@@ -1,0 +1,15 @@
+# Streamlit Community Cloud installs this file.
+# Default backend is deterministic (no weights, no API key).
+# Optional hosted model, when one is present: Llama 3.2 1B via LLM_MODEL=llama3.2:1b.
+pandas>=2.2
+numpy>=1.26
+scipy>=1.11
+pyyaml>=6
+pydantic>=2
+httpx>=0.27
+langgraph>=0.2
+langchain-core>=0.3
+plotly>=5.22
+matplotlib>=3.8
+python-pptx>=1.0
+streamlit>=1.32

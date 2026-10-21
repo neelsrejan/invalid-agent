@@ -22,6 +22,7 @@ dependencies = [
   "langchain-core>=0.3",
   "plotly>=5.22",
   "matplotlib>=3.8",
+  "streamlit>=1.32",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,12 @@
+{
+  "name": "invalid-agent",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "pip install -e '.[dev]'",
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": {
+      "label": "Invalid Bot",
+      "onAutoForward": "notify"
+    }
+  }
+}

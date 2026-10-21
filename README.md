@@ -4,7 +4,7 @@ Simulated field-quality investigation. A customer says the invalid rate on a mol
 
 **Simulation. Synthetic data. Not for clinical use.**
 
-Session 6 runs the weekly loop. Each new stakeholder note re-plans the Gantt and the risk register, appends a decision-log entry, and writes a RAG update for the customer, the internal team, and leadership. The dashboard, the evals, and the deck land in later tags.
+The weekly loop re-plans the Gantt and the risk register, appends a decision-log entry, and writes a RAG update for the customer, the internal team, and leadership. The dashboard is `streamlit run streamlit_app.py`. The evals and the exec deck land in later tags.
 
 ```bash
 python -m invalid_agent.graph --scenario bad_lot --week 3
