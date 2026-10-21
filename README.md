@@ -4,7 +4,7 @@ Simulated field-quality investigation. A customer says the invalid rate on a mol
 
 **Simulation. Synthetic data. Not for clinical use.**
 
-Session 3 adds the Week-0 triage memo. The graph calls the metrics, ranks hypotheses from the strata, and runs a numeric-fidelity check on the prose. The default backend is a template, not a model. RCA, the plan, the dashboard, and the deck land in later tags.
+Session 4 adds the RCA record: a 6M fishbone, a 5 Whys chain where every step cites an evidence id, and an 8D/CAPA with DMAIC labels. The plan, the dashboard, and the deck land in later tags.
 
 ```bash
 python -m invalid_agent.sim.generate scenarios/bad_lot.yaml

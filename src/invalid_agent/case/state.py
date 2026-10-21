@@ -22,6 +22,7 @@ class CaseState(TypedDict, total=False):
     fishbone: dict[str, Any]
     five_whys: dict[str, Any]
     capa: dict[str, Any]
+    rca_fidelity: dict[str, Any]
     plan: dict[str, Any]
     risks: list[dict[str, Any]]
     decision_log: list[dict[str, Any]]

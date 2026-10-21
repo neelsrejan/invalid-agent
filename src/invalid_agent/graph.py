@@ -11,15 +11,19 @@ from langgraph.graph import END, StateGraph
 
 from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
+from invalid_agent.nodes.rca import rca_node
 from invalid_agent.nodes.triage import triage_node
 from invalid_agent.sim.generate import load_scenario
 
 
 def build_graph():
+    """Triage then RCA. The planner and the weekly loop join this graph later."""
     graph = StateGraph(CaseState)
     graph.add_node("triage", triage_node)
+    graph.add_node("rca", rca_node)
     graph.set_entry_point("triage")
-    graph.add_edge("triage", END)
+    graph.add_edge("triage", "rca")
+    graph.add_edge("rca", END)
     return graph.compile()
 
 
@@ -49,10 +53,8 @@ def initial_state(scenario: dict[str, Any], week: int) -> CaseState:
 
 
 def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict[str, Any]:
-    if week != 0:
-        raise SystemExit(
-            "This session runs --week 0. Fishbone, the plan, and the weekly loop are later sessions."
-        )
+    if week < 0 or week > 4:
+        raise SystemExit("week must be 0 through 4")
     settings = load_settings()
     path = resolve_scenario(scenario_name, settings.repo_root)
     scenario = load_scenario(path)
@@ -66,6 +68,9 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
         json.dumps(result["fidelity"], indent=2),
         encoding="utf-8",
     )
+    (destination / "fishbone.md").write_text(result["fishbone"]["markdown"], encoding="utf-8")
+    (destination / "five_whys.md").write_text(result["five_whys"]["markdown"], encoding="utf-8")
+    (destination / "capa8d.md").write_text(result["capa"]["markdown"], encoding="utf-8")
     result["memo_path"] = str(memo_path)
     return result
 
