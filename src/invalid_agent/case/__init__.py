@@ -1,0 +1,1 @@
+"""Typed case objects shared by the graph nodes."""
