@@ -87,3 +87,9 @@ injections:
       Leadership wants a recommendation: contain the lot, expand the
       investigation, or do both, and the effectiveness check that would
       close it.
+eval:
+  expect_cause: bad_reagent_lot
+  holdout: false
+  below_bar: false
+  note: >
+    Ground truth for the harness. The ranker does not read this block.

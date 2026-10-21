@@ -52,6 +52,13 @@ def test_bad_lot_fishbone_ranks_material_and_whys_end_on_the_lot():
     assert "Not for clinical use" in joined
 
 
+def test_software_version_id_survives_the_fidelity_guard():
+    scenario = load_scenario(ROOT / "scenarios" / "software_clear.yaml")
+    update = rca_node({"scenario": scenario, "scenario_id": scenario["id"], "week": 0})
+    assert update["rca_fidelity"]["ok"] is True
+    assert "2.4.0" in update["five_whys"]["steps"][-1]["answer"]
+
+
 def test_week0_command_still_writes_the_memo_and_now_the_rca(tmp_path, monkeypatch):
     monkeypatch.setenv("LLM_BACKEND", "deterministic")
     from invalid_agent.graph import main

@@ -412,7 +412,13 @@ def rca_node(state: CaseState) -> dict[str, Any]:
         steps=[WhyStep(**step) for step in whys["steps"]],
     )
     combined = "\n".join([fishbone["markdown"], whys["markdown"], capa["markdown"]])
-    facts = {"catalog": catalog, "structure": [0, 1, 2, 3, 4, 5, 6, 7, 8], "week": week}
+    # Level ids such as 2.4.0 are labels. They have to be in the facts as
+    # strings so the fidelity scan does not read the version as a rate.
+    labels = [str(item["level"]) for item in hypotheses if item.get("level")]
+    for version in scenario.get("software_versions") or []:
+        if isinstance(version, dict) and version.get("id"):
+            labels.append(str(version["id"]))
+    facts = {"catalog": catalog, "labels": labels, "structure": [0, 1, 2, 3, 4, 5, 6, 7, 8], "week": week}
     fidelity = check_narrative(combined, facts).to_dict()
     if not fidelity["ok"]:
         raise RuntimeError(f"RCA prose failed the fidelity guard: {fidelity['unknown']}")

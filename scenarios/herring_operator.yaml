@@ -1,0 +1,83 @@
+id: herring_operator
+title: A note blames an operator; the table blames an instrument
+seed: 5109
+device: MDx-24 Respiratory Panel
+start_date: "2025-04-01"
+horizon_days: 180
+runs_per_day: 80
+baseline_invalid_rate: 0.012
+spec_invalid_rate: 0.02
+promised_validity: 0.98
+cost_per_invalid_usd: 85
+customers:
+  - Northlake Health
+  - Cedar Regional Medical
+  - Harbor Point Labs
+  - Westbend Clinic
+sites: [SITE-A, SITE-B, SITE-C, SITE-D]
+instruments: [INS-01, INS-02, INS-03, INS-04]
+operators: [OP-01, OP-02, OP-03, OP-04, OP-05, OP-06]
+software_versions:
+  - {id: "2.3.1", start_day: 0, end_day: 180, weight: 0.7}
+  - {id: "2.4.0", start_day: 0, end_day: 180, weight: 0.3}
+lots:
+  - {id: L-4401, start_day: 0, end_day: 70}
+  - {id: L-4412, start_day: 40, end_day: 130}
+  - {id: L-4419, start_day: 120, end_day: 180}
+  - {id: L-4425, start_day: 125, end_day: 180}
+root_cause:
+  type: red_herring
+  "true":
+    type: drifting_instrument
+    instrument_id: INS-02
+    start_day: 70
+    end_day: 180
+    peak_invalid_rate: 0.24
+    dominant_code: INV-SW
+complaint: >
+  Synthetic complaint, not a real customer. Northlake Health reports that
+  MDx-24 invalids this month are well above the ≥98% validity they were
+  sold. They have paused reporting on the panel and asked for a written
+  position today. The attached note names an operator. That sentence is the herring.
+injections:
+  - week: 0
+    source: customer
+    audience: customer
+    text: >
+      Training says operator OP-02 missed a wash step and that this operator is the cause.
+  - week: 1
+    source: QA
+    audience: internal
+    text: >
+      Training still says operator OP-02 is the cause. The field table is the check.
+  - week: 2
+    source: R&D
+    audience: internal
+    text: >
+      R&D reports release testing on the panel was inside its limits. The release sample was not a field specimen.
+  - week: 2
+    source: customer
+    audience: customer
+    text: >
+      The lab director wants a written customer update today.
+  - week: 3
+    source: manufacturing
+    audience: internal
+    text: >
+      Manufacturing has no second excursion to add this week.
+  - week: 3
+    source: management
+    audience: leadership
+    text: >
+      Leadership asks for the cost of the invalids so far.
+  - week: 4
+    source: management
+    audience: leadership
+    text: >
+      Leadership wants a recommendation and the effectiveness check that would close it.
+eval:
+  expect_cause: drifting_instrument
+  holdout: false
+  below_bar: false
+  note: >
+    Ground truth for the harness. The ranker does not read this block.

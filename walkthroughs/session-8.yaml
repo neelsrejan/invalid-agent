@@ -1,0 +1,11 @@
+session: 8
+title: Offline eval, evidence ranker versus keyword ranker
+narration:
+  - file: evals/reports/2026-10-21.md
+    beat: "Read n, the holdout split, weak_lot, and the drift extra stratum before the 22/22 cell."
+  - file: evals/run_eval.py
+    beat: "keyword_cause reads week-0 notes. score_scenario never passes eval.expect_cause into the ranker."
+  - file: scenarios/herring_software.yaml
+    beat: "The note says software. The quoted true cause is the lot."
+  - file: src/invalid_agent/nodes/rca.py
+    beat: "Version ids go into the fidelity facts so 2.4.0 is a label."
