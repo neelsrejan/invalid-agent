@@ -13,6 +13,7 @@ class CaseState(TypedDict, total=False):
     scenario_id: str
     scenario: dict[str, Any]
     week: int
+    target_week: int
     out_dir: str
     metrics: dict[str, Any]
     hypotheses: list[dict[str, Any]]
@@ -28,6 +29,7 @@ class CaseState(TypedDict, total=False):
     risks: list[dict[str, Any]]
     decision_log: list[dict[str, Any]]
     status_updates: dict[str, str]
+    status_fidelity: dict[str, Any]
     jira: dict[str, Any]
     closeout: dict[str, Any]
     deck_path: str

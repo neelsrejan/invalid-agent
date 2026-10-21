@@ -4,7 +4,11 @@ Simulated field-quality investigation. A customer says the invalid rate on a mol
 
 **Simulation. Synthetic data. Not for clinical use.**
 
-Session 5 adds the 4-week Gantt, the likelihood × impact risk register, and a Jira sync that writes a JSON dry-run when no token is set. Stakeholder updates, the dashboard, and the deck land in later tags.
+Session 6 runs the weekly loop. Each new stakeholder note re-plans the Gantt and the risk register, appends a decision-log entry, and writes a RAG update for the customer, the internal team, and leadership. The dashboard, the evals, and the deck land in later tags.
+
+```bash
+python -m invalid_agent.graph --scenario bad_lot --week 3
+```
 
 ```bash
 python -m invalid_agent.sim.generate scenarios/bad_lot.yaml

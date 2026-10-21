@@ -101,6 +101,13 @@ def build_plan(scenario: dict[str, Any], top: dict[str, Any], week: int) -> dict
                 3,
             )
         )
+    for task in tasks:
+        if task["sim_week"] < week:
+            task["status"] = "Done"
+        elif task["sim_week"] == week:
+            task["status"] = "In Progress"
+        else:
+            task["status"] = "To Do"
     _assert_dependencies(tasks)
     return {
         "scenario_id": str(scenario.get("id", "scenario")),
@@ -230,9 +237,12 @@ def plan_node(state: CaseState) -> dict[str, Any]:
     settings = load_settings()
     out = Path(state["out_dir"]) if state.get("out_dir") else settings.out_dir
     out.mkdir(parents=True, exist_ok=True)
-    write_gantt(plan, out / "gantt.html", out / "gantt.png")
     register = render_risk_register(risks, week)
-    (out / "risk_register.md").write_text(register, encoding="utf-8")
-    (out / "plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+    plan_json = json.dumps(plan, indent=2)
+    for folder in (out, out / f"week{week}"):
+        folder.mkdir(parents=True, exist_ok=True)
+        write_gantt(plan, folder / "gantt.html", folder / "gantt.png")
+        (folder / "risk_register.md").write_text(register, encoding="utf-8")
+        (folder / "plan.json").write_text(plan_json, encoding="utf-8")
     jira = make_client(settings, out / "jira_issues.json").sync(plan)
     return {"plan": plan, "risks": risks, "jira": jira}

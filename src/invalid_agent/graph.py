@@ -1,4 +1,4 @@
-"""One case graph: triage, then the plan, then RCA. Status and close-out join later."""
+"""One case graph: triage, then plan, RCA, and a status note, looping by week."""
 
 from __future__ import annotations
 
@@ -13,20 +13,38 @@ from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
 from invalid_agent.nodes.planner import plan_node
 from invalid_agent.nodes.rca import rca_node
+from invalid_agent.nodes.status import status_node
 from invalid_agent.nodes.triage import triage_node
 from invalid_agent.sim.generate import load_scenario
 
 
+def advance_week(state: CaseState) -> dict[str, int]:
+    """Move the investigation forward one week and re-enter the planner."""
+    return {"week": int(state["week"]) + 1}
+
+
+def route_after_status(state: CaseState) -> str:
+    """Stop at the requested week. Otherwise take another lap: plan, RCA, status."""
+    target = int(state.get("target_week", state["week"]))
+    if int(state["week"]) >= target:
+        return "end"
+    return "advance"
+
+
 def build_graph():
-    """Triage then RCA. The planner and the weekly loop join this graph later."""
+    """Triage once, then plan → RCA → status, repeating until target_week."""
     graph = StateGraph(CaseState)
     graph.add_node("triage", triage_node)
     graph.add_node("plan", plan_node)
     graph.add_node("rca", rca_node)
+    graph.add_node("status", status_node)
+    graph.add_node("advance", advance_week)
     graph.set_entry_point("triage")
     graph.add_edge("triage", "plan")
     graph.add_edge("plan", "rca")
-    graph.add_edge("rca", END)
+    graph.add_edge("rca", "status")
+    graph.add_conditional_edges("status", route_after_status, {"advance": "advance", "end": END})
+    graph.add_edge("advance", "plan")
     return graph.compile()
 
 
@@ -43,11 +61,17 @@ def resolve_scenario(name: str, root: Path) -> Path:
     raise SystemExit(f"scenario not found: {name}")
 
 
-def initial_state(scenario: dict[str, Any], week: int, out_dir: Path | None = None) -> CaseState:
+def initial_state(
+    scenario: dict[str, Any],
+    week: int,
+    out_dir: Path | None = None,
+    target_week: int | None = None,
+) -> CaseState:
     state: CaseState = {
         "scenario_id": str(scenario.get("id", "scenario")),
         "scenario": scenario,
         "week": week,
+        "target_week": week if target_week is None else target_week,
         "decision_log": [],
         "risks": [],
         "status_updates": {},
@@ -67,7 +91,10 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
     destination = out_dir or settings.out_dir
     destination.mkdir(parents=True, exist_ok=True)
     app = build_graph()
-    result = app.invoke(initial_state(scenario, week, destination))
+    result = app.invoke(
+        initial_state(scenario, 0, destination, target_week=week),
+        config={"recursion_limit": 80},
+    )
     memo_path = destination / "week0_triage.md"
     memo_path.write_text(result["triage_markdown"], encoding="utf-8")
     (destination / "week0_fidelity.json").write_text(

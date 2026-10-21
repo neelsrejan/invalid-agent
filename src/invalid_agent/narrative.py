@@ -111,6 +111,83 @@ def triage_memo(facts: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _status_header(facts: dict[str, Any], title: str) -> list[str]:
+    overall = facts["overall"]
+    return [
+        f"# {title}",
+        "",
+        "**Simulation. Synthetic data. Not for clinical use.**",
+        "",
+        f"Investigation week {facts['week']}. RAG: {facts['rag']}.",
+        "",
+        (
+            f"Invalid rate {overall['rate_pct']:.2f}% ({overall['k']} of {overall['n']}), "
+            f"Wilson 95% CI {overall['ci_low_pct']:.2f}–{overall['ci_high_pct']:.2f}%. "
+            f"Promised validity {overall['promised_pct']:.2f}%, so the invalid rate must stay at or below {overall['spec_pct']:.2f}%."
+        ),
+        "",
+    ]
+
+
+def status_customer(facts: dict[str, Any]) -> str:
+    lines = _status_header(facts, "Customer update")
+    lines.extend(
+        [
+            facts["customer_action"],
+            "",
+            "This note does not state a confirmed cause. We will write again when the next week's evidence is in.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def status_internal(facts: dict[str, Any]) -> str:
+    lines = _status_header(facts, "Internal update")
+    hypo = facts["hypothesis"]
+    lines.append(
+        f"Leading hypothesis: {hypo['category']} / {hypo['cause']} / {hypo['level']}. "
+        "This is a ranking, not a confirmed cause."
+    )
+    lines.append("")
+    if hypo.get("prose"):
+        lines.append(hypo["prose"])
+        lines.append("")
+    lines.append("Evidence: " + ", ".join(hypo.get("evidence_ids") or []) + ".")
+    lines.append("")
+    lines.append(f"Plan version {facts['plan_version']}. Tasks in progress are marked on the Jira dry-run.")
+    lines.append("")
+    if facts.get("injection_texts"):
+        lines.append("Stakeholder notes in scope:")
+        lines.append("")
+        for text in facts["injection_texts"]:
+            lines.append(f"- {text}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def status_leadership(facts: dict[str, Any]) -> str:
+    lines = _status_header(facts, "Leadership update")
+    cost = facts["cost"]
+    lines.extend(
+        [
+            (
+                f"Cost of invalids in the field file: {cost['total_usd']} dollars "
+                f"({cost['k']} invalids at {cost['unit_usd']} dollars)."
+            ),
+            "",
+            facts["ask"],
+            "",
+            "The ask is a decision on containment scope. It is not a request to close the CAPA.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 TEMPLATES = {
     "triage": triage_memo,
+    "status_customer": status_customer,
+    "status_internal": status_internal,
+    "status_leadership": status_leadership,
 }
