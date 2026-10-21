@@ -1,4 +1,7 @@
-"""One case graph: triage, then plan, RCA, and a status note, looping by week."""
+"""One case graph: triage, then plan, RCA, and a status note, looping by week.
+
+Week 4 continues into close-out and the exec deck.
+"""
 
 from __future__ import annotations
 
@@ -11,6 +14,7 @@ from langgraph.graph import END, StateGraph
 
 from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
+from invalid_agent.nodes.closeout import closeout_node
 from invalid_agent.nodes.planner import plan_node
 from invalid_agent.nodes.rca import rca_node
 from invalid_agent.nodes.status import status_node
@@ -24,9 +28,11 @@ def advance_week(state: CaseState) -> dict[str, int]:
 
 
 def route_after_status(state: CaseState) -> str:
-    """Stop at the requested week. Otherwise take another lap: plan, RCA, status."""
+    """Stop at the requested week. Week 4 continues into close-out."""
     target = int(state.get("target_week", state["week"]))
     if int(state["week"]) >= target:
+        if int(state["week"]) >= 4:
+            return "closeout"
         return "end"
     return "advance"
 
@@ -39,12 +45,18 @@ def build_graph():
     graph.add_node("rca", rca_node)
     graph.add_node("status", status_node)
     graph.add_node("advance", advance_week)
+    graph.add_node("closeout", closeout_node)
     graph.set_entry_point("triage")
     graph.add_edge("triage", "plan")
     graph.add_edge("plan", "rca")
     graph.add_edge("rca", "status")
-    graph.add_conditional_edges("status", route_after_status, {"advance": "advance", "end": END})
+    graph.add_conditional_edges(
+        "status",
+        route_after_status,
+        {"advance": "advance", "end": END, "closeout": "closeout"},
+    )
     graph.add_edge("advance", "plan")
+    graph.add_edge("closeout", END)
     return graph.compile()
 
 
@@ -116,6 +128,8 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     result = run_case(args.scenario, args.week, Path(args.out) if args.out else None)
     print(f"Wrote {result['memo_path']}")
+    if result.get("deck_path"):
+        print(f"Wrote {result['deck_path']}")
     print(f"Escalate: {result['triage_memo']['escalate']}  severity: {result['triage_memo']['severity']}")
     print("Simulation. Synthetic data. Not for clinical use.")
 
