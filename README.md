@@ -46,14 +46,14 @@ That command rewrites `evals/reports/<date>.md`. CI runs the same script with `-
 | Where | Model | Notes |
 |---|---|---|
 | Local Ollama (default) | `llama3.1:8b` (Meta Llama 3.1 8B) | `ollama pull llama3.1:8b`, then `LLM_BACKEND=ollama` |
-| Hosted Streamlit | Llama 3.2 1B (`llama3.2:1b`) | Used when the rules-only toggle is off and `LLM_MODEL` is unset. If that model is not running, the notes fall back to the template. No weights are bundled. |
+| Hosted Streamlit | Rules-only (deterministic) | Streamlit Community Cloud has no Ollama, so the hosted page does not run a model. `llama3.2:1b` is the suggested small tag for local or self-hosted Ollama (`LLM_MODEL=llama3.2:1b`). |
 | Alternatives | Gemma 3 (`gemma3`), Phi-4 (`phi4`) | Set `LLM_MODEL` to that Ollama tag. Same code path. |
 
 `LLM_BACKEND=deterministic` is the default and the CI path. `LLAMACPP_MODEL_PATH` is a file path for an optional Llama 3.2 1B GGUF, not a second model name. Leave the backend on `deterministic` when the file is absent.
 
 ## Eval
 
-From `evals/reports/2026-10-21.md`. n = 22 synthetic scenarios, 4 held out. Gates were the Session 3 constants. They were not refit. Prompts were not edited against either split.
+From `evals/reports/2026-10-20.md`. n = 22 synthetic scenarios, 4 held out. Gates were the Session 3 constants. They were not refit. Prompts were not edited against either split.
 
 | Split | n | Evidence top-1 | Evidence top-3 | Keyword top-1 |
 |---|---:|---:|---:|---:|
@@ -74,8 +74,8 @@ Failure notes that have to travel with the 22/22 cell:
 The repo runs with no keys.
 
 1. Jira Cloud Free, only if live sync is wanted. Set `JIRA_BASE_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN`. Otherwise the investigation writes `SIM-*` issues to JSON.
-2. Streamlit Community Cloud sign-in with GitHub. Select `app/streamlit_app.py` or the root `streamlit_app.py`. The hosted page stays rules-only unless a model is present.
-3. Ollama, only for a local model: `ollama pull llama3.1:8b`. For the smaller tag, `ollama pull llama3.2:1b` and `LLM_MODEL=llama3.2:1b`. Gemma 3 and Phi-4 are the other documented tags.
+2. Streamlit Community Cloud sign-in with GitHub. Select `app/streamlit_app.py` or the root `streamlit_app.py`. The hosted page runs rules-only (deterministic). Cloud has no Ollama.
+3. Ollama, only for a local or self-hosted model: `ollama pull llama3.1:8b`. For the smaller tag, `ollama pull llama3.2:1b` and `LLM_MODEL=llama3.2:1b`. Gemma 3 and Phi-4 are the other documented tags.
 
 ## Limits
 

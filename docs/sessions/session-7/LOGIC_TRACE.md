@@ -16,13 +16,13 @@ A Streamlit page a reviewer can click through: pick a scenario, move the week, a
 
 - **Streamlit** is the page and the free host. `st.cache_data` keeps a week from recomputing when the reviewer switches a tab.
 - **Plotly** draws the p-chart, the Pareto, and the before/after chart in the browser. The PNG path for later slides stays on matplotlib, because Plotly's static export needs Kaleido and a browser binary we are not shipping.
-- No new model library. Rules-only sets `LLM_BACKEND=deterministic`. Turning the toggle off asks Ollama for `LLM_MODEL` when that variable is set, and for Llama 3.2 1B (`llama3.2:1b`) when it is not. `narrate` still replaces a missing or rejected draft with the template.
+- No new model library. Rules-only sets `LLM_BACKEND=deterministic`. That is what hosted Streamlit runs: Streamlit Cloud has no Ollama. Turning the toggle off on a local or self-hosted machine asks Ollama for `LLM_MODEL` when that variable is set, and for Llama 3.2 1B (`llama3.2:1b`) when it is not. `narrate` still replaces a missing or rejected draft with the template.
 
 ## 4. Code, and why it is shaped this way
 
 `app/streamlit_app.py` is the page. `streamlit_app.py` at the repo root runs that file with `runpy`, so both `streamlit run streamlit_app.py` and Streamlit Community Cloud's default filename work.
 
-- `_dashboard_model` (line 29) is the only place the page chooses a model name. An explicit `LLM_MODEL` wins. Rules-only does not call a model. The hosted toggle, with `LLM_MODEL` unset, asks for `HOSTED_LLM_MODEL` (`llama3.2:1b`).
+- `_dashboard_model` (line 29) is the only place the page chooses a model name. An explicit `LLM_MODEL` wins. Rules-only does not call a model. Hosted Streamlit stays on that default. With the toggle off and `LLM_MODEL` unset, a local or self-hosted run asks for `HOSTED_LLM_MODEL` (`llama3.2:1b`).
 - `_run` (line 40) sets `LLM_BACKEND` for the call and puts `LLM_MODEL` on the environment only when the backend is not deterministic. It restores the previous environment afterwards, so a cached run cannot pin a model for the next CLI command in the same process. The cache key is scenario, week, backend, and model.
 - The banner is the first markdown on the page (line 71). The spec line under the title restates validity ≥ 98%.
 - KPI tiles use `result["metrics"]["overall"]` and the triage memo's escalate flag. RAG is read off the leadership note (`RAG: Red`, `RAG: Amber`, `RAG: Green`), which is the same string `status.py` wrote.
@@ -37,7 +37,7 @@ A Streamlit page a reviewer can click through: pick a scenario, move the week, a
 
 ## 5. What was documented, and why
 
-The README model table names `llama3.1:8b` as the local default, Llama 3.2 1B as the hosted size, and Gemma 3 (`gemma3`) and Phi-4 (`phi4`) as other `LLM_MODEL` values. The page caption says when no model is called. `.env.example` lists the same single variable.
+The README model table names `llama3.1:8b` as the local default. Hosted Streamlit runs rules-only (deterministic). `llama3.2:1b` is the suggested small tag for local or self-hosted runs. Gemma 3 (`gemma3`) and Phi-4 (`phi4`) are other `LLM_MODEL` values. The page caption says when no model is called. `.env.example` lists the same single variable.
 
 ## 6. Stakeholder / Jira buy-in before Session 8
 

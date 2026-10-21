@@ -33,7 +33,7 @@ The model comparison the plan named as 7B versus 1.5B is now Llama 3.1 8B (`llam
 
 ## 5. What was documented, and why
 
-`evals/reports/2026-10-21.md` is the run. Evidence top-1 was 22/22 on this constructed set, including the three herrings and the weak lot. Keyword top-1 was 3/22. The three keyword hits are the flat files, where the week-0 note names no cause. On the herrings and on `weak_lot` the keyword ranker repeats the note and the evidence ranker does not. Four drift files also cleared a lot stratum; top-1 stayed on the instrument. That second stratum is the failure note a résumé bullet has to keep.
+`evals/reports/2026-10-20.md` is the run. Evidence top-1 was 22/22 on this constructed set, including the three herrings and the weak lot. Keyword top-1 was 3/22. The three keyword hits are the flat files, where the week-0 note names no cause. On the herrings and on `weak_lot` the keyword ranker repeats the note and the evidence ranker does not. Four drift files also cleared a lot stratum; top-1 stayed on the instrument. That second stratum is the failure note a résumé bullet has to keep.
 
 CI runs five scenarios through the same script and fails if evidence top-1, fidelity, citations, or escalation miss.
 
@@ -57,7 +57,7 @@ Check out `session-8` first.
 2. `score_scenario` generates, ranks, and compares to `eval.expect_cause`.
 3. `render_report` writes the three split rows, then the failure notes. A clean top-1 list is still followed by keyword misses and extra strata.
 4. `_model_section` names `llama3.1:8b` and `llama3.2:1b` and states when the probe did not run.
-5. Open `evals/reports/2026-10-21.md` and read the weak_lot row and the drift extra-stratum lines before reading the 22/22 cell.
+5. Open `evals/reports/2026-10-20.md` and read the weak_lot row and the drift extra-stratum lines before reading the 22/22 cell.
 6. Open `scenarios/herring_software.yaml`. The week-0 note says software. `root_cause.true` is the lot. The quoted `"true"` key is required.
 7. Open `src/invalid_agent/nodes/rca.py` at the facts dict. `labels` includes `2.4.0` so the Why can name the version.
 

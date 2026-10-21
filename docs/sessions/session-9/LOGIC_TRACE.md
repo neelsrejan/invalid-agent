@@ -10,7 +10,7 @@ Close the case at week 4. D7 and D8 are confirmed, the effectiveness check is a 
 
 ## 2. What had to be true before calling the project done
 
-Tags `session-1` through `session-9` exist. `pytest` passes offline. `streamlit run streamlit_app.py` renders the banner. `python -m invalid_agent.graph --scenario bad_lot --week 4` writes the deck. The model name in the repo is `LLM_MODEL`, default `llama3.1:8b`. The hosted page asks for Llama 3.2 1B only when a model is requested, and otherwise stays on the template.
+Tags `session-1` through `session-9` exist. `pytest` passes offline. `streamlit run streamlit_app.py` renders the banner. `python -m invalid_agent.graph --scenario bad_lot --week 4` writes the deck. The model name in the repo is `LLM_MODEL`, default `llama3.1:8b`. Hosted Streamlit runs rules-only (deterministic). `llama3.2:1b` is the suggested small tag for local or self-hosted runs.
 
 ## 3. Why these libraries
 
@@ -34,7 +34,7 @@ A single-cause call recommends containing that stratum and not expanding. `no_si
 
 ## 5. What was documented, and why
 
-`README.md` carries the disclaimer, the quickstart, the model table (Llama 3.1 8B, Llama 3.2 1B, Gemma 3, Phi-4), the eval table from `evals/reports/2026-10-21.md`, and the three things Neel still has to sign in for. `RESUME_BULLETS.md` repeats the 22/22 cell next to the keyword 3/22 and the four drift files that also cleared a lot. Quoting the first number alone would mislead.
+`README.md` carries the disclaimer, the quickstart, the model table (Llama 3.1 8B locally, rules-only on hosted Streamlit, `llama3.2:1b` for a small local or self-hosted run, Gemma 3 and Phi-4 as alternatives), the eval table from `evals/reports/2026-10-20.md`, and the three things Neel still has to sign in for. `RESUME_BULLETS.md` repeats the 22/22 cell next to the keyword 3/22 and the four drift files that also cleared a lot. Quoting the first number alone would mislead.
 
 ## 6. Stakeholder / Jira buy-in
 

@@ -27,7 +27,10 @@ def _scenarios() -> list[Path]:
 
 
 def _dashboard_model(rules_only: bool) -> str:
-    """Honor LLM_MODEL when it is set. Otherwise the page asks for Llama 3.2 1B."""
+    """Honor LLM_MODEL when it is set. A local toggle-off run asks for Llama 3.2 1B.
+
+    Streamlit Cloud has no Ollama. The hosted page stays on rules-only.
+    """
     pinned = os.environ.get("LLM_MODEL", "").strip()
     if pinned:
         return pinned

@@ -152,7 +152,7 @@ The generator can inject one of:
 ## 11. Non-functional requirements
 
 - Runs on a 32 GB laptop with no GPU. The local model, when used, is Ollama `llama3.1:8b` (Meta Llama 3.1 8B). `LLM_MODEL` is the only model setting. Gemma 3 (`gemma3`) and Phi-4 (`phi4`) are drop-in alternatives.
-- Hosted demo target is Streamlit Community Cloud. The default backend is deterministic so the app fits the free RAM limit. When a model is available, the hosted size is Llama 3.2 1B (`llama3.2:1b`, or a Llama 3.2 1B GGUF). If it is not available, the template fallback is what the page shows.
+- Hosted demo target is Streamlit Community Cloud. Hosted Streamlit runs rules-only (deterministic). Cloud has no Ollama, so it does not load a model. `llama3.2:1b` is the suggested small tag for local or self-hosted runs (`LLM_MODEL=llama3.2:1b`, or a Llama 3.2 1B GGUF on a machine that has the file).
 - No secret in the repo. `.env.example` has empty values.
 - CI is GitHub Actions, offline, Python 3.11 and 3.12.
 
@@ -174,5 +174,5 @@ None. This is a local simulation. The eval report is the only scorecard.
 
 1. Create the Jira Cloud Free site and, when he wants live sync, an API token in the environment. The repo runs without it.
 2. Sign in to Streamlit Community Cloud with GitHub and pick `app/streamlit_app.py`.
-3. Install Ollama and pull `llama3.1:8b` only if he wants the local model. For the smaller hosted size, set `LLM_MODEL=llama3.2:1b`. Gemma 3 and Phi-4 are the other documented tags.
+3. Install Ollama and pull `llama3.1:8b` only if he wants the local model. For a smaller local or self-hosted tag, set `LLM_MODEL=llama3.2:1b`. Gemma 3 and Phi-4 are the other documented tags. The hosted Streamlit page stays rules-only.
 4. Sanity-check the root-cause list and the weekly injections against his QC experience before he quotes the eval numbers.

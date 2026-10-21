@@ -2,7 +2,7 @@ session: 7
 title: Streamlit dashboard, rules-only by default
 narration:
   - file: app/streamlit_app.py
-    beat: "Banner first. Then the week slider and the rules-only toggle. Unset LLM_MODEL plus the toggle off asks for llama3.2:1b."
+    beat: "Banner first. Hosted Streamlit stays rules-only. On a local machine, toggle off with LLM_MODEL unset asks for llama3.2:1b."
   - file: src/invalid_agent/artifacts/charts.py
     beat: "Navy series, red rule-1 marks. The figure reads the p-chart dict the graph already computed."
   - file: src/invalid_agent/metrics/effectiveness.py

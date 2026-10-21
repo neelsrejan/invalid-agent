@@ -1,6 +1,6 @@
 # Streamlit Community Cloud installs this file.
-# Default backend is deterministic (no weights, no API key).
-# Optional hosted model, when one is present: Llama 3.2 1B via LLM_MODEL=llama3.2:1b.
+# Hosted Streamlit runs rules-only (deterministic). No weights and no API key.
+# llama3.2:1b is the suggested small tag for local or self-hosted runs, not for Streamlit Cloud.
 pandas>=2.2
 numpy>=1.26
 scipy>=1.11

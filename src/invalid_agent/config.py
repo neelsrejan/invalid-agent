@@ -17,7 +17,8 @@ SPEC_INVALID_RATE = round(1.0 - PROMISED_VALIDITY, 2)
 _LLM_BACKENDS = {"deterministic", "ollama", "llamacpp"}
 
 # The only model name. Local Ollama default is Meta Llama 3.1 8B.
-# The hosted Streamlit page requests Llama 3.2 1B when this is unset and a model is on.
+# llama3.2:1b is the suggested small tag for local or self-hosted runs.
+# Hosted Streamlit stays deterministic. Streamlit Cloud has no Ollama.
 DEFAULT_LLM_MODEL = "llama3.1:8b"
 HOSTED_LLM_MODEL = "llama3.2:1b"
 
