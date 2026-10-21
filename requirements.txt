@@ -13,3 +13,5 @@ plotly>=5.22
 matplotlib>=3.8
 python-pptx>=1.0
 streamlit>=1.32
+# src-layout package. Streamlit Cloud installs only this file.
+-e .

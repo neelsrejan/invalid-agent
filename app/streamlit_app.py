@@ -7,7 +7,14 @@ Move the week slider to replay the stakeholder loop.
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+# Repo root is the parent of app/. Works for `streamlit run app/streamlit_app.py`
+# and for the root wrapper, which executes this file via runpy.
+_SRC = Path(__file__).resolve().parents[1] / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 import pandas as pd
 import streamlit as st
