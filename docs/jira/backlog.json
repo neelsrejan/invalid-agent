@@ -1,0 +1,228 @@
+{
+  "project": {
+    "key": "INV",
+    "name": "Invalid Bot",
+    "type": "software",
+    "note": "Import this on a Jira Cloud Free site (team-managed or company-managed). The simulation runs with no site; this file is the Sprint 1 board the build plan asks to show."
+  },
+  "spec": {
+    "device": "MDx-24 Respiratory Panel (fictional molecular panel)",
+    "promised_validity": 0.98,
+    "spec_invalid_rate": 0.02
+  },
+  "sprints": [
+    {
+      "id": 1,
+      "name": "Sprint 1 — Framing, data, Week-0 triage",
+      "sessions": ["S1", "S2", "S3"],
+      "goal": "A reviewer can install the repo, read the PRD, generate a synthetic field file, and read a Week-0 triage memo whose numbers match the code."
+    },
+    {
+      "id": 2,
+      "name": "Sprint 2 — RCA, plan, weekly loop",
+      "sessions": ["S4", "S5", "S6"],
+      "goal": "Fishbone, 5 Whys, and 8D exist; a 4-week Gantt and risk register sync to Jira in dry-run; weekly injections rewrite the plan and the status note."
+    },
+    {
+      "id": 3,
+      "name": "Sprint 3 — Dashboard, evals, close-out",
+      "sessions": ["S7", "S8", "S9"],
+      "goal": "A Streamlit dashboard, an offline eval report, and an executive deck close the simulated investigation."
+    }
+  ],
+  "epics": [
+    {"key": "INV-1", "name": "Triage", "summary": "Escalation intake, rates, and the Week-0 memo"},
+    {"key": "INV-2", "name": "RCA", "summary": "Fishbone, 5 Whys, 8D/CAPA with DMAIC labels"},
+    {"key": "INV-3", "name": "Planning", "summary": "Gantt, risk register, decision log"},
+    {"key": "INV-4", "name": "Comms", "summary": "Audience-specific RAG status updates"},
+    {"key": "INV-5", "name": "Dashboard", "summary": "KPI, p-chart, Pareto, week stepper"},
+    {"key": "INV-6", "name": "Deck", "summary": "Week-4 executive recommendation deck"},
+    {"key": "INV-7", "name": "Evals", "summary": "Seeded scenarios, hit rate, numeric fidelity"}
+  ],
+  "stories": [
+    {
+      "key": "INV-101",
+      "epic": "INV-1",
+      "sprint": 1,
+      "points": 2,
+      "summary": "As a field-quality PM, I want a PRD so scope, non-goals, and success metrics are written down before the build.",
+      "acceptance": ["PRD.md states the user, the spec (≥98% validity), non-goals, and success metrics."]
+    },
+    {
+      "key": "INV-102",
+      "epic": "INV-7",
+      "sprint": 1,
+      "points": 2,
+      "summary": "As a field-quality PM, I want the repo to install and test with no API keys.",
+      "acceptance": ["pytest is green in GitHub Actions on Python 3.11 and 3.12.", "No token is committed."]
+    },
+    {
+      "key": "INV-103",
+      "epic": "INV-4",
+      "sprint": 1,
+      "points": 1,
+      "summary": "As a field-quality PM, I want a simulation disclaimer and a data-license note so the work cannot be read as a real complaint.",
+      "acceptance": ["SIMULATION_DISCLAIMER.md and DATA_LICENSES.md exist and name the three public sources."]
+    },
+    {
+      "key": "INV-104",
+      "epic": "INV-1",
+      "sprint": 1,
+      "points": 5,
+      "summary": "As a field-quality PM, I want a synthetic 6-month field file with a known injected root cause.",
+      "acceptance": ["python -m invalid_agent.sim.generate scenarios/bad_lot.yaml prints a summary.", "The CSV includes site, instrument, lot, software version, and invalid code."]
+    },
+    {
+      "key": "INV-105",
+      "epic": "INV-1",
+      "sprint": 1,
+      "points": 3,
+      "summary": "As a field-quality PM, I want the invalid rate, a Wilson 95% interval, stratified rates, and a chi-square test computed in code.",
+      "acceptance": ["Unit tests match a hand-computed Wilson interval."]
+    },
+    {
+      "key": "INV-106",
+      "epic": "INV-5",
+      "sprint": 1,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a p-chart and Western Electric flags.",
+      "acceptance": ["Control limits match a hand calculation.", "A planted 3-sigma point is flagged."]
+    },
+    {
+      "key": "INV-107",
+      "epic": "INV-5",
+      "sprint": 1,
+      "points": 2,
+      "summary": "As a field-quality PM, I want a Pareto of invalid codes.",
+      "acceptance": ["Codes are sorted by count and the cumulative share reaches 100%."]
+    },
+    {
+      "key": "INV-108",
+      "epic": "INV-1",
+      "sprint": 1,
+      "points": 5,
+      "summary": "As a field-quality PM, I want a one-page Week-0 triage memo with rate, interval, strata, severity, and an escalate decision.",
+      "acceptance": ["python -m invalid_agent.graph --scenario bad_lot --week 0 writes out/week0_triage.md."]
+    },
+    {
+      "key": "INV-109",
+      "epic": "INV-7",
+      "sprint": 1,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a numeric-fidelity check that rejects a narrative number the code did not compute.",
+      "acceptance": ["A test feeds a deliberately wrong rate and the guard fails it."]
+    },
+    {
+      "key": "INV-201",
+      "epic": "INV-2",
+      "sprint": 2,
+      "points": 5,
+      "summary": "As a field-quality PM, I want a 6M fishbone ranked from the strata, with evidence for and against each branch.",
+      "acceptance": ["On bad_lot the top branch is Material."]
+    },
+    {
+      "key": "INV-202",
+      "epic": "INV-2",
+      "sprint": 2,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a 5 Whys on the top branch where every step cites a fact or an injection.",
+      "acceptance": ["A step with an empty citation list fails the test.", "The chain ends at a lot-level cause on bad_lot."]
+    },
+    {
+      "key": "INV-203",
+      "epic": "INV-2",
+      "sprint": 2,
+      "points": 5,
+      "summary": "As a field-quality PM, I want an 8D/CAPA record (D1–D8) with DMAIC labels, containment, and an effectiveness metric.",
+      "acceptance": ["Markdown export includes D1 through D8."]
+    },
+    {
+      "key": "INV-204",
+      "epic": "INV-3",
+      "sprint": 2,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a 4-week plan with functional owners, dependencies, and dates, exported as a Gantt.",
+      "acceptance": ["HTML Gantt is written.", "PNG is written even when kaleido is absent."]
+    },
+    {
+      "key": "INV-205",
+      "epic": "INV-3",
+      "sprint": 2,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a likelihood × impact risk register with mitigation, owner, and trend.",
+      "acceptance": ["Scores equal likelihood times impact.", "Week 2 shows a trend change versus week 0."]
+    },
+    {
+      "key": "INV-206",
+      "epic": "INV-3",
+      "sprint": 2,
+      "points": 5,
+      "summary": "As a field-quality PM, I want the investigation epic and stories created in Jira, or a JSON dry-run when I have no token.",
+      "acceptance": ["Tests use a mocked HTTP API.", "Missing env vars never raise and never call the network."]
+    },
+    {
+      "key": "INV-207",
+      "epic": "INV-4",
+      "sprint": 2,
+      "points": 3,
+      "summary": "As a field-quality PM, I want weekly stakeholder injections to update the plan and append a decision-log entry.",
+      "acceptance": ["Weeks 1–3 can be stepped.", "The decision log has one entry per week."]
+    },
+    {
+      "key": "INV-208",
+      "epic": "INV-4",
+      "sprint": 2,
+      "points": 3,
+      "summary": "As a field-quality PM, I want a RAG status update for the customer, for the internal team, and for leadership.",
+      "acceptance": ["Customer text does not name an unconfirmed root cause as fact.", "All three pass the fidelity guard."]
+    },
+    {
+      "key": "INV-301",
+      "epic": "INV-5",
+      "sprint": 3,
+      "points": 5,
+      "summary": "As a reviewer, I want a Streamlit dashboard with KPI tiles, a p-chart, a Pareto, strata, and the week's artifacts.",
+      "acceptance": ["streamlit run app/streamlit_app.py renders the simulation banner and the default scenario."]
+    },
+    {
+      "key": "INV-302",
+      "epic": "INV-5",
+      "sprint": 3,
+      "points": 2,
+      "summary": "As a reviewer, I want rules-only mode and a Streamlit Community Cloud config so the demo costs nothing.",
+      "acceptance": ["requirements.txt installs the deterministic path.", "No GGUF is required."]
+    },
+    {
+      "key": "INV-303",
+      "epic": "INV-7",
+      "sprint": 3,
+      "points": 5,
+      "summary": "As a field-quality PM, I want 15–30 seeded scenarios scored for top-1, top-3, numeric fidelity, and citation validity.",
+      "acceptance": ["A 5-scenario smoke eval runs in CI.", "The report lists n and any failures."]
+    },
+    {
+      "key": "INV-304",
+      "epic": "INV-2",
+      "sprint": 3,
+      "points": 3,
+      "summary": "As a field-quality PM, I want Week 4 to close the 8D (D7–D8) with an effectiveness check on the before/after chart.",
+      "acceptance": ["The check is labeled projected when it is a counterfactual, not observed follow-up."]
+    },
+    {
+      "key": "INV-305",
+      "epic": "INV-6",
+      "sprint": 3,
+      "points": 3,
+      "summary": "As a field-quality PM, I want an executive PowerPoint with the cause, the options, the cost, and the ask.",
+      "acceptance": ["python -m invalid_agent.graph --scenario bad_lot --week 4 writes out/exec_deck.pptx."]
+    },
+    {
+      "key": "INV-306",
+      "epic": "INV-6",
+      "sprint": 3,
+      "points": 2,
+      "summary": "As a reviewer, I want a README and résumé bullets filled only from the eval report.",
+      "acceptance": ["README has setup, architecture, disclaimer, and a demo image.", "Bullets quote the report's n."]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "invalid-agent"
+version = "0.1.0"
+description = "Simulated field-quality investigation agent for an invalid-rate escalation on a molecular diagnostic panel."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Neel Srejan" }]
+keywords = ["pm", "quality", "simulation", "capa", "spc"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+invalid-agent = "invalid_agent.graph:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.package-data]
+invalid_agent = ["py.typed"]
