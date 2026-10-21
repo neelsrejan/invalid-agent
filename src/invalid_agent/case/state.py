@@ -13,6 +13,7 @@ class CaseState(TypedDict, total=False):
     scenario_id: str
     scenario: dict[str, Any]
     week: int
+    out_dir: str
     metrics: dict[str, Any]
     hypotheses: list[dict[str, Any]]
     evidence_catalog: dict[str, str]

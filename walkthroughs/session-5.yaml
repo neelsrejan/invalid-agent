@@ -1,0 +1,13 @@
+session: 5
+title: Gantt, risk register, Jira dry-run
+narration:
+  - file: src/invalid_agent/graph.py
+    beat: "Show triage, plan, rca. out_dir is set before invoke."
+  - file: src/invalid_agent/nodes/planner.py
+    beat: "Walk T1 through T10 dates, then the week >= 2 branch, then build_risks R1 and R4."
+  - file: src/invalid_agent/artifacts/gantt.py
+    beat: "HTML is plotly. PNG is matplotlib. Say kaleido out loud."
+  - file: src/invalid_agent/integrations/jira.py
+    beat: "make_client gate, then _upsert idempotency, then LiveJira repr."
+  - file: tests/test_jira.py
+    beat: "11 posts, then zero. The fake transport is the whole Jira site."

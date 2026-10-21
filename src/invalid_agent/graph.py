@@ -1,4 +1,4 @@
-"""One case graph. Session 3 wires intake. Later sessions add nodes on this object."""
+"""One case graph: triage, then the plan, then RCA. Status and close-out join later."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from langgraph.graph import END, StateGraph
 
 from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
+from invalid_agent.nodes.planner import plan_node
 from invalid_agent.nodes.rca import rca_node
 from invalid_agent.nodes.triage import triage_node
 from invalid_agent.sim.generate import load_scenario
@@ -20,9 +21,11 @@ def build_graph():
     """Triage then RCA. The planner and the weekly loop join this graph later."""
     graph = StateGraph(CaseState)
     graph.add_node("triage", triage_node)
+    graph.add_node("plan", plan_node)
     graph.add_node("rca", rca_node)
     graph.set_entry_point("triage")
-    graph.add_edge("triage", "rca")
+    graph.add_edge("triage", "plan")
+    graph.add_edge("plan", "rca")
     graph.add_edge("rca", END)
     return graph.compile()
 
@@ -40,8 +43,8 @@ def resolve_scenario(name: str, root: Path) -> Path:
     raise SystemExit(f"scenario not found: {name}")
 
 
-def initial_state(scenario: dict[str, Any], week: int) -> CaseState:
-    return {
+def initial_state(scenario: dict[str, Any], week: int, out_dir: Path | None = None) -> CaseState:
+    state: CaseState = {
         "scenario_id": str(scenario.get("id", "scenario")),
         "scenario": scenario,
         "week": week,
@@ -50,6 +53,9 @@ def initial_state(scenario: dict[str, Any], week: int) -> CaseState:
         "status_updates": {},
         "jira": {},
     }
+    if out_dir is not None:
+        state["out_dir"] = str(out_dir)
+    return state
 
 
 def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict[str, Any]:
@@ -58,10 +64,10 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
     settings = load_settings()
     path = resolve_scenario(scenario_name, settings.repo_root)
     scenario = load_scenario(path)
-    app = build_graph()
-    result = app.invoke(initial_state(scenario, week))
     destination = out_dir or settings.out_dir
     destination.mkdir(parents=True, exist_ok=True)
+    app = build_graph()
+    result = app.invoke(initial_state(scenario, week, destination))
     memo_path = destination / "week0_triage.md"
     memo_path.write_text(result["triage_markdown"], encoding="utf-8")
     (destination / "week0_fidelity.json").write_text(
