@@ -1,0 +1,1 @@
+"""External systems. Jira is the only one, and it is optional."""

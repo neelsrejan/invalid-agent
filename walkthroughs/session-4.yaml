@@ -1,0 +1,11 @@
+session: 4
+title: Fishbone, 5 Whys, 8D/CAPA
+narration:
+  - file: src/invalid_agent/graph.py
+    beat: "The graph is now triage then rca. Show the four files run_case writes."
+  - file: src/invalid_agent/nodes/rca.py
+    beat: "Walk build_fishbone sort, then _whys_for_hit step 5, then validate_whys."
+  - file: tests/test_rca.py
+    beat: "The empty-citation test is the rule. Then the bad_lot assertions."
+  - file: scenarios/bad_lot.yaml
+    beat: "Point at the week-1 QA injection and the week-2 release-pass injection. Week gates them."

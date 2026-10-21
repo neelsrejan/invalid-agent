@@ -1,0 +1,13 @@
+session: 1
+title: PRD, backlog, config, CI
+narration:
+  - file: PRD.md
+    beat: "Start with the problem statement and the out-of-scope list. The spec is validity at least 98 percent."
+  - file: docs/jira/backlog.json
+    beat: "Show Sprint 1. Count the stories. Epics match the artifacts a PM would hand someone."
+  - file: src/invalid_agent/config.py
+    beat: "Walk jira_enabled and __repr__. Plant the idea that the token never hits a log line."
+  - file: .github/workflows/ci.yml
+    beat: "CI is pytest on 3.11 and 3.12. No secrets in the workflow."
+  - file: tests/test_config.py
+    beat: "The test is the proof. It sets a fake token and asserts the repr does not contain it."

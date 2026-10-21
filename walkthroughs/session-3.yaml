@@ -1,0 +1,13 @@
+session: 3
+title: Week-0 triage memo and numeric fidelity
+narration:
+  - file: src/invalid_agent/graph.py
+    beat: "Start at main, then run_case. Week 0 only. One LangGraph node."
+  - file: src/invalid_agent/nodes/triage.py
+    beat: "generate, rank, build_facts, narrate, check_stored. The frame is not kept on the state."
+  - file: src/invalid_agent/metrics/hypotheses.py
+    beat: "Walk the three gates and the close-call rule. Injections are not an argument."
+  - file: src/invalid_agent/guards/numeric_fidelity.py
+    beat: "Mask identifiers, then scan. Plant 27.40 and show it land in unknown."
+  - file: src/invalid_agent/llm.py
+    beat: "Deterministic returns the template. Any other backend that fails is replaced, and the draft is not saved."

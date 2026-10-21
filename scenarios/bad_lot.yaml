@@ -1,0 +1,95 @@
+id: bad_lot
+title: Reagent lot L-4419 field invalid spike
+seed: 4419
+device: MDx-24 Respiratory Panel
+start_date: "2025-04-01"
+horizon_days: 180
+runs_per_day: 80
+baseline_invalid_rate: 0.012
+spec_invalid_rate: 0.02
+promised_validity: 0.98
+cost_per_invalid_usd: 85
+customers:
+  - Northlake Health
+  - Cedar Regional Medical
+  - Harbor Point Labs
+  - Westbend Clinic
+sites: [SITE-A, SITE-B, SITE-C, SITE-D]
+instruments: [INS-01, INS-02, INS-03, INS-04]
+operators: [OP-01, OP-02, OP-03, OP-04, OP-05, OP-06]
+# Both versions run the whole window so a software cutover is not
+# confounded with the lot change. The software-version scenarios
+# move the calendar on purpose.
+software_versions:
+  - {id: "2.3.1", start_day: 0, end_day: 180, weight: 0.7}
+  - {id: "2.4.0", start_day: 0, end_day: 180, weight: 0.3}
+lots:
+  - {id: L-4401, start_day: 0, end_day: 70}
+  - {id: L-4412, start_day: 40, end_day: 130}
+  - {id: L-4419, start_day: 120, end_day: 180}
+  - {id: L-4425, start_day: 125, end_day: 180}
+root_cause:
+  type: bad_reagent_lot
+  lot_id: L-4419
+  start_day: 120
+  stratum_invalid_rate: 0.18
+  dominant_code: INV-IC
+complaint: >
+  Synthetic complaint, not a real customer. Northlake Health reports that
+  MDx-24 invalids this month are well above the ≥98% validity they were
+  sold. They have paused reporting on the panel and asked for a written
+  position today. Wording is original and only themed on public IVD
+  failure modes (internal-control failure, extraction failure).
+injections:
+  - week: 0
+    source: customer
+    audience: customer
+    text: >
+      Northlake Health escalated to their lab director. They want the
+      current invalid rate, whether it breaks the ≥98% validity commitment,
+      and what we are doing this week.
+  - week: 1
+    source: QA
+    audience: internal
+    text: >
+      QA notes reagent lot L-4419 entered distribution on day 120, the same
+      window as the invalid spike. Earlier lots L-4401 and L-4412 are no
+      longer shipping.
+  - week: 2
+    source: R&D
+    audience: internal
+    text: >
+      R&D reports lot L-4419 passed release testing. Internal control and
+      external QC on the release panel were inside their limits. The
+      release sample was not a field specimen.
+  - week: 2
+    source: customer
+    audience: customer
+    text: >
+      The lab director wants a written customer update today and has asked
+      whether they should stop using every lot or only the current one.
+  - week: 3
+    source: manufacturing
+    audience: internal
+    text: >
+      Manufacturing logged a two-hour shipping-temperature excursion on lot
+      L-4425, not on L-4419. L-4425's field rate has not moved.
+  - week: 3
+    source: management
+    audience: leadership
+    text: >
+      Leadership asks for the cost of the invalids so far and the cost of
+      quarantine versus a broader field action.
+  - week: 4
+    source: management
+    audience: leadership
+    text: >
+      Leadership wants a recommendation: contain the lot, expand the
+      investigation, or do both, and the effectiveness check that would
+      close it.
+eval:
+  expect_cause: bad_reagent_lot
+  holdout: false
+  below_bar: false
+  note: >
+    Ground truth for the harness. The ranker does not read this block.

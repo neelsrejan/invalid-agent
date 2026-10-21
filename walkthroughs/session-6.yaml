@@ -1,0 +1,11 @@
+session: 6
+title: Weekly loop, decision log, RAG notes
+narration:
+  - file: src/invalid_agent/graph.py
+    beat: "Read the conditional edge. Walk week 0 versus week 3 on target_week."
+  - file: src/invalid_agent/nodes/status.py
+    beat: "rag_color, then the cost product, then the customer action that does not name the cause."
+  - file: src/invalid_agent/narrative.py
+    beat: "The three templates share one rate header. Leadership adds cost and the ask."
+  - file: tests/test_status.py
+    beat: "Show the week0 versus week2 plan diff and the Jira Done status."

@@ -1,0 +1,11 @@
+session: 9
+title: Week-4 close-out, exec deck, résumé lines
+narration:
+  - file: src/invalid_agent/graph.py
+    beat: "route_after_status sends week 4 to closeout and earlier weeks to end."
+  - file: src/invalid_agent/nodes/closeout.py
+    beat: "Cost is k times the unit price. The projection label is copied through, including Not observed follow-up."
+  - file: src/invalid_agent/artifacts/deck.py
+    beat: "Seven slides. Navy bar. The chart is the observed p-chart."
+  - file: RESUME_BULLETS.md
+    beat: "Read the keyword 3/22 and the drift extra stratum in the same breath as 22/22."
