@@ -4,7 +4,11 @@ Simulated field-quality investigation. A customer says the invalid rate on a mol
 
 **Simulation. Synthetic data. Not for clinical use.**
 
-This tag is Session 1: the PRD, the Jira backlog, the config, and CI. Metrics, the agent, the dashboard, and the deck land in later session tags (`session-2` … `session-9`).
+Session 2 adds the synthetic field generator and the metrics (Wilson interval, chi-square, p-chart, Pareto). The agent, the dashboard, and the deck land in later tags (`session-3` … `session-9`).
+
+```bash
+python -m invalid_agent.sim.generate scenarios/bad_lot.yaml
+```
 
 Read [PRD.md](PRD.md), [SIMULATION_DISCLAIMER.md](SIMULATION_DISCLAIMER.md), and [DATA_LICENSES.md](DATA_LICENSES.md). The backlog a Jira Free site can import is [docs/jira/backlog.json](docs/jira/backlog.json).
 

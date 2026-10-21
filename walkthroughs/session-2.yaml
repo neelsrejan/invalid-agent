@@ -1,0 +1,13 @@
+session: 2
+title: Simulation generator and metrics
+narration:
+  - file: scenarios/bad_lot.yaml
+    beat: "The YAML is the cause, not the rate. Lot L-4419, day 120, stratum rate 0.18."
+  - file: src/invalid_agent/sim/generate.py
+    beat: "Walk generate, then _cause, then _redraw. Baseline first, then the mask."
+  - file: src/invalid_agent/metrics/rates.py
+    beat: "Read the Wilson formula in the docstring and then the function. Mention the k=0 snap."
+  - file: src/invalid_agent/metrics/spc.py
+    beat: "Hand-calculate SE for p=0.02, n=100, then show western_electric rule 1."
+  - file: src/invalid_agent/sim/seeds.py
+    beat: "HIL parameters are a stand-in. The DOI is in the module docstring. No clinical file in the repo."
