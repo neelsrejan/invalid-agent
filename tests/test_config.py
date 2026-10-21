@@ -1,6 +1,12 @@
 """Settings stay offline-safe and never leak secrets."""
 
-from invalid_agent.config import PROMISED_VALIDITY, SPEC_INVALID_RATE, load_settings
+from invalid_agent.config import (
+    DEFAULT_LLM_MODEL,
+    HOSTED_LLM_MODEL,
+    PROMISED_VALIDITY,
+    SPEC_INVALID_RATE,
+    load_settings,
+)
 
 _SECRET_KEYS = (
     "LLM_BACKEND",
@@ -12,6 +18,7 @@ _SECRET_KEYS = (
     "OPENFDA_API_KEY",
     "OLLAMA_HOST",
     "LLM_MODEL",
+    "OLLAMA_MODEL",
     "LLAMACPP_MODEL_PATH",
 )
 
@@ -27,6 +34,8 @@ def test_defaults_are_offline(monkeypatch):
     assert settings.spec_invalid_rate == SPEC_INVALID_RATE == 0.02
     assert settings.promised_validity == PROMISED_VALIDITY == 0.98
     assert settings.llm_backend == "deterministic"
+    assert settings.llm_model == DEFAULT_LLM_MODEL == "llama3.1:8b"
+    assert HOSTED_LLM_MODEL == "llama3.2:1b"
     assert settings.rules_only is True
     assert settings.jira_enabled is False
     assert settings.jira_api_token == ""
@@ -68,6 +77,22 @@ def test_preferred_jira_names_win_over_aliases(monkeypatch):
     assert settings.jira_base_url == "https://preferred.atlassian.net"
     assert settings.jira_api_token == "preferred-token"
     assert "preferred-token" not in repr(settings)
+
+
+def test_llm_model_overrides_the_default(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("LLM_MODEL", "llama3.2:1b")
+    assert load_settings().llm_model == "llama3.2:1b"
+    monkeypatch.setenv("LLM_MODEL", "gemma3")
+    assert load_settings().llm_model == "gemma3"
+    monkeypatch.setenv("LLM_MODEL", "phi4")
+    assert load_settings().llm_model == "phi4"
+
+
+def test_ollama_model_env_is_not_a_second_setting(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("OLLAMA_MODEL", "llama3.2:1b")
+    assert load_settings().llm_model == DEFAULT_LLM_MODEL
 
 
 def test_unknown_backend_falls_back(monkeypatch):

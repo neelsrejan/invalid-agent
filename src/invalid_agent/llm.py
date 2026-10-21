@@ -3,8 +3,8 @@
 ``deterministic`` fills a template and does not open a socket. That is the
 default, the CI path, and the hosted-demo fallback.
 
-``ollama`` talks to a local Ollama server (intended model ``llama3.1:8b``).
-``llamacpp`` loads a GGUF through ``llama-cpp-python`` (intended model
+``ollama`` talks to a local Ollama server (``LLM_MODEL``, default ``llama3.1:8b``).
+``llamacpp`` loads a GGUF through ``llama-cpp-python`` (hosted size is
 Llama 3.2 1B). Neither package is imported unless that backend
 is selected. If the call fails or the fidelity guard rejects the draft,
 ``narrate`` substitutes the template and records the rejection.

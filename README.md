@@ -23,3 +23,15 @@ python -m pytest
 ```
 
 No API keys. Copy `.env.example` to `.env` only when you have a Jira site or a local Ollama model.
+
+## Models
+
+`LLM_MODEL` is the only model setting.
+
+| Where | Model | Notes |
+|---|---|---|
+| Local Ollama (default) | `llama3.1:8b` (Meta Llama 3.1 8B) | `ollama pull llama3.1:8b`, then `LLM_BACKEND=ollama` |
+| Hosted Streamlit | Llama 3.2 1B (`llama3.2:1b`) | Used only when a model is available. Otherwise the page stays on the deterministic backend. No weights are bundled. |
+| Alternatives | Gemma 3 (`gemma3`), Phi-4 (`phi4`) | Set `LLM_MODEL` to that Ollama tag. Same code path. |
+
+`LLM_BACKEND=deterministic` is the default and the CI path. A missing model, a transport error, or a draft that fails the numeric-fidelity check is replaced by the template. The rejected draft is not shown.

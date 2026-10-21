@@ -16,6 +16,11 @@ SPEC_INVALID_RATE = round(1.0 - PROMISED_VALIDITY, 2)
 
 _LLM_BACKENDS = {"deterministic", "ollama", "llamacpp"}
 
+# The only model name. Local Ollama default is Meta Llama 3.1 8B.
+# The hosted Streamlit page requests Llama 3.2 1B when this is unset and a model is on.
+DEFAULT_LLM_MODEL = "llama3.1:8b"
+HOSTED_LLM_MODEL = "llama3.2:1b"
+
 
 def find_repo_root() -> Path:
     """Locate the repo whether the process was started from it or from site-packages."""
@@ -105,7 +110,7 @@ def load_settings() -> Settings:
     return Settings(
         llm_backend=backend,
         ollama_host=_env("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/"),
-        llm_model=_env("LLM_MODEL", "llama3.1:8b"),
+        llm_model=_env("LLM_MODEL", DEFAULT_LLM_MODEL),
         llamacpp_model_path=_env("LLAMACPP_MODEL_PATH"),
         jira_base_url=(_env("JIRA_BASE_URL") or _env("JIRA_URL")).rstrip("/"),
         jira_email=_env("JIRA_EMAIL"),
