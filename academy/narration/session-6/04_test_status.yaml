@@ -1,0 +1,95 @@
+title: "Session 6 · Clip 4 · tests/test_status.py"
+file: ../../snapshots/session-6/tests/test_status.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-8
+    say: >-
+      This is test underscore status dot p y. It is the proof for the weekly loop you just
+      walked. The docstring states the two claims that matter to a program manager. Weeks 0
+      through 3 keep a decision per week. And the customer note does not declare a cause. The
+      imports are small on purpose. JSON and Path read the files the graph writes. The long
+      test at the bottom is the one that runs the case.
+  - lines: 10-14
+    say: >-
+      The first test, lines 10 through 14, walks rag color with five asserts that are really
+      four calls. Over spec at week 0 is Red. Over spec at week 2 is still Red. Over spec at
+      week 3 is Amber. Inside spec at week 0 is Green. Read that as the traffic light. Bad lot
+      stays over spec, so this test's Green line is the other branch, a case that already
+      meets the promise.
+  - lines: 17-22
+    say: >-
+      Lines 17 through 22 test upsert decision without touching the disk. The log starts
+      empty. Week 1 is inserted with the decision text first. Week 1 is inserted again with
+      the text replaced. Then week 0 is inserted with the text earlier. The week numbers in
+      the result must be 0 then 1. The week 1 row must say replaced, not first. If this test
+      failed, a rerun could show two week 1 headings to a leadership reader.
+  - lines: 25-31
+    say: >-
+      The long test starts at line 25. It uses pytest's tmp path, a throwaway folder, and
+      monkeypatch, which sets environment variables for this test only. Line 26 forces L L M
+      underscore BACKEND to deterministic, so the notes come from the templates. No model is
+      downloaded, and no Ollama server is required. Line 31 calls main the way you would from
+      a terminal: scenario bad lot, week 3, output set to that temporary folder.
+  - lines: 32-33
+    say: >-
+      Lines 32 and 33 read decision underscore log dot m d from the root of that folder and
+      count the headings. The count of the markdown heading Week must be 4. Those four
+      headings are weeks 0, 1, 2, and 3. Remember the graph. Dash dash week 3 starts at week 0
+      and stops when the week meets the target, and each lap appends one decision. Four is the
+      contract.
+  - lines: 34-37
+    say: >-
+      Lines 34 through 37 are the plan diff. Both week 0 and week 2 have a plan dot json,
+      written by the planner on that lap. The test builds a set of task ids from each file. T
+      11 must be absent from week 0. T 11 must be present in week 2. Week 0's snapshot stays
+      without that task. That is the diff a program manager means by the plan changed when the
+      week changed.
+  - lines: 38-41
+    say: >-
+      Lines 38 through 41 do the same diff for the risk register. Week 0's risk underscore
+      register dot m d must not contain the table cell for R 4. Week 2's register must contain
+      it. R 4 is the risk that release testing passed while the field rate did not, so the
+      cause is disputed. It is added only from week 2 on. That matches the week 2 decision
+      sentence: keep the field ranking.
+  - lines: 42-47
+    say: >-
+      Lines 42 through 47 open the three week 2 notes: customer, internal, and leadership. The
+      customer text, lowercased, must not contain the phrase the root cause is. It also must
+      not contain bad underscore reagent underscore lot. The internal note must contain that
+      cause id, because the internal audience is allowed to see the ranking. That is the
+      stakeholder rule from the job description, checked as an assert rather than left as a
+      comment.
+  - lines: 48-49
+    say: >-
+      Lines 48 and 49 check the week 2 leadership note. It must contain the string R A G colon
+      Red. Week 2 is still before the containment week, and bad lot is still over spec, so
+      Amber would be wrong and Green would be wrong. The note must also contain the word
+      dollars. The number in that sentence had to be on the facts, or status node would have
+      raised before this file existed.
+  - lines: 50-53
+    say: >-
+      Lines 50 through 53 read jira underscore issues dot json, the dry run file, and index
+      the issues by task id. T 1 must be Done. T 11 must be Done. The comment on line 53 says
+      why. T 11 has sim underscore week 2, and the run finished at week 3. A task whose sim
+      week is earlier than the current week is Done. Status was updated in place, so there is
+      one T 1, not four.
+  - lines: 54-57
+    say: >-
+      Lines 54 through 57 close the file. The customer note must contain Not for clinical use,
+      the banner every audience shares. Line 57 then feeds the guard a fake sentence: the
+      invalid rate is 27.40 percent, against facts that only know 3.67. That check must not be
+      ok. 27.40 was never computed, so it is rejected. The real notes survived because every
+      number in them was already on the facts. That is the guard doing the job a reviewer
+      cannot do by eye on a deadline.
+  - lines: 25-31
+    say: >-
+      One more pass over the setup, lines 25 through 31, because the environment is part of
+      the claim. Deterministic backend means the words in the notes are the templates, so a
+      failure is a template failure, not a model having a creative day. Clearing the Jira
+      token, email, and both U R L names means jira enabled is false. The sync still writes a
+      local JSON file. Pytest stays offline. That is the bar for the stakeholder loop.

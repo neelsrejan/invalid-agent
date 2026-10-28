@@ -1,0 +1,91 @@
+title: "Session 7 · Clip 2 · src/invalid_agent/artifacts/charts.py"
+file: ../../snapshots/session-7/src/invalid_agent/artifacts/charts.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-7
+    say: >-
+      This is charts dot p y, in artifacts. It builds the three Plotly figures the dashboard
+      shows in the browser. The docstring draws a boundary. The slide deck renders its own P N
+      G files with matplotlib. Plotly can export a static image, but that path needs Kaleido
+      and a browser binary this project does not ship. So the live page uses Plotly, and the
+      later slides keep matplotlib. It only draws dictionaries the graph already produced.
+  - lines: 9-12
+    say: >-
+      Lines 9 through 12 are the palette. Navy is hex 0 B 3 A 5 B, the same navy as the banner
+      and the Streamlit theme. Teal is hex 1 F 7 A 8 C. Red is hex B 2 3 A 4 8, reserved for
+      the rule 1 marks and the observed series on the projection chart. Grid is a light gray,
+      hex E 3 E 8 E C. A fourth color would have to earn a meaning.
+  - lines: 15-21
+    say: >-
+      P chart figure starts at line 15. The title defaults to Weekly invalid rate, and the
+      caller on the page passes the chart dictionary through. Periods are the week labels on
+      each point. Rate, upper control limit, and lower control limit are each multiplied by
+      100 so the axis reads as a percent. The center line repeats p bar, the average invalid
+      rate, once per period. This figure marks rule 1 only. It does not recompute the limits.
+  - lines: 22-26
+    say: >-
+      Lines 22 through 26 add four traces. A trace is one series Plotly will draw. The upper
+      and lower limits are thin red dotted lines, so they read as boundaries. The center line,
+      named p bar, is a muted dash. The invalid percent is a navy line with markers, slightly
+      thicker, so the eye lands on the rate. A program manager can say a point is above the
+      upper limit. The chart does not invent a new calculation to get there.
+  - lines: 27-32
+    say: >-
+      Lines 27 through 32 add the red marks, and only when at least one rule 1 period exists.
+      Flagged x is the period. Flagged y is that point's rate times 100, the same scale as the
+      navy line. The trace is named Rule 1. The mode is markers only, no connecting line. The
+      marker is red, size 9, and the symbol is an x. Quiet weeks are allowed to look quiet.
+  - lines: 33-36
+    say: >-
+      Lines 33 through 36 finish the p chart. The layout sets the title, names the y axis
+      Invalid rate percent, and uses the white Plotly template. Height is 380 pixels. Margins
+      are tight: 40 on the left, 20 on the right, 50 on top, 40 on the bottom, so two charts
+      can sit side by side on the page. Then the figure is returned. The P N G path belongs to
+      the deck, not to this function.
+  - lines: 39-45
+    say: >-
+      Pareto figure, lines 39 through 45, draws the invalid codes from most useful to least,
+      using rows the Pareto function already sorted. Codes become the x axis. Counts become
+      the bar heights. Cumulative share is multiplied by 100 for the line. The bars are teal,
+      named Count. A Pareto is the chart a program manager uses to see whether a few codes
+      account for most of the invalids. The metrics step is what makes it a real Pareto.
+  - lines: 46-54
+    say: >-
+      Lines 46 through 54 lay out that Pareto. The title is Pareto of invalid codes. The left
+      axis is titled Invalids. The right axis is titled Cumulative percent, overlays the left
+      axis, sits on the right, and ranges from 0 to 105 so a 100 percent line is not clipped.
+      The figure is returned, and the page puts it in the right hand column.
+  - lines: 58-68
+    say: >-
+      Before after figure, lines 58 through 68, starts the projection chart. It takes two
+      chart dictionaries: the observed p chart, and a second p chart built from the projected
+      frame. The first trace is named Observed. It uses the periods and the rates from the
+      before chart, times 100. The line is red and solid. Nothing in this function removes a
+      stratum. The drawing and the counterfactual stay in different files, which is what makes
+      the label trustworthy.
+  - lines: 69-77
+    say: >-
+      Lines 69 through 77 add the second series. The name is Projected without leading
+      stratum. The x values are the periods on the after chart. The y values are those rates
+      times 100. The line is teal, the same teal as the Pareto bars, and it is also a solid
+      line of width 2. The series name says projected. It does not say after the field action.
+      Effectiveness is still a forecast on the same rows.
+  - lines: 78-86
+    say: >-
+      Lines 78 through 86 set the title that keeps that distinction visible. The title is
+      Before slash after, then the words projection, not observed follow up. The y axis is
+      Invalid rate percent. The template, height, and margins match the other two figures.
+      That is the third figure: navy and teal and red used with a meaning, and a title that
+      refuses to call a forecast a result.
+  - lines: 15-16
+    say: >-
+      One last look at the signature on lines 15 and 16, because the input is the whole
+      design. P chart figure accepts a dictionary and an optional title. The dashboard passes
+      the dictionary from result metrics p chart. Session 6 and the metrics code computed the
+      points, p bar, the limits, and the violations. This file's job is the picture. Draw what
+      the graph stored. Do not invent a second analysis in the view.

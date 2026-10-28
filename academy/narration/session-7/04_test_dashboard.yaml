@@ -1,0 +1,95 @@
+title: "Session 7 · Clip 4 · tests/test_dashboard.py"
+file: ../../snapshots/session-7/tests/test_dashboard.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-4
+    say: >-
+      This is test underscore dashboard dot p y. Two claims, and both are about honesty. The
+      projection must be a lower rate than the file you started with. And the Streamlit page
+      must render the simulation banner without throwing. The docstring says both in one line.
+      There is no third test hiding a live Jira call or a model download. Pytest stays
+      offline. This file is what a reviewer runs before trusting the screenshot.
+  - lines: 5-9
+    say: >-
+      Lines 5 through 9 set up the imports and the repo root. Projection summary is the helper
+      you just walked. Rank hypotheses picks the leading stratum from the table. Generate and
+      load scenario rebuild the synthetic file from YAML, the same way the page does. ROOT is
+      this test file's folder, parents index 1, which is the repository root. That path trick
+      matters in continuous integration, where the working directory is not always the repo.
+  - lines: 12-14
+    say: >-
+      The first test is test removing the bad lot drops the rate, lines 12 through 14. It
+      loads the bad lot scenario and generates the dataframe. Generate is seeded, so the rows
+      are the same rows the dashboard will project. There is no network call. The YAML and the
+      generator are local. It compares the two rates the helper returns, so a future change to
+      the seed still checks the direction.
+  - lines: 15-16
+    say: >-
+      Lines 15 and 16 choose the stratum and run the projection. Rank hypotheses is called
+      with the dataframe and the scenario's spec invalid rate. Index 0 is the leading
+      hypothesis, the same top row the graph stores. Projection summary then receives that
+      hypothesis, the spec, and promised validity from the YAML. Promised validity is 98
+      percent, and the spec invalid rate is 2 percent. The test never opens Streamlit for this
+      part. The math stands on its own.
+  - lines: 17-17
+    say: >-
+      Line 17 asserts that applied is true. Applied means the hypothesis named a real column
+      and a real level, and at least one row matched. If the ranker returned no single cause,
+      the helper would return false and leave the table unchanged. Bad lot is supposed to
+      clear that bar, so false here would mean the ranker and the projection had come apart.
+      The test locks the bad lot path to the chart, not the empty state.
+  - lines: 18-18
+    say: >-
+      Line 18 asserts that the after rate is less than the before rate. Before is observed, on
+      the original table. After is the copy whose leading stratum no longer counts as invalid.
+      The rows stay in the denominator. Only those failures were cleared. The test checks the
+      direction, not a flattering exact percent. Deleting the rows instead of clearing the
+      flag would change n. This helper does not delete rows.
+  - lines: 19-19
+    say: >-
+      Line 19 asserts that the words Not observed appear in the label. The full label says
+      projected if the leading stratum is removed, and not observed follow up. The test only
+      pins the two words that keep a forecast from being read as a result. You saw those words
+      in the chart title as well. If a later edit makes the label cheerier and drops those
+      words, this assert fails before a screenshot can mislead a leadership reader.
+  - lines: 22-25
+    say: >-
+      The second test starts at line 22, test streamlit app renders the banner. The import of
+      App Test is inside the function, from streamlit dot testing dot v 1. Keeping it inside
+      means the projection test can run even if someone is only thinking about the math. Line
+      25 loads app slash streamlit underscore app dot p y from the repo root. It still
+      executes main, builds the widgets, and records the markdown and the metric tiles.
+  - lines: 26-27
+    say: >-
+      Lines 26 and 27 run the app and require a clean run. App dot run executes the script.
+      App dot exception must be empty. An exception here would be a crash while building the
+      page: a missing scenario, a bad import, or a status note that failed the fidelity guard.
+      The toggle defaults to rules only, so this run uses the deterministic backend. No model
+      is called, and nothing is downloaded. Silence is the pass.
+  - lines: 28-29
+    say: >-
+      Lines 28 and 29 look at the markdown the page produced. The join walks every markdown
+      item and collects its value, then makes one string. That string must contain Not for
+      clinical use. Those words are in the banner, the first markdown in main, and they are
+      repeated inside the notes. The test does not care which element held them. If the banner
+      were moved below a chart or dropped, this assert is what would catch it.
+  - lines: 30-30
+    say: >-
+      Line 30 asserts app dot metric. In App Test, that collection is the metric tiles. A non
+      empty collection means at least one tile rendered. The page builds five: invalid rate,
+      spec, the Wilson interval, the escalate decision, and the R A G color. Together the two
+      tests say the projection is a lower, labeled forecast, and the page can show the banner
+      and a tile offline.
+  - lines: 22-30
+    say: >-
+      Read lines 22 through 30 as the render check. App Test loads the file Community Cloud
+      runs, headless, and requires no exception, the clinical use disclaimer, and at least one
+      metric. The projection test never opens the page. It checks a lower rate and the words
+      Not observed. Neither test sets L L M underscore MODEL, so the page stays rules only.
+      Turning the toggle off would ask a local Ollama server for a model. This file does not
+      do that.
