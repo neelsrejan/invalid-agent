@@ -1,0 +1,100 @@
+title: "Session 9 · Clip 2 · src/invalid_agent/nodes/closeout.py"
+file: ../../snapshots/session-9/src/invalid_agent/nodes/closeout.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is closeout dot p y, the week-4 node. The docstring says what D 7 and D 8 may
+      claim. The effectiveness figure clears the leading stratum on the same synthetic file,
+      and the prose has to say so. A missing follow-up file is not rewritten into a cured
+      rate. In the earlier r c a, D 7 and D 8 were marked planned. This node confirms them,
+      and it leaves the record open until real follow-up exists.
+  - lines: 20-32
+    say: >-
+      Build closeout facts regenerates the frame with generate, so the dataframe does not have
+      to live on the graph. Top is the first hypothesis. Spec defaults to 0.02 and promised
+      validity to 0.98. Projection summary returns before, after, a label, and a frame of its
+      own. The label is copied unchanged. It reads, projected if the leading stratum is
+      removed. Not observed follow-up. The facts this function returns never include that
+      frame. The table is used, then dropped.
+  - lines: 33-36
+    say: >-
+      Lines 33 through 36 are counts, not a customer quote. Unit is cost per invalid from the
+      scenario, defaulting to 85 dollars. Invalids is k on the before block, the observed
+      invalid count. Cause and level come off the top hypothesis. Single is true only when the
+      cause is a real cause and the projection actually changed rows. A no single cause call
+      stays on the other branch. That flag chooses the recommendation.
+  - lines: 37-46
+    say: >-
+      Lines 37 through 46 are the single-cause branch. The recommendation says contain the
+      level, and do not extend the field action to every stratum on this file. On bad lot the
+      level is lot L four four one nine, so the sentence names that lot and stops. D 7 adds
+      the leading stratum to the routine S P C review and to incoming release, and it says the
+      prevention action is confirmed at week 4. One stratum cleared the bar. The action
+      matches that stratum.
+  - lines: 47-54
+    say: >-
+      Lines 47 through 54 are the other branch, where weak lot and the flat files land. The
+      recommendation says do not quarantine a single stratum. Keep the investigation open and
+      widen the data pull. D 7 says no single-stratum prevention action is confirmed. The S P
+      C review stays on the overall rate until a stratum clears the bar. Week 4 still writes a
+      deck. The deck's recommendation is to widen the pull. A close-out may say we do not have
+      a cause yet.
+  - lines: 55-59
+    say: >-
+      Lines 55 through 59 build D 8, and the first characters are the label from projection
+      summary, copied through. Then the observed invalid rate and the projected rate, both as
+      percents to two decimals. The last sentence is fixed. The record stays open until
+      observed follow-up replaces the projection. This function does not soften the label. If
+      the metrics say not observed follow-up, D 8 says those words.
+  - lines: 60-84
+    say: >-
+      Lines 60 through 84 are everything the prose and the deck may say. Cause, level,
+      category, and the single flag. The observed rate, the Wilson interval, the spec, the
+      promised validity, and the projected rate, as percents. K and n are the observed counts.
+      Unit is the scenario price. Cost, on line 76, is invalids times unit, k times the unit
+      price. Label, recommendation, D 7, and D 8 are stored as written. Chart is the observed
+      p-chart, passed through for the slide.
+  - lines: 96-118
+    say: >-
+      Render closeout is the only prose. It fills in the facts. It does not call a model, and
+      it does not recompute a rate. The page opens with the week-4 title and the banner.
+      Simulation. Synthetic data. Not for clinical use. Not a medical device. The
+      effectiveness section prints D 8, label included, then the observed rate, the Wilson
+      interval, the spec, and the projected rate. On bad lot the week-4 test looks for 3.67,
+      the observed rate from the report, and for the words not observed follow-up.
+  - lines: 128-145
+    say: >-
+      Lines 128 through 145 are the decision. When single is true, option A says contain the
+      level, shows k of n and the cost, and names a risk. The risk is that a second stratum
+      which also cleared the bar would stay in the field. That is the eval's extra-stratum
+      note, written as a decision risk. When single is false, option A says do not contain a
+      stratum. Option B is always widen the pull, with no second cost. The ask is to approve
+      this week or send the case back.
+  - lines: 148-153
+    say: >-
+      Closeout node, lines 148 through 153, guards that prose. It builds the facts, renders
+      the markdown, and runs check narrative on those facts. If the check fails, the node
+      raises and names the unknown numbers. Nothing is written. The same guard that required
+      version 2.4.0 to be a string now reads the close-out page. A template that smuggled in a
+      cost or a rate the facts do not hold is refused, and the deck is not attempted.
+  - lines: 154-157
+    say: >-
+      Lines 154 through 157 write the files, and only after the check passes. The folder comes
+      from the state, or a folder named out. Closeout dot m d receives the markdown. Write
+      deck receives exec deck dot p p t x and the same facts. Both files are the week-4
+      package a reviewer opens. The command that reaches these lines is python dash m invalid
+      agent dot graph, scenario bad lot, week 4, because the route returned closeout.
+  - lines: 158-167
+    say: >-
+      Lines 158 through 167 update the case. D 7 and D 8 on the C A P A are replaced with the
+      confirmed sentences. Preliminary close becomes false. Earlier that flag was true,
+      meaning the actions were only planned. False means week 4 has spoken, and D 8 still
+      carries the projection label, so this is not a cured close. The close-out markdown is
+      appended to the C A P A page. The stored record copies every fact except chart, and it
+      keeps the deck path for the command line to print.

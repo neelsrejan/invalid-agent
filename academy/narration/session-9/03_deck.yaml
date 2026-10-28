@@ -1,0 +1,100 @@
+title: "Session 9 · Clip 3 · src/invalid_agent/artifacts/deck.py"
+file: ../../snapshots/session-9/src/invalid_agent/artifacts/deck.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-18
+    say: >-
+      This is deck dot p y. The docstring is the contract. Seven-slide exec deck. Navy and
+      teal. No model writes the numbers. Line 8 imports python dash p p t x, which writes a
+      real PowerPoint. Every number on a slide is a field closeout already checked. Navy is
+      hex 0 B 3 A 5 B. Teal is hex 1 F 7 A 8 C. Ink, paper, white, and a red for the warning
+      line complete the palette. The slide size is widescreen, 13.333 by 7.5 inches.
+  - lines: 24-40
+    say: >-
+      Underscore box is the only text tool the slides use. It adds a text box, fills it when
+      asked, and writes one run of Calibri. Size, color, bold, and alignment are arguments.
+      Word wrap is on, so a long recommendation stays inside the box. There is no hidden chart
+      title in this helper. If a sentence appears on a slide, a later function passed that
+      sentence in. That is what you want in an exec deck. Each sentence has one call site.
+  - lines: 43-49
+    say: >-
+      Underscore blank makes one slide from layout index 6, paints the background paper, and
+      draws a navy bar across the top, 0.18 inches tall. Every content slide goes through
+      here, so the bar is the family resemblance. Count the calls to underscore blank inside
+      write deck as we walk. There will be seven, then the file is saved. The week-4 test
+      opens the PowerPoint and asserts that the slide count is 7.
+  - lines: 52-77
+    say: >-
+      Underscore chart p n g draws the picture for the root-cause slide. With no chart points,
+      it returns none and the slide stays text. Otherwise matplotlib uses the Agg backend,
+      which writes a file and opens no window, so a test can run it. The upper control limit
+      is a dotted red line, p-bar is dashed, and the invalid percent is navy with markers. The
+      picture's own title is observed weekly invalid rate. This series is the observed rate,
+      not the projection.
+  - lines: 80-87
+    say: >-
+      Write deck opens the presentation, sets the widescreen size, and stamps the file
+      properties. The title is Invalid Bot, dash, the scenario id. The subject is the banner.
+      Simulation. Synthetic data. Not for clinical use. The docstring says the slide text is
+      the close-out facts, not a new estimate. Each block from here is one slide. Slide one
+      starts on the next lines, the first blank call.
+  - lines: 88-111
+    say: >-
+      Lines 88 through 111 are slide one. The title is Invalid Bot, large and navy. Under it,
+      the device, and week-4 recommendation for the scenario id. The bottom box is the
+      disclaimer in white on navy, bold. Simulation. Synthetic data. Not for clinical use. Not
+      a medical device. The week-4 test looks for the words not for clinical use somewhere on
+      the deck. This box is the sure place. No rate appears on the title slide. It names the
+      case and states the limit.
+  - lines: 113-131
+    say: >-
+      Lines 113 through 131 are slide two, executive summary, the second blank call. The body
+      is five facts already computed. Observed invalid rate and k of n. The Wilson 95 percent
+      interval. The spec and the promised validity. Then the call, cause and level and
+      category, and the recommendation from the facts. On bad lot this is where 3.67 percent
+      and lot L four four one nine appear. The test looks for both. They are printed from the
+      facts.
+  - lines: 133-148
+    say: >-
+      Lines 133 through 148 are slide three, Impact, the third blank call. The body is k
+      invalids of n runs, the unit price from the scenario, and the cost of invalids on this
+      file. The last sentence is for a finance partner. That product is computed. It is not a
+      quote from a customer invoice. The product is the cost field from closeout, k times the
+      unit price. This slide adds a dollar sign. It does not multiply again.
+  - lines: 150-167
+    say: >-
+      Lines 150 through 167 are slide four, root cause and effectiveness, the fourth blank
+      call. The text box states the cause and level, the observed percent, the projected
+      percent, and the label. The label says projected if the leading stratum is removed, and
+      not observed follow-up. The observed p-chart is placed under that box. The chart title
+      says observed. The sentence says the removal figure is a projection. The slide keeps
+      those claims apart.
+  - lines: 169-188
+    say: >-
+      Lines 169 through 188 are slide five, Options, the fifth blank call, in two columns.
+      When a cause cleared the bar, option A says contain the level, shows the cost so far,
+      and names the risk that a second cleared stratum would remain in the field. When none
+      cleared, option A says do not contain a stratum. Option B is the same on every file.
+      Widen the pull before a field action. No second cost is estimated. Invalids can continue
+      while the team waits.
+  - lines: 190-193
+    say: >-
+      Lines 190 through 193 are slide six, the sixth blank call. The heading Recommendation is
+      teal, so the decision is easy to find. The large navy sentence is the recommendation
+      from the facts. For a single cause, contain the level and leave the other strata alone.
+      For no single cause, do not quarantine, keep the case open, and widen the pull. Under
+      it, smaller, is D 7, the prevention sentence confirmed at week 4. The slide adds no
+      third option.
+  - lines: 195-222
+    say: >-
+      Lines 195 through 222 are slide seven, the seventh blank call, and the save. The heading
+      is The ask. Approve the recommendation this week, or send the case back for the wider
+      pull. The warning is red. Do not treat the projected rate as observed follow-up. Then
+      the banner again. Not for clinical use. Not a medical device. Line 221 saves exec deck
+      dot p p t x, and line 222 returns that path. Seven blanks, seven slides, one file a
+      reviewer can open.

@@ -1,0 +1,97 @@
+title: "Session 9 · Clip 1 · src/invalid_agent/graph.py"
+file: ../../snapshots/session-9/src/invalid_agent/graph.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-4
+    say: >-
+      This is graph dot p y, the case graph for the investigation. The docstring is the
+      Session 9 change in one line. Week 4 continues into close-out and the exec deck. Earlier
+      weeks still end where they ended before. Triage runs once. Then plan, r c a, and status
+      repeat, one loop per week. Close-out is a node on this graph, not a second program you
+      have to remember.
+  - lines: 13-22
+    say: >-
+      Lines 13 through 22 import the pieces that make that sentence true. State graph and end
+      come from Lang Graph. Case state is the dictionary the nodes share. The new name on line
+      17 is closeout node. Plan, r c a, status, and triage are the nodes you already know.
+      Nothing here imports a language model. The deck is reached by routing. The deck module
+      is called from inside closeout, which is the next file.
+  - lines: 25-27
+    say: >-
+      Advance week is three lines, and it is the only way the week counter moves. It reads
+      state week, adds one, and returns that new integer. Lang Graph merges the update and, on
+      the edge we will see, sends the run back to the planner. This function does not rebuild
+      the table, and it does not decide to stop. Asked for week 4, it runs four times, from 0
+      to 1, 1 to 2, 2 to 3, and 3 to 4.
+  - lines: 30-37
+    say: >-
+      Route after status, lines 30 through 37, is the decision. Target is target week, or the
+      current week if the state has no target. If the week that just finished is still below
+      the target, the function returns advance. If the week has reached the target and that
+      week is at least 4, it returns closeout. If the week has reached the target and the week
+      is 0, 1, 2, or 3, it returns end. Week 4 is the only route into closeout. Earlier tests
+      never build a deck.
+  - lines: 30-37
+    say: >-
+      Two commands, both on these lines. Week 4 starts the state at week 0 with target week 4.
+      After status at week 0, 0 is below 4, so the route returns advance. Weeks 1, 2, and 3 do
+      the same. When status finishes at week 4, the week equals the target and the week is at
+      least 4, so the route returns closeout. For week 2, status finishes on the target while
+      2 is below 4, so the route returns end. Closeout never runs.
+  - lines: 40-52
+    say: >-
+      Build graph, lines 40 through 52, registers the nodes. They are triage, plan, r c a,
+      status, advance, and closeout. The entry point is triage, so every run opens with the
+      week-zero memo, including a run whose target is week 4. Triage goes to plan, plan to r c
+      a, r c a to status. There is no edge that skips r c a on the last week. Week 4 still
+      gets a fishbone and a 5 Whys before the recommendation.
+  - lines: 53-59
+    say: >-
+      Lines 53 through 59 wire the three return strings. After status, advance maps to the
+      advance node, end maps to END, and closeout maps to the closeout node. Advance goes back
+      to plan. That is the loop. Closeout goes to END, so the deck is the last step. Nothing
+      leads from closeout back to the planner. Week 4 does not become week 5. The three
+      returns on lines 35 through 37 are exactly these three keys.
+  - lines: 63-73
+    say: >-
+      Resolve scenario turns a command-line name into a file. A path that already points at a
+      file is used as given. Otherwise the function looks in the scenarios folder, then adds
+      dot yaml. Bad lot becomes scenarios slash bad lot dot yaml. Herring software becomes the
+      herring file from Session 8. If neither file exists, it exits with scenario not found. A
+      week-4 deck is never built from a missing case.
+  - lines: 76-94
+    say: >-
+      Initial state, lines 76 through 94, is the dictionary the graph starts with. Scenario
+      id, the scenario, week, target week, and empty logs for decisions, risks, status, and
+      Jira. Line 86 says that if you omit target week, it equals the week argument. Run case
+      does not omit it. Run case always starts at week 0 and passes the requested week as the
+      target. Out dir is stored when a folder was given, because closeout writes the deck
+      there.
+  - lines: 97-109
+    say: >-
+      Run case is what the eval and the command line both call. The week must be 0 through 4.
+      It loads settings, resolves the scenario, creates the output folder, compiles the graph,
+      and invokes it. The invoke starts at week 0 with target week equal to the week you asked
+      for. The recursion limit is 80, enough for four loops plus closeout. Load settings still
+      defaults the local tag to llama 3.1 colon 8 b. A deterministic backend never calls it.
+      Hosted Streamlit stays rules-only.
+  - lines: 110-120
+    say: >-
+      Lines 110 through 120 write the artifacts that exist at every week. The week-zero memo,
+      the fidelity JSON, fishbone dot m d, five whys dot m d, and capa eight d dot m d. This
+      function does not build the PowerPoint itself. Deck path appears on the result only
+      because closeout node, when the route reached it, stored that path. A week-2 run still
+      writes the fishbone. It leaves deck path empty.
+  - lines: 123-134
+    say: >-
+      Main is the command a reviewer can run. Python dash m invalid agent dot graph, then
+      scenario, week, and an optional out folder. The help text uses bad lot as the example.
+      Week is required. After the run, it prints the memo path, and it prints the deck path
+      when one exists. Then escalate, severity, and the simulation banner. For bad lot at week
+      4, the second path is out slash exec deck dot p p t x, the seven-slide deck the next
+      clips build.

@@ -1,0 +1,101 @@
+title: "Session 9 · Clip 5 · README.md"
+file: ../../snapshots/session-9/README.md
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-3
+    say: >-
+      This is read me dot m d, the page a hiring manager opens first. The product is stated in
+      program-manager language. A customer says the invalid rate on a fictional molecular
+      panel broke the promised validity. At least 98 percent valid, so the invalid rate stays
+      at or below 2 percent. Invalid Bot runs the weekly loop. Plan, execute, update, new
+      feedback, re-plan, resolve. It ends in a fishbone, 5 Whys, an eight D C A P A record,
+      and a seven-slide exec deck.
+  - lines: 5
+    say: >-
+      Line 5 is the banner, in bold, and you do not paraphrase it away. Simulation. Synthetic
+      data. Not for clinical use. Not a medical device. Memos, the close-out page, and the
+      deck's title slide repeat it. The read me puts it in the second paragraph, before the
+      architecture and before the score table. The twenty-two of twenty-two cell further down
+      sits under this banner. The banner says what kind of number that is.
+  - lines: 7
+    say: >-
+      Line 7 divides the work. The language model does not calculate. Rates, intervals,
+      control limits, hypothesis scores, costs, and the projection are Python. When a model is
+      connected, it only narrates. A fidelity check rejects a draft that introduces a number
+      the facts do not contain, and the template replaces that draft. That is the guard that
+      needed version 2.4.0 stored as a string, and the guard that runs before the deck is
+      written.
+  - lines: 9-23
+    say: >-
+      Lines 9 through 23 are the picture. Scenario yaml feeds a seeded generator, then rates,
+      S P C, and Pareto, then the evidence ranker, then the Lang Graph. Week 4 adds the exec
+      deck beside the memos and the C A P A. L L M model is optional, and its arrow points
+      only at the notes. Triage runs once, then plan, r c a, and status loop until the
+      requested week. The dataframe is not stored on the graph. Each node regenerates it from
+      the seed.
+  - lines: 25-33
+    say: >-
+      Lines 25 through 33 are four commands. Install in editable mode with the dev extra, so
+      pytest is available. Run pytest. Then python dash m invalid agent dot graph, scenario
+      bad lot, week 4. That command routes into closeout and writes the deck. Then streamlit
+      run streamlit app dot p y. Those four give you the offline tests, the week-4 artifacts,
+      and the page. None of them needs a key.
+  - lines: 34-40
+    say: >-
+      Lines 34 through 40 say what lands on disk. Week 4 writes out slash exec deck dot p p t
+      x and out slash closeout dot m d. The dashboard default is rules-only. Templates and
+      computed numbers, no model download. Hosted Streamlit ships that way. Python evals slash
+      run eval dot p y, backend deterministic, rewrites the dated report. Continuous
+      integration runs the same script with limit 5 and smoke, and fails if top one, fidelity,
+      citations, or escalation miss.
+  - lines: 42-52
+    say: >-
+      Lines 42 through 52 are the model table. L L M model is the only model setting. Local
+      Ollama defaults to llama 3.1 colon 8 b, Meta Llama 3.1 8 B. The hosted row names Llama
+      3.2 1 B, llama 3.2 colon 1 b, only after rules-only is turned off and L L M model is
+      unset. If it is absent, notes fall back to the template. The hosted page stays
+      rules-only unless a model is present. Gemma 3 and Phi-4 are the other tags. C I uses
+      deterministic.
+  - lines: 54-62
+    say: >-
+      Lines 54 through 62 copy the October 21 table. N equals 22 synthetic scenarios, 4 held
+      out. The Session 3 gates were not refit. Prompts were not edited against either split.
+      All: evidence top one 22 of 22, top three 22 of 22, keyword 3 of 22. Seen, 18: 18 of 18
+      and keyword 2 of 18. Holdout, 4: 4 of 4 and keyword 1 of 4. Top one and top three match
+      on every split. A holdout is the slice the rules were not tuned on.
+  - lines: 64-70
+    say: >-
+      Lines 64 through 70 are the notes that travel with the twenty-two of twenty-two cell.
+      The keyword ranker matched 3 of 22. Those three are the flat files. On the three red
+      herrings it repeated the note. On weak lot it named the lot, and evidence stayed at no
+      single cause. On four drift scenarios a reagent lot also cleared the bar. Top one stayed
+      on the instrument. Line 70 says the two Llama weights were not installed. The table is
+      two ranking policies. Do not quote it as a model-accuracy number.
+  - lines: 72-78
+    say: >-
+      Lines 72 through 78 are the three setups that are still yours. The repo runs with no
+      keys. Jira, only for live sync, needs the base U R L, email, and A P I token. Otherwise
+      the case writes S I M issues to JSON. Streamlit Community Cloud, signed in with GitHub.
+      The hosted page stays rules-only unless a model is present. Ollama, only for a local
+      model. Pull llama 3.1 colon 8 b. The smaller tag is llama 3.2 colon 1 b. Gemma 3 and
+      Phi-4 are the other documented tags.
+  - lines: 80-86
+    say: >-
+      Lines 80 through 86 are the limits. The panel, the customers, and the field file are
+      synthetic. openFDA, Mendeley, and Zenodo are cited, not redistributed. The projection
+      clears the leading stratum on the same file. It is not observed follow-up. Bad lot never
+      turns green, because the file is not rewritten. Laptop snapshot folders are not created
+      here. Tags session 1 through session 9 are the snapshots. The walkthrough yaml files are
+      the beat lists.
+  - lines: 88-90
+    say: >-
+      Lines 88 through 90 tell a reader where to check you. Session notes live under docs
+      slash sessions, each with a logic trace and a quiz. The résumé lines are resume bullets
+      dot m d, including the drift bullet and the keyword fraction, copied from the eval
+      report. Product framing is the P R D. The disclaimer has its own file. A spoken number
+      needs a home on the October 21 report or in a computed artifact.
