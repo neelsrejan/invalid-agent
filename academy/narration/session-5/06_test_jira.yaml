@@ -1,0 +1,88 @@
+title: "Session 5 · Clip 6 · tests/test_jira.py"
+file: ../../snapshots/session-5/tests/test_jira.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-7
+    say: >-
+      This is test underscore jira dot p y. Dry-run never touches the network. Live sync is
+      idempotent against a fake transport. Idempotent means a second run updates the same
+      tickets and does not open a second set. The imports pull in settings, the dry-run class,
+      the live class, make client, and build plan. Pytest supplies a temporary folder and a
+      monkeypatch for environment variables. No test here constructs a real socket.
+  - lines: 10-15
+    say: >-
+      Underscore plan builds a week 0 plan for bad lot, cause bad reagent lot, level L-4419.
+      Week 0 leaves T 11 and T 12 off the list, so there are ten tasks. The live test will
+      expect 11 posts, the epic plus those ten. The dry-run test will expect 10 issue rows,
+      because the epic is stored beside the list, not inside it. Same plan, two counts. Both
+      are right once you see where the epic sits.
+  - lines: 18-25
+    say: >-
+      Fake transport is the whole Jira site for this file. Request appends the method, the
+      path, and the body, then returns an id and a key shaped like I N V dash the call count.
+      Nothing is sent. There is no host and no socket. The test can count the calls and read
+      what would have been posted. Live Jira only knows how to call request. Hand it this
+      class and the production code runs the same path it would run against a real site.
+  - lines: 28-30
+    say: >-
+      Broken transport is the failure drill. Request raises Runtime Error and mentions a 401
+      from the fake site. The production catch block does not store that sentence. It stores
+      the class name. This tiny class lets the test prove two things. The exception is caught,
+      and the words of the error, which on a real site might be sensitive, are not what gets
+      written into the JSON. The token we set later has to stay out of that file too.
+  - lines: 33-39
+    say: >-
+      The dry-run test deletes every Jira variable, the official names and the aliases.
+      Monkeypatch with raising false treats a missing variable as a normal case. Load settings
+      then sees an empty Jira setup, so jira enabled is false. Make client has to return a
+      dry-run instance. If a leftover token flipped the client to live, the class assert fails
+      before any sync. The output path is jira underscore issues dot json inside the temporary
+      folder.
+  - lines: 40-44
+    say: >-
+      Sync runs twice on the same plan. The first call creates the epic and the ten stories.
+      The second finds those task ids and refreshes them in place. Mode on the first payload
+      is dry-run. Both payloads have 10 issues, and the first story keeps its key. A bug that
+      minted a new S I M key on every sync would fail that equality. Ten tasks in, ten rows
+      out, twice. The epic is not one of those ten rows.
+  - lines: 45-47
+    say: >-
+      The file is read back as JSON. The epic key has to be S I M dash 1, the first number the
+      local creator mints. The raw text must not contain the phrase super secret. This run
+      never set a token, and the assert keeps a later edit from writing one into the dry-run
+      payload. The disclaimer lives in that same file. Opening it is the whole demo when you
+      have no Jira site. The keys are obviously simulated.
+  - lines: 50-57
+    say: >-
+      The live test sets the three variables: a base U R L, an email, and the token
+      super-secret-token. Load settings now reports jira enabled. The client is built as Live
+      Jira directly, with the fake transport, so the test never touches H T T P X. Repr of the
+      client must not contain the token. The project and the email may show. The secret may
+      not. That is the line to remember when a log prints the client object.
+  - lines: 58-61
+    say: >-
+      The first sync runs, and the fake call list is counted. Eleven is the contract. One epic
+      plus ten tasks. The comment on line 60 says exactly that. Every call has to be method
+      POST and path slash rest slash api slash 3 slash issue. A GET, or a post to some other
+      path, fails the check. The bodies, including the A D F descriptions, are sitting in the
+      Python list. Nothing left the process.
+  - lines: 62-65
+    say: >-
+      The second sync uses the same plan. The call list has to stay the same length. Zero new
+      posts. Upsert saw the task ids and skipped the creator. The second payload has the same
+      number of issues as the first, and the mode is live. This is the idempotent promise in
+      the docstring. Run the sync again before a demo and you do not flood a board with
+      duplicate stories. The counter is what locks that behavior.
+  - lines: 68-76
+    say: >-
+      The failure test sets the same three variables and passes the broken transport. Sync has
+      to return. It must not raise. The error field equals Runtime Error, the class name, with
+      the message left off. The dumped JSON must not contain the token. A handler that raised
+      would crash this test. A handler that copied the exception text into the file could leak
+      a secret on a real site. The case would still finish, because this function caught the
+      error on purpose.

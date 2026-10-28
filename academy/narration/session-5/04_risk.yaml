@@ -1,0 +1,79 @@
+title: "Session 5 · Clip 4 · src/invalid_agent/artifacts/risk_register.py"
+file: ../../snapshots/session-5/src/invalid_agent/artifacts/risk_register.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1
+    say: >-
+      This is risk underscore register dot p y. A risk register lists what can still go wrong,
+      who owns it, and the next action. The docstring says the score is the product.
+      Likelihood times impact, on purpose. Planner already did that multiplication. This file
+      only prints the rows, so the sentence a reader sees matches the arithmetic in planner
+      dot p y. Open risk underscore register dot m d and the rule is at the top of the page.
+  - lines: 3-5
+    say: >-
+      Lines 3 through 5 import almost nothing. There is no date math, no chart, and no Jira
+      call here. If a score looks wrong, the bug is upstream, in underscore risk, where score
+      is set to likelihood times impact. This module turns that list of dictionaries into
+      markdown. One function, one string, one file. Keeping the printer separate means you can
+      change the wording of the page without touching the arithmetic.
+  - lines: 8
+    say: >-
+      Render risk register takes the list and the week. The week does not filter rows. Planner
+      already decided which risks exist. The week is printed in the header so the page names
+      its investigation week. A week 0 file can sit beside a week 2 file. One header says week
+      0 and shows three rows. The other says week 2, with R 1 trending down and R 4 added.
+      This function prints the list it was given, in that order, with no extra sort.
+  - lines: 9-11
+    say: >-
+      Lines 9 through 11 start the markdown. The title is a level-1 heading, Risk register,
+      then a blank line. There is no table yet. That heading is the first thing you see in
+      risk underscore register dot m d. Plan node writes this exact string into the output
+      folder, next to the Gantt. The week line just below tells you which run you are holding.
+  - lines: 12
+    say: >-
+      Line 12 is the banner, in bold. Simulation. Synthetic data. Not for clinical use. The
+      same sentence is on the fishbone, the five Whys, and the C A P A. A register with owners
+      and scores can look like a live quality file. The banner is what keeps a reader from
+      treating it as one. It sits above any number. Someone skimming the output folder sees
+      the warning on every artifact. Leave it on the slide if you paste the table into a deck.
+  - lines: 14
+    say: >-
+      Line 14 states the scoring rule inside the file. Investigation week, then the number,
+      then score equals likelihood times impact, each on a scale from 1 to 5. You do not have
+      to reverse the formula from the column. R 1 in week 0 is likelihood 3 times impact 4,
+      score 12. At week 2, with a cause in hand, likelihood drops to 2 and the score is 8. The
+      page shows the product. This line says why the column exists.
+  - lines: 16
+    say: >-
+      Line 16 is the header row. The columns are id, the risk, L, I, score, owner, trend, and
+      mitigation. L and I are likelihood and impact, shortened so the row fits. Score is the
+      product. Owner uses the same group names as the Gantt. Keep the high scores at the top
+      of a review. Trend is a word: new, stable, down, or up. Mitigation is the next action.
+      Read down the score column, then use the trend to see whether this week helped.
+  - lines: 17
+    say: >-
+      Line 17 is the markdown separator under that header. The colons in the L, I, and score
+      cells mean those columns align to the right, which is what you want for numbers. The
+      word columns stay left aligned. A viewer that understands tables will line the scores
+      up. In a plain diff the row is still text. When R 4 appears at week 2, the new line
+      shows up under this same header as an added row.
+  - lines: 19-24
+    say: >-
+      The loop writes one row per risk, in the planner's order. The format string names id,
+      risk, likelihood, impact, score, owner, trend, and mitigation. The double star unpacks
+      the dictionary into those names. A missing key raises, which is a loud and useful
+      failure. R 3's 4 times 4 lands in the score column as 16. Nothing here re-sorts the list
+      or recomputes the product. Planner's order is the page's order.
+  - lines: 25-26
+    say: >-
+      Line 25 adds a trailing blank line, and line 26 joins every piece with newlines. That
+      string is the whole file. Plan node writes it to risk underscore register dot m d,
+      beside the Gantt in the same folder. There is no second formula on this page. If the
+      score column and the header sentence ever disagreed, the bug would be in the multiply,
+      upstream of this return. Bring the week 2 file to a re-plan review and the new row is
+      the diff.

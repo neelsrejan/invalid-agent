@@ -1,0 +1,82 @@
+title: "Session 4 · Clip 3 · tests/test_rca.py"
+file: ../../snapshots/session-4/tests/test_rca.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-7
+    say: >-
+      This is test underscore rca dot p y. It locks the fishbone rank, the citation rule, and
+      the eight D headings on the bad lot. Pytest finds functions whose names start with test
+      and checks plain asserts. The imports are R C A node, validate whys, the scenario
+      loader, and Path. Generate is on the import line because the node builds the table with
+      it. The tests call the node, and the node calls generate.
+  - lines: 9-14
+    say: >-
+      Line 9 walks two parents up from this file to the project root. Underscore state loads
+      bad underscore lot dot yaml and returns the scenario, the id, and the week. The default
+      week is 1, the first week the Q A lot note can be cited. Pass 0 when you want that note
+      hidden. Pytest ignores the helper because of the leading underscore. The tests share one
+      loader, so each test states only the week it cares about.
+  - lines: 17-22
+    say: >-
+      The first test is the citation rule, stated as a failure. Pytest raises passes only when
+      validate whys raises Value Error and the message matches no citation. The step is Why 1
+      with an empty citation list. The catalog has a real id, and the step does not use it.
+      Empty citations hit the first branch. The message is why 1 has no citation. A chain with
+      no evidence fails the run.
+  - lines: 25-30
+    say: >-
+      The second test gives the step a citation, so it gets past the empty check. The id is
+      made colon up, and the catalog only knows the overall rate. Validate whys misses the id
+      and raises, and the message has to match unknown id. A quiet function, or a different
+      message, fails the test. The id has to be a real catalog key. A plausible-looking string
+      is still a miss.
+  - lines: 33-37
+    say: >-
+      The happy path runs the node at week 1, so the Q A note is visible. Top is the first
+      fishbone branch after the sort, which is rank 1. The category has to be Material and the
+      cause bad reagent lot. Those two strings are the six M answer for this scenario. A sort
+      that used the category name alone could let hemolysis, also Material, take rank 1. This
+      assert is what catches that.
+  - lines: 38-43
+    say: >-
+      The five Whys have to be five steps long. A shorter chain fails even when the story
+      feels finished. Every step needs a non-empty citation list. An empty list is false in
+      Python, so the assert catches a hole. Each citation then has to be a key in the returned
+      evidence catalog. At week 1 that catalog holds the metric sentences and the injections
+      whose week has arrived.
+  - lines: 44-46
+    say: >-
+      Terminal is the answer on Why 5. It has to contain L-4419, which arrives inside the
+      catalog rate sentence, and the words lot-level, from the required stop sentence. Both
+      pieces have to be there. Naming the cause and forgetting the lot fails. Naming the lot
+      and forgetting lot-level fails. The chain stops on the lot the data named.
+  - lines: 47-49
+    say: >-
+      Capa is the markdown that capa 8 d dot m d will contain. The tuple lists the eight
+      headings, D 1 Team through D 8 Closure. The loop asserts each one appears. Eight D is
+      those eight boxes. A renamed heading fails even when the paragraph under it is fine. The
+      order in the tuple is the order a quality reader expects to see in the file.
+  - lines: 50-52
+    say: >-
+      Line 50 checks that the D M A I C map has a define key. The node sets define to D 1 and
+      D 2, and the other keys to measure, analyze, improve, and control. One key proves the
+      map was attached. Lines 51 and 52 join the fishbone and five Whys markdown and require
+      the clinical banner. The simulation sentence has to be on the files a person opens.
+  - lines: 55-59
+    say: >-
+      The last test runs the command, the way a terminal would. Tmp path is a temporary
+      folder. Monkeypatch sets L L M backend to deterministic, so the run stays on rules. Main
+      is imported from the graph module and called with bad lot, week 0, and that folder. Week
+      0 keeps the Q A note hidden. The command still has to succeed and write the record.
+  - lines: 60-62
+    say: >-
+      Three asserts read the folder. The triage memo has to exist, so the Session 3 file is
+      still written. Fishbone dot m d has to contain the word Material. Capa 8 d dot m d has
+      to exist. Week 0 changes which injections can be cited. It still produces the memo and
+      the R C A files. Adding tasks by week is Session 5. This command writes the quality
+      record.
