@@ -1,0 +1,99 @@
+title: "Session 3 · Clip 4 · src/invalid_agent/guards/numeric_fidelity.py"
+file: ../../snapshots/session-3/src/invalid_agent/guards/numeric_fidelity.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is numeric fidelity dot p y. It is the guard on the memo. A narrative may only
+      contain numbers that already live in the computed facts. The docstring states the trick
+      with identifiers. Strings such as L dash 4419 and version 2.4.0 are removed before the
+      scan, when that exact string appears in the facts. A lot id is not mistaken for a rate,
+      and it is also not a free pass for some other number. Ticket I N V dash 109 is this
+      guard.
+  - lines: 14-15
+    say: >-
+      Lines 14 and 15 are two regular expressions, from the standard library, no extra
+      package. Number matches a run of digits with an optional decimal, and the lookbehind
+      stops it from firing in the middle of a word or a version fragment we already handled.
+      Date matches an I S O day, 20 something, dash, month, dash, day. We blank dates first so
+      a calendar day is not read as a huge integer.
+  - lines: 18-24
+    say: >-
+      Fidelity result, lines 18 through 24, is a small data class. Ok is true when no stranger
+      remains. Unknown is the list of numbers that survived and matched nothing. To dict turns
+      that into the J S O N written beside the memo, so a reviewer sees ok, or the list of
+      offenders, without reading this file. A data class is enough. We do not need Pydantic
+      here. This object is a receipt, not the memo contract.
+  - lines: 27-44
+    say: >-
+      Walk numbers, at line 27, collects every number hiding in the facts. Booleans are
+      skipped, because true is not a rate. Integers and floats are added as themselves, and
+      also rounded to two and four decimals. A proportion between 0 and 1, not including 0,
+      also contributes its percent form, times 100, rounded to two decimals and to one. That
+      is why 3.67 is allowed when the stored rate is about 0.0367 and rate percent is already
+      3.67.
+  - lines: 47-58
+    say: >-
+      Identifiers, lines 47 through 58, collect strings. A string of length at least 2 is
+      kept. One character is too easy, and it would not be a lot id anyway. Dictionaries and
+      lists are walked the same way as the numbers. L dash 4419, I N V dash I C, version
+      2.4.0, Northlake Health, the complaint paragraph, all of these are strings inside the
+      facts, so they qualify. We will delete them from the prose before we scan. We do not add
+      4419 to the allowed number list.
+  - lines: 66-72
+    say: >-
+      A tol, lines 66 through 72, is how near a printed number must be. A value of 50 or more,
+      a count like 14,400, gets a tolerance of about half a unit, so 14400 and 14400.4 are the
+      same count. Anything smaller, a rate printed to two decimals, gets 0.03. The comment
+      says what that buys. 3.67 matches 3.67 and 3.70. 3.72 does not. Rounding to two decimals
+      can wobble by one digit. It cannot invent a point and a half.
+  - lines: 74-80
+    say: >-
+      Check narrative, at line 74, is the scan. It gathers identifiers, blanks every I S O
+      date, then replaces each identifier with a space. Longest strings go first, so a long
+      lot id is removed before a shorter piece of it could confuse the pass. What remains is
+      prose with the names scooped out and the numbers still sitting there. Allowed numbers
+      are whatever walk numbers found in the facts. The next loop is the only judgment. A
+      number is fine, or it is unknown.
+  - lines: 81-88
+    say: >-
+      Lines 81 through 88 are that judgment. For each remaining number, convert it to a float.
+      If it sits within tolerance of any allowed value, keep going. If it does not, append it
+      to unknown. Ok is true only when unknown is empty. Order does not matter. One stranger
+      fails the memo. The function does not try to correct the sentence. It reports. The
+      caller, narrate or check stored, decides whether to swap in the template or to raise.
+  - lines: 74-88
+    say: >-
+      Plant a lie and watch it land. Take the sentence, the rate is 27.40 percent. 27.40 is
+      not an identifier in the facts, so masking leaves it in place. It is not within 0.03 of
+      3.67, or of 2.00, or of any other walked number. Unknown comes back with 27.40 in it,
+      and ok is false. That is the test you can tell a reviewer. A draft that invents a rate
+      does not get stored. The number shows up on the receipt, and the memo they read is the
+      safe text.
+  - lines: 74-80
+    say: >-
+      The same function on the real template returns ok. Every digit cluster is either inside
+      a fact string that got blanked, such as L dash 4419, I N V dash I C, and 2.4.0, or near
+      a walked number. Counts like 529 and 14,400, percents like 17.10 and 1.09, and the
+      promise figures 98.00 and 2.00, all have a home in the facts. The guard is not a vibe
+      check.
+  - lines: 47-51
+    say: >-
+      Come back to why identifiers are removed instead of added to the allow list. If 4419
+      were an allowed number, a sentence could claim an invalid rate of 4419 and the guard
+      would smile. Removing the lot id as text means the characters L dash 4419 disappear, and
+      the bare number 4419, if someone types it as a rate, still has to match a real fact. It
+      will not. A name is not a permission slip for arithmetic.
+  - lines: 81-88
+    say: >-
+      The takeaway is the file next to the memo. Week 0 fidelity dot j s o n records ok, the
+      backend, and any unknown numbers. On the default path the template passes, ok is true,
+      and unknown is empty. A planted 27.40 fails. The memo a customer could be shown is not
+      allowed to carry a figure the Python did not compute. The guard is standard library
+      only, regular expressions and a data class. Next, l l m dot p y, which decides whether a
+      model is even asked to write.

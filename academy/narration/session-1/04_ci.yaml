@@ -1,0 +1,20 @@
+title: "Session 1 · Clip 4 · .github/workflows/ci.yml"
+file: ../../snapshots/session-1/.github/workflows/ci.yml
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.5
+segments:
+  - lines: 1-24
+    say: "This last file is the continuous integration workflow, or C I. It lives in dot github slash workflows, and GitHub Actions reads any YAML file in that folder automatically. C I means: every time code changes, a fresh machine in the cloud installs the project from scratch and runs the tests. If anything breaks, you get a red X on the commit. If everything passes, a green check. For a portfolio project, that green check tells a hiring manager that this code actually installs and runs on a machine that isn't yours. YAML, like TOML, is just a settings format. Indentation shows nesting, and dashes start list items."
+  - lines: 1
+    say: "Line 1 names the workflow C I. That's the label you'll see in the Actions tab on GitHub and next to each commit."
+  - lines: 3-5
+    say: "Lines 3 through 5 are the triggers. On push means run whenever any branch gets new commits. On pull request means run whenever a pull request is opened or updated. Together, nothing reaches main without being tested. That includes the practice branch you'll create after this session: push it, and C I runs on it too."
+  - lines: 7-13
+    say: "Line 7 starts the jobs section, and line 8 defines one job called test. Line 9 says it runs on the latest Ubuntu Linux machine, which GitHub provides for free. Lines 10 through 13 are a strategy matrix. Instead of writing the job twice, we list Python 3.11 and 3.12, and GitHub runs the same job once for each version, side by side. 3.11 is the minimum we promised in pyproject. 3.12 matches the newer interpreter, so both are covered. Fail fast false means if one version fails, the other still finishes, so you can see whether the problem is version specific."
+  - lines: 14-18
+    say: "Line 14 begins the steps, which run in order. Line 15 uses a ready-made action called checkout, version 4, which copies your repo onto the fresh machine. Line 16 uses setup python, version 5, to install Python. Lines 17 and 18 pass in the version from the matrix. The dollar sign double brace syntax is how GitHub fills in a value, so it becomes 3.11 in one run and 3.12 in the other."
+  - lines: 19-22
+    say: "Lines 19 through 22 are the install step. The pipe character on line 20 means the next lines are a small multi-line script. First, upgrade pip itself, since old versions can choke on modern pyproject files. Then pip install dash e, dot, bracket dev. That's the same editable install from our pyproject, plus the dev group, which brings in pytest. Notice what's not here: no Jira token, no openFDA key, no secrets of any kind. The workflow doesn't need them, because config defaults to offline, rules only."
+  - lines: 23-24
+    say: "Lines 23 and 24 run python dash m pytest. Pytest reads its settings from pyproject, so it looks in the tests folder and runs quietly. If all five tests pass on both Python versions, the commit gets a green check. That's Session 1 complete: a pyproject that installs cleanly, a config that's offline by default and never leaks secrets, tests that prove it, and C I that checks it on every push. Session 2 builds on this with the synthetic data generator, ticket I N V 104. Now take the quiz, then try the practice change on your own branch."

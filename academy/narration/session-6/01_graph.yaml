@@ -1,0 +1,94 @@
+title: "Session 6 · Clip 1 · src/invalid_agent/graph.py"
+file: ../../snapshots/session-6/src/invalid_agent/graph.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-18
+    say: >-
+      This is graph dot p y, the file that runs one case as a weekly stakeholder loop. The
+      docstring names the order: triage, then plan, root cause, and a status note, looping by
+      week. The imports bring in LangGraph, the case state, settings, and four nodes: planner,
+      r c a, status, and triage. A node is one step. Each lap ends in the status node, which
+      writes the notes a program manager sends.
+  - lines: 34-41
+    say: >-
+      Start at build graph, lines 34 through 41, because the edges are the product. State
+      Graph is built on Case State, the clipboard every node reads and updates. Five nodes are
+      registered. Triage writes the week zero memo. Plan builds the task list and the risk
+      register. R c a refreshes the fishbone, the 5 Whys, and the C A P A with the injections
+      that are visible this week. This function only wires the meeting.
+  - lines: 42-45
+    say: >-
+      Lines 42 through 45 are the straight path. The entry point is triage, so every run
+      begins with the opening memo. Then three plain edges: triage goes to plan, plan goes to
+      r c a, and r c a goes to status. There is still no way out, and there is still no way
+      back. Triage does not run again on later weeks. The field table stays honest, even when
+      the plan grows.
+  - lines: 46-48
+    say: >-
+      Lines 46 through 48 are the only branch. Add conditional edges hangs route after status
+      on the status node. The dictionary is the map. If the router returns the word advance,
+      the next node is advance. If it returns the word end, the next node is END, LangGraph's
+      stop signal. Line 47 then draws a plain edge from advance back to plan. A continuing
+      week does not redo triage. Here the edge is the control flow.
+  - lines: 26-31
+    say: >-
+      Now read route after status, lines 26 through 31. It compares the current week with
+      target underscore week. Week greater than or equal to the target returns end. Otherwise
+      it returns advance. Pass dash dash week 3 and the target is 3. After the week 0 status
+      node, 0 has not reached 3, so the next node is advance. After the week 3 status node, 3
+      meets 3, so the graph stops. Those four visits are why the decision log has four rows.
+  - lines: 21-23
+    say: >-
+      Advance week, lines 21 through 23, is deliberately tiny. It returns a dictionary with
+      one key: week, set to the old week plus one. LangGraph merges that dictionary into the
+      case state. Keys you leave out stay as they were. Decision log is not in the return, so
+      the rows already written survive into the next lap. The scenario, the metrics, and the
+      hypotheses survive the same way. It only turns the page.
+  - lines: 51-61
+    say: >-
+      Resolve scenario, lines 51 through 61, finds the YAML before any week runs. If the
+      argument is already a path to a file, that path is used. Otherwise the function looks in
+      the scenarios folder for the exact name, then for the same name with dot yaml added. So
+      bad lot becomes scenarios slash bad underscore lot dot yaml. The loop never invents a
+      case. It only runs a file you can open and read.
+  - lines: 64-82
+    say: >-
+      Initial state, lines 64 through 82, is the blank clipboard those nodes fill. It stores
+      the scenario id, the scenario dictionary, the starting week, and the target week. If you
+      omit the target, the target equals the start, so a single week still stops. Decision log
+      begins as an empty list. Risks begin empty. Status updates and the Jira record begin as
+      empty dictionaries. It only lays out the fields the weekly meeting will fill in.
+  - lines: 85-93
+    say: >-
+      Run case, lines 85 through 93, is the function the command line calls, and the function
+      the dashboard will call next session. Week must be 0 through 4, or the program exits.
+      Settings are loaded, the scenario name is resolved to a real file, and the output folder
+      is created, including parents. Line 93 compiles the graph you just walked. One compiled
+      app is reused for every week of this call. A bad flag stops at the door.
+  - lines: 94-97
+    say: >-
+      Lines 94 through 97 are the invoke. The graph always starts at week 0. The number you
+      passed becomes target underscore week, not the starting week. A request for week 3 still
+      walks weeks 0, 1, 2, and 3, in order. Line 96 sets recursion limit to 80. Four weeks of
+      nodes sit far under that ceiling. The limit makes a routing bug fail fast, instead of
+      hanging a demo. The result that comes back is the state after the last status node.
+  - lines: 98-108
+    say: >-
+      After the graph returns, lines 98 through 108 write the artifacts that belong to the
+      whole case. The triage memo goes to week 0 triage dot m d, and the fidelity record goes
+      beside it as JSON. Fishbone, five whys, and the 8 D C A P A markdown are written at the
+      output root from the result dictionary. This function does not render the three status
+      notes or decision underscore log dot m d. The status node already wrote those, once per
+      week, while the loop was running.
+  - lines: 111-124
+    say: >-
+      Main, lines 111 through 124, is the command line wrapper. It requires a scenario and a
+      week, and it takes an optional output folder that defaults to dot slash out. It calls
+      run case, prints the memo path, and prints whether triage said escalate, plus the
+      severity. The last print is the banner on every stakeholder artifact: Simulation.
+      Synthetic data. Not for clinical use. Next is status dot p y, where the color is chosen.

@@ -1,0 +1,98 @@
+title: "Session 2 · Clip 1 · scenarios/bad_lot.yaml"
+file: ../../snapshots/session-2/scenarios/bad_lot.yaml
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-11
+    say: >-
+      Welcome to Session 2. Bad lot dot yaml is the process we simulate. Line 1 names the
+      case. Line 3 is the seed, 4419, the integer that starts the random number generator so
+      this file always rebuilds the same table. Lines 6 and 7 are 180 days at 80 runs a day,
+      14,400 rows. Line 8 is the healthy background, 1.2 percent invalid. Lines 9 and 10
+      promise validity of at least 98 percent, so the invalid rate must stay at or below 2
+      percent.
+  - lines: 31-36
+    say: >-
+      Start at root cause. These lines are the knobs. The type is bad reagent lot, the lot is
+      L dash 4419, and the start day is 120, so the trouble begins late. The stratum invalid
+      rate is 0.18, about 18 invalids in every 100 runs on that lot after that day. The
+      dominant code is I N V dash I C, internal control failure. Lot, day, and 0.18 are
+      inputs. The 3.67 percent in the summary is computed from the rows. It is not typed here.
+  - lines: 26-30
+    say: >-
+      Lines 26 through 30 are the lot calendar, how a lot enters distribution. L dash 4401
+      runs from day 0 to 70. L dash 4412 overlaps it, day 40 to 130. L dash 4419 starts on day
+      120 and stays through day 180. L dash 4425 starts on day 125. Overlap is intentional, so
+      on many days the sampler chooses among lots on the shelf. The window lives in data. The
+      generator needs no special case for a start day.
+  - lines: 20-25
+    say: >-
+      Lines 20 through 25 keep software from posing as the lot. Both versions, 2.3.1 and
+      2.4.0, run all 180 days, with weights 0.7 and 0.3. The newer build is less common, and
+      it is present from day 1 through day 180. If version 2.4.0 had landed on day 120, the
+      same day as L dash 4419, a cutover and a bad lot would look like one event. Later
+      scenarios move this calendar when software really is the cause.
+  - lines: 12-19
+    say: >-
+      Lines 12 through 19 name the people and the machines. Four fictional customers, led by
+      Northlake Health, then four sites, four instruments, and six operators. A bare string
+      means always on, equal weight, from day zero through the end. Lots used a calendar
+      instead. Both shapes are legal. Site, instrument, lot, software, and operator stay
+      separate columns, so a lot effect is not an instrument effect with the name painted
+      over.
+  - lines: 37-42
+    say: >-
+      Lines 37 through 42 are the complaint. It says synthetic, not a real customer. Northlake
+      reports invalids above the 98 percent validity they were sold, they have paused
+      reporting, and they want a written position today. The themes follow public diagnostic
+      failure modes, and the sentences are original. Session 3 copies this paragraph into the
+      week zero memo as the story. It carries no calculated rate. Numbers beside it have to
+      come from the table.
+  - lines: 43-50
+    say: >-
+      Lines 43 through 50 are the week zero injection, the email that opens the case. The
+      customer asks for the current invalid rate, whether it breaks the 98 percent commitment,
+      and what we are doing this week. That is the requirement for today's printed summary and
+      for next session's triage memo. Read it as the Monday inbox. The generator does not
+      parse this text. A firm email does not flip an invalid flag.
+  - lines: 51-57
+    say: >-
+      Lines 51 through 57 are week one, from quality assurance. They note that lot L dash 4419
+      entered distribution on day 120, the same window as the spike, and that the earlier lots
+      are no longer shipping. You will want to circle that lot. Hold the circle until the
+      table agrees. Session 3 ranks causes from the rows and never reads this injections list.
+      A stakeholder sentence cannot outrank the measurement.
+  - lines: 58-70
+    say: >-
+      Lines 58 through 70 are two week two notes. Research says lot L dash 4419 passed release
+      testing, on a release sample that was not a field specimen. Release passed, so attention
+      can slide off the lot. That is the trap. The lab director then asks whether to stop
+      every lot or only the current one. This YAML cannot answer that. Lot by lot rates,
+      computed after the rows exist, are what answer it.
+  - lines: 71-82
+    say: >-
+      Lines 71 through 82 plant a herring and a money question. Manufacturing logged a two
+      hour temperature excursion on lot L dash 4425, not on L dash 4419, and says 4425's field
+      rate has not moved. Search for temperature and you find a culprit. The generated table
+      has to agree before that culprit is real. Leadership also asks the cost of invalids.
+      Line 11 prices one at 85 dollars, for a later session. This session stops at the rate.
+  - lines: 83-89
+    say: >-
+      Lines 83 through 89 are week four. Leadership wants a recommendation, contain the lot or
+      widen the work, and the check that would close it. Session 2 does not write that
+      recommendation. It builds the field file and the spreadsheet math. The demo prints the
+      rate, a Wilson interval, the top strata, Western Electric hits, and the invalid code
+      head. On seed 4419 that printout is about 3.67 percent, interval 3.38 to 3.99, against a
+      2 percent spec. L dash 4419 sits near 17 percent.
+  - lines: 1-10
+    say: >-
+      Treat this file as the contract with the generator. The seed makes the world repeatable,
+      and the root cause block says how the world was broken. PyYAML, the package that reads
+      this format, only loads data, and it shows up in the next file. There is no language
+      model in Session 2. The program manager artifact is the printed summary from python dash
+      m, invalid agent dot sim dot generate, on bad lot dot yaml. Re running that command is
+      the check. Next we build the rows.

@@ -1,0 +1,96 @@
+title: "Session 2 · Clip 5 · src/invalid_agent/sim/seeds.py"
+file: ../../snapshots/session-2/src/invalid_agent/sim/seeds.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-10
+    say: >-
+      This is seeds dot p y. Generate draws invalid codes, shipping temperatures, and
+      hemolysis indexes from constants that live here, next to the reason each constant
+      exists. Hemolysis uses a lognormal stand in for a published, right skewed H I L index. H
+      I L means hemolysis, icterus, and lipemia. The digital object identifier, the D O I, is
+      in the docstring: 10.17632 slash v x k k d m w 55 f dot 1. These parameters are not a
+      fit to that dataset, and the dataset is not in the repo.
+  - lines: 16-25
+    say: >-
+      Lines 16 through 25 are the invalid code vocabulary, eight labels the Pareto will rank.
+      I N V dash I C is an internal control failure. E X T is extraction. I N H is inhibition.
+      H E M is hemolysis, before the assay. V O L is low volume. T M P is a temperature flag.
+      S W is a software or instrument abort. U S R is the operator. A healthy week uses the
+      whole mix. A cause pushes one label.
+  - lines: 28-37
+    say: >-
+      Lines 28 through 37 are the baseline shares, and they sum to 1. Internal control is the
+      common background code, at 0.22. Extraction is 0.16. Inhibition and volume are 0.14
+      each. Hemolysis and software are 0.10. Operator is 0.08. Temperature is the rare one, at
+      0.06. When no dominant code is named, sample codes draws from this mix. The first pass
+      in generate does exactly that, so quiet weeks already have a spread of failure modes for
+      a cause to stand out against.
+  - lines: 39-47
+    say: >-
+      Lines 39 through 47 are complaint themes, public F D A device problem labels,
+      paraphrased. Incorrect result, software, mechanical, calibration, operates differently,
+      failure to run. They are labels, not adverse event narratives, and they are not rows in
+      the field file. The optional probe is open F D A dot p y. Generate never calls it. Fetch
+      event count, near line 27 of that file, asks the public device event A P I for a count.
+      A network error, a timeout, or a strange payload returns None.
+  - lines: 49-51
+    say: >-
+      Lines 49 through 51 are the nominal shipping lane, a pair. The mean is 20 degrees
+      Celsius and the spread is 1.2. This is a controlled shipment. Excursions are written
+      later by the generator, on top of this draw, not sampled from it. In bad lot, nothing
+      heats the lane, so temperature stays a tight cloud around 20. In a heat scenario, cause
+      overwrites a fraction of one site with values around 32 to 38.
+  - lines: 53-57
+    say: >-
+      Lines 53 through 57 are the hemolysis stand in. A lognormal is right skewed: most values
+      are modest, and a long tail runs high, which matches a real H I L index. The pair is mu
+      and sigma on the natural log. Baseline is 1.5 and 0.85, so the median is e to the 1.5,
+      about 4.5. Severe is 4.3 and 0.55, median about 74, and a large share then clears a
+      cutoff of 100. We picked these so the cutoff has work to do.
+  - lines: 60-62
+    say: >-
+      Sample hemolysis, at line 60, is the only function that reads those two pairs. Severe
+      true picks the hot pair. Otherwise it uses baseline. NumPy lognormal draws the index.
+      Generate calls this once, severe false, to fill every row. The hemolysis cause calls it
+      again, severe true, and only for the site named in that scenario. One function is the
+      door a reviewer opens if they want to challenge the stand in.
+  - lines: 65-73
+    say: >-
+      Sample codes, at line 65, labels invalid rows only. The count n is the number of
+      invalids, not the number of runs. Zero or less returns an empty array. With no dominant
+      code, or a name missing from the weight table, we draw from the baseline shares, scaled
+      so they sum to 1. NumPy choice does the draw. Generate's baseline pass uses this branch,
+      dominant set to none. Valid rows never arrive here.
+  - lines: 74-79
+    say: >-
+      Lines 74 through 79 are the dominant branch, the one bad lot uses. The other codes keep
+      their baseline weights, scaled so they sum to 1 minus the dominant weight. The label
+      list puts the dominant code first. The default weight, from redraw, is 0.7. About 70
+      percent of caused invalids get I N V dash I C, and the rest still look like ordinary
+      background codes. A cause that stamped every row with one code would look fake.
+  - lines: 39-47
+    say: >-
+      One more pass on those theme lines, because the boundary is easy to miss. Open F D A dot
+      p y can be run on its own, python dash m invalid agent dot sim dot open F D A. Anonymous
+      access works. An A P I key is sent only when it is set, and the settings object masks
+      that key if you print it. Failure returns None, so a dead network cannot stop the
+      simulation. The rows in the C S V never include that public count.
+  - lines: 16-37
+    say: >-
+      Tie the codes to the causes in generate. A bad lot pushes I N V dash I C. Heat pushes T
+      M P. Hemolysis pushes H E M. Software or a drifting instrument pushes S W. An operator
+      pushes U S R. The Pareto we open next sorts whichever labels actually landed on invalid
+      rows. Empty codes on valid rows never enter that sort. On seed 4419, internal control
+      should lead the printed head.
+  - lines: 1-10
+    say: >-
+      The takeaway: the field file is synthetic, and every borrowed shape is labeled. The H I
+      L numbers are a stand in, cited by D O I, and the clinical file is not in the repo.
+      Complaint themes are public labels. Open F D A is optional and off the generate path.
+      The rate and the code mix in the printed summary come from the seed and these draws.
+      Next, Pareto dot p y ranks those codes into the head line the summary prints.

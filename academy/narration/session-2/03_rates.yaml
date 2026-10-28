@@ -1,0 +1,96 @@
+title: "Session 2 · Clip 3 · src/invalid_agent/metrics/rates.py"
+file: ../../snapshots/session-2/src/invalid_agent/metrics/rates.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-9
+    say: >-
+      This is rates dot p y. The summary asks it for the invalid rate, a confidence interval,
+      and the rate by lot, instrument, site, software, and operator. A Wilson interval is a
+      range for a yes or no proportion, and it stays inside 0 and 1. The ordinary Wald
+      interval, rate plus or minus a margin, can go negative when invalids are rare. The
+      algebra is written in the docstring so you can check it by hand. SciPy supplies the z
+      value. Statsmodels is not imported.
+  - lines: 20-28
+    say: >-
+      Wilson interval, at line 20, takes k events in n trials. K is the invalid count and n is
+      the runs. Confidence defaults to 95 percent. A non positive n, or a k outside 0 to n,
+      raises. Line 26 asks SciPy for z through the normal quantile, norm dot p p f. For 95
+      percent, z is about 1.96, the familiar poll margin. The library does that one lookup.
+      The rest of the formula is ordinary arithmetic in this file.
+  - lines: 27-33
+    say: >-
+      Lines 27 through 33 are the docstring formula in code. P hat is k over n, the plain
+      rate. The denominator is 1 plus z squared over n. The center tugs the rate a little
+      toward one half, then divides. The margin takes the usual spread of a proportion, adds a
+      small z term, takes the square root, multiplies by z, and divides again. Low is the
+      center minus the margin, floored at 0. High is the center plus the margin, capped at 1.
+  - lines: 34-39
+    say: >-
+      Lines 34 through 39 snap away floating point dust. When k is 0 the true lower bound is
+      0, but subtraction can leave a crumb near 10 to the minus 18. If low is under 10 to the
+      minus 12 we set it to 0, and the same idea pins high to 1. Tests check two facts without
+      calling this function for the algebra. Ten invalids in 100 runs round to about 5.5
+      through 17.4 percent. A zero count comes back with a lower bound of 0.
+  - lines: 42-59
+    say: >-
+      Overall rate, at line 42, is what the summary and the later memo both call. It counts
+      rows as n, true flags as k, and asks Wilson for the 95 percent interval. Two booleans
+      matter. Exceeds spec is true when the point estimate sits above 2 percent. The other is
+      true when even the low end clears 2 percent. Session 3 needs both. One says the rate we
+      see is over the promise. The other says the uncertainty is over the promise too.
+  - lines: 42-47
+    say: >-
+      Put bad lot on those first lines. Seed 4419 builds 14,400 runs and 529 invalids. 529
+      over 14,400 is 3.67 percent, and the Wilson interval prints as 3.38 to 3.99. The spec is
+      2 percent, so both flags are true. You do not type 3.67 anywhere. This function computes
+      it from the invalid column. If the summary and a spreadsheet disagree, recompute k and n
+      from the C S V and walk the formula.
+  - lines: 62-82
+    say: >-
+      Stratified rates, at line 62, answers where the invalids sit. Pandas group by splits the
+      frame on one column. Each level gets n, k, the same Wilson interval, and its name. The
+      sort is largest rate, then largest k, then the name, so ties do not flicker. The summary
+      prints the first three. On this seed, lot L dash 4419 is near 17 percent and the other
+      lots sit near 1 to 1.7 percent. That is the 0.18 knob, sampled, against the 1.2 percent
+      background.
+  - lines: 85-102
+    say: >-
+      Chi square by, at line 85, asks whether the invalid split differs across levels. Chi
+      square is a test on a table of counts. The grid is invalid versus valid, one row per
+      level, and the p value says how surprising that grid is if every level shared one rate.
+      A tiny p means one shared rate fits poorly. Pandas crosstab builds the grid. A single
+      level, or a column of all zeros, returns p value 1.
+  - lines: 98-110
+    say: >-
+      Lines 98 through 102 are that quiet path. One stratum, or a whole outcome column empty,
+      and we return p equals 1, which means no evidence of a difference. The caller keeps
+      going. When the grid is real, line 103 calls SciPy chi 2 contingency. We keep the
+      statistic, the p value, and the degrees of freedom. Session 3 uses a cousin of this
+      test, one level against everyone else, and it will not rank a cause unless that p value
+      is under 0.01.
+  - lines: 16-18
+    say: >-
+      Two packages, and only for the jobs just named. Pandas gives group by and crosstab, the
+      same idea you know from S Q L, group then count. SciPy gives the normal quantile for z
+      and the chi square test on the table. The Wilson algebra itself stays in this file, plus
+      a square root from the math module. A reviewer can recompute one row on a calculator.
+      Statsmodels stayed on the shelf.
+  - lines: 48-59
+    say: >-
+      The dictionary from overall rate is the contract with the next session. You will meet n,
+      k, rate, both interval ends, the spec, the promised validity, exceeds spec, and the flag
+      that says the whole interval is above the spec. Confidence is fixed at 0.95. The week
+      zero memo quotes these keys. It does not invent a second formula. When that memo says
+      3.67 percent, it is this rate times 100, rounded, on the rows generate just built.
+  - lines: 1-9
+    say: >-
+      The takeaway is where a rate comes from. The YAML held a cause and a promise. This file
+      turns rows into a rate, an interval, a spec call, and a breakdown by level. The artifact
+      is still the printed summary: 3.67 percent invalid, Wilson 3.38 to 3.99, over the 2
+      percent spec, with L dash 4419 far above the other lots. The summary sentence does no
+      arithmetic of its own. Next is s p c dot p y, the weekly chart behind the hit counts.

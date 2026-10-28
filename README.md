@@ -82,9 +82,13 @@ The repo runs with no keys.
 - The panel, the customers, and the field file are synthetic. openFDA MAUDE, the Mendeley HIL DOI, and Zenodo CBC are cited in `DATA_LICENSES.md` and are not redistributed.
 - The projection clears the leading stratum on the same file. It is not observed follow-up. `bad_lot` never turns Green, because the file is not rewritten.
 - Laptop snapshot folders under `C:\Users\neels\Grok_Bot\Project_Agent\` are not created here. Annotated tags `session-1` through `session-9` are the snapshots. Check out the tag and copy the tree.
-- There is no narrated MP4. `walkthroughs/session-N.yaml` is the beat list for a recording.
+- Narrated MP4s are the academy on GitHub Pages, not files in `main`. `walkthroughs/session-N.yaml` is still the beat list. `academy/narration/` is the full script.
 - No agent swarm, no extra integrations, no fine-tune.
 
 ## Layout
 
 Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé lines copied from the eval report: `RESUME_BULLETS.md`. Product framing: `PRD.md`. Disclaimer: `SIMULATION_DISCLAIMER.md`.
+
+## Academy
+
+`academy/` is the static course: one narrated clip per key file, the logic trace, a practice edit on a private branch, and an 8-question quiz. Pass at 80% to open the next session. Videos are published on the `gh-pages` branch so a clone of `main` stays light. See `academy/README.md`.

@@ -1,0 +1,78 @@
+title: "Session 7 · Clip 6 · .streamlit/config.toml"
+file: ../../snapshots/session-7/.streamlit/config.toml
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-1
+    say: >-
+      This is config dot toml, inside the dot streamlit folder. Streamlit reads it
+      automatically when the page starts. You do not import it from Python. The framework
+      looks for this path next to the app. Line 1 opens the theme section. A theme is the set
+      of colors and the font the page uses before your own banner C S S. TOML is the same
+      simple format as the project file: a bracketed section, then key equals value.
+  - lines: 2-2
+    say: >-
+      Line 2 sets base to light. Streamlit ships a light base and a dark base. Light means a
+      pale page, dark text, and widgets that match a printed status report. A dark theme would
+      fight the off white banner text and the white Plotly template. Light is also what a
+      leadership reader expects when they open a review over a slide. We keep light so the
+      status colors Red, Amber, and Green sit on a quiet background.
+  - lines: 3-3
+    say: >-
+      Line 3 is primary color, hex 0 B 3 A 5 B. That is the navy. Streamlit uses the primary
+      color for buttons, the selected tab, the slider, and other controls. It is the same hex
+      as the banner background in the page, and the same hex as the navy series on the p
+      chart. If this key drifted, the page would look like two products stapled together.
+  - lines: 4-4
+    say: >-
+      Line 4 is background color, hex F 7 F 5 F 2. That is a warm off white, a paper color
+      rather than pure white. It is also the text color inside the navy banner, so the banner
+      and the page are a pair: navy field, paper type, and paper field, navy type. It is not
+      the sidebar. A program manager reading a rate against a 2 percent spec should get a calm
+      surface, not a decorated one.
+  - lines: 5-5
+    say: >-
+      Line 5 is the secondary background, hex E 7 E E F 2, a pale blue gray. Streamlit uses it
+      for the sidebar, where the scenario picker, the week slider, and the rules only toggle
+      live. A different ground from the main paper splits controls from results. The hex stays
+      in the navy family, only lightened, so the sidebar does not invent a second brand. The
+      toggle's default value, not this color, is what keeps the hosted page on rules only.
+  - lines: 6-6
+    say: >-
+      Line 6 is text color, hex 1 C 2 8 3 0. That is a near black with a little blue, not pure
+      black. It colors the title, the captions, the tile labels, and the body copy Streamlit
+      draws. The banner does not use this key. The metric numbers use this color too. The
+      delta's red or green comes from Streamlit's inverse delta, not from this key. Above spec
+      can look bad without the whole page turning red.
+  - lines: 7-7
+    say: >-
+      Line 7 sets font to sans serif. Streamlit's theme fonts are a short list, and sans serif
+      is the plain one. Sans serif means the letters have no small strokes at the ends. It
+      reads well in tiles and in a sidebar. The code editor in these walkthroughs uses a mono
+      font so columns of Python line up. The product page should not. Charts bring their own
+      Plotly font. This key covers the chrome around them.
+  - lines: 9-10
+    say: >-
+      Lines 9 and 10 are the server section. Headless equals true. Headless means Streamlit
+      will start without trying to open a browser window on the machine. Community Cloud, and
+      a continuous integration job, have no desktop. A server that insists on popping a window
+      fails there. Your laptop can still open the page. The page you walked, with the banner
+      first and the week slider in the sidebar, is what this server is willing to host.
+  - lines: 11-11
+    say: >-
+      Line 11 sets file watcher type to none. By default Streamlit watches the folder and
+      reruns the script when a file changes. That is pleasant while you edit the page. It is
+      the wrong behavior for this agent. A run writes markdown, plan JSON, and charts into the
+      out folder while the page is up. None turns that watcher off. The watcher is a separate
+      switch, and it is off on purpose.
+  - lines: 13-14
+    say: >-
+      Lines 13 and 14 are the browser section. Gather usage stats equals false. Left on,
+      Streamlit phones home anonymous usage data. For a portfolio demo of a simulated clinical
+      investigation, that call is noise, and it is a surprise in a review. False turns it off.
+      The page does not need the telemetry to render the banner, the tiles, or the notes. No
+      model is configured here. That is the frame around the Red, Amber, and Green status.

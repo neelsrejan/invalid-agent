@@ -1,0 +1,96 @@
+title: "Session 5 · Clip 5 · src/invalid_agent/integrations/jira.py"
+file: ../../snapshots/session-5/src/invalid_agent/integrations/jira.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-8
+    say: >-
+      This is jira dot p y, the optional Jira adapter. Dry-run is the path with no
+      credentials. It writes jira underscore issues dot json and does not open a socket. The
+      keys start with S I M, so a practice file stays distinct from a live board. Live mode
+      needs the base U R L, the email, and the A P I token. A failed post is recorded, and the
+      case still finishes. The token stays out of the printed object.
+  - lines: 114-117
+    say: >-
+      Make client, line 114, is the gate. It takes settings, the JSON path, and an optional
+      transport. When jira enabled is true, all three settings are present, and it returns the
+      live client. When the flag is false, it returns the dry-run client and never builds the
+      H T T P transport. An empty environment, a missing token, or a token made of spaces all
+      stay on the dry-run side. The graph calls this one function and takes whatever class
+      comes back.
+  - lines: 54-68
+    say: >-
+      Dry-run Jira is the local mirror. Its docstring says the keys are S I M dash a number,
+      so this file cannot be confused with the build backlog. Mode is the string dry-run. The
+      constructor keeps the output path and the project key, defaulting to I N V. Repr prints
+      the path and the project. This class has no token field. Sync reads any JSON already on
+      disk, then calls the shared upsert with a creator that mints local keys.
+  - lines: 131-146
+    say: >-
+      Underscore local creator mints those S I M keys. It scans the existing file so a second
+      sync continues the count instead of restarting at 1. The epic and every issue key that
+      starts with S I M dash feed the counter. Each new call adds one and returns an id plus a
+      key. On a fresh ten-task plan the epic becomes S I M 1 and the stories follow. Kind,
+      summary, and body are ignored. Dry-run only needs the next number.
+  - lines: 149-169
+    say: >-
+      Upsert is shared by dry-run and live. The epic is created once. With nothing on disk,
+      creator is called with kind epic and a summary naming the scenario and the top cause.
+      The stored task id is the word EPIC. On the next sync that block is skipped. Running it
+      twice keeps one epic. That is the first half of idempotent: the same plan keeps the epic
+      it already has.
+  - lines: 170-190
+    say: >-
+      Lines 170 through 190 are the stories. Existing issues are indexed by task id. When the
+      plan's id is already in that map, the code refreshes status, summary, and owner, then
+      moves on. Creator is not called. A second sync updates the row in place. A new id, such
+      as T 11 showing up at week 2, falls through, gets a fresh key, and is appended. The
+      saved fields are the ones a board would show: key, summary, status, owner, sprint, and
+      sim week.
+  - lines: 191-199
+    say: >-
+      The payload is the file you open. Mode says dry-run or live. Project is the key. Epic
+      and issues are what upsert just built. The disclaimer reads: Simulation. Not a live
+      customer escalation. It is inside the JSON so a person who only opens jira underscore
+      issues dot json still sees the boundary. Underscore write saves the file, and the
+      function returns the same dictionary. The graph stores that return value on the state,
+      under jira.
+  - lines: 120-128
+    say: >-
+      Underscore read and underscore write are the disk pair. Read returns an empty dictionary
+      when the file is missing, which is every first sync. Write creates the parent folder and
+      saves indented JSON. Upsert calls write at the end. A crash before that line leaves the
+      previous file in place, the last good sync. The live failure path uses the same write,
+      so a rejected post still leaves JSON the rest of the case can point at.
+  - lines: 23-28
+    say: >-
+      Underscore a d f wraps a description for Jira's version 3 A P I. A D F is Atlassian
+      document format. Version 3 rejects a plain string in the description field, so this
+      helper builds a tiny document: type doc, version 1, and one paragraph of text. Dry-run
+      never calls it, because the local creator ignores the body. The live client calls it for
+      the epic and for each new story. One paragraph is enough for this simulation.
+  - lines: 31-51
+    say: >-
+      H T T P X transport is the only place a socket can open. It stores the base U R L, the
+      email, and the token. The import sits inside request, so loading this module stays
+      quiet. Request posts to the base U R L plus the path, with email and token as basic
+      auth, and a 30 second timeout. An error status becomes an exception. Make client skips
+      this class while jira enabled is false.
+  - lines: 71-83
+    say: >-
+      Live Jira is the other client. Mode is the string live. It keeps the project key, the
+      JSON path, and the email. The transport is the one you passed, which is how a test hands
+      in a fake instead of H T T P X. Repr, lines 82 and 83, prints the project and the email
+      only. The token stays on the object and out of that string. A log can show the account.
+      The secret stays off the line.
+  - lines: 85-111
+    say: >-
+      Live sync uses the same upsert. Its creator posts to slash rest slash api slash 3 slash
+      issue, as an epic or a task, with an A D F description. The try block is the happy path.
+      Any exception is caught. The stored error is the class name, such as Runtime Error, and
+      the token is kept out of that string. The JSON is still written. The Gantt and the
+      quality record still finish, with a note that Jira refused the post.

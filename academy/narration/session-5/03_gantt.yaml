@@ -1,0 +1,86 @@
+title: "Session 5 · Clip 3 · src/invalid_agent/artifacts/gantt.py"
+file: ../../snapshots/session-5/src/invalid_agent/artifacts/gantt.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is gantt dot p y. A Gantt chart draws tasks as bars on a timeline, with an owner
+      and dates. The H T M L file comes from plotly, so you can open it and hover a bar. The P
+      N G is drawn with matplotlib. Kaleido is the usual plotly path from a chart to a P N G,
+      and it wants a browser download. Laptops and the C I image skip that. Underscore write p
+      n g never calls kaleido. The deck still gets a picture.
+  - lines: 12-14
+    say: >-
+      Lines 12 and 13 import matplotlib, and line 14 sets the backend to Agg before pyplot is
+      imported. Agg draws into a file and never opens a window. That matters in C I, where
+      there is no display, and in a script on a laptop. The order is the point. Set the
+      backend first. Importing pyplot earlier would lock a different backend, and a missing
+      display would fail the case. The P N G path stays headless on purpose.
+  - lines: 15-18
+    say: >-
+      Lines 15 through 18 finish the drawing stack. Matplotlib dates turns calendar dates into
+      numbers a bar can use. Pyplot draws the P N G. Pandas holds the table plotly expects.
+      Plotly express arrives as p x, and p x dot timeline is the one-call Gantt. Session 5
+      added these libraries for the picture. The plan itself is still plain dictionaries. This
+      file is only the view of that plan.
+  - lines: 20-27
+    say: >-
+      Underscore owners is a fixed color map. P M, Q A, R and D, Manufacturing, Regulatory,
+      and Customer Support each have one color. The same owner keeps that color every week, so
+      a week 0 picture and a week 2 picture can be compared. A fresh palette would repaint Q A
+      and make the diff look like a redesign. Regulatory is in the map even when this plan has
+      no regulatory bar. The color is ready when a later task needs it.
+  - lines: 30-40
+    say: >-
+      Underscore frame turns the plan into rows. The label joins the task id and the name, so
+      T 1 and its sentence share the axis. Owner, start, and end are copied as the planner
+      stored them. Nothing is filtered here. If T 11 is absent from the plan, it is absent
+      from the picture. The frame has one row per task, in the planner's order. Week 2 grows
+      the picture only because the plan grew.
+  - lines: 41-44
+    say: >-
+      Lines 42 and 43 parse the start and end strings into datetimes. Plotly's timeline needs
+      real dates. The planner stored I S O text, which is right for JSON and for the
+      dependency check, and wrong for a time axis. The conversion lives in this one place, so
+      the planner can keep storing strings. The H T M L chart and the P N G both draw from
+      this same frame, so the two pictures cannot disagree about a date.
+  - lines: 47-59
+    say: >-
+      Write gantt makes the folder, builds the frame, and sets a title that says this is a
+      simulation and not for clinical use. P x timeline takes start, end, the task on the y
+      axis, and the owner as the color. The discrete color map forces the fixed owner colors,
+      so plotly does not invent a palette. The figure is the interactive chart. It is not on
+      disk yet. The next lines set the axis, write the H T M L, and call the P N G helper.
+  - lines: 60-63
+    say: >-
+      Line 60 reverses the y axis, so T 1 sits at the top, the way a P M reads a plan.
+      Plotly's default would put the first task at the bottom. Line 61 sets the margins and a
+      height that grows with the rows, 36 pixels each, at least 360. Line 62 writes the H T M
+      L and sets include plotly j s to c d n, so the file links the library instead of
+      embedding it and stays small. Line 63 sends the same frame to the P N G writer.
+  - lines: 66-72
+    say: >-
+      Underscore write p n g does not import kaleido, and it does not call write image. It
+      opens a matplotlib figure and walks the rows in reverse, so the first task lands at the
+      top, matching the H T M L. Each bar's width is the end minus the start, and at least 0.4
+      of a day. That floor keeps a sliver visible if a task is ever shorter than a day. Bar h
+      draws one horizontal bar per task, in the owner's color.
+  - lines: 73-77
+    say: >-
+      The tick labels use that same reversed order, so the top label is T 1. Font size 8 keeps
+      a ten-task plan readable. The x axis is formatted as month and day, so it reads Sep 28
+      rather than a raw day number. The title sits on the left. A light dotted grid runs along
+      the dates only, which makes the alignment easy to see. This is the picture that can sit
+      on a slide when the H T M L file cannot.
+  - lines: 78-81
+    say: >-
+      Tight layout keeps the long task names from being clipped. Save fig writes the P N G at
+      120 dots per inch, enough for a slide. Pyplot close releases the figure. A week-by-week
+      runner will call this more than once, and leaving figures open would pile up memory. You
+      now have two files of one plan. Gantt dot h t m l is for hovering. Gantt dot p n g is
+      for the deck. Same tasks, same order, same owner colors.

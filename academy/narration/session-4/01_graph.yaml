@@ -1,0 +1,93 @@
+title: "Session 4 · Clip 1 · src/invalid_agent/graph.py"
+file: ../../snapshots/session-4/src/invalid_agent/graph.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-9
+    say: >-
+      This is graph dot p y, the file that runs one case. Session 4 keeps triage and adds the
+      root-cause step after it. The docstring says later sessions add nodes on this object.
+      The planner is that later node, and this tag stops at root cause. Lines 5 through 8
+      import argument parsing, JSON, and paths. No model client is imported. This session does
+      not call a language model. The run is rules on the synthetic table.
+  - lines: 10-16
+    say: >-
+      Lines 10 through 16 bring in what the graph calls. Lang Graph gives us END and State
+      Graph. A state graph is a flowchart the program can run. Each node is a function, and an
+      edge says what runs next. Case state is the dictionary those functions pass along. Load
+      settings is the frozen settings object from Session 1. Triage node and R C A node are
+      the two functions. Load scenario turns the YAML file into a dictionary.
+  - lines: 19-23
+    say: >-
+      Build graph starts at line 19. The docstring says triage, then R C A. The planner joins
+      later, in Session 5. Line 21 creates a State Graph typed with case state, so every node
+      shares one dictionary shape. Line 22 registers triage node under the name triage. Line
+      23 registers R C A node under the name rca. The graph only records those names. Invoke
+      is what actually runs them.
+  - lines: 24-27
+    say: >-
+      Lines 24 through 27 are the whole control flow. Set entry point makes triage first. The
+      edge from triage to rca hands that dictionary to the root-cause function. The edge from
+      rca to END stops the case. END means there is no next node. Line 27 compiles this into
+      an app you can invoke. The line stays straight. A later week changes which notes R C A
+      may cite. These edges stay put.
+  - lines: 30-40
+    say: >-
+      Resolve scenario finds the YAML from the name you typed. Line 31 treats the argument as
+      a path and returns it when that path is already a file. Line 34 looks in the scenarios
+      folder under the repo root. Line 37 adds dot yaml, so bad lot and bad underscore lot dot
+      yaml both resolve. Line 40 raises System Exit when none of those exist. You get a short
+      message, and the case does not start.
+  - lines: 43-52
+    say: >-
+      Initial state builds the dictionary the graph starts from. Scenario id comes from the
+      YAML. The whole scenario is stored, injections included, so the root-cause step can
+      filter them by week. Week is the integer you passed. Decision log, risks, status
+      updates, and jira start empty. Those empty containers are reservations. Session 5 fills
+      risks and jira. This session needs the scenario, the week, and the hypotheses triage
+      adds.
+  - lines: 55-62
+    say: >-
+      Run case is what the command line calls. Lines 56 and 57 reject a week outside 0 through
+      4 with System Exit. The investigation uses those five week numbers. Line 58 loads
+      settings and finds the repo root. Lines 59 and 60 resolve the name and load the YAML.
+      Line 61 compiles the graph. Line 62 calls invoke. Invoke runs triage, then R C A, and
+      returns one result. Both nodes finish before any file is written.
+  - lines: 63-70
+    say: >-
+      Writing starts after invoke. Line 63 picks your folder, or the default from settings.
+      Line 64 creates it, parents included, and does nothing if it is already there. The nodes
+      return markdown on the result and leave the disk to run case, so the folder can be
+      created after they finish. Lines 65 and 66 write week 0 triage dot m d. Lines 67 through
+      70 write week 0 fidelity dot json, pretty-printed with indent 2.
+  - lines: 71-75
+    say: >-
+      Lines 71 through 73 are the files a quality manager opens. Fishbone dot m d copies the
+      fishbone markdown. Five underscore whys dot m d copies the five Whys markdown. Capa 8 d
+      dot m d copies the C A P A markdown. R C A node already rendered each string. This
+      function writes that same text, so the file and the state stay in agreement. Line 74
+      stores the memo path. Line 75 returns the dictionary.
+  - lines: 78-83
+    say: >-
+      Main is the command-line door. The parser takes three flags. Scenario is required, an id
+      or a YAML path, and the help text uses bad lot. Week is a required integer. Out is
+      optional, and empty means you did not pick a folder. Line 83 only parses. Nothing has
+      run. The next line calls run case and starts triage.
+  - lines: 84-87
+    say: >-
+      Line 84 calls run case. An empty out becomes None, so the settings folder is used,
+      usually a folder named out. Line 85 prints the memo path. Line 86 prints whether triage
+      escalates, and the severity. Line 87 prints the banner that also sits inside the
+      markdown. Simulation. Synthetic data. Not for clinical use. Every artifact in this
+      project carries that reminder. The case is a portfolio simulation.
+  - lines: 90-91
+    say: >-
+      Lines 90 and 91 run main only when you execute this file directly. Importing it, which
+      the tests do, does not start a case. A test can call run case, or call main with a fake
+      argument list and a temporary folder. From a terminal the module is invalid underscore
+      agent dot graph. Either door writes the same four files. The triage memo, fishbone dot m
+      d, five underscore whys dot m d, and capa 8 d dot m d.

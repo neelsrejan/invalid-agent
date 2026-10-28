@@ -1,0 +1,95 @@
+title: "Session 2 · Clip 4 · src/invalid_agent/metrics/spc.py"
+file: ../../snapshots/session-2/src/invalid_agent/metrics/spc.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-16
+    say: >-
+      This is s p c dot p y. S P C means statistical process control, watching a process week
+      by week instead of one average. A p chart is the chart for a proportion. Each week is a
+      dot. The center line is the pooled invalid rate, called p bar, and the limits sit three
+      standard errors out. The docstring writes that formula, then four Western Electric rules
+      for a run or a drift. Pandas groups the dates. The limits are plain math. This file does
+      not call a model or SciPy.
+  - lines: 26-32
+    say: >-
+      Control limits, at line 26, takes p bar and the week size n. It returns the lower limit,
+      the upper limit, and the standard error. N must be positive, and p bar is clamped into 0
+      to 1. The error is the square root of p bar times 1 minus p bar, divided by n. The upper
+      limit is p bar plus 3 errors, capped at 1. The lower limit is p bar minus 3 errors,
+      floored at 0.
+  - lines: 31-32
+    say: >-
+      Walk the numbers the tests lock, on the formula in lines 31 and 32. Let p bar be 0.02
+      and n be 100. The error is the square root of 0.02 times 0.98 over 100, which is 0.014.
+      Three errors are 0.042. The upper limit is 0.062, about 6.2 percent. The raw lower limit
+      is negative, 0.02 minus 0.042, so the floor wins and the lower limit is 0. On only 100
+      runs, a 2 percent process has to reach about 6 percent before one point alone is out of
+      control.
+  - lines: 35-48
+    say: >-
+      Western Electric, at line 35, reads z scores in time order. A z says how many standard
+      errors a week sits from p bar. Positive is a high week. Rule 1 is the spike. The loop at
+      line 44 flags z above 3 as high, and z below minus 3 as low. That is the same three
+      sigma line as the control limits. One bad week is enough. Each hit stores the index, the
+      rule, the side, and the z.
+  - lines: 50-57
+    say: >-
+      Rule 2 looks for a short burst. The window is the three points ending at index i, and it
+      waits until three exist. It fires high when at least two of them sit above 2, and low
+      when at least two sit below minus 2. Two strong weeks out of three, same side, count
+      even if neither crossed three sigma. The window slides one week at a time, and the hit
+      sticks to the week where the pattern completed.
+  - lines: 59-66
+    say: >-
+      Rule 3 widens the window to five points ending at i, and it needs all five. High means
+      at least four of those five are above 1 sigma. Low means at least four are below minus
+      1. This catches a milder shift that lasts longer. A process can walk off the center
+      without a dramatic week. We apply the rule to the z scores, in time order, the way that
+      zone rule was written down.
+  - lines: 68-75
+    say: >-
+      Rule 4 is a run of eight. The window must be a full eight points. High means every z is
+      strictly above 0. Low means every z is strictly below 0. Strict is the whole point. A
+      week sitting on the center line, z exactly 0, breaks the run, because the test is
+      greater than 0, not greater than or equal. Eight weeks on one side is a drift even when
+      every week is inside the three sigma limits.
+  - lines: 80-99
+    say: >-
+      P chart, at line 80, builds the weekly series. The frequency defaults to W dash S U N,
+      which is Pandas for a week ending Sunday. We keep date and invalid, force a real
+      timestamp, and turn the flag into 1 or 0. A Grouper buckets the rows. Empty weeks are
+      skipped, so a calendar gap does not become a fake zero rate. Each kept week stores an I
+      S O date, the run count n, the invalid count k, and p, which is k divided by n.
+  - lines: 100-113
+    say: >-
+      Lines 100 through 113 finish the chart. Totals of n and k become p bar, so a long week
+      weighs more than a short one. Each week then stores its limits, its error, and a z,
+      which is p minus p bar, divided by the error. A zero error becomes z of 0. One call to
+      Western Electric sees the z list in week order. Each hit is stamped with that week's
+      period. A violation names a Sunday week, not just a slot in a list.
+  - lines: 80-90
+    say: >-
+      A week is the right grain for a program manager. One run cannot steer a decision, and a
+      daily chart on 80 runs is jumpy. A week pools several hundred runs, the error shrinks,
+      and a real shift can show. Week ending Sunday matches a lot of lab dashboards. The
+      Grouper does the bucketing, so nobody hand codes the date math.
+  - lines: 103-113
+    say: >-
+      Put bad lot on this chart. The background sits near 1.2 percent. From day 120 one lot
+      jumps toward 18 percent, and that lot is only part of the lab, so the weekly rate steps
+      up rather than exploding. Rule 1 catches a week beyond three sigma. Rules 2, 3, and 4
+      catch a burst, a walk, or eight high weeks. The summary prints a count per rule. Those
+      counts are outputs of this file on seed 4419.
+  - lines: 1-8
+    say: >-
+      The takeaway: the control chart is code you can defend. P bar, the three sigma limits,
+      and the four zone rules live in this file, and the limits floor at 0 and cap at 1. The
+      summary's Western Electric line only formats the violations list. With the Wilson
+      interval and the strata, that printout is the Session 2 artifact. Next is seeds dot p y,
+      where the invalid codes and the hemolysis stand in are defined, citation sitting beside
+      the numbers.

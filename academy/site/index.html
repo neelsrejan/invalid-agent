@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>invalid-agent Academy</title>
+<link rel="stylesheet" href="css/academy.css">
+
+</head>
+<body data-page="home" data-session="0">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item active" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Field-quality PM · nine git tags</p>
+<h1>Learn the invalid-agent, session by session.</h1>
+<p class="lede">A simulated investigation, narrated against the code that built it. The language model does not do the arithmetic. You can study this from a locked-down work browser: the pages, the quizzes, and the videos are static files.</p>
+<div class="progress-row">
+  <div class="ring" data-progress style="--p:0"><span id="ring-label">0/9</span></div>
+  <div>
+    <strong id="progress-label">0 of 9 sessions passed</strong>
+    <div class="bar" data-progress style="--p:0"><i></i></div>
+    <p class="note" id="progress-detail">Pass a quiz at 80% or better to open the next session. Retries are unlimited.</p>
+    <p class="note" id="lock-note"></p>
+  </div>
+</div>
+<div class="cards">
+  <a class="link-card" id="link-github" href="https://github.com/neelsrejan/invalid-agent"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Each session links to its tag.</p></a>
+  <a class="link-card" id="link-jira" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
+  <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+</div>
+<h2>How to run it locally</h2>
+<div class="panel">
+<p>The default path needs no key and no model. Deterministic templates plus the numbers Python already computed.</p>
+<pre>python -m pip install -e ".[dev]"
+python -m pytest
+python -m invalid_agent.graph --scenario bad_lot --week 4
+streamlit run streamlit_app.py</pre>
+<p>When you want a local model, Ollama serves Meta Llama 3.1 8B. The smaller tag for a laptop demo is Llama 3.2 1B. Hosted Streamlit Community Cloud stays rules-only, because Cloud has no Ollama.</p>
+<pre>ollama pull llama3.1:8b
+LLM_BACKEND=ollama LLM_MODEL=llama3.1:8b python -m invalid_agent.graph --scenario bad_lot --week 0
+
+ollama pull llama3.2:1b
+LLM_MODEL=llama3.2:1b</pre>
+<p class="note">Practice edits stay on a branch you create from the session tag. Do not merge them into main.</p>
+</div>
+<h2>Sessions</h2>
+<div class="session-grid">
+<a class="session-card" data-session="1" href="session-1.html">
+<div class="num">01</div>
+<div><h3>PRD, backlog, and a skeleton that tests</h3>
+<div class="meta">Week 1 · 75–90 min · PRD, build backlog, green CI with no secrets</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="2" href="session-2.html">
+<div class="num">02</div>
+<div><h3>A synthetic field file and the metrics</h3>
+<div class="meta">Week 1 · 80–100 min · Seeded field file, Wilson interval, p-chart, Pareto</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="3" href="session-3.html">
+<div class="num">03</div>
+<div><h3>Week-0 triage memo and the fidelity guard</h3>
+<div class="meta">Week 1 · 80–100 min · One-page triage memo whose numbers match the code</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="4" href="session-4.html">
+<div class="num">04</div>
+<div><h3>Fishbone, 5 Whys, and an 8D/CAPA</h3>
+<div class="meta">Week 2 · 80–100 min · fishbone.md, five_whys.md, capa8d.md</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="5" href="session-5.html">
+<div class="num">05</div>
+<div><h3>Gantt, risk register, and a Jira dry-run</h3>
+<div class="meta">Week 2 · 80–100 min · Gantt HTML and PNG, risk register, jira_issues.json</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="6" href="session-6.html">
+<div class="num">06</div>
+<div><h3>Weekly injections and three RAG notes</h3>
+<div class="meta">Week 2 · 80–100 min · Decision log, customer / internal / leadership notes</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="7" href="session-7.html">
+<div class="num">07</div>
+<div><h3>A Streamlit dashboard, rules-only by default</h3>
+<div class="meta">Week 3 · 70–90 min · Clickable week stepper: rate, p-chart, Pareto, projection</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="8" href="session-8.html">
+<div class="num">08</div>
+<div><h3>An offline scorecard</h3>
+<div class="meta">Week 3 · 70–90 min · Eval report: evidence ranker versus a note-only ranker</div></div>
+<div class="pill">Open</div>
+</a><a class="session-card" data-session="9" href="session-9.html">
+<div class="num">09</div>
+<div><h3>Week-4 close-out, the exec deck, and the résumé</h3>
+<div class="meta">Week 3 · 70–90 min · Seven-slide deck, close-out note, résumé bullets with the misses kept</div></div>
+<div class="pill">Open</div>
+</a>
+</div>
+<h2>Move progress between computers</h2>
+<div class="panel">
+<p>Quiz scores live in this browser's localStorage. Export a code, and paste it on the other machine. The code is a checksummed copy of your scores, not an account.</p>
+<div class="row">
+  <button type="button" id="export-btn">Export progress</button>
+  <button type="button" class="secondary" id="reset-btn">Clear this browser</button>
+</div>
+<textarea id="export-code" rows="3" readonly placeholder="Your code appears here"></textarea>
+<label for="import-code">Paste a code from your other computer</label>
+<textarea id="import-code" rows="3" placeholder="IA1...."></textarea>
+<div class="row"><button type="button" id="import-btn">Import progress</button></div>
+<p class="note" id="transfer-msg"></p>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

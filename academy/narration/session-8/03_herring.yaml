@@ -1,0 +1,98 @@
+title: "Session 8 · Clip 3 · scenarios/herring_software.yaml"
+file: ../../snapshots/session-8/scenarios/herring_software.yaml
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-2
+    say: >-
+      This is herring underscore software dot yaml. The title states the trick. A note blames
+      software. The table blames the lot. A red herring here is a stakeholder sentence that
+      names the wrong cause on purpose. The file still has one designed call, and both rankers
+      are scored against it. The title is not a customer event. The complaint will say the
+      same thing in a full sentence, and it will mark itself synthetic.
+  - lines: 3-11
+    say: >-
+      Lines 3 through 11 set a repeatable world. Seed 4418, device M D x dash 24, start April
+      1 2025, 180 days, 80 runs a day. Baseline invalid rate 0.012. Spec invalid rate 0.02.
+      Promised validity 0.98. At least 98 percent valid means at most 2 percent invalid. Cost
+      per invalid is 85 dollars, the unit week 4 will multiply by the invalid count. The
+      herring changes which sentence is loud. It does not change the spec.
+  - lines: 12-19
+    say: >-
+      Lines 12 through 19 are the cast. Four customer names, four sites, four instruments, six
+      operators. Northlake Health is the name the complaint uses. They are generator labels,
+      not accounts and not a hospital census. The herring does not live in this list. No site
+      is called software, and no operator is the designed cause. When the ranker names a lot,
+      it is naming an id from the next block.
+  - lines: 20-22
+    say: >-
+      Lines 20 through 22 are the decoy. Version 2.3.1 runs from day 0 to day 180 with weight
+      0.7. Version 2.4.0 runs the same full horizon with weight 0.3. Both versions are present
+      the entire window. There is no day when 2.4.0 arrives and the rate should jump. A
+      service note can still point at 2.4.0, because the id exists in the file. The timing
+      does not support that pointer. The mix is about seventy percent on the older id.
+  - lines: 23-27
+    say: >-
+      Lines 23 through 27 are the lots, each with a start day and an end day. L four four one
+      nine starts on day 120 and runs through day 180. That start day is the change in the
+      file. The software versions had no change point. This lot does. When a week-zero note
+      blames a version that was always installed, look for the stratum that begins
+      mid-horizon. On this file that stratum is the lot.
+  - lines: 28-34
+    say: >-
+      Lines 28 through 34 are the ground truth. Root cause type is red herring. The real cause
+      sits under the key true, and true is quoted. In YAML 1.1 an unquoted true is a boolean,
+      so the quotes keep the key as a label the loader can read. Under it, type is bad reagent
+      lot, lot id L four four one nine, start day 120, stratum invalid rate 0.18. 0.18 is a
+      loud lot rate. The note will talk about software anyway.
+  - lines: 35-40
+    say: >-
+      Lines 35 through 40 are the complaint. It says synthetic complaint, not a real customer.
+      Northlake Health reports M D x dash 24 invalids well above the 98 percent validity they
+      were sold, and they have paused reporting. Then the file marks the trick. The attached
+      note names a software change. That sentence is the herring. A reader of only this
+      paragraph would walk into the meeting ready to discuss a release. The table is the
+      check.
+  - lines: 41-46
+    say: >-
+      Lines 41 through 46 are the week-zero injection, the only note the keyword ranker hears.
+      Source customer, audience customer. The text says the service note blames software
+      version 2.4.0 and asks us to confirm that version. Keyword cause hits the word software
+      first and returns software version. The evidence ranker never receives this text. It
+      receives the generated table. On the report, evidence says bad reagent lot and keyword
+      says software version.
+  - lines: 47-51
+    say: >-
+      Lines 47 through 51 are week 1, from Q A, marked internal. The same service note still
+      says software version 2.4.0. The field table is the check. The project keeps the herring
+      in view. A later week does not quietly correct the note so the keyword ranker can catch
+      up. Week-zero scoring never sees this sentence. It is here so a forward run still has a
+      stakeholder repeating the wrong cause while the metrics point at the lot.
+  - lines: 52-66
+    say: >-
+      Lines 52 through 66 are ordinary case pressure, not a new cause. Week 2, R and D says
+      release testing was inside its limits, and the release sample was not a field specimen.
+      The same week, the lab director wants a written update today. Week 3, manufacturing has
+      no second excursion. None of these sentences name lot L four four one nine. A reader who
+      trusts the loudest sentence still hears software, or a clean release test. The designed
+      cause stays in the root cause block.
+  - lines: 67-76
+    say: >-
+      Lines 67 through 76 are the leadership asks, and they set up Session 9. Week 3 asks for
+      the cost of the invalids so far. Week 4 asks for a recommendation and the effectiveness
+      check that would close the case. Those asks do not pick a cause. On this file the
+      recommendation has to contain lot L four four one nine, because that is the true cause,
+      and it has to treat the software sentence as the herring. The cost is the invalid count
+      times 85 dollars, from line 11, computed in code.
+  - lines: 77-82
+    say: >-
+      Lines 77 through 82 are ground truth for the harness. Expect cause is bad reagent lot.
+      Holdout is false, so this herring sits in the seen 18. Below bar is false, so a real
+      cause is supposed to clear the gates. The note says the ranker does not read this block.
+      Score scenario compares the ranker's first cause with expect cause after ranking
+      returns. Pasting this block into a prompt would leak the answer into the twenty-two of
+      twenty-two cell. The code leaves the block on our side of the score.

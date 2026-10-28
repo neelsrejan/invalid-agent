@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 2 · A synthetic field file and the metrics</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 2;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="2">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item active" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 1 · Session 2 · tag session-2</p>
+<h1>A synthetic field file and the metrics</h1>
+<p class="lede">The YAML is the cause, not the rate. Numpy, pandas, and scipy compute the spreadsheet a PM would otherwise rebuild by hand. No model is involved.</p>
+<p class="note">Ticket INV-104, INV-105 · about 80–100 minutes · artifact: Seeded field file, Wilson interval, p-chart, Pareto</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 1 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-1.html">Go to Session 1</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>scenarios/bad_lot.yaml — lot, start day, and stratum rate are the knobs. 3.67% is not in this file.</li><li>scenarios/README.md — the YAML is the process, not an answer key of rates.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-2</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 2 · Clip 1 · scenarios/bad_lot.yaml</h3>
+<video controls preload="metadata" src="videos/session-2/01_bad_lot.mp4">
+<a href="videos/session-2/01_bad_lot.mp4">Download clip 1</a>
+</video>
+<p class="meta">6:16 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/scenarios/bad_lot.yaml">scenarios/bad_lot.yaml</a> at <code>session-2</code></p>
+</article><article class="clip">
+<h3>2. Session 2 · Clip 2 · src/invalid_agent/sim/generate.py</h3>
+<video controls preload="metadata" src="videos/session-2/02_generate.mp4">
+<a href="videos/session-2/02_generate.mp4">Download clip 2</a>
+</video>
+<p class="meta">6:19 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/sim/generate.py">src/invalid_agent/sim/generate.py</a> at <code>session-2</code></p>
+</article><article class="clip">
+<h3>3. Session 2 · Clip 3 · src/invalid_agent/metrics/rates.py</h3>
+<video controls preload="metadata" src="videos/session-2/03_rates.mp4">
+<a href="videos/session-2/03_rates.mp4">Download clip 3</a>
+</video>
+<p class="meta">6:17 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/rates.py">src/invalid_agent/metrics/rates.py</a> at <code>session-2</code></p>
+</article><article class="clip">
+<h3>4. Session 2 · Clip 4 · src/invalid_agent/metrics/spc.py</h3>
+<video controls preload="metadata" src="videos/session-2/04_spc.mp4">
+<a href="videos/session-2/04_spc.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:20 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/spc.py">src/invalid_agent/metrics/spc.py</a> at <code>session-2</code></p>
+</article><article class="clip">
+<h3>5. Session 2 · Clip 5 · src/invalid_agent/sim/seeds.py</h3>
+<video controls preload="metadata" src="videos/session-2/05_seeds.mp4">
+<a href="videos/session-2/05_seeds.mp4">Download clip 5</a>
+</video>
+<p class="meta">6:17 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/sim/seeds.py">src/invalid_agent/sim/seeds.py</a> at <code>session-2</code></p>
+</article><article class="clip">
+<h3>6. Session 2 · Clip 6 · src/invalid_agent/metrics/pareto.py</h3>
+<video controls preload="metadata" src="videos/session-2/06_pareto.mp4">
+<a href="videos/session-2/06_pareto.mp4">Download clip 6</a>
+</video>
+<p class="meta">5:39 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/pareto.py">src/invalid_agent/metrics/pareto.py</a> at <code>session-2</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/docs/sessions/session-2/LOGIC_TRACE.md">LOGIC_TRACE.md at session-2</a></p>
+<div class="prose"><h1>Session 2 logic trace</h1>
+<p>Snapshot id: git tag <code>session-2</code>. Resolve the commit with <code>git rev-parse session-2^{}</code>.</p>
+<p>Laptop folder <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 2\</code> is not created here (no Windows path in this workspace). Check out the tag and copy the tree, excluding <code>.git/</code>, venvs, <code>out/</code>, and <code>.env</code>.</p>
+<h2>1. Goal</h2>
+<p>A 6-month synthetic field file with a known injected root cause, plus the calculations a PM would otherwise do in a spreadsheet: invalid rate, Wilson 95% interval, stratified rates, chi-square, a p-chart with Western Electric rules, and a Pareto of invalid codes. The demo command prints that summary. The LLM is not involved.</p>
+<h2>2. What had to be true before Session 3</h2>
+<p>The triage memo needs a stable row schema and a metrics dict it can quote without recomputing a different way. Session 3 will call <code>generate</code>, <code>overall_rate</code>, <code>stratified_rates</code>, <code>p_chart</code>, and <code>pareto</code>. It will not reimplement them.</p>
+<h2>3. Why these libraries</h2>
+<ul>
+<li><strong>numpy</strong> supplies the seeded generator (<code>default_rng</code>) so a scenario is a file, not a mood. The same YAML produces the same CSV.</li>
+<li><strong>pandas</strong> is the frame the strata, the weekly grouper, and the Pareto <code>value_counts</code> run on.</li>
+<li><strong>scipy.stats</strong> supplies <code>norm.ppf</code> for the Wilson z and <code>chi2_contingency</code> for the stratum test. The interval itself is written out in <code>rates.py</code> so a reviewer can check it by hand. statsmodels is not used; the plan listed it as optional.</li>
+<li><strong>PyYAML</strong> loads the scenario. The cause, the lot calendar, and the injections live in data, not in a Python branch the eval cannot see.</li>
+</ul>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>src/invalid_agent/sim/seeds.py</code></p>
+<ul>
+<li><code>INVALID_CODES</code> and <code>BASE_CODE_WEIGHTS</code> are the Pareto vocabulary. Baseline invalids are a mix. A cause may push one code (INV-IC for a bad lot, INV-TMP for heat, INV-HEM for hemolysis, INV-SW for software or a drifting instrument, INV-USR for an operator).</li>
+<li><code>HEMOLYSIS_BASELINE</code> / <code>HEMOLYSIS_SEVERE</code> are lognormal stand-ins for the published right-skewed HIL index (DOI 10.17632/vxkkdmw55f.1). They are not a fit to that file. <code>sample_hemolysis</code> (line 60) is the only place those parameters are used.</li>
+<li><code>COMPLAINT_THEMES</code> are FDA product-problem labels. <code>openfda.py</code> can optionally ask the API for a count. <code>generate</code> does not call it. <code>fetch_event_count</code> (openfda.py line 27) swallows network errors and returns None.</li>
+</ul>
+<p><code>src/invalid_agent/sim/generate.py</code></p>
+<ul>
+<li><code>load_scenario</code> (line 36) is YAML in, dict out.</li>
+<li><code>_levels</code> (line 44) accepts either <code>"SITE-A"</code> or <code>{id, start_day, end_day, weight}</code>. A calendar is how a lot &ldquo;enters distribution&rdquo; without a special case in the sampler.</li>
+<li><code>_assign</code> (line 63) draws a level for each day from the levels active that day. Site, instrument, lot, software, and operator each get their own draw, so they are not the same column renamed. The module docstring states the reference-lab assumption that makes a lot effect separable from an instrument effect.</li>
+<li><code>_redraw</code> (line 75) replaces the invalid flag on a mask. Baseline is a redraw of every row at <code>baseline_invalid_rate</code>. The cause then redraws only its mask, so the complement stays at baseline instead of stacking two probabilities.</li>
+<li><code>_cause</code> (line 97) is the ground-truth injection. <code>bad_reagent_lot</code> masks on lot id and start day. <code>drifting_instrument</code> ramps the probability from baseline to <code>peak_invalid_rate</code>. <code>site_temperature</code> heats a fraction of one site&rsquo;s rows and invalidates those rows, not the whole site, so the temperature band is the signal. <code>preanalytical_hemolysis</code> redraws that site&rsquo;s index from the severe lognormal and invalidates rows at or above the cutoff. <code>no_single_cause</code> redraws every row at one global rate. <code>red_herring</code> applies <code>root_cause.true</code> and leaves the misleading text in the YAML for the eval to abuse.</li>
+<li><code>generate</code> (line 165) builds 180 × 80 = 14,400 rows from day 0, then baseline, then cause. <code>df.attrs["scenario_id"]</code> records which file it was.</li>
+<li><code>summarize</code> (line 207) is the demo print. It formats numbers from <code>overall_rate</code>, <code>stratified_rates</code>, <code>p_chart</code>, and <code>pareto</code>. It does not compute a second rate of its own.</li>
+</ul>
+<p><code>src/invalid_agent/metrics/rates.py</code></p>
+<ul>
+<li><code>wilson_interval</code> (line 20) is the formula in the module docstring. The last lines snap a ~1e-18 residue to 0 when k = 0, because the analytic lower bound is 0 and float subtraction is not.</li>
+<li><code>overall_rate</code> (line 42) returns both <code>exceeds_spec</code> (point estimate above 2%) and <code>ci_entirely_above_spec</code> (interval clears 2%). The memo in Session 3 needs both.</li>
+<li><code>chi_square_by</code> (line 85) returns p = 1 on a one-row table instead of throwing. A quiet scenario is not an exception.</li>
+</ul>
+<p><code>src/invalid_agent/metrics/spc.py</code></p>
+<ul>
+<li><code>control_limits</code> (line 26) is <code>p_bar ± 3 * sqrt(p_bar(1-p_bar)/n)</code>, floored at 0 and capped at 1.</li>
+<li><code>western_electric</code> (line 35) implements the four zone rules on z-scores, in time order.</li>
+<li><code>p_chart</code> (line 80) groups by week ending Sunday, pools <code>p_bar</code> across weeks, and attaches each violation to a period label.</li>
+</ul>
+<p><code>src/invalid_agent/metrics/pareto.py</code> sorts invalid codes by count and closes <code>cumulative_share</code> at 1. Valid rows (empty code) are excluded.</p>
+<p><code>scenarios/bad_lot.yaml</code> is the walkthrough. Lot L-4419 starts on day 120 at a stratum rate of 0.18. Both software versions run the whole horizon so a version cutover is not mistaken for the lot. On seed 4419 the file is 3.67% invalid (Wilson 3.38–3.99%) against a 2% spec, and L-4419 is about 17% against about 1–1.7% on the other lots. Those figures are outputs, not inputs. Re-running the command is the check.</p>
+<h2>5. What was documented, and why</h2>
+<ul>
+<li><code>scenarios/README.md</code> tells a reviewer that the YAML is the process, not the answer key of rates.</li>
+<li><code>DATA_LICENSES.md</code> (Session 1) already says the HIL file is not vendored. <code>seeds.py</code> repeats the DOI next to the parameters so the number and the citation stay together.</li>
+<li>The README at this tag gains the generate command.</li>
+</ul>
+<h2>6. Stakeholder / Jira buy-in before Session 3</h2>
+<p>Ticket <strong>INV-108</strong> (Week-0 memo) and <strong>INV-109</strong> (fidelity guard), epic <strong>INV-1</strong>. The data contract they inherit is the column list in <code>generate</code> (run_id, date, day_index, customer, site, instrument, reagent_lot, software_version, operator, hemolysis_index, shipping_temp_c, invalid, invalid_code) and the dict from <code>overall_rate</code>. No Jira token.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>python -m invalid_agent.sim.generate scenarios/bad_lot.yaml</code> prints a summary that exceeds spec, names L-4419, and lists Western Electric hits. Unit tests lock the Wilson formula, the 3-sigma limit, three of the zone rules, and a planted out-of-control week.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A PM who can say where a rate came from. The spec comparison, the interval, the strata, and the control chart are code. Nothing in this session asks a model to do arithmetic.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-2</code> before using these line numbers.</p>
+<ol>
+<li>Open <code>scenarios/bad_lot.yaml</code>. Read <code>root_cause</code>. The lot id, the start day, and the stratum rate are the only knobs. The 3.67% in a printout is not in this file.</li>
+<li>Open <code>generate.py</code> at <code>generate</code> (line 165). <code>n = horizon * per_day</code>. <code>default_rng(seed)</code> is the entire source of randomness.</li>
+<li><code>day_index</code> repeats 0, then 1, then 2, <code>runs_per_day</code> times. <code>dates</code> adds that to <code>start_date</code>.</li>
+<li><code>_assign</code> (line 63) loops over unique days. For each day it keeps levels whose window contains the day, renormalizes weights, and draws. Because each category consumes its own draws, changing a software weight does not reshuffle the lot column&rsquo;s subsequent invalid draws only if the number of <code>choice</code> calls stays the same. It does. That is why the lot rate survived the software-weight edit during this session.</li>
+<li>The DataFrame constructor fills shipping temperature from <code>NOMINAL_SHIPPING_TEMP_C</code> and hemolysis from the baseline lognormal. <code>invalid</code> starts false, then <code>_redraw</code> on a mask of all True applies the 1.2% baseline.</li>
+<li><code>_cause</code> for <code>bad_reagent_lot</code> (the branch around the lot mask) builds <code>mask = lot equals L-4419 AND day_index &gt;= 120</code>, then <code>_redraw</code> at 0.18 with dominant code INV-IC. Rows outside the mask keep the baseline flag. That is the contrast the chi-square test sees.</li>
+<li><code>_redraw</code> (line 75) draws <code>rng.random(n) &lt; probability</code>, writes the flag, and fills codes only on the True positions via <code>sample_codes</code>. Valid rows get an empty code so the Pareto cannot count them.</li>
+<li>Open <code>rates.py</code> <code>wilson_interval</code>. For k=10, n=100 the test recomputes the same algebra in the test file, not by calling this function, and also checks the published rounding 5.5% to 17.4%. The snap-to-zero at the bottom is for k=0.</li>
+<li>Open <code>spc.py</code> <code>control_limits</code>. For p_bar=0.02 and n=100, SE = sqrt(0.02 × 0.98 / 100) = 0.014, UCL = 0.062, LCL floors at 0 because 0.02 − 0.042 is negative.</li>
+<li><code>western_electric</code>: rule 1 is <code>abs(z) &gt; 3</code> at that index. Rule 2 looks at a window of 3 ending at i. Rule 4 looks at a window of 8 and requires every z on one side of 0, strict, so a point sitting on the center line breaks the run.</li>
+<li><code>p_chart</code> groups with <code>pd.Grouper(freq="W-SUN")</code>, skips empty weeks, then one loop writes z and a second call to <code>western_electric</code> attaches the period string onto each hit.</li>
+<li><code>summarize</code> only formats. If a number in that printout is wrong, the bug is in metrics or in the generator, not in a sentence.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-2">Browse the whole tree for session-2</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/scenarios/bad_lot.yaml"><code>scenarios/bad_lot.yaml</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/sim/generate.py"><code>src/invalid_agent/sim/generate.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/rates.py"><code>src/invalid_agent/metrics/rates.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/spc.py"><code>src/invalid_agent/metrics/spc.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/sim/seeds.py"><code>src/invalid_agent/sim/seeds.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-2/src/invalid_agent/metrics/pareto.py"><code>src/invalid_agent/metrics/pareto.py</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-2 session-2
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest
+</code></pre>
+<p><code>chi_square_by</code> in <code>src/invalid_agent/metrics/rates.py</code> returns p = 1 when the table has a single level. That branch is easy to &ldquo;clean up&rdquo; into a crash later. Lock it.</p>
+<p>At the end of <code>tests/test_metrics.py</code> add:</p>
+<pre><code class="language-python">def test_one_stratum_chi_square_is_quiet():
+    frame = pd.DataFrame(
+        {
+            &quot;reagent_lot&quot;: [&quot;L-ONLY&quot;] * 30,
+            &quot;invalid&quot;: [True] * 4 + [False] * 26,
+        }
+    )
+    result = chi_square_by(frame, &quot;reagent_lot&quot;)
+    assert result[&quot;p_value&quot;] == 1.0
+    assert result[&quot;chi2&quot;] == 0.0
+    assert result[&quot;levels&quot;] == 1
+</code></pre>
+<p><code>chi_square_by</code> and <code>pd</code> are already imported in that file. Run <code>pytest tests/test_metrics.py</code>.</p>
+<p><strong>Extra credit.</strong> Generate the walkthrough file and read the printout, then open the YAML again and point at the three knobs that are inputs. The command is <code>python -m invalid_agent.sim.generate scenarios/bad_lot.yaml</code>.</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The answer key is not stored as letters in this page.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

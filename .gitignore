@@ -14,3 +14,9 @@ out/
 *.gguf
 .DS_Store
 .ipynb_checkpoints/
+
+# Academy: tag snapshots and rendered media stay out of main.
+# The published site, including MP4s, is the gh-pages branch.
+academy/snapshots/
+academy/build/
+academy/site/videos/

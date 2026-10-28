@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 4 · Fishbone, 5 Whys, and an 8D/CAPA</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 4;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="4">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item active" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 2 · Session 4 · tag session-4</p>
+<h1>Fishbone, 5 Whys, and an 8D/CAPA</h1>
+<p class="lede">Turn the ranked hypothesis into a quality record. A Why with no citation is an error. On bad_lot the chain stops at lot L-4419, and a future QA note stays invisible at week 0.</p>
+<p class="note">Ticket INV-201 · about 80–100 minutes · artifact: fishbone.md, five_whys.md, capa8d.md</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 3 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-3.html">Go to Session 3</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>After `python -m invalid_agent.graph --scenario bad_lot --week 0`, open `out/fishbone.md`, `out/five_whys.md`, and `out/capa8d.md`.</li><li>Find the week-1 QA injection in `scenarios/bad_lot.yaml` and notice it is not yet citable.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-4</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 4 · Clip 1 · src/invalid_agent/graph.py</h3>
+<video controls preload="metadata" src="videos/session-4/01_graph.mp4">
+<a href="videos/session-4/01_graph.mp4">Download clip 1</a>
+</video>
+<p class="meta">5:37 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/src/invalid_agent/graph.py">src/invalid_agent/graph.py</a> at <code>session-4</code></p>
+</article><article class="clip">
+<h3>2. Session 4 · Clip 2 · src/invalid_agent/nodes/rca.py</h3>
+<video controls preload="metadata" src="videos/session-4/02_rca.mp4">
+<a href="videos/session-4/02_rca.mp4">Download clip 2</a>
+</video>
+<p class="meta">6:18 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/src/invalid_agent/nodes/rca.py">src/invalid_agent/nodes/rca.py</a> at <code>session-4</code></p>
+</article><article class="clip">
+<h3>3. Session 4 · Clip 3 · tests/test_rca.py</h3>
+<video controls preload="metadata" src="videos/session-4/03_test_rca.mp4">
+<a href="videos/session-4/03_test_rca.mp4">Download clip 3</a>
+</video>
+<p class="meta">4:29 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/tests/test_rca.py">tests/test_rca.py</a> at <code>session-4</code></p>
+</article><article class="clip">
+<h3>4. Session 4 · Clip 4 · scenarios/bad_lot.yaml</h3>
+<video controls preload="metadata" src="videos/session-4/04_bad_lot.mp4">
+<a href="videos/session-4/04_bad_lot.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:02 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/scenarios/bad_lot.yaml">scenarios/bad_lot.yaml</a> at <code>session-4</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/docs/sessions/session-4/LOGIC_TRACE.md">LOGIC_TRACE.md at session-4</a></p>
+<div class="prose"><h1>Session 4 logic trace</h1>
+<p>Snapshot id: git tag <code>session-4</code>. Resolve the commit with <code>git rev-parse session-4^{}</code>.</p>
+<p>Laptop copy: check out the tag into <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 4\</code>. The tag is the snapshot.</p>
+<h2>1. Goal</h2>
+<p>Turn the ranked hypothesis into a quality-system record: a 6M fishbone with evidence for and against each branch, a 5 Whys on the top branch where every step cites a data fact or an injection, and an 8D/CAPA (D1–D8) labeled with DMAIC. On <code>bad_lot</code>, Material ranks first and the chain ends on lot L-4419. A Why with no citation is an error, not a warning.</p>
+<h2>2. What had to be true before Session 5</h2>
+<p>The case state now carries <code>fishbone</code>, <code>five_whys</code>, and <code>capa</code>. Session 5&rsquo;s planner can read the top cause and write tasks against it (quarantine a lot versus service an instrument) without re-deriving the rank. The graph is still linear: triage → rca → END. The Gantt and Jira sync are not in this tag.</p>
+<h2>3. Why these libraries</h2>
+<p>No new package. Pydantic checks the branch and the Why step before markdown is written. The fidelity guard from Session 3 is reused on the three markdown files, with the evidence-catalog sentences treated as known text so a rate is not retyped by hand in a second format.</p>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>nodes/rca.py</code></p>
+<ul>
+<li><code>_BRANCH_SPECS</code> lists the 6M branches. Material appears twice (lot and hemolysis) because both are material failures and they are different actions. Measurement is an explicit empty branch so the diagram is not missing a bone just because the ranker has no &ldquo;measurement&rdquo; column.</li>
+<li><code>index_injections</code> (line 68) adds only injections with <code>week &lt;=</code> the case week. At week 0 the QA lot note is invisible. At week 1 it becomes citable. The id is <code>injection:{week}:{source}</code>.</li>
+<li><code>validate_whys</code> (line 85) is the rule the test plants a failure against. Empty <code>citations</code> raises. An id missing from the catalog raises. <code>build_whys</code> calls it before the markdown exists, so a broken chain never becomes a file.</li>
+<li><code>build_fishbone</code> (line 104) copies a hit&rsquo;s evidence ids into <code>evidence_for</code> and asks <code>_against</code> (line 140) for a contrary citation. For the lot, a &ldquo;passed release&rdquo; injection is the contrary evidence once that week has arrived. For a branch that did not fire, the contrary citation is the overall rate: the panel moved, and this branch did not explain it. Branches sort by score. Rank 1 on <code>bad_lot</code> is Material / <code>bad_reagent_lot</code>.</li>
+<li><code>_whys_for_hit</code> (line 182) builds five steps. Step 1 is overall versus spec. Step 2 is the winning stratum&rsquo;s catalog sentence. Step 3 cites a different column (<code>_contrast_id</code>, line 228) so the chain has to say why the next stratum is not the cause. Step 4 cites an injection that names the level, or the stratum&rsquo;s <code>n</code> sentence when no injection has arrived. Step 5 stops. For a lot, the stop sentence is required to say <code>lot-level</code> and it includes the catalog sentence that names L-4419.</li>
+<li><code>_whys_unresolved</code> (line 237) is the chain when the ranker returned <code>no_single_cause</code>. It still has five cited steps. It does not invent a lot to satisfy the bad-lot test.</li>
+<li><code>build_capa</code> (line 283) maps the top cause to a containment and a corrective action in words. D6 names the effectiveness metric (back to spec, no rule-1 point) and says a before/after number is a projection until follow-up exists. D7 and D8 are written and marked preliminary. <code>dmaic</code> maps Define through Control onto those D fields.</li>
+<li><code>rca_node</code> (line 391) regenerates the frame only if triage did not already put hypotheses on the state. It extends the catalog with injections, builds the three objects, renders markdown, validates the Pydantic models, and runs <code>check_narrative</code>. A fidelity failure raises. The rejected text is not returned.</li>
+</ul>
+<p><code>graph.py</code> <code>build_graph</code> (line 19) is now triage → rca → END. <code>run_case</code> (line 55) accepts weeks 0–4 and writes <code>week0_triage.md</code>, <code>fishbone.md</code>, <code>five_whys.md</code>, and <code>capa8d.md</code>. Weeks above 0 do not yet re-plan; they only change which injections the RCA can cite. That split is deliberate: Session 5 owns the plan.</p>
+<h2>5. What was documented, and why</h2>
+<p>The three markdown files repeat the simulation banner. The CAPA says D7 and D8 are planned, so a reader does not think the investigation is already closed. DMAIC labels are in the file because a quality hiring manager looks for that mapping, not for the word &ldquo;agent&rdquo;.</p>
+<h2>6. Stakeholder / Jira buy-in before Session 5</h2>
+<p>Ticket <strong>INV-204</strong> (Gantt) and <strong>INV-205</strong> (risk register), epic <strong>INV-3</strong>, plus <strong>INV-206</strong> (Jira dry-run). The containment sentence in D3 is what the first plan tasks have to match. No token yet. The dry-run is the path that must work with an empty environment.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>tests/test_rca.py</code> rejects an empty citation and an unknown id, asserts Material is rank 1, asserts the fifth Why names L-4419 and says lot-level, and checks D1 through D8 in the markdown. The week-0 command still writes the memo and now also writes the RCA files.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A structured problem-solving record: fishbone, 5 Whys with citations, 8D, DMAIC. The cause is the lot the data named, and the chain is not allowed to skip the citation. That is the RCA / CAPA signal in the quality and med-device JDs, labeled as a simulation.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-4</code>.</p>
+<ol>
+<li>Open <code>graph.py</code> <code>build_graph</code> (line 19). Two nodes. The edge list is the whole control flow: triage, then rca, then END.</li>
+<li><code>run_case</code> (line 55) still starts from <code>initial_state</code>. <code>invoke</code> runs both nodes. After it returns, four files are written. <code>fishbone.md</code> is <code>result["fishbone"]["markdown"]</code>, not a second rendering.</li>
+<li>Open <code>nodes/rca.py</code> <code>rca_node</code> (line 391). <code>week = state["week"]</code>. Hypotheses are reused from triage when present, otherwise <code>rank_hypotheses</code> runs on a fresh <code>generate</code>.</li>
+<li><code>index_injections</code> (line 68) loops the YAML list. The comparison <code>int(inj["week"]) &gt; week</code> drops the future. The key is stable for a source, and a second note from the same source in the same week gets a numeric suffix.</li>
+<li><code>catalog.update(injections)</code> is what makes an injection a legal citation. Before that line, <code>validate_whys</code> would reject it.</li>
+<li><code>build_fishbone</code> (line 104). For each spec row, look up the cause in <code>_by_cause</code>. <code>_by_cause</code> (line 100) drops <code>no_single_cause</code>, because that is a call, not a bone. A miss gets score 0 and the statement &ldquo;This branch did not clear the evidence bar.&rdquo; A hit uses the catalog rate sentence as the statement so the number on the page is the same sentence Session 2 computed.</li>
+<li>Sort key <code>(-score, category, cause)</code>. On <code>bad_lot</code> the lot score is the only non-zero score, so Material / bad_reagent_lot is rank 1. Hemolysis is also Material and stays at 0, under it.</li>
+<li><code>_against</code> (line 140). Read the release-test branch first: it only attaches to <code>bad_reagent_lot</code>, and only when an injection contains &ldquo;passed release&rdquo;. Otherwise a live hit cites the customer injection, which does not name the lot. A dead branch cites <code>metric:overall:rate</code>.</li>
+<li><code>build_whys</code> (line 165) takes <code>hypotheses[0]</code>. If that cause is <code>no_single_cause</code>, it does not look at a later contender and pretend. Otherwise <code>_whys_for_hit</code>.</li>
+<li>Inside <code>_whys_for_hit</code> (line 182), <code>rate_id</code> is <code>metric:{column}:{level}:rate</code>. Step 5&rsquo;s answer starts with &ldquo;Stop at a lot-level cause.&rdquo; only when the cause is <code>bad_reagent_lot</code>. Other causes say &ldquo;Stop at {cause} {level}.&rdquo; The catalog sentence is appended so the rate stays a quoted fact.</li>
+<li><code>validate_whys</code> (line 85) runs before return. Walk the test <code>test_why_without_a_citation_is_rejected</code>: citations <code>[]</code> hits the first branch and raises <code>why 1 has no citation</code>.</li>
+<li><code>build_capa</code> (line 283) picks containment from <code>_CONTAINMENT</code> by cause. D2 pastes the overall rate sentence and the spec sentence. D6 uses the words &ldquo;rule-1&rdquo; so the digit is glued to a hyphen and the fidelity scanner does not treat it as a free number. The <code>preliminary_close</code> flag is what the markdown uses to print that D7 and D8 are not done.</li>
+<li>Back in <code>rca_node</code>, the combined markdown is checked with facts <code>{catalog, structure: 0..8, week}</code>. Catalog sentences are strings, so wherever the markdown pastes one verbatim, the scanner masks it. A digit that is not inside one of those sentences and not in 0..8 fails the run.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-4">Browse the whole tree for session-4</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/src/invalid_agent/graph.py"><code>src/invalid_agent/graph.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/src/invalid_agent/nodes/rca.py"><code>src/invalid_agent/nodes/rca.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/tests/test_rca.py"><code>tests/test_rca.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-4/scenarios/bad_lot.yaml"><code>scenarios/bad_lot.yaml</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-4 session-4
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest
+</code></pre>
+<p>Add this to <code>tests/test_rca.py</code>. <code>index_injections</code> and <code>load_scenario</code> need importing if they are not already.</p>
+<pre><code class="language-python">def test_week_zero_hides_the_qa_lot_note():
+    from invalid_agent.nodes.rca import index_injections
+    from invalid_agent.sim.generate import load_scenario
+
+    scenario = load_scenario(ROOT / &quot;scenarios&quot; / &quot;bad_lot.yaml&quot;)
+    week0 = index_injections(scenario, week=0)
+    assert not any(&quot;L-4419&quot; in text for text in week0.values())
+    week1 = index_injections(scenario, week=1)
+    assert any(key.startswith(&quot;injection:1:&quot;) for key in week1)
+    assert any(&quot;L-4419&quot; in text for text in week1.values())
+</code></pre>
+<p><code>ROOT</code> is already defined in that test file on this tag. If it is not, use <code>Path(__file__).resolve().parents[1]</code>. Run <code>pytest tests/test_rca.py</code>.</p>
+<p><strong>Extra credit.</strong> At week 2 the release-test injection is the contrary evidence on the lot bone. Say which week gate makes that sentence legal, in one line.</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The answer key is not stored as letters in this page.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

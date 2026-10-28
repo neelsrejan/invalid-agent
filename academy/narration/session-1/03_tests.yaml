@@ -1,0 +1,22 @@
+title: "Session 1 · Clip 3 · tests/test_config.py"
+file: ../../snapshots/session-1/tests/test_config.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.5
+segments:
+  - lines: 1-3
+    say: "This is test config dot p y. If config dot p y makes promises, this file is the proof. The docstring says what we're proving: settings stay offline safe and never leak secrets. Line 3 imports the two spec constants and the load settings function from the installed package. Because of the s r c layout, this is the same import a real user would do. Tests are run by pytest, which finds any function whose name starts with test, runs it, and reports a dot for a pass or an F for a failure."
+  - lines: 5-16
+    say: "Lines 5 through 16 list every environment variable config reads. Why do we need this list? Because your laptop, or the C I machine, might already have one of these set. If L L M backend happened to be set to ollama on your machine, the default test would fail for a reason that has nothing to do with the code. Good tests control their own world, and this list is how we do that."
+  - lines: 19-21
+    say: "Lines 19 through 21 are the helper that does it, called underscore clear. It takes monkeypatch, a built-in pytest tool that temporarily changes environment variables and automatically undoes the change when the test ends. Del env removes each variable, and raising equals false means don't complain if it wasn't set in the first place. Every test starts by calling this, so each one starts from a clean slate."
+  - lines: 24-32
+    say: "The first test, test defaults are offline. With nothing set, we load settings and check seven things. The invalid rate spec equals the constant, which equals exactly 0.02. That's why the rounding in config mattered. Promised validity is 0.98. The backend is deterministic, rules only is true, Jira is disabled, and both secrets are empty strings. In plain terms: a fresh install with no keys runs offline with rules only. That's the safe default for C I, for a reviewer cloning the repo, and for a hosted demo."
+  - lines: 35-45
+    say: "Test jira requires all three values is the key test in this session. Lines 37 and 38 set the Jira base U R L and the email, but not the token. Line 39 asserts Jira is still disabled. Two out of three stays offline. Line 40 then adds a token, and the value is deliberately obvious: super secret token. Line 42 confirms Jira is now enabled, and line 43 confirms the U R L was read correctly. Then the important part. Line 44 asserts the string super secret token does not appear anywhere in repr of settings. That's the planted secret technique: put a recognizable fake secret in, then prove it never comes out. Line 45 checks the redacted view shows three asterisks for the token."
+  - lines: 48-56
+    say: "Test plan aliases for jira checks the alternate names. It sets Jira U R L, with a trailing slash on purpose, Jira email, and Jira token. Jira should turn on, the base U R L should come back with the slash stripped, and once again the alias token must not appear in the repr. So one test covers three behaviors: aliases work, slashes get normalized, and the secret stays hidden."
+  - lines: 59-69
+    say: "Test preferred jira names win over aliases sets both the alias and the official name for the U R L and the token, each with a different value. Lines 67 and 68 check that the official names, preferred dot atlassian dot net and preferred token, are the ones used. Line 69 again checks the token isn't in the repr. This pins down the precedence rule, so nobody can accidentally flip it in a later session without a test going red."
+  - lines: 72-76
+    say: "The last test, test unknown backend falls back. Line 74 sets the backend to hosted G P U, which isn't on the allow list, and line 75 confirms we fall back to deterministic instead of crashing. Then line 76 sets rules dash only, a friendly synonym, and that also maps to deterministic. Five tests, about seventy lines, covering defaults, the three-part Jira gate, aliases, precedence, and the backend fallback. To run them yourself, open a terminal in the repo, activate your virtual environment, and type pytest. You should see five dots. Next, we'll see how GitHub runs these same tests automatically on every push."

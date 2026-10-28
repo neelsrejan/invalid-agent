@@ -1,0 +1,93 @@
+title: "Session 7 · Clip 3 · src/invalid_agent/metrics/effectiveness.py"
+file: ../../snapshots/session-7/src/invalid_agent/metrics/effectiveness.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is effectiveness dot p y, in the metrics folder. The docstring is the rule for the
+      chart you just saw. The projected rate is what you would get if the leading stratum were
+      removed. It is a counterfactual on the same file. It is not observed follow up after a
+      field action. Callers have to say that in the label. It is not allowed to pretend the
+      removal already happened.
+  - lines: 8-14
+    say: >-
+      Lines 8 through 14 bring in the tools. Pandas holds the field table, one row per result
+      in the synthetic file. With bands, from the hypotheses module, prepares the columns the
+      ranker uses. Overall rate, from the rates module, is the same calculator the rest of the
+      case uses for k, n, the Wilson interval, and the spec comparison. A second formula would
+      be a second product. The caller passes a dataframe that was already generated.
+  - lines: 17-19
+    say: >-
+      Project without leading stratum, lines 17 through 19, starts by copying. The parameter d
+      f is the caller's table. Line 19 calls with bands on d f dot copy, so the copy is what
+      gets edited. If you have written SQL, this is a select into a new table before the
+      update. The original rows stay as they were. A false flag means the table came back
+      unchanged. The caller must not draw a fake improvement.
+  - lines: 20-23
+    say: >-
+      Lines 20 through 23 decide whether there is anything to remove. Column and level come
+      off the hypothesis dictionary, the same top hypothesis the ranker stored. If the column
+      is missing, or the level is missing, or that column is not on the frame, the function
+      returns the copy and False. No rows are edited. That is the honest path when no single
+      stratum cleared the evidence bar. A blank hypothesis does not become a silent filter.
+  - lines: 24-26
+    say: >-
+      Lines 24 through 26 build the mask. The column is cast to string and compared with the
+      level, also as a string, so a numeric looking lot id still matches. Mask any asks
+      whether at least one row qualified. If none did, the function returns the untouched copy
+      and False. Only a mask that hits real rows continues into the edit. That guard is what
+      keeps a typo in the hypothesis from painting a flattering teal line.
+  - lines: 27-30
+    say: >-
+      Lines 27 through 30 are the edit, and they are small on purpose. On the masked rows, the
+      invalid flag is set to false. If the frame has an invalid code column, that code is
+      cleared to an empty string on those same rows. The rows stay in the table. They count in
+      n, the denominator, and they no longer count in k, the invalid numerator. The scenario
+      file on disk is never opened and never rewritten.
+  - lines: 33-36
+    say: >-
+      Projection summary, lines 33 through 36, is what the page calls. Line 34 removes the
+      leading stratum and keeps the applied flag. Line 35 runs overall rate on the original
+      table. That before number is the observed rate. Line 36 runs the same function on the
+      edited copy. That after number is the projection. Same spec, two tables. Only the
+      invalid flags on the leading stratum changed. The scenario file on disk is untouched.
+  - lines: 37-40
+    say: >-
+      Lines 37 through 40 pack the dictionary the page reads. Applied is the flag from the
+      removal. Before is the observed overall rate dictionary, including the rate, the count,
+      and the interval. After is that same shape on the projected table. The test in this
+      session asserts that applied is true for bad lot, and that the after rate is lower than
+      the before rate. A false flag skips the figure and shows the info box.
+  - lines: 41-41
+    say: >-
+      Line 41 is the label, and it is a fixed sentence, not a number. Projected if the leading
+      stratum is removed. Not observed follow up. The page caption prints this string next to
+      the observed percent and the projected percent. The test searches the label for the
+      words Not observed. If someone shortens the label to After the fix, the test fails. This
+      sentence keeps the dashboard from claiming it early.
+  - lines: 42-43
+    say: >-
+      Line 42 returns the projected frame itself, under the key frame. The page passes that
+      frame to the p chart function, the same calculator used on the real file, and then hands
+      both charts to the before after figure. So the teal line is a real control chart on the
+      edited copy, not a hand drawn slope. Line 43 ends the function. That split is what lets
+      Session 8 score scenarios without teaching the dashboard a second investigation.
+  - lines: 17-30
+    say: >-
+      Put the removal together, lines 17 through 30, as a program manager would explain it.
+      Copy the field table. Find the column and the level on the leading hypothesis. If either
+      is missing, stop and say nothing was applied. If the level is present, clear the invalid
+      flag and the invalid code on those rows only. Leave the rows in the denominator. You
+      have asked what the rate would be if this stratum stopped failing.
+  - lines: 33-43
+    say: >-
+      And put the summary together, lines 33 through 43, as the page uses it. Before is
+      observed. After is projected. The label says not observed. The frame is there so the
+      chart can be rebuilt with the real p chart math. The dashboard regenerates the table
+      from the scenario seed before it calls this function, so the rows match the graph that
+      filled the tiles. The status note keeps the traffic light honest.

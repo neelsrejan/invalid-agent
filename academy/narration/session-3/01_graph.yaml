@@ -1,0 +1,100 @@
+title: "Session 3 · Clip 1 · src/invalid_agent/graph.py"
+file: ../../snapshots/session-3/src/invalid_agent/graph.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-15
+    say: >-
+      Welcome to Session 3. This is graph dot p y, the front door that turns the bad lot field
+      file into a one page week zero memo. LangGraph is the package that wires steps into a
+      graph. A node is one step: a function that receives the case state and returns an
+      update. An edge says which step runs next. The import on line 10 brings in StateGraph
+      and END. This tag has one node, triage. Later sessions add nodes on this same object
+      instead of starting over.
+  - lines: 73-78
+    say: >-
+      The walkthrough starts at main, line 73. The command is python dash m invalid agent dot
+      graph, with scenario bad lot and week 0. Argparse requires both flags. Scenario may be a
+      bare id, like bad lot, or a path to a YAML file. Week is an integer. There is an
+      optional out directory. Default output is the folder named out. Nothing in main computes
+      a rate. It parses the flags and hands them to run case.
+  - lines: 26-36
+    say: >-
+      Resolve scenario, at line 26, turns that flag into a real file. If the argument is
+      already a path that exists, we use it. Otherwise we look under scenarios, next to the
+      repo root, for that name. A bare id such as bad lot becomes scenarios slash bad lot dot
+      yaml, because line 33 adds the suffix when the name has none. If none of those paths
+      exist, the program exits with scenario not found.
+  - lines: 51-55
+    say: >-
+      Run case, at line 51, is the session boundary. If week is anything other than 0, it
+      raises SystemExit and names what is missing: the fishbone, the plan, and the weekly loop
+      are later sessions. This tag cannot pretend those already run. Week 0 is intake. You get
+      a position on the escalation, not a closed investigation. That early exit is on purpose,
+      so a reviewer who passes week 4 sees a clear stop instead of an empty memo.
+  - lines: 39-48
+    say: >-
+      Initial state, at line 39, is the dictionary the graph starts from. It keeps the
+      scenario id, the whole scenario dictionary, the week, and empty containers for a
+      decision log, risks, status updates, and Jira. It does not hold the data frame. The
+      14,400 rows are rebuilt inside the node from the seed, then dropped. State is what later
+      nodes will share. A big table does not belong on it. Jira stays an empty dictionary.
+  - lines: 56-60
+    say: >-
+      Lines 56 through 60 do the run. Load settings reads the environment, including the
+      language model backend, which defaults to deterministic, rules only. Resolve scenario
+      finds the YAML. Load scenario, the same PyYAML reader as Session 2, turns it into a
+      dictionary. Build graph compiles the one node. Invoke calls triage with that initial
+      state and merges whatever the node returns. The rows never sit on the state. The memo
+      text and the checked fields do.
+  - lines: 18-23
+    say: >-
+      Build graph, lines 18 through 23, is the whole topology for this tag. StateGraph is
+      typed with CaseState, so the keys are declared in one place. Add node registers the name
+      triage and the function triage node. Set entry point says start there. Add edge connects
+      triage to END, so the graph stops. Compile freezes that shape into something invoke can
+      run. One node, one edge. Session 4 will add a fishbone node on this same graph, not a
+      second framework.
+  - lines: 61-70
+    say: >-
+      Lines 61 through 70 write the two files a reviewer can open. The folder is out, unless
+      you passed another directory. Week 0 triage dot m d receives the markdown the node
+      stored. Week 0 fidelity dot j s o n receives the guard record, pretty printed. That J S
+      O N is how you see the backend, deterministic, without reading the code. The function
+      also returns the memo path on the result. The prose and the fidelity record travel
+      together. One is the memo. The other is the receipt.
+  - lines: 80-82
+    say: >-
+      Back in main, lines 80 through 82 print three lines and stop. The path that was written.
+      Then escalate and severity, read off the triage memo dictionary, which came from a
+      checked schema object. Then the banner: simulation, synthetic data, not for clinical
+      use. The escalate line is not a regex scraped out of the prose. If the sentence and the
+      flag ever disagreed, you would trust the flag. Tests assert fields. They do not search
+      the markdown for the word escalate.
+  - lines: 51-55
+    say: >-
+      Hold on the week gate for what it protects. Session 4 needs a ranked hypothesis list, an
+      evidence id catalog, and a graph it can extend. Those three exist once triage has run.
+      The fishbone itself does not. Passing any week but 0 exits, so this snapshot cannot be
+      demoed as a finished weekly loop. That is an honest product boundary. The command you
+      show a hiring manager is week 0 on bad lot, and the page it writes is the intake memo.
+  - lines: 10-14
+    say: >-
+      The packages on these import lines are the Session 3 set, used where they pay rent.
+      LangGraph owns the case graph. The node function lives in triage dot p y. Settings come
+      from the same config module as Session 1, still offline unless you set a backend. Load
+      scenario is the Session 2 reader. We did not pull in a model client here. The default
+      path never opens a socket. A hosted demo with no local model server still has a memo to
+      show.
+  - lines: 61-64
+    say: >-
+      The takeaway is the artifact in your hand. Run python dash m invalid agent dot graph,
+      scenario bad lot, week 0, and you get out slash week 0 triage dot m d. On seed 4419 that
+      memo reports 3.67 percent, 529 of 14,400, a Wilson interval of 3.38 to 3.99, escalate,
+      severity high, and one hypothesis: material, bad reagent lot, L dash 4419. Those figures
+      are outputs of the command, not constants typed into a template. Next we open the only
+      node, triage dot p y.

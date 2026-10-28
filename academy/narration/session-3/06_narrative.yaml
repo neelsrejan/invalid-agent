@@ -1,0 +1,101 @@
+title: "Session 3 · Clip 6 · src/invalid_agent/narrative.py"
+file: ../../snapshots/session-3/src/invalid_agent/narrative.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-4
+    say: >-
+      This is narrative dot p y, the words of the week zero memo. The deterministic backend
+      fills a template. A model, if you turned one on, sees a prompt. Either way, the fidelity
+      guard checks the result. The rule in the docstring is strict. A template may only
+      interpolate values that already live on the facts dictionary. There is no second
+      arithmetic in this file. No division, no interval, no spec. If a figure is wrong, it was
+      wrong before it got here.
+  - lines: 12-18
+    say: >-
+      The system prompt, lines 12 through 18, is what a model is told when one is configured.
+      Draft a field quality note for a simulation. It is not for clinical use. Use only
+      numbers that appear in the facts. Do not invent rates, intervals, counts, costs, or
+      dates. Do not state a root cause as confirmed if the facts call it a hypothesis. Write
+      plain sentences a program manager can send. The default path does not send this prompt
+      anywhere.
+  - lines: 21-27
+    say: >-
+      Prompt for, lines 21 through 27, builds the user message. It names the task, asks for
+      the artifact, and says to quote numbers exactly as they appear in the facts. Then it
+      dumps the facts dictionary as J S O N, indented, so a model sees 3.67 and not a raw
+      fraction it might reformat badly. Json is the standard library. This string is the user
+      half of the pair l l m dot p y sends. On the deterministic path, narrate never calls
+      prompt for. The template is enough.
+  - lines: 30-36
+    say: >-
+      Render, lines 30 through 32, looks the task up in the templates dictionary and calls
+      that function with the facts. Percent, lines 35 and 36, formats a number that build
+      facts already rounded, with two decimals and a percent sign. It does not multiply by
+      100. Rate percent is already 3.67. The rounding already happened upstream, in triage.
+  - lines: 39-48
+    say: >-
+      Triage memo, at line 39, is the page. It reads the overall block and chooses Escalate or
+      Do not escalate from the boolean. The title is Week 0 triage memo. The next line is the
+      banner, in bold: simulation, synthetic data, not for clinical use. That banner lives in
+      the template, not as an afterthought printed only by the command line. Then a line names
+      the scenario id, the device, and the investigation week.
+  - lines: 49-59
+    say: >-
+      Lines 49 through 59 are the decision a customer asked for on Monday. The invalid rate,
+      in bold, then k of n, then the Wilson 95 percent interval, then the promised validity
+      and the invalid cap that promise implies. All of those percents come from the rounded
+      keys. The next paragraph is the decision word and the severity. On seed 4419 this reads
+      escalate, severity high, 3.67 percent, 529 of 14,400, interval 3.38 to 3.99, promised
+      validity 98 percent, cap 2 percent. The template only places those values.
+  - lines: 61-63
+    say: >-
+      Lines 61 through 63 are the complaint section. The heading is fixed. The body is the
+      complaint string from the facts, stripped of extra whitespace. That string was copied
+      from bad lot dot yaml. It is the synthetic Northlake note, not a calculated rate.
+      Because the whole complaint is a string in the facts, the fidelity guard treats it as an
+      identifier and blanks it before scanning.
+  - lines: 65-78
+    say: >-
+      Lines 65 through 78 are where the invalids concentrate. Four bullets: lot, instrument,
+      site, and software. Each level prints its rounded percent, its n, and its k. The top
+      three of each column were chosen back in build facts. This loop does not sort again. On
+      the bad lot memo, the lot line leads with L dash 4419. You can compare that bullet with
+      the hypothesis below it. The concentration section is descriptive. The hypothesis
+      section is the ranked call.
+  - lines: 79-88
+    say: >-
+      Lines 79 through 88 add the Pareto head and the weekly chart. If the code list is non
+      empty, one bullet names each code and its share percent. Then a bullet gives p bar as a
+      percent, the count of Western Electric rule 1 points, and the count of any rule. Those
+      numbers were computed in s p c dot p y and Pareto dot p y, then rounded in triage. This
+      file places them.
+  - lines: 89-99
+    say: >-
+      Lines 89 through 99 are the initial hypotheses. A short preface says they are ranked
+      from the strata, using lift, excess invalids, and chi square, and they are not a
+      confirmed root cause. A cause that missed the bar is left off on purpose. Then each
+      hypothesis prints its prose, the sentence triage built from the rounded fields, and its
+      evidence ids. Those ids have to exist in the catalog. On bad lot you get one item:
+      Material, the bad reagent lot, L dash 4419, its percent versus the complement, and the
+      evidence keys.
+  - lines: 100-111
+    say: >-
+      Lines 100 through 111 close the memo with a section called what the numbers are. Every
+      figure above was computed in Python: Wilson interval, strata, p chart, Pareto. A
+      language model, if one is configured, is only allowed to phrase them. A figure that is
+      not in the computed set is rejected. That paragraph is part of the template, so the
+      default memo says it every time. It is the promise to the reader. The guard is what
+      makes that promise true.
+  - lines: 114-116
+    say: >-
+      The dictionary at lines 114 through 116 registers one template, triage, pointing at
+      triage memo. Render looks up that key. The week zero command asks narrate for the task
+      named triage, which lands here. Under the default backend, the file out slash week 0
+      triage dot m d is this function's text, plus a one line footer from l l m dot p y. That
+      page is the Session 3 artifact: the rate versus the promise, where it concentrates, and
+      a hypothesis that cites the lot. The model is optional. By default it is absent.

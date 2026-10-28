@@ -1,0 +1,102 @@
+title: "Session 8 · Clip 2 · evals/reports/2026-10-21.md"
+file: ../../snapshots/session-8/evals/reports/2026-10-21.md
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-5
+    say: >-
+      This is the eval report, two zero two six dash one zero dash two one dot m d. The logic
+      trace on the main notes names an October 20 file. This snapshot is dated October 21.
+      Line 3 is the banner. Simulation. Synthetic data. Not for clinical use. Line 5 gives the
+      sample: n equals 22 scenarios, and holdout n equals 4. Read the weak lot row and the
+      extra-stratum lines before that score cell.
+  - lines: 40
+    say: >-
+      Line 40 is weak lot. Expect is no single cause. Evidence is no single cause. Keyword is
+      bad reagent lot. Holdout is blank, so it was seen. Below bar is yes. The rate is 2.84
+      percent, still over the 2 percent spec. The scenario plants lot L four four one nine at
+      a stratum rate of 0.04 against a baseline of 0.025, under the lift gate. The overall
+      rate can break the spec while that bump stays too small to call.
+  - lines: 73-74
+    say: >-
+      Lines 73 and 74 state the rule for a below-bar file. A correct call is no single cause.
+      Weak lot was injected as bad reagent lot. Evidence stayed no single cause. Keyword said
+      bad reagent lot, because the week-zero note names that lot. The evidence match on this
+      row is a refusal. The bump missed the bar, so no cause was named. Keep this refusal
+      attached when you quote the headline.
+  - lines: 67-71
+    say: >-
+      Lines 67 through 71 are the extra stratum. Four rows cleared a second bar. Drift clear,
+      drift late, and drift noisy each show bad reagent lot behind drifting instrument.
+      Herring operator is the fourth, also an instrument call. Top one stayed on drifting
+      instrument. A reagent lot also cleared the bar behind it. This matches the logic trace:
+      evidence 22 of 22, keyword 3 of 22, holdout 4, weak lot, and this drift extra stratum.
+  - lines: 46-65
+    say: >-
+      Line 46 says keyword top one missed 19 of 22, and those misses are the point of the
+      comparison. Line 65 is weak lot again. Keyword said bad reagent lot, evidence said no
+      single cause, and expect is no single cause. Where the week-zero note names a cause, the
+      keyword ranker repeats the note. The evidence ranker never sees that note, and it
+      matches the designed label. Nineteen misses are a result.
+  - lines: 30-32
+    say: >-
+      Lines 30 through 32 are the three red herrings. A red herring is a note that names the
+      wrong cause on purpose. Herring lot expects hemolysis. Evidence agrees. Keyword says bad
+      reagent lot. Rate 2.80 percent. Herring operator expects the drifting instrument.
+      Keyword says user process error. Rate 2.84 percent. Herring software expects bad reagent
+      lot. Evidence says the lot. Keyword says software version. Rate 4.12 percent. Keyword
+      repeats the note. Evidence follows the table.
+  - lines: 26-28
+    say: >-
+      Lines 26 through 28 are the three flat files, the keyword hits. Flat border, flat high,
+      and flat mild all expect no single cause, and the keyword column agrees. Their week-zero
+      note asks for the invalid rate and the 98 percent promise. It names no cause word. No
+      needle, so keyword cause returns no single cause, the designed call. That is 3 of 22.
+      Flat border is the holdout among them.
+  - lines: 11-12
+    say: >-
+      Now the score table. Lines 11 and 12 name the columns: split, n, evidence top one,
+      evidence top three, and keyword top one. Top one means position zero matched eval dot
+      expect cause, the designed label in the yaml. Top three means that label appears
+      anywhere in the first three. It is a softer credit. A higher top three would mean the
+      right cause was present and was not the call.
+  - lines: 13-15
+    say: >-
+      Lines 13 through 15 are the cells. All 22: evidence top one 22 of 22, evidence top three
+      22 of 22, keyword top one 3 of 22, 13.6 percent. Not held out is 18 of 18, keyword 2 of
+      18. Holdout is 4 of 4, keyword 1 of 4. Top one and top three match on every split. The
+      holdout files are bad lot noisy, drift late, flat border, and temp mild. Gates were not
+      refit. These fractions match the trace.
+  - lines: 84-93
+    say: >-
+      Lines 84 through 93. Local default is Meta Llama 3.1 8 B, tag llama 3.1 colon 8 b. The
+      smaller tag is Llama 3.2 1 B, llama 3.2 colon 1 b. Gemma 3 and Phi-4 were not scored.
+      This command used backend deterministic. The Ollama probe says not contacted. Neither
+      Llama weight was installed. The table is two ranking policies on the deterministic
+      backend. Hosted Streamlit is rules-only. There is no accuracy number for a model that
+      did not run.
+  - lines: 76-82
+    say: >-
+      Lines 76 through 82 are the week-zero graph checks. Run case ran on all 22 scenarios,
+      backend deterministic. Numeric fidelity is 22 of 22. Citations resolve in the catalog,
+      22 of 22. Escalation matches the memo, 22 of 22. Mean latency is 0.55 seconds per
+      scenario, mean wall time on the rules path. Fidelity here means the prose stayed inside
+      the computed facts.
+  - lines: 17-19
+    say: >-
+      Lines 17 through 19 show a detail row, using bad lot, which week 4 reopens. Expect bad
+      reagent lot, evidence the same, keyword no single cause, holdout blank, below bar blank,
+      rate 3.67 percent. That week-zero note never says lot, so the naive ranker falls
+      through. The 3.67 percent is the observed rate on the synthetic file. Week 4 prints this
+      computed rate.
+  - lines: 95
+    say: >-
+      Line 95 closes the file. Synthetic data. Not a medical device. Twenty-two of twenty-two
+      is the designed call on these 22 synthetic files, gates fixed, herrings and the weak-lot
+      refusal included. A clinical accuracy claim would be measured on real specimens. This
+      file has no such measurement. A model-versus-model claim would need both Llama weights
+      installed and scored. Keep the misses in the same sentence.
