@@ -138,12 +138,30 @@ def quiz_payload() -> dict:
     return payload
 
 
-def quiz_shape(payload: dict) -> tuple[Counter, int, int]:
-    """Return letter counts, how often the correct text is uniquely longest, and n."""
+def _clauses(text: str) -> set[str]:
+    """Sentences and longer clauses, normalized. Short fragments are ignored."""
+    import re
+
+    found: set[str] = set()
+    for chunk in re.split(r"[.;]", text):
+        pieces = [chunk]
+        pieces.extend(chunk.split(","))
+        for piece in pieces:
+            norm = " ".join(piece.lower().split()).strip(" -")
+            if len(norm.split()) >= 5:
+                found.add(norm)
+    return found
+
+
+def quiz_shape(payload: dict) -> tuple[Counter, int, int, dict[int, float]]:
+    """Letter counts, longest-correct count, n, and strike-the-tell expected score by session."""
     letters: Counter = Counter()
     longest_correct = 0
     n = 0
-    for pack in payload.values():
+    # clause -> [correct appearances, wrong appearances]
+    usage: dict[str, list[int]] = {}
+    questions = []
+    for session, pack in payload.items():
         for question in pack["questions"]:
             n += 1
             winner = None
@@ -159,7 +177,45 @@ def quiz_shape(payload: dict) -> tuple[Counter, int, int]:
             top = max(lengths)
             if len(winner["text"]) == top and lengths.count(top) == 1:
                 longest_correct += 1
-    return letters, longest_correct, n
+            tagged = []
+            for choice in question["choices"]:
+                is_correct = choice["id"] == winner["id"]
+                parts = _clauses(choice["text"])
+                for part in parts:
+                    usage.setdefault(part, [0, 0])
+                    usage[part][0 if is_correct else 1] += 1
+                tagged.append((choice, is_correct, parts))
+            questions.append((int(session), tagged))
+    tells = {
+        part
+        for part, (correct_n, wrong_n) in usage.items()
+        if correct_n + wrong_n >= 2 and (correct_n == 0 or wrong_n > 2 * correct_n)
+    }
+    if tells:
+        sample = sorted(tells)[:8]
+        raise SystemExit(
+            "repeated clause is a wrong-answer tell: " + " | ".join(sample)
+        )
+    by_session: dict[int, float] = {}
+    counts: dict[int, int] = {}
+    for session, tagged in questions:
+        remaining = [
+            is_correct
+            for _choice, is_correct, parts in tagged
+            if not parts & tells
+        ]
+        score = 0.0
+        if remaining and any(remaining):
+            score = 1.0 / len(remaining)
+        by_session[session] = by_session.get(session, 0.0) + score
+        counts[session] = counts.get(session, 0) + 1
+    expected = {session: by_session[session] / counts[session] for session in by_session}
+    for session, rate in expected.items():
+        if rate >= 0.80:
+            raise SystemExit(
+                f"strike-the-tell guesser scores {rate:.0%} on session {session}"
+            )
+    return letters, longest_correct, n, expected
 
 
 def nav(active: int) -> str:
@@ -380,7 +436,7 @@ def main() -> None:
     for forbidden in ('"correct"', '"answer":', "Qwen", "qwen"):
         if forbidden in blob:
             raise SystemExit(f"quiz payload contains {forbidden}")
-    letters, longest_correct, n = quiz_shape(payload)
+    letters, longest_correct, n, _guesser = quiz_shape(payload)
     for letter, count in letters.items():
         if count / n > 0.40:
             raise SystemExit(f"letter {letter} is {count}/{n} answers, over 40%")

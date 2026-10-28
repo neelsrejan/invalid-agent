@@ -8,19 +8,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "So the promised validity and the 2% invalid cap cannot drift apart. The unit test on this tag is the check."
+            "text": "So the promised validity and the 2% invalid cap cannot drift apart."
           },
           {
             "id": "b",
-            "text": "Because Jira refuses a field that is not a formula. The logic trace names the same function. The practice edit below depends on this point."
+            "text": "Jira's importer rejects a bare number, so the cap has to be stored as a calculated custom field."
           },
           {
             "id": "c",
-            "text": "So the Wilson interval can skip the upper bound. The demo command is how you see the consequence."
+            "text": "Otherwise the Wilson helper drops its upper bound and the memo can print only a floor."
           },
           {
             "id": "d",
-            "text": "Because pytest cannot compare two numeric literals. The unit test on this tag is the check."
+            "text": "pytest refuses to compare two numeric literals, which is why one of them is computed."
           }
         ],
         "salt": "1648a87e8b2a3dee",
@@ -33,19 +33,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A base URL, an email, and a token. Any missing piece leaves jira_enabled false. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "A base URL, an email, and a token. Any missing piece leaves jira_enabled false."
           },
           {
             "id": "b",
-            "text": "Only JIRA_API_TOKEN. The clip stops on the lines that decide it. The logic trace names the same function."
+            "text": "JIRA_API_TOKEN by itself enables the client, even when the URL and the email are blank."
           },
           {
             "id": "c",
-            "text": "OPENFDA_API_KEY plus the email. The demo command is how you see the consequence."
+            "text": "OPENFDA_API_KEY together with JIRA_EMAIL opens Jira, and the token stays optional."
           },
           {
             "id": "d",
-            "text": "JIRA_PROJECT_KEY by itself. The unit test on this tag is the check."
+            "text": "JIRA_PROJECT_KEY set to INV is the entire switch, with or without an email address."
           }
         ],
         "salt": "397bee6cce6b881a",
@@ -58,15 +58,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "It cannot be called from pytest. The demo command is how you see the consequence."
+            "text": "pytest is blocked from calling repr, so a planted token can never reach a log."
           },
           {
             "id": "b",
-            "text": "It lowercases the model name and breaks Ollama. The practice edit below depends on this point."
+            "text": "It lowercases LLM_MODEL, so Ollama cannot resolve the llama3.1:8b tag."
           },
           {
             "id": "c",
-            "text": "It hides the repo root, so tests cannot find scenarios. The unit test on this tag is the check."
+            "text": "It hides the repo root, so tests cannot find scenarios."
           },
           {
             "id": "d",
@@ -83,11 +83,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The dry-run file of SIM-* investigation issues. The logic trace names the same function."
+            "text": "It is the dry-run file of SIM investigation issues, written only after make_client runs."
           },
           {
             "id": "b",
-            "text": "The live customer-escalation board. The clip stops on the lines that decide it. The demo command is how you see the consequence."
+            "text": "It is the live customer-escalation board, and later sync posts onto those same INV keys."
           },
           {
             "id": "c",
@@ -95,7 +95,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The Week-0 triage memo. The demo command is how you see the consequence."
+            "text": "It is the Week-0 triage memo stored as JSON so an escalate flag can be imported."
           }
         ],
         "salt": "88a0929bc0363574",
@@ -108,19 +108,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Python 3.11 forbids third-party libraries. The clip stops on the lines that decide it. The logic trace names the same function."
+            "text": "Python 3.11 rejects third-party imports, which forces the dependencies list to stay empty."
           },
           {
             "id": "b",
-            "text": "setuptools cannot install a non-empty list. The demo command is how you see the consequence."
+            "text": "setuptools refuses a non-empty dependencies list while the version is still 0.1.0, so CI would fail closed."
           },
           {
             "id": "c",
-            "text": "Nothing in this tag imports them yet, so CI should not download pandas, LangGraph, or a model client. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Nothing in this tag imports them yet, so CI should not download pandas, LangGraph, or a model client."
           },
           {
             "id": "d",
-            "text": "The MIT license bans dependencies. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The MIT license forbids dependencies, and pip blocks install once that list is filled."
           }
         ],
         "salt": "7e3e843c6a8a3b5a",
@@ -133,15 +133,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The first folder named out/. The clip stops on the lines that decide it. The unit test on this tag is the check."
+            "text": "It stops at the first directory named out, treating that folder as proof of the repo root."
           },
           {
             "id": "b",
-            "text": "An environment variable REPO_ROOT, which is required. The practice edit below depends on this point."
+            "text": "It requires the REPO_ROOT variable and ignores pyproject.toml whenever that variable is missing."
           },
           {
             "id": "c",
-            "text": "A running Ollama process. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "It looks for a live Ollama server on port 11434 and treats that process as the project root."
           },
           {
             "id": "d",
@@ -158,19 +158,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "llamacpp. The logic trace names the same function."
+            "text": "llamacpp, because a rules-only flag loads a GGUF even when the model path is empty."
           },
           {
             "id": "b",
-            "text": "deterministic. The unit test on this tag is the check."
+            "text": "deterministic, because rules, rules-only, and mock are three names for that one backend."
           },
           {
             "id": "c",
-            "text": "ollama. The clip stops on the lines that decide it. The demo command is how you see the consequence."
+            "text": "ollama, because a rules-only flag means the laptop model should write the memo."
           },
           {
             "id": "d",
-            "text": "A hard error, because the name is unknown."
+            "text": "A raised error, because an unrecognized backend must not fall through to a silent template."
           }
         ],
         "salt": "8f5da9c3eef3b844",
@@ -183,19 +183,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Python 3.11 and 3.12, editable install with the dev extra, then pytest. No secrets. The logic trace names the same function."
+            "text": "Python 3.11 and 3.12, editable install with the dev extra, then pytest. No secrets."
           },
           {
             "id": "b",
-            "text": "Python 3.13 only, with a Jira token in the environment. The logic trace names the same function."
+            "text": "Python 3.13 only, and the job injects a Jira token so the live client runs inside Actions."
           },
           {
             "id": "c",
-            "text": "A download of Llama 3.1 8B, then the dashboard. The unit test on this tag is the check."
+            "text": "A download of Llama 3.1 8B, then the dashboard, before pytest is allowed to start."
           },
           {
             "id": "d",
-            "text": "Streamlit Community Cloud. The demo command is how you see the consequence."
+            "text": "Streamlit Community Cloud, which replaces GitHub-hosted runners for this workflow."
           }
         ],
         "salt": "ac8759af61bd85bb",
@@ -217,15 +217,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "The YAML forbids a baseline rate. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The YAML forbids a baseline rate, so the only legal invalids are the ones on the cause mask."
           },
           {
             "id": "c",
-            "text": "numpy cannot draw two Bernoulli variables in one function. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "numpy cannot draw two Bernoulli variables inside one function, so a second coin-flip is illegal and the mask would have to be applied in SQL instead."
           },
           {
             "id": "d",
-            "text": "So the Pareto chart can include valid rows. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Redrawing lets the Pareto count valid rows, which a stacked probability would have dropped."
           }
         ],
         "salt": "5b5e70da3b1520de",
@@ -238,19 +238,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "It raises, because a zero count is undefined. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "It raises, because a zero event count makes the Wilson denominator undefined."
           },
           {
             "id": "b",
-            "text": "It returns a negative lower bound and the caller clamps it. The clip stops on the lines that decide it. The demo command is how you see the consequence."
+            "text": "It returns a negative lower bound, and the caller clamps that bound back into the unit interval before the memo is allowed to render."
           },
           {
             "id": "c",
-            "text": "The analytic lower bound is 0. Floating point leaves a tiny residue, so anything under 1e-12 snaps back to 0. The unit test on this tag is the check."
+            "text": "The analytic lower bound is 0. Floating point leaves a tiny residue, so anything under 1e-12 snaps back to 0."
           },
           {
             "id": "d",
-            "text": "It returns the spec, 2%, as both ends. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "It returns the 2% spec as both ends, since a sample with no invalids is treated as the promise."
           }
         ],
         "salt": "91c2c89da5b68c4d",
@@ -263,19 +263,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Software version changes on the same day the lot starts, on purpose. The demo command is how you see the consequence."
+            "text": "Software version flips on the same day the bad lot starts, so the version cutover marks the lot rather than an independent instrument draw."
           },
           {
             "id": "b",
-            "text": "The lot id is copied into the instrument column. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The lot id is copied into the instrument column, which is what makes the two effects line up."
           },
           {
             "id": "c",
-            "text": "Site, instrument, lot, software, and operator are drawn independently. A collection site is not tied to one instrument. The logic trace names the same function."
+            "text": "Site, instrument, lot, software, and operator are drawn independently. A collection site is not tied to one instrument."
           },
           {
             "id": "d",
-            "text": "Each site owns exactly one instrument, so the columns are aliases. The logic trace names the same function."
+            "text": "Each collection site owns exactly one instrument, so the two columns are aliases of one draw."
           }
         ],
         "salt": "aa25122e5ee177ef",
@@ -288,7 +288,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Nelson rules 5 through 8 only. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Nelson rules 5 through 8 only, skipping the four zone rules a p-chart usually quotes."
           },
           {
             "id": "b",
@@ -296,11 +296,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "A t-test on every instrument, every day. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A two-sample t-test on every instrument, recomputed from scratch at the end of each day."
           },
           {
             "id": "d",
-            "text": "Only a single point outside the spec of 2%. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Only a single weekly point outside the 2% spec, with no zone rules beyond that one comparison."
           }
         ],
         "salt": "f2ef2e7deccd4f1c",
@@ -313,15 +313,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "openfda.py downloads them on every generate. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "openfda.py downloads the Mendeley rows on every generate and caches them beside the scenario."
           },
           {
             "id": "b",
-            "text": "Inside the Week-0 memo as an appendix. The demo command is how you see the consequence."
+            "text": "Inside the Week-0 memo as an appendix of raw hemolysis indexes taken from that paper."
           },
           {
             "id": "c",
-            "text": "In scenarios/hil.csv, copied from the paper. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "In scenarios/hil.csv, copied verbatim from the Mendeley paper so the generator can sample rows instead of a lognormal stand-in."
           },
           {
             "id": "d",
@@ -338,19 +338,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A call out to Ollama to invent rows. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A call to Ollama that invents each row from the scenario title instead of a seeded draw, using the complaint text as the prompt."
           },
           {
             "id": "b",
-            "text": "A new random sample on every run, so the rate can be whatever the meeting needs. The logic trace names the same function."
+            "text": "A fresh random sample on every run, so the printed rate can be adjusted for the meeting."
           },
           {
             "id": "c",
-            "text": "The Wilson formula. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The Wilson formula itself, which default_rng evaluates in place of a random generator."
           },
           {
             "id": "d",
-            "text": "A scenario file plus a seed is the whole source of randomness, so the same YAML reprints the same field file. The logic trace names the same function."
+            "text": "A scenario file plus a seed is the whole source of randomness, so the same YAML reprints the same field file."
           }
         ],
         "salt": "a6700a25f200619a",
@@ -363,15 +363,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "p_value 0, which forces an escalation. The unit test on this tag is the check."
+            "text": "p_value 0 and a huge chi-square, which forces the memo to escalate on any lone stratum."
           },
           {
             "id": "b",
-            "text": "It raises ZeroDivisionError. The clip stops on the lines that decide it. The unit test on this tag is the check."
+            "text": "It raises ZeroDivisionError, because a one-row table has no complement to compare."
           },
           {
             "id": "c",
-            "text": "The Wilson interval of the one level. The demo command is how you see the consequence."
+            "text": "The Wilson interval of that single level, returned in place of a chi-square result."
           },
           {
             "id": "d",
@@ -388,19 +388,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The most common code, so the chart shows only the tail. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The most common invalid code, so the chart shows only the long tail of rare codes."
           },
           {
             "id": "b",
-            "text": "Any code whose share is under 5%. The unit test on this tag is the check."
+            "text": "Any code whose share of invalids is under 5%, which is dropped before the cumulative line."
           },
           {
             "id": "c",
-            "text": "Valid rows. An empty invalid code must not count as a failure mode. The unit test on this tag is the check."
+            "text": "Valid rows. An empty invalid code must not count as a failure mode."
           },
           {
             "id": "d",
-            "text": "Rows from the injected lot. The demo command is how you see the consequence."
+            "text": "Rows that belong to the injected lot, so the cause code cannot dominate the chart."
           }
         ],
         "salt": "b07fdadfa4b089fc",
@@ -418,19 +418,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "It asks Llama 3.1 8B to remember the table. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "It asks Llama 3.1 8B to remember the table, and a later node prompts the model for the same rows."
           },
           {
             "id": "b",
-            "text": "It stores metrics, hypotheses, the evidence catalog, the memo, and the fidelity record. A later node calls generate(scenario) again. The seed makes that the same frame. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "It stores metrics, hypotheses, the evidence catalog, the memo, and the fidelity record. A later node calls generate(scenario) again. The seed makes that the same frame."
           },
           {
             "id": "c",
-            "text": "It writes the CSV into the Jira description. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "It writes the CSV into the Jira issue description, and a later node parses that description back into rows."
           },
           {
             "id": "d",
-            "text": "It stores the dataframe on the LangGraph state under the key rows. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "It stores the 14,400-row dataframe on the LangGraph state under the key rows, and later nodes read that key."
           }
         ],
         "salt": "704adf6e93902395",
@@ -443,7 +443,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "LangGraph nodes may return only one string. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "A LangGraph node may return only one string, so six hypotheses cannot fit in the state."
           },
           {
             "id": "b",
@@ -451,11 +451,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "Injections outvote every stratum except the lot. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "Stakeholder injections outvote every stratum except the lot, which is why only L-4419 remains."
           },
           {
             "id": "d",
-            "text": "The template has room for one sentence. The clip stops on the lines that decide it. The logic trace names the same function."
+            "text": "The memo template has room for one hypothesis sentence, so extra strata are dropped while formatting."
           }
         ],
         "salt": "1708eb66038a7db0",
@@ -468,15 +468,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Ollama rewrites it before the guard runs. The demo command is how you see the consequence."
+            "text": "Ollama rewrites the sentence into the template before the guard ever scans the digits."
           },
           {
             "id": "b",
-            "text": "Masking removes it because 27.40 looks like a lot id. The clip stops on the lines that decide it. The demo command is how you see the consequence."
+            "text": "Masking deletes 27.40 because that token looks like the lot id L-4419 with the letters removed."
           },
           {
             "id": "c",
-            "text": "The guard accepts it because 27 is close to the week number. The unit test on this tag is the check."
+            "text": "The guard accepts 27.40 because 27 sits close to the investigation week number stored in facts and week numbers are treated as percents."
           },
           {
             "id": "d",
@@ -493,19 +493,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The process exits and deletes week0_triage.md. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The process exits and deletes week0_triage.md so a failed draft cannot be mistaken for the memo."
           },
           {
             "id": "b",
-            "text": "narrate catches the exception, sets rewritten true, and returns the template. The failed draft is not saved. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "narrate catches the exception, sets rewritten true, and returns the template. The failed draft is not saved."
           },
           {
             "id": "c",
-            "text": "The memo is left blank so the reviewer notices. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "The memo file is left blank so a reviewer can see that the model call failed."
           },
           {
             "id": "d",
-            "text": "The draft is saved with a warning banner and the bad number intact. The demo command is how you see the consequence."
+            "text": "The rejected draft is saved beside the memo with a warning banner and the bad number left intact for the reviewer to compare."
           }
         ],
         "salt": "0fc9ec0466f832cb",
@@ -518,15 +518,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The YAML schema has no injections field yet. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "The scenario YAML has no injections list yet, so the ranker has nothing to read."
           },
           {
             "id": "b",
-            "text": "LangChain refuses to read strings. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "LangChain refuses string fields, so an injection cannot enter the ranking function."
           },
           {
             "id": "c",
-            "text": "Injections are applied as extra rows before the chi-square test. The demo command is how you see the consequence."
+            "text": "Injections are appended as extra field rows before chi-square, so a QA note can outrank a stratum."
           },
           {
             "id": "d",
@@ -543,19 +543,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "It switches the model to Llama 3.2 1B. The demo command is how you see the consequence."
+            "text": "It switches LLM_MODEL to llama3.2:1b and still writes the week-0 memo."
           },
           {
             "id": "b",
-            "text": "It exits on purpose, so the tag cannot pretend the weekly loop already exists. The unit test on this tag is the check."
+            "text": "It exits on purpose, so the tag cannot pretend the weekly loop already exists."
           },
           {
             "id": "c",
-            "text": "It runs the full four-week loop. The clip stops on the lines that decide it. The demo command is how you see the consequence."
+            "text": "It runs the full four-week loop and writes a plan, a fishbone, and a deck."
           },
           {
             "id": "d",
-            "text": "It skips triage and writes only the fishbone. The unit test on this tag is the check."
+            "text": "It skips triage and writes only the fishbone, using injections as the hypothesis."
           }
         ],
         "salt": "dd757ad561f4552a",
@@ -568,19 +568,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "LangGraph requires httpx for every node, even rules-only. The unit test on this tag is the check."
+            "text": "LangGraph requires an httpx call inside every node, including the rules-only path that never leaves the laptop."
           },
           {
             "id": "b",
-            "text": "httpx is the only library that can speak to Llama 3.1. The logic trace names the same function."
+            "text": "httpx is the only client that can speak to a Llama 3.1 server, which is why the LangChain adapter is skipped."
           },
           {
             "id": "c",
-            "text": "CI downloads the model through httpx. The demo command is how you see the consequence."
+            "text": "CI downloads the model weights through httpx during pytest, so the adapter has to be that library."
           },
           {
             "id": "d",
-            "text": "One httpx call is easier to mock, and it is not called when the backend is deterministic. The logic trace names the same function."
+            "text": "One httpx call is easier to mock, and it is not called when the backend is deterministic."
           }
         ],
         "salt": "87adf0c5fd9f6348",
@@ -593,15 +593,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Because Pydantic cannot store strings. The practice edit below depends on this point."
+            "text": "Because a Pydantic model cannot store strings, and a lot id has to be coerced to a float."
           },
           {
             "id": "b",
-            "text": "Because the Wilson formula rejects integers. Compare it with the snapshot, not with today's main."
+            "text": "Because the Wilson formula rejects integers, and 4419 would otherwise break the interval."
           },
           {
             "id": "c",
-            "text": "So the guard runs faster on short memos. The demo command is how you see the consequence."
+            "text": "So the scanner finishes faster on a one-page memo by skipping identifier-shaped tokens."
           },
           {
             "id": "d",
@@ -623,7 +623,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Measurement is always rank 1. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Measurement is hard-coded to rank 1 so a quality diagram always leads with the gauge."
           },
           {
             "id": "b",
@@ -631,11 +631,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "Pydantic rejects a fishbone with fewer than six filled bones. The demo command is how you see the consequence."
+            "text": "Pydantic rejects a fishbone object that has fewer than six filled bones, empty or not."
           },
           {
             "id": "d",
-            "text": "The YAML injection names a gauge, so the bone is required to be non-empty. The unit test on this tag is the check."
+            "text": "The scenario YAML names a gauge in an injection, which forces that bone to carry a score even when no measurement column exists."
           }
         ],
         "salt": "b3bfe52c32388dbf",
@@ -648,19 +648,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Any Why shorter than 200 characters, after the file is written. The logic trace names the same function."
+            "text": "Any Why whose answer is under 200 characters, and only after the markdown file already exists."
           },
           {
             "id": "b",
-            "text": "An empty citation list, or an id that is not in the catalog. It runs inside build_whys, before markdown exists. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "An empty citation list, or an id that is not in the catalog. It runs inside build_whys, before markdown exists."
           },
           {
             "id": "c",
-            "text": "A fishbone whose rank-1 score is zero. It runs in CI only. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A fishbone whose top score is zero. The check runs in CI and is skipped on a laptop."
           },
           {
             "id": "d",
-            "text": "A citation of metric:overall:rate, which is reserved for the memo. The demo command is how you see the consequence."
+            "text": "A citation of metric:overall:rate, which is reserved for the triage memo and banned from a Why even when the catalog contains it."
           }
         ],
         "salt": "93be1754b6c9245e",
@@ -677,15 +677,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "Yes. Every injection in the YAML is visible from week 0. The clip stops on the lines that decide it. The logic trace names the same function."
+            "text": "Yes. Every injection in the scenario file is visible from week 0, including the QA lot note about L-4419 entering distribution."
           },
           {
             "id": "c",
-            "text": "No, because QA notes are excluded from the catalog forever. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "No. QA notes are dropped from the catalog permanently, whatever week the case has reached."
           },
           {
             "id": "d",
-            "text": "Yes, but only on the Measurement bone. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Yes, but only when that note is attached to the Measurement bone rather than Material."
           }
         ],
         "salt": "d02672bcc70a5833",
@@ -702,15 +702,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "A new chi-square the language model computes. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A fresh chi-square the language model computes, replacing the p-chart as the effectiveness test."
           },
           {
             "id": "c",
-            "text": "The lot is already cured because D8 is closed. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The lot is already cured, because D8 is closed and the record can quote a recovered rate."
           },
           {
             "id": "d",
-            "text": "Customer satisfaction from a survey the model invents. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A customer-satisfaction score the model invents, which is why recovery is already claimed in D6."
           }
         ],
         "salt": "449c20a72f81b969",
@@ -723,19 +723,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Each D is its own DMAIC cycle, so there are eight cycles. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Each of the eight D fields is its own DMAIC cycle, so the record contains eight full cycles."
           },
           {
             "id": "b",
-            "text": "Define is D1–D2, Measure is the metrics, Analyze is D4 plus the fishbone and 5 Whys, Improve is D3 and D5, Control is D6 and D7. D8 is closure, not a DMAIC phase. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Define is D1–D2, Measure is the metrics, Analyze is D4 plus the fishbone and 5 Whys, Improve is D3 and D5, Control is D6 and D7. D8 is closure, not a DMAIC phase."
           },
           {
             "id": "c",
-            "text": "DMAIC is only a slide title in Session 9. It is not in this tag. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "DMAIC appears only as a slide title in the week-4 deck and is absent from this tag's CAPA."
           },
           {
             "id": "d",
-            "text": "DMAIC replaces D4 through D6 and the other Ds are dropped. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "DMAIC replaces D4, D5, and D6, and the other D headings are removed from the file."
           }
         ],
         "salt": "6ea08b9512df6622",
@@ -748,11 +748,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "no_single_cause. Step 5 invents a lot so the bad-lot test passes. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "no_single_cause. Step 5 invents lot L-4419 so the bad-lot assertion in the test can pass without a scored Material bone."
           },
           {
             "id": "b",
-            "text": "Measurement, because the empty bone sorts first. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Measurement, because an empty bone sorts ahead of every scored branch."
           },
           {
             "id": "c",
@@ -760,7 +760,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Method / software. Step 5 names version 2.4.0. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Method and a software cause. Step 5 is required to name version 2.4.0 as the stop."
           }
         ],
         "salt": "3f3a9a31af48a4e2",
@@ -773,19 +773,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Whatever the model prefers, with no catalog id. The demo command is how you see the consequence."
+            "text": "Whatever sentence the model prefers, and a missing catalog id is only a warning."
           },
           {
             "id": "b",
-            "text": "The Jira token. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The Jira API token, which step 3 has to quote before any stratum contrast is allowed."
           },
           {
             "id": "c",
-            "text": "The same sentence as step 2, copied twice. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "The same catalog sentence step 2 already used, pasted a second time so the chain looks longer."
           },
           {
             "id": "d",
-            "text": "A different column, so the chain says why the next stratum is not the cause. The unit test on this tag is the check."
+            "text": "A different column, so the chain says why the next stratum is not the cause."
           }
         ],
         "salt": "6eb0462f25d2fd76",
@@ -798,19 +798,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Llama 3.2 1B, downloaded in CI. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Llama 3.2 1B, which CI downloads before the fishbone test is allowed to run."
           },
           {
             "id": "b",
-            "text": "A fishbone drawing library. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "A fishbone drawing library that renders the six bones as an image beside the markdown and is imported by rca.py for the PNG."
           },
           {
             "id": "c",
-            "text": "kaleido, for the CAPA PDF. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "kaleido, so the CAPA record can be exported to PDF from the Plotly figure."
           },
           {
             "id": "d",
-            "text": "None. Pydantic checks the branch and the Why. The Session 3 fidelity guard is reused on the three markdown files. The logic trace names the same function."
+            "text": "None. Pydantic checks the branch and the Why. The Session 3 fidelity guard is reused on the three markdown files."
           }
         ],
         "salt": "305d08e0d687d061",
@@ -828,15 +828,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Plotly cannot draw a timeline. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Plotly has no timeline trace, so a Gantt PNG has to be drawn by hand in another tool."
           },
           {
             "id": "b",
-            "text": "Jira rejects images that did not come from kaleido. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "Jira rejects an image unless kaleido produced it, so the matplotlib PNG cannot be attached to the epic or the stories."
           },
           {
             "id": "c",
-            "text": "PNG files are disallowed in the repo. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "PNG files are banned from the repo, which is why write_image is never called."
           },
           {
             "id": "d",
@@ -853,15 +853,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Dependencies are comments. The assert never runs. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Dependencies are comments in the task dict. The assert that would check them is never called."
           },
           {
             "id": "b",
-            "text": "Dates are compared as US month/day strings. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Dates are compared as US month/day/year strings, which is why an ISO value would sort wrong."
           },
           {
             "id": "c",
-            "text": "A task may start the day before its predecessor ends, to create overlap. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A task may start the day before its predecessor ends, which is how overlap gets onto the chart."
           },
           {
             "id": "d",
@@ -878,19 +878,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "R4 is deleted because release testing passed. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "R4 is removed at week 2 because release testing passed and the disagreement is over."
           },
           {
             "id": "b",
-            "text": "The Gantt is unchanged. Only the memo title changes. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The Gantt bars stay identical. Only the memo title string changes between those weeks."
           },
           {
             "id": "c",
-            "text": "Week 2 adds T11, the lab-director note. R1's trend goes from new to down and its likelihood drops. R4 appears with trend up. The logic trace names the same function."
+            "text": "Week 2 adds T11, the lab-director note. R1's trend goes from new to down and its likelihood drops. R4 appears with trend up."
           },
           {
             "id": "d",
-            "text": "Every baseline task is deleted and replaced. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Every baseline task is deleted at week 2 and replaced by the lab-director set."
           }
         ],
         "salt": "0b6527d5129bd6de",
@@ -903,15 +903,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The epic key is copied from the scenario id, which is SIM. The demo command is how you see the consequence."
+            "text": "The epic key is copied from the scenario id, and that id is the string SIM."
           },
           {
             "id": "b",
-            "text": "SIM means the live site accepted the issue. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "A SIM prefix means the live site accepted the issue and returned that key."
           },
           {
             "id": "c",
-            "text": "Jira Cloud Free only accepts the SIM project key. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "Jira Cloud Free rejects every project key except SIM, so INV cannot be used in a dry-run."
           },
           {
             "id": "d",
@@ -928,19 +928,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The token is written into the error string so the PM can debug it. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The API token is interpolated into the error string so the PM can see which credential failed."
           },
           {
             "id": "b",
-            "text": "The client retries forever. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "The client retries the POST forever, and the JSON file is written only after a success."
           },
           {
             "id": "c",
-            "text": "LiveJira.sync catches it, stores the exception class name, writes the JSON, and does not raise. The token is not put in the error or in repr. The unit test on this tag is the check."
+            "text": "LiveJira.sync catches it, stores the exception class name, writes the JSON, and does not raise. The token is not put in the error or in repr."
           },
           {
             "id": "d",
-            "text": "The process deletes the plan. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The process deletes plan.json, because a failed sync means the schedule is no longer valid."
           }
         ],
         "salt": "00af55c5ea95f202",
@@ -953,19 +953,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Eleven more POSTs, one per task, every time. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Eleven additional POSTs, one per task, on every sync including the second call."
           },
           {
             "id": "b",
-            "text": "One POST of the whole plan as a single issue. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "One POST whose body is the entire plan, instead of an epic plus separate stories."
           },
           {
             "id": "c",
-            "text": "Zero new POSTs. The first sync posts the epic plus the tasks. _upsert updates a story in place when the task id is already in the file. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Zero new POSTs. The first sync posts the epic plus the tasks. _upsert updates a story in place when the task id is already in the file."
           },
           {
             "id": "d",
-            "text": "A DELETE of every SIM-* issue. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A DELETE against every SIM key, so the second sync clears the board before rewriting it."
           }
         ],
         "salt": "54f918147ac804c9",
@@ -978,15 +978,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Jira must exist before any metric is computed. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "A Jira project must already exist before any invalid rate is computed."
           },
           {
             "id": "b",
-            "text": "The Gantt is an input to the ranker. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The Gantt dates are an input to the hypothesis ranker, so plan has to finish before any stratum is scored."
           },
           {
             "id": "c",
-            "text": "LangGraph sorts node names alphabetically. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "LangGraph sorts node names alphabetically, which places plan after rca."
           },
           {
             "id": "d",
@@ -1003,19 +1003,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A lot is QA. An instrument or a temperature lane is Manufacturing. Software is R&D. No single cause stays with the PM, which means do not quarantine yet. The unit test on this tag is the check."
+            "text": "A lot is QA. An instrument or a temperature lane is Manufacturing. Software is R&D. No single cause stays with the PM, which means do not quarantine yet."
           },
           {
             "id": "b",
-            "text": "Every task is owned by the model. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The demo command is how you see the consequence."
+            "text": "Every task, including containment, is owned by the language model rather than a function."
           },
           {
             "id": "c",
-            "text": "Jira assigns a random owner when the key starts with SIM. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Jira assigns a random owner whenever the issue key starts with SIM."
           },
           {
             "id": "d",
-            "text": "The customer owns the corrective action. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The customer owns containment for a lot, an instrument, and a case with no single cause."
           }
         ],
         "salt": "2f3a78be0caab485",
@@ -1033,19 +1033,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Triage is deleted after Session 5. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Triage is deleted from the graph after Session 5, which is why later laps skip it."
           },
           {
             "id": "b",
-            "text": "The field file is fixed by the scenario seed. Re-running triage would recompute the same metrics. The lap re-enters at plan. The logic trace names the same function."
+            "text": "The field file is fixed by the scenario seed. Re-running triage would recompute the same metrics. The lap re-enters at plan."
           },
           {
             "id": "c",
-            "text": "The customer note replaces the metrics. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The customer note overwrites the metrics, so a second triage would have nothing to read."
           },
           {
             "id": "d",
-            "text": "LangGraph allows only one node per process. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "LangGraph allows only one node in a process, so triage cannot be entered again."
           }
         ],
         "salt": "348cbf7de3078da9",
@@ -1062,15 +1062,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "Week 2 is Green because release testing passed. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Week 2 turns Green because release testing passed, and the file is then cured."
           },
           {
             "id": "c",
-            "text": "Green is reserved for the language model. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Green is reserved for a successful model call, and week 2 never invokes one."
           },
           {
             "id": "d",
-            "text": "RAG here means a retrieval index, and Red means the index missed. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Compare it with the snapshot, not with today's main."
+            "text": "RAG names a retrieval index here, and Red means that index missed the lot note."
           }
         ],
         "salt": "0e31370362844a87",
@@ -1083,19 +1083,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Switch the cause to software because the note said so. The logic trace names the same function. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "Switch the leading cause to software, because the release note said the lot had passed and the table should follow the note."
           },
           {
             "id": "b",
-            "text": "Delete T1 because its week has passed. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Delete task T1, because its simulation week has already passed."
           },
           {
             "id": "c",
-            "text": "Close D8 and ship the deck. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Close D8 and ship the executive deck at the end of week 2."
           },
           {
             "id": "d",
-            "text": "Keep the field ranking after release testing was reported as a pass, and add the lab-director note to the plan. The unit test on this tag is the check."
+            "text": "Keep the field ranking after release testing was reported as a pass, and add the lab-director note to the plan."
           }
         ],
         "salt": "267f892434654159",
@@ -1108,19 +1108,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The template multiplies k by 100 and divides by n in the f-string. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "The template multiplies invalids by 100 and divides by the row count inside the f-string."
           },
           {
             "id": "b",
-            "text": "Llama 3.2 1B types the percent on Streamlit Community Cloud. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Llama 3.2 1B types the percent on Streamlit Community Cloud, and the template pastes that string."
           },
           {
             "id": "c",
-            "text": "build_status_facts rounds the computed rate onto rate_pct. The template interpolates that field. The guard then checks the sentence. The logic trace names the same function."
+            "text": "build_status_facts rounds the computed rate onto rate_pct. The template interpolates that field. The guard then checks the sentence."
           },
           {
             "id": "d",
-            "text": "The rate is copied from the complaint sentence. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The percent is copied from the customer's complaint sentence, which is why no arithmetic runs."
           }
         ],
         "salt": "666a134f18becf06",
@@ -1137,15 +1137,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "git diff between session-5 and session-6. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A git diff between the session-5 tag and the session-6 tag, which is the week-0 versus week-2 plan a reviewer would quote in the decision log."
           },
           {
             "id": "c",
-            "text": "Only the final jira_issues.json, which stores every week's plan. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Only the final jira_issues.json, which keeps a copy of every week's plan inside one file."
           },
           {
             "id": "d",
-            "text": "The Streamlit cache. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "The Streamlit cache, which stores each week's plan.json under the audience radio key."
           }
         ],
         "salt": "755749f7c0fae2b6",
@@ -1158,15 +1158,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "It must include the Jira token so the customer can comment. The demo command is how you see the consequence."
+            "text": "It must include the Jira API token so the customer can comment on the SIM issue."
           },
           {
             "id": "b",
-            "text": "It must be a different rate from the leadership note. The unit test on this tag is the check."
+            "text": "It must quote a different invalid rate from the one printed on the leadership note."
           },
           {
             "id": "c",
-            "text": "It must name the lot, the p-value, and the 5 Whys. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "It must name the lot, quote the chi-square p-value, and paste the 5 Whys for the customer before the holding sentence."
           },
           {
             "id": "d",
@@ -1183,19 +1183,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Done is set by a live Jira transition only. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Done is applied only by a live Jira transition, and a dry-run file leaves every task in To Do regardless of sim week or owner."
           },
           {
             "id": "b",
-            "text": "Status is a comparison of integers. T1 (sim week 0) is Done and T11 (sim week 2) is Done. T10 (sim week 4) is still To Do. The logic trace names the same function."
+            "text": "Status is a comparison of integers. T1 (sim week 0) is Done and T11 (sim week 2) is Done. T10 (sim week 4) is still To Do."
           },
           {
             "id": "c",
-            "text": "Every task is In Progress until the deck is written. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Every task stays In Progress until the week-4 deck is written, including T1."
           },
           {
             "id": "d",
-            "text": "T11 does not exist yet at week 3. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "T11 does not exist yet at the end of week 3, so only T1 can be Done."
           }
         ],
         "salt": "ebe74b486508e880",
@@ -1212,15 +1212,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "triage, so the frame is regenerated with a new seed. Compare it with the snapshot, not with today's main."
+            "text": "It returns triage, and the field file is redrawn from a new seed."
           },
           {
             "id": "c",
-            "text": "end, always. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "It returns end on every lap, so the week counter never moves."
           },
           {
             "id": "d",
-            "text": "closeout, even in week 1. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "It returns closeout as soon as week 1 finishes, and the deck is written early."
           }
         ],
         "salt": "2bd81e211dd86782",
@@ -1238,19 +1238,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The page crashes unless LLM_BACKEND is ollama. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The page raises unless LLM_BACKEND is ollama, and rules-only is how that backend is selected."
           },
           {
             "id": "b",
-            "text": "Streamlit Community Cloud has no Ollama, and this repo does not ship weights. The deterministic templates answer without a download. The unit test on this tag is the check."
+            "text": "Streamlit Community Cloud has no Ollama, and this repo does not ship weights. The deterministic templates answer without a download."
           },
           {
             "id": "c",
-            "text": "Plotly cannot draw a chart while a model is loaded. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Plotly cannot draw a p-chart while a model is loaded, so rules-only keeps the chart alive."
           },
           {
             "id": "d",
-            "text": "GitHub Actions hosts the dashboard and forbids Python. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "GitHub Actions hosts the dashboard and forbids Python, so the page has to stay rules-only."
           }
         ],
         "salt": "573fe1424ad5e481",
@@ -1263,19 +1263,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "There is no model setting. The page picks at random. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "There is no model variable. With the toggle off the page picks a tag at random."
           },
           {
             "id": "b",
-            "text": "The page always downloads Llama 3.1 8B on Community Cloud. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The hosted page always downloads Llama 3.1 8B, and the toggle cannot change that tag."
           },
           {
             "id": "c",
-            "text": "LLM_MODEL. An explicit value wins. With the toggle off and the variable unset, a local or self-hosted run asks Ollama for llama3.2:1b. The CLI default remains llama3.1:8b. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "LLM_MODEL. An explicit value wins. With the toggle off and the variable unset, a local or self-hosted run asks Ollama for llama3.2:1b. The CLI default remains llama3.1:8b."
           },
           {
             "id": "d",
-            "text": "OLLAMA_MODEL, which overrides LLM_MODEL. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "OLLAMA_MODEL overrides LLM_MODEL, and an unset value on the hosted page downloads llama3.1:8b."
           }
         ],
         "salt": "7acc16b44f33dcb2",
@@ -1288,7 +1288,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Matplotlib simulated a cured process and rewrote the YAML. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Matplotlib simulates a cured process and rewrites the scenario YAML with the new rate."
           },
           {
             "id": "b",
@@ -1296,11 +1296,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "The chart is a screenshot from the customer. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The after series is a screenshot the customer sent, pasted onto the chart as observed follow-up after the quarantine was approved."
           },
           {
             "id": "d",
-            "text": "The after series is next month's real complaints. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The after series is next month's real complaints, collected after the lot was quarantined."
           }
         ],
         "salt": "e0bdbe9e62bf59fc",
@@ -1317,15 +1317,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "Every radio click reruns the four-week graph and ignores the cache. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "Every audience click reruns the four-week graph and ignores st.cache_data."
           },
           {
             "id": "c",
-            "text": "Nothing is cached, because Streamlit forbids st.cache_data. The demo command is how you see the consequence."
+            "text": "Nothing is cached, because Streamlit forbids st.cache_data on a Community Cloud app."
           },
           {
             "id": "d",
-            "text": "The cache key is the audience name only. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The cache key is only the audience name, so a new week still serves the previous run from memory without calling run_case."
           }
         ],
         "salt": "b22b1bb5615bd234",
@@ -1338,19 +1338,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Nothing. Session 7 already published the URL. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Nothing. Session 7 already published the public URL, and the repo contains that link."
           },
           {
             "id": "b",
-            "text": "Buy a Plotly license. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Buy a Plotly license, which is the gate Community Cloud checks before the first deploy."
           },
           {
             "id": "c",
-            "text": "Sign in to Streamlit Community Cloud with GitHub and select app/streamlit_app.py or the root streamlit_app.py. The repo cannot do that sign-in. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Sign in to Streamlit Community Cloud with GitHub and select app/streamlit_app.py or the root streamlit_app.py. The repo cannot do that sign-in."
           },
           {
             "id": "d",
-            "text": "Commit an API token so Cloud can start Ollama. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Commit a Jira API token so Community Cloud can start Ollama for the hosted page."
           }
         ],
         "salt": "d2a33e926656e5ca",
@@ -1363,11 +1363,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The chart is a matplotlib PNG embedded by Kaleido. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "The figure is a matplotlib PNG embedded by Kaleido, and red is the PNG border."
           },
           {
             "id": "b",
-            "text": "A random palette per owner, same as a default Plotly theme. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "A random Plotly palette, one color per functional owner, with no fixed red for rule-1 marks on the p-chart."
           },
           {
             "id": "c",
@@ -1375,7 +1375,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Red means the projection. Navy means a model token. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "Red marks the projected series. Navy marks a model token sitting in the page state."
           }
         ],
         "salt": "ba7dce9e8a01664a",
@@ -1388,11 +1388,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Plotly, because the page uses only matplotlib. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Plotly, because the hosted page draws every chart with matplotlib instead."
           },
           {
             "id": "b",
-            "text": "Streamlit itself, so Cloud uses a different framework. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Streamlit itself, so Community Cloud is expected to serve the page with another framework."
           },
           {
             "id": "c",
@@ -1400,7 +1400,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "pytest, which Cloud needs in order to serve the page. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "pytest, which Community Cloud needs in the install list before it will boot the app."
           }
         ],
         "salt": "5d265b0f400a07e3",
@@ -1413,19 +1413,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "That the audience radio changes the invalid rate. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "That flipping the audience radio changes the invalid rate shown on the tile."
           },
           {
             "id": "b",
-            "text": "AppTest renders the banner without an exception, including the clinical-use line, and at least one metric. A second test checks that removing the bad lot lowers the projected rate. The logic trace names the same function."
+            "text": "AppTest renders the banner without an exception, including the clinical-use line, and at least one metric. A second test checks that removing the bad lot lowers the projected rate."
           },
           {
             "id": "c",
-            "text": "A live click in a browser, which CI performs on Community Cloud. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A live browser click, which CI performs against Community Cloud on every pull request."
           },
           {
             "id": "d",
-            "text": "That the page downloads llama3.1:8b. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "That the page downloads llama3.1:8b during AppTest and fails if the weight is missing."
           }
         ],
         "salt": "b93a90e8549423f0",
@@ -1443,7 +1443,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The report has no counts. The 22/22 figure is typed into the README by hand. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "The report stores no counts. The 22 of 22 cell is typed into the README by hand."
           },
           {
             "id": "b",
@@ -1451,11 +1451,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "Evidence was 3/22 and the keyword ranker was 22/22. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Evidence top-1 was 3 of 22 and the keyword ranker was 22 of 22 on the same files."
           },
           {
             "id": "d",
-            "text": "Both rankers scored 22/22, so the note is as good as the table. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Both rankers scored 22 of 22, so a week-0 note is as accurate as the evidence table."
           }
         ],
         "salt": "1f7a97edfa9bf876",
@@ -1468,15 +1468,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The evidence ranker is wrong and the keyword ranker is the one to quote. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The evidence ranker is wrong on weak_lot, and the keyword ranker is the number to quote."
           },
           {
             "id": "b",
-            "text": "no_single_cause means the file failed to generate. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "no_single_cause means generate failed, so weak_lot never produced a frame to score."
           },
           {
             "id": "c",
-            "text": "weak_lot is held out and therefore not scored. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "weak_lot is one of the four holdout files, so it is excluded from the score entirely."
           },
           {
             "id": "d",
@@ -1493,19 +1493,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A reagent-lot stratum also cleared the bar. Top-1 stayed drifting_instrument. The report lists that second stratum on purpose. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "A reagent-lot stratum also cleared the bar. Top-1 stayed drifting_instrument. The report lists that second stratum on purpose."
           },
           {
             "id": "b",
-            "text": "The drift files were deleted from the score. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The drift files were removed from the scored set once a second stratum appeared."
           },
           {
             "id": "c",
-            "text": "Top-1 flipped to the lot on all four files. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "Top-1 flipped to the reagent lot on all four drift files, and the instrument fell to second."
           },
           {
             "id": "d",
-            "text": "The keyword ranker was the only one that saw the instrument. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Only the keyword ranker saw the instrument. The evidence ranker stayed on the lot."
           }
         ],
         "salt": "c8e7a637fa35ef3c",
@@ -1518,11 +1518,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Llama 3.2 1B won, but the number is confidential. The logic trace names the same function. The demo command is how you see the consequence."
+            "text": "Llama 3.2 1B won the comparison, but that accuracy figure is confidential and stays out of the report."
           },
           {
             "id": "b",
-            "text": "Community Cloud ran both models and they tied. The demo command is how you see the consequence. Compare it with the snapshot, not with today's main."
+            "text": "Community Cloud ran both models on the 22 files, and the two accuracies came out tied."
           },
           {
             "id": "c",
@@ -1530,7 +1530,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The 7B versus 1.5B figure from an older plan is still the one to quote. The unit test on this tag is the check. The practice edit below depends on this point."
+            "text": "The older 7B versus 1.5B comparison is still the number a resume is supposed to quote."
           }
         ],
         "salt": "7890e6fb3080a6c5",
@@ -1543,19 +1543,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Quotes make the lot id a float. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The quotes force the lot id to be parsed as a float, which is what the generator expects for L-4419."
           },
           {
             "id": "b",
-            "text": "PyYAML 1.1 treats an unquoted true as a boolean. The generator looks up the string key \"true\". The unit test on this tag is the check."
+            "text": "PyYAML 1.1 treats an unquoted true as a boolean. The generator looks up the string key \"true\"."
           },
           {
             "id": "c",
-            "text": "JSON requires quotes, and the scenario is JSON. The demo command is how you see the consequence."
+            "text": "The scenario is JSON, and JSON requires quotes around every key including true."
           },
           {
             "id": "d",
-            "text": "The quotes tell the keyword ranker to ignore the file. The unit test on this tag is the check."
+            "text": "The quotes mark the file so the keyword ranker skips it and cannot take the herring."
           }
         ],
         "salt": "04f27cf10dc8d444",
@@ -1568,19 +1568,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The spec of 2%. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The 2% spec, which would let the ranker decide escalate before it sees a stratum."
           },
           {
             "id": "b",
-            "text": "The scenario seed. The logic trace names the same function."
+            "text": "The scenario seed, which would let the ranker rebuild the frame a second way."
           },
           {
             "id": "c",
-            "text": "eval.expect_cause. That block is the label for the score, not an input. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "eval.expect_cause. That block is the label for the score, not an input."
           },
           {
             "id": "d",
-            "text": "The column list. The demo command is how you see the consequence."
+            "text": "The column list, which would tell the ranker which strata it is allowed to score."
           }
         ],
         "salt": "08157241d4804410",
@@ -1597,15 +1597,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "The keyword ranker uses 2.4 as a score. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Rates and keys in this session come from code."
+            "text": "The keyword ranker treats 2.4 as its score unless that token is listed in the facts."
           },
           {
             "id": "c",
-            "text": "2.4.0 is the invalid rate on software scenarios. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "2.4.0 is the invalid rate on a software scenario, so it belongs in the facts as a percent."
           },
           {
             "id": "d",
-            "text": "Pydantic cannot store version strings unless they are floats. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. The practice edit below depends on this point."
+            "text": "Pydantic stores version strings only after they are coerced to floats, which is why 2.4.0 is copied."
           }
         ],
         "salt": "57bcc0bac62c18fd",
@@ -1618,19 +1618,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Nothing. The report is hand-edited and CI ignores it. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Nothing from the eval script. The report is edited by hand and CI does not read it."
           },
           {
             "id": "b",
-            "text": "The same eval entry point with --limit 5 --smoke. It fails if evidence top-1, fidelity, citations, or escalation miss. The unit test on this tag is the check."
+            "text": "The same eval entry point with --limit 5 --smoke. It fails if evidence top-1, fidelity, citations, or escalation miss."
           },
           {
             "id": "c",
-            "text": "A refit of the lift gate on the holdout. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A refit of the lift gate on the holdout split, which CI runs before the smoke limit."
           },
           {
             "id": "d",
-            "text": "All 22 scenarios against a live Llama 3.1 server. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "All 22 scenarios against a live Llama 3.1 server, and CI fails if that server is down or the tag is missing from the laptop."
           }
         ],
         "salt": "15c51f71a75472dc",
@@ -1648,19 +1648,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The status node cannot count to 4. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "The status node cannot represent week numbers above 3, so week 4 has to leave the graph."
           },
           {
             "id": "b",
-            "text": "Week 4 deletes the plan and starts triage over. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Week 4 deletes the plan and starts triage again from an empty hypothesis list."
           },
           {
             "id": "c",
-            "text": "A separate script writes the deck and skips the guard on purpose. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "A script outside the graph writes the deck and deliberately skips the fidelity check."
           },
           {
             "id": "d",
-            "text": "Status is the weekly note. Close-out confirms D7 and D8 and writes the deck. Routing week 4 to closeout keeps that work inside the graph, under the fidelity check. The logic trace names the same function."
+            "text": "Status is the weekly note. Close-out confirms D7 and D8 and writes the deck. Routing week 4 to closeout keeps that work inside the graph, under the fidelity check."
           }
         ],
         "salt": "890b0e2c9ce37da1",
@@ -1673,7 +1673,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The projection is a second scenario file the customer signed. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The projection is a second scenario file the customer signed, so calling it follow-up is fair."
           },
           {
             "id": "b",
@@ -1681,11 +1681,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "Labeling it follow-up is required by python-pptx. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "python-pptx requires the word follow-up on the impact slide or the deck will not save."
           },
           {
             "id": "d",
-            "text": "Follow-up is the right word because the YAML contains next quarter's rows. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Follow-up would be accurate, because the scenario YAML already contains next quarter's cured rows."
           }
         ],
         "salt": "74109de835691552",
@@ -1698,19 +1698,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The customer's email, pasted verbatim. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "The dollar amount pasted from the customer's email, which the template does not recompute."
           },
           {
             "id": "b",
-            "text": "k times cost_per_invalid_usd from the scenario. For bad_lot that is 529 times 85. The template does not type the product. The unit test on this tag is the check."
+            "text": "k times cost_per_invalid_usd from the scenario. For bad_lot that is 529 times 85. The template does not type the product."
           },
           {
             "id": "c",
-            "text": "A round number the model chooses for an executive audience. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A round dollar figure the model picks for an executive audience, independent of the row count and the unit price in the YAML."
           },
           {
             "id": "d",
-            "text": "The Jira story points, times 1000. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Jira story points for the investigation epic, multiplied by 1000."
           }
         ],
         "salt": "068eee5576b06244",
@@ -1723,19 +1723,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Safe: any number, because the deck is a simulation and the disclaimer covers a false comparison. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Rates and keys in this session come from code."
+            "text": "Safe to quote any cell, because the deck is a simulation and the disclaimer covers a false comparison."
           },
           {
             "id": "b",
-            "text": "Safe: evidence top-1 22/22 on this constructed set, keyword top-1 3/22, fidelity 22/22, and the four drift files where a lot also cleared the bar. Not safe: calling 22/22 a clinical accuracy rate, or a Llama 3.1 versus Llama 3.2 comparison. Those models were not run. The logic trace names the same function."
+            "text": "Safe: evidence top-1 22/22 on this constructed set, keyword top-1 3/22, fidelity 22/22, and the four drift files where a lot also cleared the bar. Not safe: calling 22/22 a clinical accuracy rate, or a Llama 3.1 versus Llama 3.2 comparison. Those models were not run."
           },
           {
             "id": "c",
-            "text": "Safe: the keyword ranker's 3/22, quoted alone as the system's accuracy. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Safe to quote the keyword ranker's 3 of 22 by itself as the system's accuracy."
           },
           {
             "id": "d",
-            "text": "Safe: 'the model is 100% accurate in the field.'. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Safe to quote: the model is 100% accurate in the field, because evidence top-1 was 22 of 22."
           }
         ],
         "salt": "21ae2bfc46653180",
@@ -1748,11 +1748,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Twelve slides, one per Jira epic. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. The practice edit below depends on this point."
+            "text": "Twelve slides, one for each Jira epic in the build backlog plus the five investigation tasks."
           },
           {
             "id": "b",
-            "text": "One slide, generated by the model. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The demo command is how you see the consequence."
+            "text": "One slide, and the model writes the title, the cost, and the recommendation into that single frame."
           },
           {
             "id": "c",
@@ -1760,7 +1760,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Seven slides, and no_single_cause still says to quarantine the first lot. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main."
+            "text": "Seven slides, and a no_single_cause call still recommends quarantining the first lot on the file."
           }
         ],
         "salt": "3720eeda6bc40cb3",
@@ -1773,11 +1773,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Hosted Streamlit downloads Llama 3.1 8B on every page load. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "Hosted Streamlit downloads Llama 3.1 8B on every page load and runs that tag for the deck."
           },
           {
             "id": "b",
-            "text": "The deck is written by Llama 3.2 1B on Community Cloud. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Llama 3.2 1B on Community Cloud writes the deck, which is why the local default is unused."
           },
           {
             "id": "c",
@@ -1785,7 +1785,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "There are two model settings, OLLAMA_MODEL and LLM_MODEL, and both are required. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "OLLAMA_MODEL and LLM_MODEL are both required, and the hosted page refuses to boot if either is unset."
           }
         ],
         "salt": "ae5cb36718eed753",
@@ -1798,19 +1798,19 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A live Slack thread, which Session 9 ships. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A live Slack thread for leadership, which Session 9 ships as the close-out instead of a deck."
           },
           {
             "id": "b",
-            "text": "Ticket INV-101, the PRD, rewritten as slides. The demo command is how you see the consequence. The practice edit below depends on this point."
+            "text": "Ticket INV-101, the original PRD, rewritten into slides without a new issue."
           },
           {
             "id": "c",
-            "text": "The recommendation and the effectiveness check. The deck is that answer. Ticket INV-303, epic INV-6. No Jira token is required to generate it. The logic trace names the same function. The unit test on this tag is the check."
+            "text": "The recommendation and the effectiveness check. The deck is that answer. Ticket INV-303, epic INV-6. No Jira token is required to generate it."
           },
           {
             "id": "d",
-            "text": "A fine-tune of the ranker on the 22 scenarios. The unit test on this tag is the check. The demo command is how you see the consequence."
+            "text": "A fine-tune of the evidence ranker on the 22 scenarios, filed as the week-4 deliverable."
           }
         ],
         "salt": "21d89c3eb0d52b05",
@@ -1827,15 +1827,15 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "Jira is required, and the demo does not run without a token. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Rates and keys in this session come from code. A later session does not silently rewrite this rule. The clip stops on the lines that decide it. The logic trace names the same function. Compare it with the snapshot, not with today's main."
+            "text": "Jira is required, and the week-4 demo does not run unless a token is present."
           },
           {
             "id": "c",
-            "text": "The model reads the complaint and the investigation is done. The logic trace names the same function. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Rates and keys in this session come from code. A later session does not silently rewrite this rule. The demo command is how you see the consequence."
+            "text": "The model reads the complaint, names the cause, and the investigation is finished."
           },
           {
             "id": "d",
-            "text": "This is a medical device with a cleared clinical claim of 22/22. The unit test on this tag is the check. The demo command is how you see the consequence. The practice edit below depends on this point. Compare it with the snapshot, not with today's main. Rates and keys in this session come from code. A later session does not silently rewrite this rule. The clip stops on the lines that decide it."
+            "text": "This is a medical device with a cleared clinical claim of 22 correct calls out of 22."
           }
         ],
         "salt": "94aec47c194e385b",
