@@ -13,7 +13,7 @@ Published site: GitHub Pages from the `gh-pages` branch (videos live there, not 
 Locally, after a render:
 
 ```bash
-python3 academy/scripts/publish_pages.sh
+bash academy/scripts/publish_pages.sh
 python3 -m http.server -d academy/build/pages 8765
 ```
 
@@ -28,7 +28,7 @@ python3 academy/scripts/verify_videos.py       # ffprobe, edge-tts only, under 1
 python3 academy/scripts/build_site.py
 ```
 
-Snapshots under `academy/snapshots/` and MP4s under `academy/build/` are gitignored so `main` stays light.
+Snapshots under `academy/snapshots/` and MP4s under `academy/build/` are gitignored so `main` stays light. Clip durations live in `academy/content/durations.json`, so `python3 academy/scripts/build_site.py` rebuilds the same HTML without the video files. CI runs that script and fails if `academy/site/` or `academy/content/QUIZ_ANSWERS.md` drift.
 
 ## One-time Pages setting
 
@@ -36,4 +36,4 @@ If the live site is not already on, in the repo: Settings → Pages → Build an
 
 The dashboard link is `streamlitUrl` in `academy/site/js/site-config.js` (`https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/`). Jira points at `https://neelsrejan.atlassian.net/jira/projects` (project key `INV`).
 
-Quiz letters live in `academy/content/bank.py` for rebuilds. The pages only get a salted SHA-256 of the correct choice, and the explanation is base64 until you submit.
+`academy/content/bank.py` is the authoring copy. The build shuffles the four choices and writes a salted SHA-256 of the published letter. That hash is a self-study speed bump, not protection: trying the four choices, or reading `academy/content/QUIZ_ANSWERS.md`, bypasses it. It only keeps the letter from sitting in plain sight next to the question. The prose quizzes in `docs/sessions/` are a different set.

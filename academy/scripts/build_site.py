@@ -6,7 +6,9 @@ import base64
 import hashlib
 import html
 import json
+import random
 import sys
+from collections import Counter
 from pathlib import Path
 
 import markdown
@@ -56,10 +58,7 @@ def load_clips(session: int) -> list[dict]:
     for script in sorted(folder.glob("*.yaml")):
         spec = yaml.safe_load(script.read_text())
         path = repo_path(spec["file"], session)
-        sidecar = ACADEMY / "build" / "videos" / f"session-{session}" / f"{script.stem}.json"
-        seconds = None
-        if sidecar.exists():
-            seconds = json.loads(sidecar.read_text()).get("seconds")
+        seconds = clip_seconds(session, script.stem)
         clips.append(
             {
                 "stem": script.stem,
@@ -75,11 +74,39 @@ def load_clips(session: int) -> list[dict]:
     return clips
 
 
+def clip_seconds(session: int, stem: str):
+    """Durations are committed so a rebuild matches without the MP4s present."""
+    manifest = ACADEMY / "content" / "durations.json"
+    key = f"session-{session}/{stem}"
+    if manifest.exists():
+        data = json.loads(manifest.read_text())
+        if key in data:
+            return data[key]
+    sidecar = ACADEMY / "build" / "videos" / f"session-{session}" / f"{stem}.json"
+    if sidecar.exists():
+        return json.loads(sidecar.read_text()).get("seconds")
+    return None
+
+
 def clock(seconds: float | None) -> str:
     if seconds is None:
         return "duration after render"
     total = int(round(seconds))
     return f"{total // 60}:{total % 60:02d}"
+
+
+def published_choices(q: dict, salt: str) -> tuple[dict[str, str], str]:
+    """Shuffle the four texts with a fixed seed and relabel them a–d.
+
+    The letter in bank.py is only the authoring key. The page letter is the
+    one assigned here, and that is what gets hashed.
+    """
+    correct_text = q["choices"][q["correct"]]
+    texts = [q["choices"][key] for key in "abcd"]
+    random.Random(salt).shuffle(texts)
+    labeled = {letter: texts[i] for i, letter in enumerate("abcd")}
+    published = next(letter for letter, text in labeled.items() if text == correct_text)
+    return labeled, published
 
 
 def quiz_payload() -> dict:
@@ -96,18 +123,43 @@ def quiz_payload() -> dict:
                 raise SystemExit(f"session {session} q{i} missing correct")
             qid = f"s{session}q{i}"
             salt = salt_for(session, qid)
+            labeled, published = published_choices(q, salt)
             built.append(
                 {
                     "id": qid,
                     "prompt": q["prompt"],
-                    "choices": [{"id": key, "text": choices[key]} for key in "abcd"],
+                    "choices": [{"id": key, "text": labeled[key]} for key in "abcd"],
                     "salt": salt,
-                    "answerHash": answer_hash(salt, q["correct"]),
+                    "answerHash": answer_hash(salt, published),
                     "explain": b64(q["explain"]),
                 }
             )
         payload[str(session)] = {"passMark": 0.8, "questions": built}
     return payload
+
+
+def quiz_shape(payload: dict) -> tuple[Counter, int, int]:
+    """Return letter counts, how often the correct text is uniquely longest, and n."""
+    letters: Counter = Counter()
+    longest_correct = 0
+    n = 0
+    for pack in payload.values():
+        for question in pack["questions"]:
+            n += 1
+            winner = None
+            for choice in question["choices"]:
+                if answer_hash(question["salt"], choice["id"]) == question["answerHash"]:
+                    if winner is not None:
+                        raise SystemExit(f"{question['id']} hashes to two letters")
+                    winner = choice
+            if winner is None:
+                raise SystemExit(f"{question['id']} hash matches no choice")
+            letters[winner["id"]] += 1
+            lengths = [len(choice["text"]) for choice in question["choices"]]
+            top = max(lengths)
+            if len(winner["text"]) == top and lengths.count(top) == 1:
+                longest_correct += 1
+    return letters, longest_correct, n
 
 
 def nav(active: int) -> str:
@@ -289,10 +341,35 @@ def session_body(session: dict, clips: list[dict]) -> str:
 <h2>Practice, on a private branch</h2>
 <div class="prose">{practice}</div>
 <h2>Quiz</h2>
-<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The answer key is not stored as letters in this page.</p>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
 <div id="quiz"></div>
 </div>
 """
+
+
+def write_answer_key(payload: dict) -> None:
+    """Author key for the letters the built site actually grades. Not copied to Pages."""
+    lines = [
+        "# Academy quiz letters",
+        "",
+        "These are the letters after `build_site.py` shuffles each question.",
+        "The salted hash on the page is a self-study speed bump, not protection.",
+        "Reading this file, or trying all four choices, bypasses it.",
+        "The prose quizzes in `docs/sessions/` are a separate set and are not these letters.",
+        "",
+    ]
+    for session in range(1, 10):
+        lines.append(f"## Session {session}")
+        lines.append("")
+        for index, question in enumerate(payload[str(session)]["questions"], 1):
+            winner = next(
+                choice
+                for choice in question["choices"]
+                if answer_hash(question["salt"], choice["id"]) == question["answerHash"]
+            )
+            lines.append(f"{index}. **{winner['id'].upper()}.** {winner['text']}")
+            lines.append("")
+    (ACADEMY / "content" / "QUIZ_ANSWERS.md").write_text("\n".join(lines))
 
 
 def main() -> None:
@@ -303,10 +380,20 @@ def main() -> None:
     for forbidden in ('"correct"', '"answer":', "Qwen", "qwen"):
         if forbidden in blob:
             raise SystemExit(f"quiz payload contains {forbidden}")
-    # The correct letter must not appear as its own field. Spot-check a hash.
+    letters, longest_correct, n = quiz_shape(payload)
+    for letter, count in letters.items():
+        if count / n > 0.40:
+            raise SystemExit(f"letter {letter} is {count}/{n} answers, over 40%")
+    if longest_correct / n > 0.40:
+        raise SystemExit(
+            f"the longest option is correct {longest_correct}/{n} times, over 40%"
+        )
+    # Spot-check session 1 question 1 against the shuffled letter, not a fixed "a".
     sample = payload["1"]["questions"][0]
-    if answer_hash(sample["salt"], "a") != sample["answerHash"]:
+    _labeled, published = published_choices(QUIZZES[1][0], sample["salt"])
+    if answer_hash(sample["salt"], published) != sample["answerHash"]:
         raise SystemExit("hash mismatch on session 1 question 1")
+    write_answer_key(payload)
     (SITE / "js").mkdir(parents=True, exist_ok=True)
     (SITE / "js" / "quiz-data.js").write_text("window.QUIZZES = " + blob + ";\n")
     (SITE / "index.html").write_text(page("invalid-agent Academy", home_body(), session=0, page_name="home"))
