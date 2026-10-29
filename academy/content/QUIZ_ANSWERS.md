@@ -7,162 +7,162 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 ## Session 1
 
-1. **A.** So the promised validity and the 2% invalid cap cannot drift apart.
+1. **A.** One shared constant keeps the promised validity and the two percent cap from drifting apart.
 
-2. **A.** A base URL, an email, and a token. Any missing piece leaves jira_enabled false.
+2. **B.** A base URL plus an email plus a token are all required or the client gate stays false.
 
-3. **D.** It prints every field, including jira_api_token.
+3. **C.** The       generated view prints every stored field including a planted API token.
 
-4. **C.** The build backlog for constructing the agent. Sprint 1 is INV-101 through INV-109.
+4. **D.** It is the three-sprint construction board and sprint 1 holds INV-101 through INV-109.
 
-5. **C.** Nothing in this tag imports them yet, so CI should not download pandas, LangGraph, or a model client.
+5. **A.** Nothing    in this tag imports third-party libraries yet so the job skips those downloads.
 
-6. **D.** pyproject.toml sitting next to scenarios/ or src/invalid_agent/.
+6. **B.** It   accepts the project file sitting beside the scenarios directory or the package directory.
 
-7. **B.** deterministic, because rules, rules-only, and mock are three names for that one backend.
+7. **C.** It resolves to deterministic because rules and rules-only and mock are three names for that engine.
 
-8. **A.** Python 3.11 and 3.12, editable install with the dev extra, then pytest. No secrets.
+8. **D.** Python 3.11 and 3.12 do an editable install with the dev extra and then pytest with no secrets.
 
 ## Session 2
 
-1. **A.** Stacking two draws would raise the complement too, or double-count the mask. Replacing the mask leaves everyone else at baseline.
+1. **A.** Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched.
 
-2. **C.** The analytic lower bound is 0. Floating point leaves a tiny residue, so anything under 1e-12 snaps back to 0.
+2. **B.** The      analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.
 
-3. **C.** Site, instrument, lot, software, and operator are drawn independently. A collection site is not tied to one instrument.
+3. **C.** Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge.
 
-4. **B.** One point beyond 3 sigma; two of three beyond 2 sigma on one side; four of five beyond 1 sigma on one side; eight in a row on one side of the center.
+4. **D.** Zones are a point past 3 sigma then 2 of 3 past 2 sigma then 4 of 5 past 1 sigma then 8 on one side.
 
-5. **D.** They do not. seeds.py holds a lognormal stand-in and the DOI. The file is cited, not redistributed.
+5. **A.** They are absent and the seed module holds a lognormal stand-in plus the DOI and the source is only cited.
 
-6. **D.** A scenario file plus a seed is the whole source of randomness, so the same YAML reprints the same field file.
+6. **B.** A document plus a seed is the whole randomness source so one description reprints the field document.
 
-7. **D.** p_value 1 and chi2 0. A quiet scenario is not an exception.
+7. **C.** The result is probability 1 and statistic 0 because a calm scenario is not treated as an exception.
 
-8. **C.** Valid rows. An empty invalid code must not count as a failure mode.
+8. **D.** Valid     records are left out because an empty failure code must not count as a failure mode.
 
 ## Session 3
 
-1. **B.** It stores metrics, hypotheses, the evidence catalog, the memo, and the fidelity record. A later node calls generate(scenario) again. The seed makes that the same frame.
+1. **A.** Metrics and the catalog and the memo are kept and a following step calls generate again from the same seed.
 
-2. **B.** Other strata miss at least one gate: 80 runs, lift 1.8, 15 excess invalids, and chi-square p < 0.01.
+2. **B.** Other strata miss a gate such as 80 runs or lift 1.8 or 15 excess failures or probability under 0.01.
 
-3. **D.** It survives masking, it is not within 0.03 of a walked fact, it lands in unknown, and ok is false.
+3. **C.** It survives masking and is not within 0.03 of a walked fact so it lands in unknown and ok stays false.
 
-4. **B.** narrate catches the exception, sets rewritten true, and returns the template. The failed draft is not saved.
+4. **D.** The narrator catches the exception and hands back the template without saving the failed draft.
 
-5. **D.** A cause has to come from the table. A QA sentence does not get a vote.
+5. **A.** A driver has to come from the grid because a QA line does not get a vote on the ordering.
 
-6. **B.** It exits on purpose, so the tag cannot pretend the weekly loop already exists.
+6. **B.** It stops on purpose so this snapshot cannot pretend the weekly loop already exists.
 
-7. **D.** One httpx call is easier to mock, and it is not called when the backend is deterministic.
+7. **C.** One     httpx call is easier to mock and that call is skipped when the engine is deterministic.
 
-8. **D.** So 4419 cannot be reused as a permitted rate.
+8. **D.** Removing the identifier keeps 4419 from being reused as a permitted frequency in the paragraph.
 
 ## Session 4
 
-1. **B.** The 6M set is the diagram a quality reviewer expects. An empty bone with score zero says the category was considered.
+1. **A.** An empty bone scored at zero says that category was considered on the diagram reviewers expect.
 
-2. **B.** An empty citation list, or an id that is not in the catalog. It runs inside build_whys, before markdown exists.
+2. **B.** An empty citation array or an unknown id is refused inside the builder before any markdown exists.
 
-3. **A.** No. index_injections keeps only injections whose week is less than or equal to the case week. That note is week 1.
+3. **C.** No because entries are kept only through the case lap and that QA remark belongs to lap 1.
 
-4. **A.** Return to the spec and no rule-1 point on the weekly p-chart. Follow-up runs do not exist, so a before/after figure would be a projection.
+4. **D.** The target is a return to the promise with no zone-1 point because follow-up runs do not exist yet.
 
-5. **B.** Define is D1–D2, Measure is the metrics, Analyze is D4 plus the fishbone and 5 Whys, Improve is D3 and D5, Control is D6 and D7. D8 is closure, not a DMAIC phase.
+5. **A.** Define maps to the opening pair and measure to the metrics and analyze to the contrast and the diagram.
 
-6. **C.** Material / bad_reagent_lot. Step 5 starts with a lot-level stop and includes the catalog sentence that names L-4419.
+6. **B.** Material and the bad reagent batch come first and the fifth answer names L-4419 in the catalog line.
 
-7. **D.** A different column, so the chain says why the next stratum is not the cause.
+7. **C.** A different column is required so the chain can show why the next stratum is not the driver.
 
-8. **D.** None. Pydantic checks the branch and the Why. The Session 3 fidelity guard is reused on the three markdown files.
+8. **D.** No new library is added and the prior fidelity guard is reused on the three markdown documents.
 
 ## Session 5
 
-1. **D.** write_image needs kaleido and a browser. The matplotlib path runs in CI and on a laptop without that download.
+1. **A.** The  export helper needs an extra browser library while the plotting path runs without that download.
 
-2. **D.** A task's start must be greater than or equal to the predecessor's end. The dates are YYYY-MM-DD, so dictionary order matches calendar order.
+2. **B.** A task opening must follow the predecessor closing and year-month-day stamps sort in calendar order.
 
-3. **C.** Week 2 adds T11, the lab-director note. R1's trend goes from new to down and its likelihood drops. R4 appears with trend up.
+3. **C.** The second lap adds the lab-director task and the first hazard moves down while another hazard moves up.
 
-4. **D.** The build backlog uses INV-*. SIM-* makes a dry-run file obviously not that board.
+4. **D.** The construction board uses INV identifiers and SIM makes a rehearsal document obviously different.
 
-5. **C.** LiveJira.sync catches it, stores the exception class name, writes the JSON, and does not raise. The token is not put in the error or in repr.
+5. **A.** The client catches the failure and stores the exception class and saves the document without the token.
 
-6. **C.** Zero new POSTs. The first sync posts the epic plus the tasks. _upsert updates a story in place when the task id is already in the file.
+6. **B.** The repeat pass makes no further posts because a known task id is edited in place after the first pass.
 
-7. **D.** The planner reads the top hypothesis. It does not read the fishbone. RCA does not read the plan.
+7. **C.** The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule.
 
-8. **A.** A lot is QA. An instrument or a temperature lane is Manufacturing. Software is R&D. No single cause stays with the PM, which means do not quarantine yet.
+8. **D.** Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays put.
 
 ## Session 6
 
-1. **B.** The field file is fixed by the scenario seed. Re-running triage would recompute the same metrics. The lap re-enters at plan.
+1. **A.** The field document is fixed by the seed so the pass re-enters at the scheduler.
 
-2. **A.** The rate is still over spec, and containment is week 3, so week 2 is Red. The synthetic file is not rewritten, so it never goes Green. Amber means containment is underway, not that the rate recovered.
+2. **B.** Frequency stays over the promise and containment waits so the second lap stays urgent and nothing is cured.
 
-3. **D.** Keep the field ranking after release testing was reported as a pass, and add the lab-director note to the plan.
+3. **C.** Keep the field ordering after a reported release pass and add the lab-director remark to the schedule.
 
-4. **C.** build_status_facts rounds the computed rate onto rate_pct. The template interpolates that field. The guard then checks the sentence.
+4. **D.** The facts builder rounds frequency onto a percent field and the wording inserts that field for the guard.
 
-5. **A.** out/week0/ and out/week2/. Compare plan.json and risk_register.md. The root copy is latest. The week folder is as of that week.
+5. **A.** Compare the opening folder with the second because each is as of that lap and the top copy is newest.
 
-6. **D.** It must not state a confirmed cause. Internal gets the hypothesis. Leadership gets the cost and the ask.
+6. **B.** It must not state a confirmed driver and internal text gets the guess while leadership gets the cost.
 
-7. **B.** Status is a comparison of integers. T1 (sim week 0) is Done and T11 (sim week 2) is Done. T10 (sim week 4) is still To Do.
+7. **C.** Integer comparison marks the lap-0 task finished and the lap-2 task finished while the lap-4 task stays open.
 
-8. **A.** advance, which adds one to the week and edges back to plan.
+8. **D.** The result is advance which adds one to the lap and then edges back to the scheduler.
 
 ## Session 7
 
-1. **B.** Streamlit Community Cloud has no Ollama, and this repo does not ship weights. The deterministic templates answer without a download.
+1. **A.** The cloud app has no local runner and ships no weights so deterministic wording answers with no download.
 
-2. **C.** LLM_MODEL. An explicit value wins. With the toggle off and the variable unset, a local or self-hosted run asks Ollama for llama3.2:1b. The CLI default remains llama3.1:8b.
+2. **B.** LLM_MODEL wins when set and otherwise a local run asks for llama3.2:1b while commands stay on llama3.1:8b.
 
-3. **B.** projection_summary clears invalids on the leading stratum of the same synthetic file. No new field data were collected.
+3. **C.** Failures on the leading stratum of the same synthetic document are cleared and no new field data are collected.
 
-4. **A.** _run is cached on scenario, week, backend, and model. The radio only picks a string already stored on status_updates.
+4. **D.** The cache key covers scenario and lap and engine and model while the selector only rereads stored text.
 
-5. **C.** Sign in to Streamlit Community Cloud with GitHub and select app/streamlit_app.py or the root streamlit_app.py. The repo cannot do that sign-in.
+5. **A.** Sign in on the cloud host with the code host and pick the app entry because the tree cannot do it.
 
-6. **C.** Navy #0B3A5B and teal #1F7A8C for the series, red #B23A48 for rule-1 marks. No purple gradient.
+6. **B.** Navy 0B3A5B and teal 1F7A8C draw the line and B23A48 marks zone-1 points with no purple gradient.
 
-7. **C.** A GGUF weight file. The install list is pandas, numpy, scipy, PyYAML, Pydantic, httpx, LangGraph, langchain-core, Plotly, matplotlib, python-pptx, and Streamlit.
+7. **C.** A weight file stays out while data and graph and chart libraries and the app framework stay installed.
 
-8. **B.** AppTest renders the banner without an exception, including the clinical-use line, and at least one metric. A second test checks that removing the bad lot lowers the projected rate.
+8. **D.** The screen shows the clinical-use banner and a metric and dropping the bad batch lowers the projection.
 
 ## Session 8
 
-1. **B.** Evidence top-1 and top-3 were 22/22. Keyword top-1 was 3/22. The three keyword hits are the flat files, whose week-0 note names no cause.
+1. **A.** The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 where no driver was named.
 
-2. **D.** The lot bump was built to stay under the lift gate. The correct call is to withhold. The keyword ranker repeats the note and says bad_reagent_lot.
+2. **B.** The batch bump stays under the lift gate so withholding is correct and notes still name the reagent batch.
 
-3. **A.** A reagent-lot stratum also cleared the bar. Top-1 stayed drifting_instrument. The report lists that second stratum on purpose.
+3. **C.** A reagent-batch stratum also cleared the bar and the leading name stayed the drifting gauge on purpose.
 
-4. **C.** Neither model was installed. The table compares two ranking policies on the deterministic backend.
+4. **D.** Neither llama tag was installed and the table compares two ordering policies on the deterministic engine.
 
-5. **B.** PyYAML 1.1 treats an unquoted true as a boolean. The generator looks up the string key "true".
+5. **A.** The parser treats an unquoted true as a boolean and the builder looks up that same string in the map.
 
-6. **C.** eval.expect_cause. That block is the label for the score, not an input.
+6. **B.** The    hidden expected label stays out of ordering because that block is the grade and not an input.
 
-7. **A.** The guard strips an identifier only when the exact string is in the facts. Otherwise 2.4.0 was scanned as the number 2.4. Lot ids were already safe behind a hyphen. The guard's thresholds did not change.
+7. **C.** An identifier is stripped only when its exact text is already in the fact bag so 2.4.0 must be placed there.
 
-8. **B.** The same eval entry point with --limit 5 --smoke. It fails if evidence top-1, fidelity, citations, or escalation miss.
+8. **D.** The entry runs under limit 5 with a smoke flag and fails when top choice or fidelity is missed.
 
 ## Session 9
 
-1. **D.** Status is the weekly note. Close-out confirms D7 and D8 and writes the deck. Routing week 4 to closeout keeps that work inside the graph, under the fidelity check.
+1. **A.** The lap note is not the ending and the wrap-up confirms the last sections then builds the slides.
 
-2. **B.** The generator does not rewrite the field file. Clearing the leading stratum is a counterfactual. bad_lot stays over spec in the observed series.
+2. **B.** The     field document is not rewritten and clearing the leading stratum is only a counterfactual.
 
-3. **B.** k times cost_per_invalid_usd from the scenario. For bad_lot that is 529 times 85. The template does not type the product.
+3. **C.** It is failure count times unit price and on the bad batch that product is 529 times 85 with no typed total.
 
-4. **B.** Safe: evidence top-1 22/22 on this constructed set, keyword top-1 3/22, fidelity 22/22, and the four drift files where a lot also cleared the bar. Not safe: calling 22/22 a clinical accuracy rate, or a Llama 3.1 versus Llama 3.2 comparison. Those models were not run.
+4. **D.** Quote         the table at 22 of 22 beside notes at 3 of 22 and the shift documents and do not call it clinical.
 
-5. **C.** Seven blank-layout slides: title and disclaimer, summary, impact, root cause, options, recommendation, ask. No single cause recommends not containing a stratum.
+5. **A.** Seven frames are produced and an unclear driver means the recommendation is not to contain a stratum.
 
-6. **C.** LLM_MODEL defaults to llama3.1:8b, Meta Llama 3.1 8B via Ollama. Hosted Streamlit runs rules-only. llama3.2:1b is the small tag for a local or self-hosted run.
+6. **B.** The name defaults to llama3.1:8b on the desktop runner and the cloud app stays deterministic.
 
-7. **C.** The recommendation and the effectiveness check. The deck is that answer. Ticket INV-303, epic INV-6. No Jira token is required to generate it.
+7. **C.** It       wants the recommendation and the effectiveness check and the slides are INV-303 on epic INV-6.
 
-8. **A.** A lab says a fictional panel missed a 98% validity promise. The ranker only keeps strata that clear a fixed bar. Notes that name the wrong cause do not outvote the table. The deck labels the before/after chart as a projection. On 22 synthetic scenarios the evidence ranker matched the designed call 22 times, a note-only ranker matched 3, and four drift cases also cleared a lot.
+8. **D.** Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection while the table hit 22 and notes hit 3.

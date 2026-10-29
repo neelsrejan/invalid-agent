@@ -17,10 +17,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 ACADEMY = ROOT / "academy"
 SITE = ACADEMY / "site"
+sys.path.insert(0, str(ACADEMY))
 sys.path.insert(0, str(ACADEMY / "content"))
 
 from bank import QUIZZES  # noqa: E402
 from course import SESSIONS  # noqa: E402
+from quiz_checks import assert_guessers, assert_uniform_options  # noqa: E402
 
 REPO = "https://github.com/neelsrejan/invalid-agent"
 MD = markdown.Markdown(extensions=["extra", "sane_lists", "smarty"], output_format="html5")
@@ -131,39 +133,18 @@ def quiz_payload() -> dict:
                     "choices": [{"id": key, "text": labeled[key]} for key in "abcd"],
                     "salt": salt,
                     "answerHash": answer_hash(salt, published),
-                    "explain": b64(q["explain"]),
+                    "explain": b64(q["why"]),
                 }
             )
         payload[str(session)] = {"passMark": 0.8, "questions": built}
     return payload
 
 
-def _clauses(text: str) -> set[str]:
-    """Sentences and longer clauses, normalized. Short fragments are ignored."""
-    import re
-
-    found: set[str] = set()
-    for chunk in re.split(r"[.;]", text):
-        pieces = [chunk]
-        pieces.extend(chunk.split(","))
-        for piece in pieces:
-            norm = " ".join(piece.lower().split()).strip(" -")
-            if len(norm.split()) >= 5:
-                found.add(norm)
-    return found
-
-
-def quiz_shape(payload: dict) -> tuple[Counter, int, int, dict[int, float]]:
-    """Letter counts, longest-correct count, n, and strike-the-tell expected score by session."""
-    letters: Counter = Counter()
-    longest_correct = 0
-    n = 0
-    # clause -> [correct appearances, wrong appearances]
-    usage: dict[str, list[int]] = {}
-    questions = []
+def graded_items(payload: dict) -> list[dict]:
+    """Questions as the page shows them, with the letter the hash actually accepts."""
+    items = []
     for session, pack in payload.items():
         for question in pack["questions"]:
-            n += 1
             winner = None
             for choice in question["choices"]:
                 if answer_hash(question["salt"], choice["id"]) == question["answerHash"]:
@@ -172,50 +153,15 @@ def quiz_shape(payload: dict) -> tuple[Counter, int, int, dict[int, float]]:
                     winner = choice
             if winner is None:
                 raise SystemExit(f"{question['id']} hash matches no choice")
-            letters[winner["id"]] += 1
-            lengths = [len(choice["text"]) for choice in question["choices"]]
-            top = max(lengths)
-            if len(winner["text"]) == top and lengths.count(top) == 1:
-                longest_correct += 1
-            tagged = []
-            for choice in question["choices"]:
-                is_correct = choice["id"] == winner["id"]
-                parts = _clauses(choice["text"])
-                for part in parts:
-                    usage.setdefault(part, [0, 0])
-                    usage[part][0 if is_correct else 1] += 1
-                tagged.append((choice, is_correct, parts))
-            questions.append((int(session), tagged))
-    tells = {
-        part
-        for part, (correct_n, wrong_n) in usage.items()
-        if correct_n + wrong_n >= 2 and (correct_n == 0 or wrong_n > 2 * correct_n)
-    }
-    if tells:
-        sample = sorted(tells)[:8]
-        raise SystemExit(
-            "repeated clause is a wrong-answer tell: " + " | ".join(sample)
-        )
-    by_session: dict[int, float] = {}
-    counts: dict[int, int] = {}
-    for session, tagged in questions:
-        remaining = [
-            is_correct
-            for _choice, is_correct, parts in tagged
-            if not parts & tells
-        ]
-        score = 0.0
-        if remaining and any(remaining):
-            score = 1.0 / len(remaining)
-        by_session[session] = by_session.get(session, 0.0) + score
-        counts[session] = counts.get(session, 0) + 1
-    expected = {session: by_session[session] / counts[session] for session in by_session}
-    for session, rate in expected.items():
-        if rate >= 0.80:
-            raise SystemExit(
-                f"strike-the-tell guesser scores {rate:.0%} on session {session}"
+            items.append(
+                {
+                    "session": int(session),
+                    "prompt": question["prompt"],
+                    "choices": question["choices"],
+                    "correct": winner["id"],
+                }
             )
-    return letters, longest_correct, n, expected
+    return items
 
 
 def nav(active: int) -> str:
@@ -436,14 +382,18 @@ def main() -> None:
     for forbidden in ('"correct"', '"answer":', "Qwen", "qwen"):
         if forbidden in blob:
             raise SystemExit(f"quiz payload contains {forbidden}")
-    letters, longest_correct, n, _guesser = quiz_shape(payload)
-    for letter, count in letters.items():
+    items = graded_items(payload)
+    assert_uniform_options(items)
+    expected = assert_guessers(items)
+    letters: Counter = Counter(item["correct"] for item in items)
+    n = len(items)
+    for letter, count in sorted(letters.items()):
         if count / n > 0.40:
             raise SystemExit(f"letter {letter} is {count}/{n} answers, over 40%")
-    if longest_correct / n > 0.40:
-        raise SystemExit(
-            f"the longest option is correct {longest_correct}/{n} times, over 40%"
-        )
+        print(f"letter {letter}: {count}/{n}")
+    for name, by_session in expected.items():
+        bits = " ".join(f"s{session}={by_session[session]:.1%}" for session in range(1, 10))
+        print(f"guesser {name}: {bits}")
     # Spot-check session 1 question 1 against the shuffled letter, not a fixed "a".
     sample = payload["1"]["questions"][0]
     _labeled, published = published_choices(QUIZZES[1][0], sample["salt"])
