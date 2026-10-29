@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 6 · Weekly injections and three RAG notes</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 6;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="6">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item active" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 2 · Session 6 · tag session-6</p>
+<h1>Weekly injections and three RAG notes</h1>
+<p class="lede">The same rate header goes to three audiences. The customer note does not name the cause. Here RAG means Red, Amber, Green.</p>
+<p class="note">Ticket INV-207, INV-208 · about 80–100 minutes · artifact: Decision log, customer / internal / leadership notes</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 5 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-5.html">Go to Session 5</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>Run `python -m invalid_agent.graph --scenario bad_lot --week 3`.</li><li>Diff `out/week0/plan.json` with `out/week2/plan.json`, and the two risk registers.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-6</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 6 · Clip 1 · src/invalid_agent/graph.py</h3>
+<video controls preload="metadata" src="videos/session-6/01_graph.mp4">
+<a href="videos/session-6/01_graph.mp4">Download clip 1</a>
+</video>
+<p class="meta">5:50 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/graph.py">src/invalid_agent/graph.py</a> at <code>session-6</code></p>
+</article><article class="clip">
+<h3>2. Session 6 · Clip 2 · src/invalid_agent/nodes/status.py</h3>
+<video controls preload="metadata" src="videos/session-6/02_status.mp4">
+<a href="videos/session-6/02_status.mp4">Download clip 2</a>
+</video>
+<p class="meta">5:58 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/nodes/status.py">src/invalid_agent/nodes/status.py</a> at <code>session-6</code></p>
+</article><article class="clip">
+<h3>3. Session 6 · Clip 3 · src/invalid_agent/narrative.py</h3>
+<video controls preload="metadata" src="videos/session-6/03_narrative.mp4">
+<a href="videos/session-6/03_narrative.mp4">Download clip 3</a>
+</video>
+<p class="meta">5:45 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/narrative.py">src/invalid_agent/narrative.py</a> at <code>session-6</code></p>
+</article><article class="clip">
+<h3>4. Session 6 · Clip 4 · tests/test_status.py</h3>
+<video controls preload="metadata" src="videos/session-6/04_test_status.mp4">
+<a href="videos/session-6/04_test_status.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:25 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/tests/test_status.py">tests/test_status.py</a> at <code>session-6</code></p>
+</article><article class="clip">
+<h3>5. Session 6 · Clip 5 · src/invalid_agent/nodes/planner.py</h3>
+<video controls preload="metadata" src="videos/session-6/05_planner_status.mp4">
+<a href="videos/session-6/05_planner_status.mp4">Download clip 5</a>
+</video>
+<p class="meta">5:40 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/nodes/planner.py">src/invalid_agent/nodes/planner.py</a> at <code>session-6</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/docs/sessions/session-6/LOGIC_TRACE.md">LOGIC_TRACE.md at session-6</a></p>
+<div class="prose"><h1>Session 6 logic trace</h1>
+<p>Snapshot id: git tag <code>session-6</code>. Resolve the commit with <code>git rev-parse session-6^{}</code>.</p>
+<p>Laptop copy: check out the tag into <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 6\</code>. The tag is the snapshot.</p>
+<h2>1. Goal</h2>
+<p>Step one scenario from week 0 through week 3. Each week re-runs the plan and the RCA with the injections that have arrived, writes a decision-log entry, syncs Jira status, and drafts three RAG notes: customer, internal, leadership. The customer note does not declare a cause. The Gantt and the risk register differ across weeks. The notes pass the numeric-fidelity guard.</p>
+<h2>2. What had to be true before Session 7</h2>
+<p>The case state at the end of a run holds the latest plan, risks, decision log, and the three notes, and <code>out/weekN/</code> holds the snapshot for each week. The dashboard can read those files or call <code>run_case</code> without inventing a second loop.</p>
+<h2>3. Why these libraries</h2>
+<p>No new package. The new piece is a conditional edge in LangGraph. <code>route_after_status</code> returns <code>"advance"</code> or <code>"end"</code>. That is the loop. A <code>for</code> loop in the CLI would have worked and would have hidden the control flow. The edge is the control flow.</p>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>graph.py</code></p>
+<ul>
+<li><code>advance_week</code> (line 21) returns <code>week + 1</code> and nothing else. The decision log, the metrics, and the scenario stay on the state.</li>
+<li><code>route_after_status</code> (line 26) compares <code>week</code> with <code>target_week</code>. Equal means stop, including week 0, so a one-week run does not spin.</li>
+<li><code>build_graph</code> (line 34) is triage → plan → rca → status, and status either ends or advances back to plan. Triage does not run again. The field file does not change between weeks. What changes is which injections are visible and which tasks are in progress.</li>
+<li><code>run_case</code> always starts at week 0 and sets <code>target_week</code> to the CLI value, with <code>recursion_limit</code> 80. Four weeks of four nodes is well under that. The limit is there so a routing bug fails fast instead of hanging.</li>
+</ul>
+<p><code>nodes/planner.py</code> around line 108 sets Jira status from <code>sim_week</code> versus the current week: earlier tasks are Done, this week&rsquo;s tasks are In Progress, later tasks stay To Do. The dry-run upsert from Session 5 refreshes status in place, so the file at the end of week 3 shows T1 Done and T11 Done.</p>
+<p><code>nodes/status.py</code></p>
+<ul>
+<li><code>rag_color</code> (line 20) is Red while the rate is over spec and containment week has not arrived, Amber from week 3 (containment is on the plan, effectiveness is not observed), Green only when the rate is inside spec. The field file does not shrink, so bad_lot never goes Green. That is honest.</li>
+<li><code>_customer_action</code> (line 32) is words. It does not name <code>bad_reagent_lot</code> and it does not say &ldquo;the root cause is&rdquo;.</li>
+<li><code>_decision</code> (line 51) is one sentence per week. Week 2 records that release testing passed and the ranking stayed. Week 3 records that the shipping note did not take over.</li>
+<li><code>upsert_decision</code> (line 74) replaces an existing row for the same week. A second pass cannot double the log.</li>
+<li><code>build_status_facts</code> (line 100) is the only number source for the three notes: rounded percents, the invalid count, the unit cost from the YAML, and the product. Cost is <code>k * unit</code>, computed here, not typed into the template.</li>
+<li><code>status_node</code> (line 146) calls <code>narrate</code> per audience and then <code>check_narrative</code> again. A failure raises. The three strings are what get written.</li>
+<li><code>_write</code> (line 172) puts the notes and the full decision log in <code>out/</code> and in <code>out/weekN/</code>. The week folder is the diff the test reads.</li>
+</ul>
+<p><code>narrative.py</code> <code>status_customer</code>, <code>status_internal</code>, and <code>status_leadership</code> share <code>_status_header</code>, so the rate line cannot drift between audiences. Internal adds the hypothesis and pastes injection text verbatim (so the guard can mask it). Leadership adds the cost line and the ask.</p>
+<h2>5. What was documented, and why</h2>
+<p>Each note and the decision log repeat the simulation banner. The customer note says it does not state a confirmed cause, in the note, not only in a code comment. The decision log cites evidence ids so a reader can see that week 2&rsquo;s choice was &ldquo;keep the field ranking&rdquo;, not &ldquo;believe the release report&rdquo;.</p>
+<h2>6. Stakeholder / Jira buy-in before Session 7</h2>
+<p>Ticket <strong>INV-301</strong>, epic <strong>INV-5</strong>: the dashboard. It should show the week folders this session writes: the p-chart was already computed, and the memo, fishbone, Gantt, register, and notes are files. No token. Streamlit sign-in is Neel&rsquo;s step at deploy time, not a code step.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>tests/test_status.py</code> runs <code>--week 3</code>, counts four decision headings, checks T11 is absent in week 0 and present in week 2, checks R4 appears only later, checks the customer note, checks leadership is Red at week 2 and states a dollar cost, and checks Jira status moved to Done for tasks whose week has passed.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A weekly stakeholder loop with a decision log and three audiences. The customer does not get an unconfirmed cause stated as fact. Leadership gets the cost and an ask. The plan actually changes when the week changes. That is the stakeholder and status-report work the JD research ranked near the top.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-6</code>.</p>
+<ol>
+<li>Start at <code>graph.py</code> <code>build_graph</code> (line 34). Read the edges in order. The conditional is the only branch. <code>"end"</code> maps to <code>END</code>. <code>"advance"</code> maps to the node that adds one to <code>week</code>.</li>
+<li><code>route_after_status</code> (line 26). For <code>--week 3</code>, <code>target_week</code> is 3. After the week-0 status node, 0 &gt;= 3 is false, so the next node is <code>advance</code>. After the week-3 status node, 3 &gt;= 3 is true, so the graph stops. The decision log has four rows because weeks 0, 1, 2, and 3 each called <code>status_node</code> once.</li>
+<li><code>advance_week</code> (line 21) returns a one-key dict. LangGraph merges it. <code>decision_log</code> is not in the return, so it survives.</li>
+<li>Open <code>status.py</code> <code>status_node</code> (line 146). <code>build_status_facts</code> first. Cost is <code>invalids * unit</code> at the bottom of that function. Both factors and the product sit on <code>facts["cost"]</code> before any sentence is rendered.</li>
+<li>The audience loop calls <code>narrate</code>. Deterministic mode returns the template plus the source footer. <code>check_narrative</code> runs on that exact string. Unknown numbers raise, so a bad template never becomes a file.</li>
+<li><code>_decision</code> (line 51) picks the sentence from <code>week</code>. It stores evidence ids from the hypothesis the ranker already produced. It does not score anything.</li>
+<li><code>upsert_decision</code> (line 74) filters out the same week, appends, sorts. The test inserts week 1 twice and week 0 once and expects order <code>[0, 1]</code> with the replaced text.</li>
+<li><code>_write</code> writes three files and <code>decision_log.md</code> into the root and the week folder. Root is &ldquo;latest&rdquo;. The week folder is &ldquo;as of that week&rdquo;, which is why week 0&rsquo;s register has no R4 and week 2&rsquo;s does. Those registers were written by <code>plan_node</code> on that lap, not reconstructed later.</li>
+<li>Back in <code>planner.py</code> near line 108, status is a comparison of integers. At the end of a week-3 run, T1 (<code>sim_week</code> 0) is Done and T11 (<code>sim_week</code> 2) is Done. T10 (<code>sim_week</code> 4) is still To Do. The Jira file is the sync of that last plan.</li>
+<li>Customer template: search the week-2 file for <code>bad_reagent_lot</code> and for <code>the root cause is</code>. Neither is there. The rate line is the shared header, so the customer sees the same 3.67% the internal note sees.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-6">Browse the whole tree for session-6</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/graph.py"><code>src/invalid_agent/graph.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/nodes/status.py"><code>src/invalid_agent/nodes/status.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/narrative.py"><code>src/invalid_agent/narrative.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/tests/test_status.py"><code>tests/test_status.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-6/src/invalid_agent/nodes/planner.py"><code>src/invalid_agent/nodes/planner.py</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-6 session-6
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest
+</code></pre>
+<p>The customer template must keep the rate and drop the lot. Add this to <code>tests/test_status.py</code>:</p>
+<pre><code class="language-python">def test_customer_note_keeps_the_rate_and_hides_the_lot():
+    from invalid_agent.narrative import status_customer
+
+    facts = {
+        &quot;week&quot;: 2,
+        &quot;rag&quot;: &quot;Red&quot;,
+        &quot;customer_action&quot;: &quot;The review is still limited to one lot.&quot;,
+        &quot;overall&quot;: {
+            &quot;rate_pct&quot;: 3.67,
+            &quot;k&quot;: 529,
+            &quot;n&quot;: 14400,
+            &quot;ci_low_pct&quot;: 3.38,
+            &quot;ci_high_pct&quot;: 3.99,
+            &quot;promised_pct&quot;: 98.0,
+            &quot;spec_pct&quot;: 2.0,
+        },
+        &quot;hypothesis&quot;: {
+            &quot;category&quot;: &quot;Material&quot;,
+            &quot;cause&quot;: &quot;bad_reagent_lot&quot;,
+            &quot;level&quot;: &quot;L-4419&quot;,
+        },
+    }
+    text = status_customer(facts)
+    assert &quot;3.67&quot; in text
+    assert &quot;does not state a confirmed cause&quot; in text
+    assert &quot;L-4419&quot; not in text
+    assert &quot;bad_reagent_lot&quot; not in text
+</code></pre>
+<p>Run <code>pytest tests/test_status.py</code>.</p>
+<p><strong>Extra credit.</strong> What does <code>rag_color(True, 2)</code> return, and what does <code>rag_color(True, 3)</code> return? Why is the second one not Green?</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

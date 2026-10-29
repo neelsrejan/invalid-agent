@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 8 · An offline scorecard</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 8;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="8">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item active" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 3 · Session 8 · tag session-8</p>
+<h1>An offline scorecard</h1>
+<p class="lede">Twenty-two seeded scenarios. 22/22 is the designed call on this constructed set. It is not a clinical accuracy number, and it is not Llama versus Llama.</p>
+<p class="note">Ticket INV-302 · about 70–90 minutes · artifact: Eval report: evidence ranker versus a note-only ranker</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 7 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-7.html">Go to Session 7</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>The report under `evals/reports/` on this tag. Read the weak_lot row and the drift extra stratum before the 22/22 cell.</li><li>`scenarios/herring_software.yaml` — the note says software. The true cause is the lot.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-8</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 8 · Clip 1 · evals/run_eval.py</h3>
+<video controls preload="metadata" src="videos/session-8/01_run_eval.mp4">
+<a href="videos/session-8/01_run_eval.mp4">Download clip 1</a>
+</video>
+<p class="meta">6:03 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/evals/run_eval.py">evals/run_eval.py</a> at <code>session-8</code></p>
+</article><article class="clip">
+<h3>2. Session 8 · Clip 2 · evals/reports/2026-10-21.md</h3>
+<video controls preload="metadata" src="videos/session-8/02_report.mp4">
+<a href="videos/session-8/02_report.mp4">Download clip 2</a>
+</video>
+<p class="meta">6:26 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/evals/reports/2026-10-21.md">evals/reports/2026-10-21.md</a> at <code>session-8</code></p>
+</article><article class="clip">
+<h3>3. Session 8 · Clip 3 · scenarios/herring_software.yaml</h3>
+<video controls preload="metadata" src="videos/session-8/03_herring.mp4">
+<a href="videos/session-8/03_herring.mp4">Download clip 3</a>
+</video>
+<p class="meta">6:02 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/scenarios/herring_software.yaml">scenarios/herring_software.yaml</a> at <code>session-8</code></p>
+</article><article class="clip">
+<h3>4. Session 8 · Clip 4 · src/invalid_agent/nodes/rca.py</h3>
+<video controls preload="metadata" src="videos/session-8/04_rca_labels.mp4">
+<a href="videos/session-8/04_rca_labels.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:47 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/src/invalid_agent/nodes/rca.py">src/invalid_agent/nodes/rca.py</a> at <code>session-8</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/docs/sessions/session-8/LOGIC_TRACE.md">LOGIC_TRACE.md at session-8</a></p>
+<div class="prose"><h1>Session 8 logic trace</h1>
+<p>Snapshot id: git tag <code>session-8</code>. Resolve the commit with <code>git rev-parse session-8^{}</code>.</p>
+<p>Laptop copy: check out the tag into <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 8\</code>. This workspace has no Windows path, so the tag is the snapshot.</p>
+<h2>1. Goal</h2>
+<p>An offline scorecard. Twenty-two seeded scenarios, a known call in each YAML, and a report that compares the evidence ranker with a ranker that only reads the week-0 notes. The report records top-1, top-3, numeric fidelity, citation validity, escalation, and latency, plus the cases that mislead.</p>
+<h2>2. What had to be true before Session 9</h2>
+<p>The report file exists and its counts come from a run of <code>evals/run_eval.py</code>, not from a sentence typed into the README. Session 9 copies those counts into the résumé bullets and does not invent a model-accuracy number.</p>
+<h2>3. Why these libraries</h2>
+<p>No new package. Ranking reuses <code>rank_hypotheses</code> and <code>generate</code>. The week-0 graph check reuses <code>run_case</code>. CI calls the same script with <code>--limit 5 --smoke</code>.</p>
+<p>The model comparison the plan named as 7B versus 1.5B is now Llama 3.1 8B (<code>llama3.1:8b</code>) versus Llama 3.2 1B (<code>llama3.2:1b</code>). Neither weight is installed in this environment, so the report compares two policies on the deterministic backend and says the models were not called. Gemma 3 and Phi-4 stay documented as other <code>LLM_MODEL</code> tags. They were not scored either.</p>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>scenarios/</code> holds the files. Six cause types appear at more than one severity or baseline. Three files are <code>no_single_cause</code>. Three are red herrings (<code>root_cause.type: red_herring</code>, with the real cause under the quoted key <code>"true"</code>, because unquoted <code>true</code> is a boolean in YAML 1.1). <code>weak_lot</code> raises lot L-4419 only to 0.04 against a 0.025 baseline, which stays under the lift gate, while the overall rate is still over the 2% spec. Four files set <code>eval.holdout: true</code> (bad_lot_noisy, drift_late, temp_mild, flat_border).</p>
+<p><code>evals/run_eval.py</code></p>
+<ul>
+<li><code>keyword_cause</code> scans week-0 injection text for the first word in a fixed list. It never opens the table.</li>
+<li><code>score_scenario</code> generates the frame and calls <code>rank_hypotheses</code>. Top-1 is the cause at index 0. Top-3 is membership in the first three causes. <code>eval.expect_cause</code> is the label. The ranker does not receive that block.</li>
+<li><code>run_graph_checks</code> runs week 0 and reads fidelity, 5 Whys citations, and whether <code>escalate</code> equals <code>exceeds_spec</code> on the memo. Mean latency on this run was 0.55s.</li>
+<li>The report writer prints n, both splits, every row, keyword misses, extra strata, and the below-bar case.</li>
+</ul>
+<p><code>nodes/rca.py</code> now puts hypothesis levels and software version ids into the fidelity facts as strings. The terminal Why for a software hit says <code>2.4.0</code>. That token was being scanned as the number 2.4, because the guard only strips an identifier when the exact string is in the facts. Lot ids were already safe behind a hyphen. The version id needed the same treatment. The guard&rsquo;s thresholds did not change.</p>
+<h2>5. What was documented, and why</h2>
+<p><code>evals/reports/2026-10-20.md</code> is the run. Evidence top-1 was 22/22 on this constructed set, including the three herrings and the weak lot. Keyword top-1 was 3/22. The three keyword hits are the flat files, where the week-0 note names no cause. On the herrings and on <code>weak_lot</code> the keyword ranker repeats the note and the evidence ranker does not. Four drift files also cleared a lot stratum; top-1 stayed on the instrument. That second stratum is the failure note a résumé bullet has to keep.</p>
+<p>CI runs five scenarios through the same script and fails if evidence top-1, fidelity, citations, or escalation miss.</p>
+<h2>6. Stakeholder / Jira buy-in before Session 9</h2>
+<p>Ticket <strong>INV-302</strong>, epic <strong>INV-7</strong>: the eval. Neel should read the weak-lot row and the drift extra-stratum rows before he quotes 22/22. No Jira token. The Llama weights are optional and were not required for this tag.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>tests/test_eval.py</code> checks every scenario&rsquo;s expected call, the software herring, and the weak lot. <code>tests/test_rca.py</code> checks that <code>2.4.0</code> survives the fidelity guard. <code>pytest</code> does not download a model.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A scorecard with n, a holdout split, and the cases the naive reading gets wrong. The 22/22 figure is the designed call on synthetic files with fixed gates. It is not a clinical accuracy claim, and it is not a Llama-versus-Llama result.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-8</code> first.</p>
+<ol>
+<li>Open <code>evals/run_eval.py</code>. <code>_KEYWORDS</code> is the naive policy. <code>software</code> is before <code>lot</code> so a sentence that says both still has one call.</li>
+<li><code>score_scenario</code> generates, ranks, and compares to <code>eval.expect_cause</code>.</li>
+<li><code>render_report</code> writes the three split rows, then the failure notes. A clean top-1 list is still followed by keyword misses and extra strata.</li>
+<li><code>_model_section</code> names <code>llama3.1:8b</code> and <code>llama3.2:1b</code> and states when the probe did not run.</li>
+<li>Open <code>evals/reports/2026-10-20.md</code> and read the weak_lot row and the drift extra-stratum lines before reading the 22/22 cell.</li>
+<li>Open <code>scenarios/herring_software.yaml</code>. The week-0 note says software. <code>root_cause.true</code> is the lot. The quoted <code>"true"</code> key is required.</li>
+<li>Open <code>src/invalid_agent/nodes/rca.py</code> at the facts dict. <code>labels</code> includes <code>2.4.0</code> so the Why can name the version.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-8">Browse the whole tree for session-8</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/evals/run_eval.py"><code>evals/run_eval.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/evals/reports/2026-10-21.md"><code>evals/reports/2026-10-21.md</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/scenarios/herring_software.yaml"><code>scenarios/herring_software.yaml</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-8/src/invalid_agent/nodes/rca.py"><code>src/invalid_agent/nodes/rca.py</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-8 session-8
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest
+</code></pre>
+<p>An unquoted <code>true</code> in YAML 1.1 becomes a boolean, and the generator would miss the real cause. Lock the quotes. Add to <code>tests/test_eval.py</code>:</p>
+<pre><code class="language-python">def test_herring_true_key_is_a_string_not_a_boolean():
+    import yaml
+
+    raw = (ROOT / &quot;scenarios&quot; / &quot;herring_software.yaml&quot;).read_text(encoding=&quot;utf-8&quot;)
+    data = yaml.safe_load(raw)
+    assert &quot;true&quot; in data[&quot;root_cause&quot;]
+    assert isinstance(data[&quot;root_cause&quot;][&quot;true&quot;], dict)
+    assert data[&quot;root_cause&quot;][&quot;true&quot;][&quot;type&quot;] == &quot;bad_reagent_lot&quot;
+    bare = yaml.safe_load(&quot;root_cause:\n  true:\n    type: bad_reagent_lot\n&quot;)
+    assert True in bare[&quot;root_cause&quot;]
+    assert &quot;true&quot; not in bare[&quot;root_cause&quot;]
+</code></pre>
+<p>If <code>ROOT</code> is not in that file, define it as <code>Path(__file__).resolve().parents[1]</code>. Run <code>pytest tests/test_eval.py</code>.</p>
+<p><strong>Extra credit.</strong> In one sentence, why is weak_lot a success when the evidence call is <code>no_single_cause</code>?</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

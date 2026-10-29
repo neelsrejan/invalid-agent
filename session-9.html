@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 9 · Week-4 close-out, the exec deck, and the résumé</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 9;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="9">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item active" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 3 · Session 9 · tag session-9</p>
+<h1>Week-4 close-out, the exec deck, and the résumé</h1>
+<p class="lede">D7 and D8 are confirmed. The deck&#x27;s cost is k times the unit price. The projection stays labeled as a projection. The 22/22 cell keeps its failure notes.</p>
+<p class="note">Ticket INV-303 · about 70–90 minutes · artifact: Seven-slide deck, close-out note, résumé bullets with the misses kept</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 8 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-8.html">Go to Session 8</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>README.md on this tag — the model table and the eval table.</li><li>RESUME_BULLETS.md — read the drift bullet before you reuse the 22/22 line.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-9</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 9 · Clip 1 · src/invalid_agent/graph.py</h3>
+<video controls preload="metadata" src="videos/session-9/01_graph.mp4">
+<a href="videos/session-9/01_graph.mp4">Download clip 1</a>
+</video>
+<p class="meta">5:52 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/graph.py">src/invalid_agent/graph.py</a> at <code>session-9</code></p>
+</article><article class="clip">
+<h3>2. Session 9 · Clip 2 · src/invalid_agent/nodes/closeout.py</h3>
+<video controls preload="metadata" src="videos/session-9/02_closeout.mp4">
+<a href="videos/session-9/02_closeout.mp4">Download clip 2</a>
+</video>
+<p class="meta">6:13 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/nodes/closeout.py">src/invalid_agent/nodes/closeout.py</a> at <code>session-9</code></p>
+</article><article class="clip">
+<h3>3. Session 9 · Clip 3 · src/invalid_agent/artifacts/deck.py</h3>
+<video controls preload="metadata" src="videos/session-9/03_deck.mp4">
+<a href="videos/session-9/03_deck.mp4">Download clip 3</a>
+</video>
+<p class="meta">6:10 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/artifacts/deck.py">src/invalid_agent/artifacts/deck.py</a> at <code>session-9</code></p>
+</article><article class="clip">
+<h3>4. Session 9 · Clip 4 · RESUME_BULLETS.md</h3>
+<video controls preload="metadata" src="videos/session-9/04_resume.mp4">
+<a href="videos/session-9/04_resume.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:34 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/RESUME_BULLETS.md">RESUME_BULLETS.md</a> at <code>session-9</code></p>
+</article><article class="clip">
+<h3>5. Session 9 · Clip 5 · README.md</h3>
+<video controls preload="metadata" src="videos/session-9/05_readme.mp4">
+<a href="videos/session-9/05_readme.mp4">Download clip 5</a>
+</video>
+<p class="meta">6:24 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/README.md">README.md</a> at <code>session-9</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/docs/sessions/session-9/LOGIC_TRACE.md">LOGIC_TRACE.md at session-9</a></p>
+<div class="prose"><h1>Session 9 logic trace</h1>
+<p>Snapshot id: git tag <code>session-9</code>. Resolve the commit with <code>git rev-parse session-9^{}</code>.</p>
+<p>Laptop copy: check out the tag into <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 9\</code>. This workspace has no Windows path, so the tag is the snapshot.</p>
+<h2>1. Goal</h2>
+<p>Close the case at week 4. D7 and D8 are confirmed, the effectiveness check is a labeled projection, and <code>out/exec_deck.pptx</code> is a seven-slide deck a reviewer can open. The README and the résumé bullets use the Session 8 counts, including the misses.</p>
+<h2>2. What had to be true before calling the project done</h2>
+<p>Tags <code>session-1</code> through <code>session-9</code> exist. <code>pytest</code> passes offline. <code>streamlit run streamlit_app.py</code> renders the banner. <code>python -m invalid_agent.graph --scenario bad_lot --week 4</code> writes the deck. The model name in the repo is <code>LLM_MODEL</code>, default <code>llama3.1:8b</code>. Hosted Streamlit runs rules-only (deterministic). <code>llama3.2:1b</code> is the suggested small tag for local or self-hosted runs.</p>
+<h2>3. Why these libraries</h2>
+<ul>
+<li><strong>python-pptx</strong> writes a real <code>.pptx</code>. The deck does not go through a model, so a slide cannot invent a cost.</li>
+<li><strong>matplotlib</strong> with the Agg backend writes the p-chart PNG embedded on the root-cause slide. Plotly&rsquo;s static export needs Kaleido, which we do not ship.</li>
+<li>No new model library. Close-out is a template plus the fidelity guard.</li>
+</ul>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>graph.py</code> <code>route_after_status</code> returns <code>closeout</code> when the week that just finished is at least 4. Weeks 0 through 3 still end or advance, so the earlier tests do not build a deck.</p>
+<p><code>nodes/closeout.py</code></p>
+<ul>
+<li><code>build_closeout_facts</code> regenerates the frame, calls <code>projection_summary</code>, and drops the frame before the record is stored. Cost is <code>k * cost_per_invalid_usd</code>.</li>
+<li><code>render_closeout</code> interpolates those facts. The effectiveness sentence includes the projection label: &ldquo;Not observed follow-up.&rdquo;</li>
+<li><code>closeout_node</code> runs <code>check_narrative</code> and raises on an unknown number. It writes <code>closeout.md</code> and calls <code>write_deck</code>. D7 and D8 on the CAPA record are replaced, and <code>preliminary_close</code> becomes false.</li>
+</ul>
+<p><code>artifacts/deck.py</code> <code>write_deck</code> makes seven slides: title and disclaimer, executive summary, impact, root cause with the observed p-chart, options, recommendation, ask. Colors are navy <code>#0B3A5B</code> and teal <code>#1F7A8C</code>.</p>
+<p>A single-cause call recommends containing that stratum and not expanding. <code>no_single_cause</code> recommends no quarantine.</p>
+<h2>5. What was documented, and why</h2>
+<p><code>README.md</code> carries the disclaimer, the quickstart, the model table (Llama 3.1 8B locally, rules-only on hosted Streamlit, <code>llama3.2:1b</code> for a small local or self-hosted run, Gemma 3 and Phi-4 as alternatives), the eval table from <code>evals/reports/2026-10-20.md</code>, and the three things Neel still has to sign in for. <code>RESUME_BULLETS.md</code> repeats the 22/22 cell next to the keyword 3/22 and the four drift files that also cleared a lot. Quoting the first number alone would mislead.</p>
+<h2>6. Stakeholder / Jira buy-in</h2>
+<p>Ticket <strong>INV-303</strong>, epic <strong>INV-6</strong>: the deck. Leadership&rsquo;s week-4 injection on <code>bad_lot</code> asks for the recommendation and the effectiveness check. The deck is that answer. No Jira token is required to generate it.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>tests/test_closeout.py</code> runs <code>--week 4</code>, opens the pptx, and checks seven slides, the disclaimer, the projection label, the 3.67% rate, and lot L-4419.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A recommendation with a cost, a risk, and an ask, plus a scorecard that shows where a naive reading of the customer note goes wrong. The projection is marked as a projection.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-9</code> first.</p>
+<ol>
+<li>Open <code>graph.py</code> <code>route_after_status</code>. Week 4 is the only route into <code>closeout</code>.</li>
+<li>Open <code>nodes/closeout.py</code> <code>build_closeout_facts</code>. The cost line is <code>invalids * unit</code>. The label comes from <code>projection_summary</code> unchanged.</li>
+<li><code>render_closeout</code> is the only prose. <code>closeout_node</code> refuses to write it if <code>check_narrative</code> fails.</li>
+<li>Open <code>artifacts/deck.py</code> <code>write_deck</code>. Count <code>_blank</code> calls. There are seven. The title slide paints the disclaimer in white on navy.</li>
+<li>Run <code>python -m invalid_agent.graph --scenario bad_lot --week 4</code> and open <code>out/exec_deck.pptx</code>. The root-cause slide&rsquo;s chart is the observed weekly rate. The sentence under it says the removal figure is not follow-up.</li>
+<li>Open <code>RESUME_BULLETS.md</code> and read the drift bullet before using the 22/22 line.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-9">Browse the whole tree for session-9</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/graph.py"><code>src/invalid_agent/graph.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/nodes/closeout.py"><code>src/invalid_agent/nodes/closeout.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/src/invalid_agent/artifacts/deck.py"><code>src/invalid_agent/artifacts/deck.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/RESUME_BULLETS.md"><code>RESUME_BULLETS.md</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-9/README.md"><code>README.md</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-9 session-9
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest tests/test_closeout.py
+</code></pre>
+<p>A no-single-cause call must not tell leadership to contain a stratum. Add this to <code>tests/test_closeout.py</code>:</p>
+<pre><code class="language-python">def test_unresolved_deck_does_not_contain_a_stratum(tmp_path):
+    from invalid_agent.artifacts.deck import write_deck
+
+    facts = {
+        &quot;scenario_id&quot;: &quot;flat_high&quot;,
+        &quot;device&quot;: &quot;MDx-24 Respiratory Panel&quot;,
+        &quot;rate_pct&quot;: 2.4,
+        &quot;k&quot;: 100,
+        &quot;n&quot;: 4000,
+        &quot;ci_low_pct&quot;: 2.1,
+        &quot;ci_high_pct&quot;: 2.8,
+        &quot;spec_pct&quot;: 2.0,
+        &quot;promised_pct&quot;: 98.0,
+        &quot;cause&quot;: &quot;no_single_cause&quot;,
+        &quot;level&quot;: &quot;no single stratum&quot;,
+        &quot;category&quot;: &quot;Unresolved&quot;,
+        &quot;recommendation&quot;: &quot;Do not quarantine.&quot;,
+        &quot;unit&quot;: 85,
+        &quot;cost&quot;: 8500,
+        &quot;after_pct&quot;: 2.4,
+        &quot;label&quot;: &quot;Not observed follow-up.&quot;,
+        &quot;single&quot;: False,
+        &quot;d7&quot;: &quot;D7 stays a prevention plan, not a claim that the rate recovered.&quot;,
+    }
+    path = tmp_path / &quot;exec_deck.pptx&quot;
+    write_deck(path, facts)
+    presentation = Presentation(str(path))
+    assert len(presentation.slides) == 7
+    chunks = []
+    for slide in presentation.slides:
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                chunks.append(shape.text_frame.text)
+    text = &quot;\n&quot;.join(chunks)
+    assert &quot;Do not contain a stratum&quot; in text
+    assert &quot;Not observed follow-up&quot; in text
+    assert &quot;Contain no single stratum&quot; not in text
+</code></pre>
+<p><code>Presentation</code> is already imported in that test file. Run <code>pytest tests/test_closeout.py</code>.</p>
+<p><strong>Extra credit.</strong> Say the two-minute pitch out loud. Keep the keyword 3/22 and the four drift files in the same breath as 22/22.</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>
