@@ -1,0 +1,103 @@
+title: "Session 3 · Clip 2 · src/invalid_agent/nodes/triage.py"
+file: ../../snapshots/session-3/src/invalid_agent/nodes/triage.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-14
+    say: >-
+      This is triage dot p y, the only node on the Session 3 graph. The docstring says the
+      order of work: compute the memo fields, then ask for prose. The imports are the cast.
+      Schemas brings Pydantic models, which we will open in a moment. Narrate asks for the
+      paragraph. Rank hypotheses and the Session 2 metrics, rates, Pareto, and the p chart, do
+      the arithmetic. Generate rebuilds the rows. Nothing here recalculates a Wilson interval
+      by hand.
+  - lines: 156-164
+    say: >-
+      Start at triage node, line 156, because that is the function LangGraph calls. The first
+      line that matters pulls the scenario off the state and calls generate. Same seed as
+      Session 2, 4419, same 14,400 rows. Spec and promised validity come from the YAML, with
+      the familiar defaults, 2 percent and 98 percent. Rank hypotheses scores causes from that
+      frame. Build facts rounds the numbers the memo is allowed to say. The week on the state
+      overwrites the header, so a later caller can restamp it.
+  - lines: 17-18
+    say: >-
+      Before the template sees a number, percent, at line 17, rounds it. Take the rate,
+      multiply by 100, and round to two decimals. 0.036736 becomes 3.67. That rounded value is
+      what gets stored as rate percent, and it is the same float the fidelity guard will walk
+      later. Rounding first is the whole trick. If you formatted 3.674 inside the sentence and
+      stored 3.67 in the facts, the guard would see a stranger. One rounding, then everyone
+      quotes it.
+  - lines: 79-84
+    say: >-
+      Build facts, at line 79, is the shopping list for the memo. It reads the spec and the
+      promise from the scenario, then calls overall rate, the same function as the printed
+      summary. The p chart supplies how many weekly points broke rule 1. Stratified rates run
+      on lot, instrument, site, software, and operator, and top keeps three levels, each with
+      a rounded percent. Pareto keeps three codes.
+  - lines: 36-41
+    say: >-
+      Severity, lines 36 through 41, is a small rule you can say out loud. If the rate does
+      not exceed the spec, severity is low. If the whole Wilson interval sits above the spec,
+      or the rate is at least one and a half times the spec, severity is high. Otherwise it is
+      moderate. Bad lot is high on both counts. 3.67 percent is well above 2, and the interval
+      3.38 to 3.99 clears 2 entirely. Escalate, just below this in build facts, is exactly the
+      exceeds spec flag.
+  - lines: 99-123
+    say: >-
+      The overall block inside the returned dictionary, lines 105 through 123, is what the
+      memo quotes. N and k stay integers, 14400 and 529. The raw rate stays a fraction. Beside
+      it, rate percent, the two interval percents, the spec percent, and the promised percent
+      are the rounded forms. Exceeds spec and the interval flag come straight from overall
+      rate. Severity and escalate sit next to that block. A program manager reading the memo
+      is reading these keys, formatted.
+  - lines: 44-55
+    say: >-
+      Hypothesis facts, at line 44, writes the sentence the guard will see. For an ordinary
+      cause it builds one line: category, cause, level, the level's percent, the complement's
+      percent, the lift, n, and k. Lift is how many times higher this level's rate is than
+      everyone else. We will compute it in the next file. The percents go through the same
+      round to two decimals. A no single cause result uses the summary string instead of
+      pretending a winner.
+  - lines: 165-190
+    say: >-
+      Lines 165 through 190 ask for prose, then check the shape. Narrate returns the paragraph
+      and a fidelity record. TriageMemo is a Pydantic model. Pydantic turns a class into a
+      contract: you name the fields and their types, and a missing escalate, or a string where
+      a float belongs, raises before anything is stored. Tests assert those fields. They do
+      not scrape the markdown. Fidelity ok on the object is true when the check passed, or
+      when a bad draft was replaced by the safe text.
+  - lines: 205-211
+    say: >-
+      Check stored, at line 205, runs the guard again on the exact string about to be saved.
+      It imports the checker locally and calls check narrative with the prose and the facts.
+      If ok is false, it raises, and the unknown numbers are in the message. A broken template
+      is a bug, not a fallback, so we stop. If the prose is clean, the function returns a copy
+      of the memo with fidelity ok set true. The file on disk cannot contain a number the
+      facts do not support.
+  - lines: 191-202
+    say: >-
+      The return, lines 195 through 202, is the state update. Metrics is a J S O N ready blob
+      for later nodes: overall, strata, chi square, Pareto, and the p chart. Violations stay.
+      The raw rows do not. Hypotheses and the evidence catalog go on the state for Session 4.
+      The memo is stored with model dump, Pydantic's plain dictionary. The markdown is the
+      prose. Fidelity is the receipt. The data frame was local to this function. When the node
+      returns, the 14,400 rows are gone.
+  - lines: 138-153
+    say: >-
+      Metrics blob, lines 138 through 153, is that package for later nodes. It calls the
+      Session 2 functions again, on purpose, so a fishbone or a status note can quote a
+      stratum without regenerating a different way. Chi square by column sits beside the
+      rates. The comment on the function says the rule: violations stay, raw rows do not. Two
+      calls, build facts and this blob, share one frame and one seed.
+  - lines: 156-158
+    say: >-
+      The takeaway sits on the first lines of the node. Generate, rank, build facts, narrate,
+      check stored. The frame is computed and then forgotten. The memo a program manager reads
+      is the template filled from those facts, because the default backend is deterministic.
+      On seed 4419 you should see 3.67 percent, 529 of 14,400, interval 3.38 to 3.99,
+      escalate, severity high, and L dash 4419 at about 17.10 percent against a complement
+      near 1.09. That page is the week zero triage memo.

@@ -1,0 +1,93 @@
+title: "Session 5 · Clip 1 · src/invalid_agent/graph.py"
+file: ../../snapshots/session-5/src/invalid_agent/graph.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-8
+    say: >-
+      This is graph dot p y in the Session 5 snapshot. The docstring says triage, then the
+      plan, then R C A. Status updates and close-out are still later. The imports below are
+      argument parsing, JSON, and paths. Still no model client. This session does not call a
+      language model. The new work is a plan, a risk register, and a Jira file, computed from
+      the scenario, the top hypothesis, and the week.
+  - lines: 10-17
+    say: >-
+      Line 10 imports END and State Graph. Case state and load settings are unchanged. The new
+      import is plan node, from planner dot p y. R C A node and triage node are the Session 4
+      functions. Load scenario still reads the YAML. Three node functions are now in scope.
+      This file owns the order. The dates, the risk scores, and the Jira keys live in the
+      modules these lines name.
+  - lines: 20-25
+    say: >-
+      Build graph starts at line 20. The docstring on line 21 still says the planner joins
+      later. Line 22 only creates the State Graph. Lines 23 through 25 register triage, then
+      plan, then rca. The comment lagged the code. The weekly loop really is still later. The
+      plan node is already here. Three functions are named before any edge is drawn.
+  - lines: 26-30
+    say: >-
+      Lines 26 through 29 are the control flow. Triage runs first. Plan is next, because it
+      reads the hypotheses triage just wrote. Plan does not read the fishbone. R C A does not
+      read the plan. The order is the intake, then the plan, then the quality record. The last
+      edge goes to END. Line 30 compiles the app. Session 4 had two boxes. This snapshot puts
+      plan in the middle.
+  - lines: 33-44
+    say: >-
+      Resolve scenario is the same lookup as Session 4. A full path is used when it already
+      points at a file. Otherwise the name is sought in the scenarios folder, then with dot
+      yaml added. Bad lot still finds bad underscore lot dot yaml. Line 44 raises System Exit
+      when the name misses. The planner needs that file. The investigation dates are computed
+      from the start date and the horizon stored in it.
+  - lines: 46-58
+    say: >-
+      Initial state grew an out dir argument. The dictionary still holds the scenario, the
+      week, and empty containers for the decision log, risks, status updates, and jira. Lines
+      56 through 58 are the new part. When a destination folder was passed, its path is stored
+      on the state as a string. Plan node writes files during the node, and it reads that key.
+      The command and the node then share one folder.
+  - lines: 61-68
+    say: >-
+      Run case still rejects a week outside 0 through 4. It loads settings, resolves the
+      scenario, and reads the YAML. Line 67 picks the output folder. Line 68 creates it,
+      parents included, before the graph runs. That order is the change. In Session 4 the
+      folder was created after invoke, because the nodes only returned strings. Plan node
+      writes the Gantt during the node. The directory has to exist first.
+  - lines: 69-70
+    say: >-
+      Line 69 compiles the three-node graph. Line 70 calls invoke and passes the destination
+      into the initial state. Triage runs, then plan, then R C A. While plan runs it writes
+      gantt dot h t m l, gantt dot p n g, risk underscore register dot m d, plan dot json, and
+      jira underscore issues dot json. Invoke returns after all three nodes finish. The result
+      holds the plan, the risks, the Jira payload, and the quality records.
+  - lines: 71-76
+    say: >-
+      After invoke, run case still writes the Session 4 reading set. Week 0 triage dot m d
+      comes from the triage markdown. Week 0 fidelity dot json is the numeric check,
+      pretty-printed. These writes happen after the nodes, from strings on the result. The
+      plan files are already on disk. The node saved them. One folder holds both kinds of
+      output: files the node wrote, and files this function writes from the returned markdown.
+  - lines: 77-81
+    say: >-
+      Lines 77 through 79 write fishbone dot m d, five underscore whys dot m d, and capa 8 d
+      dot m d, copying markdown R C A node already rendered. Line 80 stores the memo path.
+      Line 81 returns the result. A later week uses this same function. The week changes the
+      plan, because plan node reads it, and it changes which injections R C A may cite. The
+      folder then holds the Gantt, the register, the Jira file, and the quality record
+      together.
+  - lines: 84-90
+    say: >-
+      Main is the same door. Scenario and week are required. Out is optional. The help text
+      still uses bad lot. Line 90 calls run case. An empty out becomes None, and the settings
+      folder is used. Pass a real path when you want a week 0 run and a week 2 run in
+      different folders. The task list grows at week 2. You want both Gantt files on disk to
+      show that diff.
+  - lines: 91-97
+    say: >-
+      Lines 91 and 92 print the memo path, the escalation flag, and the severity. Line 93
+      prints the simulation banner. Lines 96 and 97 run main only when this file is executed
+      directly. Tests import it and pass their own argument list. Nothing on this path opens a
+      Jira socket by itself. With the Jira settings empty, the plan node writes a dry-run file
+      of S I M keys. The gate for that choice is in jira dot p y.

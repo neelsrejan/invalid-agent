@@ -1,0 +1,94 @@
+title: "Session 8 · Clip 4 · src/invalid_agent/nodes/rca.py"
+file: ../../snapshots/session-8/src/invalid_agent/nodes/rca.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is r c a dot p y. It still builds the fishbone, the 5 Whys, and the eight D record.
+      Session 4 walked that diagram. Today we stay on the facts dictionary at the bottom of
+      the file. The change exists so a software Why may say a version id such as 2.4.0.
+      Ranking still comes from rank hypotheses. A Why with no catalog citation is still a hard
+      error. We follow the version token into the prose, then into the facts that make the
+      token legal.
+  - lines: 165-179
+    say: >-
+      Build whys starts at the top hypothesis. If the cause is no single cause, the terminal
+      word is no single cause. Otherwise the terminal is the cause, a colon, and the level.
+      For a software hit the level is the version id, so the terminal reads software version,
+      colon, 2.4.0. Validate whys still runs before this dictionary returns. A missing
+      citation, or an id the catalog does not hold, raises. Printing a version did not loosen
+      that rule.
+  - lines: 182-190
+    say: >-
+      Lines 182 through 190 build the sentence Why 5 will speak. Rate id points at the winning
+      stratum's rate sentence in the catalog. A bad reagent lot starts with stop at a
+      lot-level cause, then that catalog sentence. Every other cause, including software, uses
+      the else branch. Stop at, the cause, the level, then the catalog sentence. That branch
+      is where the characters 2.4.0 enter the prose. They are the level, written out, not a
+      rate the metrics computed.
+  - lines: 218-223
+    say: >-
+      Lines 218 through 223 are Why number 5. The question is why the chain stops here. The
+      answer is that terminal sentence. The only citation is the rate id, which has to exist
+      in the catalog. The chain may stop on software version 2.4.0 by pointing at the rate
+      evidence. The words still contain the version token beside that evidence sentence. The
+      test for this file reads the last step's answer and expects the characters 2.4.0 to
+      survive the guard.
+  - lines: 341-347
+    say: >-
+      The guard reads markdown, not the Python dictionary. Lines 341 through 347 open five
+      whys dot m d with the simulation banner, then one header. Top call, the cause, then
+      Terminal, then the terminal string. For the software hit that header contains software
+      version colon 2.4.0. A reviewer sees the version there and again inside Why 5. The
+      fidelity check scans the rendered fishbone, the Whys, and the C A P A as one string.
+  - lines: 350-358
+    say: >-
+      Lines 350 through 358 print each step. Heading, question, answer, then the citation ids.
+      Why 5's answer is the fresh sentence, stop at software version 2.4.0, followed by the
+      catalog rate sentence. That catalog sentence is already a whole string in the facts, so
+      the guard can lift those exact words out before it scans for numbers. What remains is
+      the version token. The labels list exists so that leftover is treated as a name.
+  - lines: 407-414
+    say: >-
+      In r c a node, lines 407 through 414 are the gate before the facts are built. The
+      fishbone, the Whys, and the C A P A are checked against their schemas. A bad citation
+      already raised inside build whys, so a run that reaches line 414 has five steps and
+      known ids. Combined joins the three markdown pages. That string is what the guard scans.
+      If 2.4.0 sits in combined and is not stored as its own label, the scan is about to read
+      part of it as a number.
+  - lines: 415-416
+    say: >-
+      Lines 415 and 416 are the design note. Level ids such as 2.4.0 are labels. They have to
+      be in the facts as strings, so the fidelity scan does not read the version as a rate. A
+      label here means an identifier, a lot id or a version id, not a measurement. The guard
+      removes an identifier only when that exact string is present in the facts. A version
+      buried inside a longer sentence does not qualify. These two lines are why the next four
+      lines exist.
+  - lines: 417-420
+    say: >-
+      Lines 417 through 420 build labels. First, every hypothesis level, passed through str,
+      skipping a missing level. A software hit already contributes 2.4.0, because the level is
+      the version. The loop then walks scenario software versions and appends each id as a
+      string. On these files that adds 2.3.1 and 2.4.0, including a version that did not win.
+      The herring note names 2.4.0 even when the cause is the lot, so the id has to be a label
+      on that file too.
+  - lines: 421
+    say: >-
+      Line 421 is the facts dictionary. Catalog holds the evidence sentences and the
+      injections that have arrived. Labels holds the strings from the lines above. Structure
+      is the integers 0 through 8, so the Why numbers and the eight D headings are allowed
+      counts. Week is the integer week. No field here blesses a digit the metrics did not
+      compute. The guard's thresholds did not change. What changed is that 2.4.0 is now one of
+      these strings.
+  - lines: 422-424
+    say: >-
+      Lines 422 through 424 run the check. If it fails, r c a node raises and stores nothing.
+      The scan reads digits, one dot, and more digits, then stops, so 2.4.0 is read as 2.4.
+      2.4 is not a rate in the facts. Lot ids such as L four four one nine were already safe
+      behind a hyphen. Stored as a string, 2.4.0 is removed first. The Why still says it, and
+      the check stays ok.

@@ -1,0 +1,98 @@
+title: "Session 5 · Clip 2 · src/invalid_agent/nodes/planner.py"
+file: ../../snapshots/session-5/src/invalid_agent/nodes/planner.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-7
+    say: >-
+      This is planner dot p y. It builds a four-week investigation plan and the risk register.
+      Dates come from the day the synthetic field window ends, so the Gantt does not float on
+      today. A task may start when the task it depends on ends. Cause-specific work is an
+      extra task. The baseline plan stays. Week 2 adds the lab-director task, and that added
+      bar is the Gantt diff the test looks for.
+  - lines: 22-31
+    say: >-
+      Underscore owner maps each cause to a group. A bad reagent lot is Q A. A drifting
+      instrument or a temperature lane is Manufacturing. Software is R and D. When the call is
+      no single cause, the owner is the P M, who holds the action until a stratum clears. The
+      name on the Gantt then matches the containment in the C A P A. An unknown cause falls
+      through to the P M too.
+  - lines: 34-38
+    say: >-
+      Investigation start anchors the calendar. If the YAML sets investigation start, that
+      date is used. Otherwise line 37 reads start date, defaulting to April 1, 2025, and line
+      38 adds the horizon, defaulting to 180 days. April 1 plus 180 days is September 28,
+      2025. Every bar is an offset from that day, the day after the field window. Run the case
+      tomorrow and the dates stay put.
+  - lines: 41-59
+    say: >-
+      Underscore task stores one bar. A Gantt dependency means a later task waits for an
+      earlier one to finish. The end stored here is exclusive: start plus the day count. A
+      3-day task that starts on the anchor ends on the anchor plus 3, and the next task may
+      start that same day. Start greater than or equal to the predecessor end is the rule.
+      Status begins as To Do.
+  - lines: 62-72
+    say: >-
+      Build plan reads the anchor, the cause, and the level, then the owner. The comment calls
+      this a 28-day window. T 1 confirms the rate and the strata. Q A owns it, it starts on
+      the anchor, and it depends on nothing. T 2, the holding response, starts when T 1 ends.
+      T 3 is the containment decision, same start. For this lot the owner is Q A. T 4 is the
+      fishbone review, the P M, starting on day 7.
+  - lines: 73-79
+    say: >-
+      Lines 73 through 79 are T 5 through T 10. T 5 traces the cause and depends on the
+      fishbone review. T 6 is the five Whys, starting on day 15 for 3 days, so it ends on day
+      18. T 8 executes containment, starts on day 18, and depends on T 3 and T 6. Equal dates
+      mean T 8 starts when T 6 ends. T 10 is the effectiveness check and depends on T 8.
+  - lines: 80-91
+    say: >-
+      When the week is 2 or later, this block appends T 11, a written update for the lab
+      director, owned by the P M. It starts on day 14, lasts 2 days, and depends on T 2. A
+      week 0 id list has no T 11. A week 2 list does. That added bar is the Gantt diff. The
+      earlier tasks stay on the plan. The new work sits beside the baseline.
+  - lines: 92-113
+    say: >-
+      Week 3 or later appends T 12, a lane-temperature review owned by Manufacturing,
+      depending on T 5. That is the second injection-driven add. Line 104 checks every
+      dependency before the plan is returned. Version is 1 before week 2 and 2 from week 2 on,
+      a label you can put on the re-plan. The horizon is 28 days. Top cause and top level are
+      copied onto the plan so the Gantt and the Jira epic can name them.
+  - lines: 116-122
+    say: >-
+      Underscore assert dependencies is the gate. It maps tasks by id, then walks every
+      depends-on list. The comparison is a string comparison of the I S O dates. Year, month,
+      and day are fixed width and already in calendar order, so alphabetical order is date
+      order. The test is start strictly before the predecessor end. Equal dates pass, which is
+      the exclusive-end rule. An earlier start raises Value Error and names both ids.
+  - lines: 125-144
+    say: >-
+      Underscore risk builds one row. Likelihood and impact are each a whole number from 1 to
+      5. The score is likelihood times impact. Likelihood 4 and impact 3 score 12. Read both
+      columns, because a rare severe risk and a common milder one can share a number. Line 139
+      does the multiplication. A hand-typed score has no field of its own. Owner, trend, and
+      mitigation ride along. The trend words are new, stable, down, and up.
+  - lines: 146-181
+    say: >-
+      Build risks opens three rows and moves them by week. R 1 is a field action aimed at the
+      wrong stratum. Likelihood stays 3 until week 2, then drops to 2 when a real cause is in
+      hand, and the trend becomes down. Impact stays 4, so the score goes from 12 to 8. R 3 is
+      another week above spec: 4 times 4 is 16, the high score on the opening page. R 1 says
+      wait until the stratum clears.
+  - lines: 182-220
+    say: >-
+      At week 2, R 4 appears. Release testing passed while the field rate did not, so the
+      cause is disputed. Likelihood 4 times impact 3 is 12, and the trend is the word up.
+      Treat that release note as a citation. The field table keeps the rank. R 5 and R 6 wait
+      for week 3. The loop checks that score equals likelihood times impact, and raises the
+      risk id if a later edit breaks the product.
+  - lines: 223-238
+    say: >-
+      Plan node is what the graph calls. It takes hypotheses zero. It builds the plan and the
+      risks, then makes sure the output folder exists. Write gantt saves gantt dot h t m l and
+      gantt dot p n g. The register goes to risk underscore register dot m d. Plan dot json
+      stores the tasks. Make client syncs the plan into jira underscore issues dot json and
+      returns that payload with the plan.

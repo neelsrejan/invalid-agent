@@ -1,0 +1,102 @@
+title: "Session 3 · Clip 5 · src/invalid_agent/llm.py"
+file: ../../snapshots/session-3/src/invalid_agent/llm.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-11
+    say: >-
+      This is l l m dot p y, the policy for prose. Deterministic fills a template and opens no
+      socket. It is the default, the continuous integration path, and hosted Streamlit
+      Community Cloud, because that host has no Ollama. The local model is Meta Llama 3.1, 8
+      billion, tag llama 3.1 colon 8 b, through Ollama. The small file is Llama 3.2, 1
+      billion, tag llama 3.2 colon 1 b. A failed call or a rejected draft is replaced by the
+      template.
+  - lines: 17-21
+    say: >-
+      The imports explain a deliberate skip. LangChain core supplies SystemMessage and
+      HumanMessage, used only to build one prompt shape. We do not take LangChain's Ollama
+      integration. One H T T P X call is easier to mock, and it does not pull a model client
+      into continuous integration. H T T P X is imported inside the Ollama method, not at the
+      top of the file, so the default path never loads it. Numeric fidelity and the narrative
+      templates are the other two imports.
+  - lines: 24-38
+    say: >-
+      Lines 24 through 38 are the shared prompt shape. The Protocol says any backend has a
+      name and a complete method, system, user, and a temperature. Chat payload builds two
+      role and content pairs. A system message and a human message go in. A tiny map turns
+      LangChain's human type into the role name user, which is what both servers expect.
+      Ollama and llama c p p therefore receive the same pairs.
+  - lines: 41-46
+    say: >-
+      Deterministic L L M, lines 41 through 46, is the default class. Its name is
+      deterministic. Complete deletes the system, the user, and the temperature, and raises.
+      This class does not generate free text. The comment in the error tells you to use
+      narrate. That split is intentional. If someone calls complete on the rules backend, they
+      get a loud failure instead of a silent empty string that might look like a model
+      refusal.
+  - lines: 49-70
+    say: >-
+      Ollama L L M, lines 49 through 70, is the local model path. The host is stripped of a
+      trailing slash, and the model name comes from settings, defaulting to llama 3.1 colon 8
+      b. Complete imports H T T P X and posts to the server's chat A P I. The body carries the
+      model, the shared message pairs, stream false, and the temperature. The timeout is three
+      minutes. A bad status raises. The return value is the assistant content string.
+  - lines: 73-95
+    say: >-
+      Llama c p p, lines 73 through 95, is the small local file path. If the model path is
+      empty, it raises and points you back at deterministic. The import of llama c p p python
+      sits inside the constructor. A missing install becomes a recorded error, not a crash of
+      the package import at startup. The intended file is a Llama 3.2 1 B model. Complete
+      calls create chat completion with the same message pairs. This class is optional.
+  - lines: 98-104
+    say: >-
+      Get L L M, lines 98 through 104, is the switch. Ollama returns the Ollama class with the
+      host and model from settings. Llama c p p returns the file loader. Anything else,
+      including the default, returns Deterministic L L M. Config already mapped friendly names
+      such as rules onto deterministic, and it already rejected unknown names by falling back.
+      So a typo in a hosted demo does not take the site down.
+  - lines: 107-119
+    say: >-
+      Narrate, at line 107, is the policy the node calls. The docstring says it in order.
+      Always render the template first. That string is named safe. If the backend is
+      deterministic, line 117 is true. Line 116 has already rendered the template. Line 118
+      runs the fidelity guard on it. Line 119 appends a footer, narrative source,
+      deterministic template. That footer has no digits, so it cannot trip the guard. The
+      record says ok from the check, backend deterministic, rewritten false, and an empty
+      error.
+  - lines: 120-126
+    say: >-
+      Stay on that return and see what a broken template does. The record's ok flag is the
+      guard's ok flag. If the template itself contains a number that is not in the facts, ok
+      is false and rewritten is still false. Triage node then calls check stored, and check
+      stored raises. We do not quietly ship a template that fails its own guard. A broken
+      template is a bug in narrative dot p y, and the run should stop so you fix the sentence.
+      The default path is this branch.
+  - lines: 127-142
+    say: >-
+      Lines 127 through 142 are the model path, used only when the backend is not
+      deterministic. Complete is called with the system prompt, a user prompt that contains
+      the facts as J S O N, and temperature 0.1. Any exception, network, missing model, or a
+      bad payload, is stored as the error string, and the draft stays empty. If there is a
+      draft, the guard runs on it. A clean draft is kept, with a footer that says the numeric
+      fidelity check accepted it. Rewritten is false. Unknown is empty.
+  - lines: 143-150
+    say: >-
+      Lines 143 through 150 are the rejection. An exception, an empty draft, or a failed check
+      all land here. The text you get is the safe template, plus a footer that says the model
+      draft was rejected or unavailable. Rewritten is true. Ok on this record is false, and
+      unknown lists whatever the guard found, or stays empty if there was no draft. The
+      rejected draft is not returned. The caller shows the replacement. The memo on disk is
+      the template.
+  - lines: 107-116
+    say: >-
+      The takeaway: under the default backend, the week zero memo is the template, checked,
+      with a footer and no model in the loop. Ollama with Llama 3.1 8 B is there when you want
+      a local paraphrase, and Llama 3.2 1 B is the small file option. Hosted Streamlit
+      Community Cloud stays on deterministic, because it has no Ollama to call. A failed draft
+      is replaced, and the replacement is what a person reads. Next, narrative dot p y, the
+      template those facts are poured into.

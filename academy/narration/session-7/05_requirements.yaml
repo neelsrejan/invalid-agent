@@ -1,0 +1,87 @@
+title: "Session 7 · Clip 5 · requirements.txt"
+file: ../../snapshots/session-7/requirements.txt
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-3
+    say: >-
+      This is requirements dot t x t, the list Streamlit Community Cloud installs. Comments
+      say the default backend is deterministic: no weights, and no A P I key. A third comment
+      names an optional tag, Llama 3.2 1 B, llama 3.2 colon 1 b. That is a name, not a
+      download. There is no G G U F here, and no Ollama package. Hosted Cloud stays rules
+      only. The command line default remains Meta Llama 3.1 8 B, tag llama 3.1 colon 8 b.
+  - lines: 4-4
+    say: >-
+      Line 4 is pandas, version 2.2 or newer. Pandas is the table library. The synthetic field
+      file is a dataframe: one row per result, columns for lot, instrument, site, software,
+      and the invalid flag. The dashboard builds the strata table from it, and the projection
+      helper copies it before clearing invalids. Pandas is what lets those operations live in
+      the investigation instead of in a spreadsheet on the side.
+  - lines: 5-5
+    say: >-
+      Line 5 is numpy, version 1.26 or newer. Num py is the array library underneath the
+      simulator. The generator draws the synthetic results, the lot assignments, and the
+      hemolysis stand in with num py's random tools. Pandas uses it too, even when your code
+      never types the name. Pinning it here means Community Cloud does not have to guess which
+      num py pandas wants. That is why the tile and the chart can share a rate.
+  - lines: 6-6
+    say: >-
+      Line 6 is scipy, version 1.11 or newer. Sci py supplies the statistical functions the
+      metrics call. The Wilson interval needs a normal quantile, and the code asks scipy dot
+      stats for it. The chi square test that ranks a stratum also comes from scipy, through
+      chi square contingency. The dashboard does not import scipy itself. Pinning scipy means
+      the hosted page computes the same interval your laptop computed.
+  - lines: 7-7
+    say: >-
+      Line 7 is pie YAML, version 6 or newer. The scenarios are YAML files: bad lot and the
+      others in the scenarios folder. Load scenario uses yaml dot safe load, which parses the
+      text into a dictionary and refuses to execute arbitrary Python hiding in the file. Safe
+      load matters because a scenario is data, not a plugin. The pin is version 6 or newer,
+      which is the line that supports the safe loader this code calls.
+  - lines: 8-8
+    say: >-
+      Line 8 is Pydantic, version 2 or newer. Pydantic checks the shape of structured records.
+      The fishbone, the 5 Whys, the C A P A, and the triage memo are built as Pydantic models
+      in the case schemas. A missing field fails there, in Python, before a markdown file can
+      quietly omit a section. The Streamlit page does not construct those models itself.
+      Installing Pydantic on Cloud is what lets that graph import on the host.
+  - lines: 9-9
+    say: >-
+      Line 9 is H T T P X, version 0.27 or newer. It is the HTTP client used only when a
+      network backend is actually selected. The Ollama client posts to the local model's chat
+      endpoint with H T T P X. The live Jira client uses it too. An optional client that is
+      imported inside the function, only when that backend is chosen, is why the dependency
+      can sit here without forcing a model.
+  - lines: 10-10
+    say: >-
+      Line 10 is LangGraph, version 0.2 or newer. LangGraph is the library that runs the
+      weekly loop. State Graph, the conditional edge after status, and END all come from it.
+      Session 6 put the stakeholder loop on that edge: plan, root cause, status, and either
+      stop or advance a week. The dashboard does not rebuild that graph. The pin is 0.2 or
+      newer, the generation that provides the state graph A P I this repository calls.
+  - lines: 11-11
+    say: >-
+      Line 11 is LangChain core, version 0.3 or newer. The page does not import it directly.
+      The language model helper uses it to build the system message and the human message, so
+      a prompt has one shape whether or not a model is called. Deterministic mode never sends
+      that prompt. It still imports cleanly, which means the package has to be installed. The
+      sentences still come from the templates unless a local model is actually there.
+  - lines: 12-13
+    say: >-
+      Lines 12 and 13 are the picture libraries. Plotly, version 5.22 or newer, draws the p
+      chart, the Pareto, and the before and after projection in the browser. The page calls
+      plotly chart on the figures charts dot p y returns. Matplotlib, version 3.8 or newer, is
+      the P N G path for the Gantt and for the later slides. Cloud can take a newer compatible
+      release, and it will not take an older one.
+  - lines: 14-15
+    say: >-
+      Lines 14 and 15 finish the list. Python dash p p t x, version 1 or newer, builds a
+      PowerPoint file for the executive deck the charter describes. This page does not import
+      it yet. It is here so Cloud already has it when that writer arrives. Streamlit, version
+      1.32 or newer, is the page itself: the sidebar, the cache, the tiles, the tabs, and App
+      Test. No model weights are listed. Community Cloud installs these lines and runs rules
+      only.

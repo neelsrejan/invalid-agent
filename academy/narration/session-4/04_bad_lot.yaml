@@ -1,0 +1,86 @@
+title: "Session 4 · Clip 4 · scenarios/bad_lot.yaml"
+file: ../../snapshots/session-4/scenarios/bad_lot.yaml
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-11
+    say: >-
+      This is bad underscore lot dot yaml. You met the data design in Session 2. Today it is
+      the citation calendar. The id is bad lot, and the title names reagent lot L-4419. Spec
+      invalid rate is 0.02 and promised validity is 0.98, the pair the catalog quotes. The
+      injections do not change those numbers. Index injections hides any note whose week is
+      still in the future. The week on each block is the gate.
+  - lines: 12-25
+    say: >-
+      Lines 12 through 25 are the world the table is drawn from: customers, sites,
+      instruments, operators, and two software versions that both run the whole window.
+      Session 2 used that so a software cutover is not confused with the lot. We will leave
+      that design where it is. For root cause, these rows are what the six M bones point at.
+      Operator is Man, instrument is Machine, software is Method. The injections add
+      sentences. They do not rewrite the lists.
+  - lines: 26-35
+    say: >-
+      Lines 26 through 30 list the lots, and lines 31 through 35 plant the cause. L-4419
+      starts on day 120. The type is bad reagent lot, and the stratum invalid rate is 0.18.
+      That level is what the winning branch names. Step 4 of the five Whys cites a note that
+      contains this lot id. The cause lives in this block. Permission to quote the Q A
+      sentence about it lives on the week number of that note.
+  - lines: 36-42
+    say: >-
+      The complaint is marked synthetic. It names Northlake Health and the 98 percent validity
+      they were sold, and it names no lot. When a live branch has no release note yet, the
+      contrary citation is this customer voice. The root-cause code treats that complaint as a
+      limit, because it never names the stratum. The complaint sits in the file from the
+      start. The dated notes under injections are what the week number gates.
+  - lines: 43-50
+    say: >-
+      Injections start at line 43. The first note is week 0, source customer. A note is kept
+      when its week is less than or equal to the case week, so this one is citable on the
+      opening run. Its id is injection colon 0 colon customer. The text asks for the invalid
+      rate, whether the commitment is broken, and what we are doing this week. It still omits
+      L-4419. It cannot finish the five Whys by itself.
+  - lines: 51-57
+    say: >-
+      Lines 51 through 57 are the week 1 Q A note. Lot L-4419 entered distribution on day 120,
+      the same window as the spike, and earlier lots are no longer shipping. At week 0 the
+      note is dropped. At week 1 its id is injection colon 1 colon q a, and step 4 can cite it
+      because the text contains L-4419. The rank was already the lot. The note records who
+      wrote that down, once the week has arrived.
+  - lines: 58-64
+    say: >-
+      Lines 58 through 64 are week 2, source R and D, the release-pass note. L-4419 passed
+      release testing, and the release sample was not a field specimen. The phrase passed
+      release is what the contrary function searches for. From week 2 on, the note can sit on
+      the bad reagent lot branch as evidence against. The field table still ranks the lot
+      first. Week 0 and week 1 cannot see this paragraph.
+  - lines: 65-70
+    say: >-
+      Week 2 also has a second customer note. The lab director wants a written update and asks
+      whether to stop every lot or only the current one. Two notes share a week and a source,
+      so the second id gets a numeric suffix. Session 5 reads this note as the reason to add
+      the lab-director task at week 2. In the root-cause step it is one more citable sentence,
+      and only after that week.
+  - lines: 71-76
+    say: >-
+      Week 3, manufacturing, logs a shipping-temperature excursion on lot L-4425, and says
+      L-4419 did not have it. L-4425's field rate has not moved. It is a dated red herring. At
+      week 1 the five Whys cannot cite it. At week 3 the note is legal, and it still points at
+      a different lot. The gate keeps a later memo out of an earlier record.
+  - lines: 77-82
+    say: >-
+      The other week 3 note is for leadership. It asks the cost of the invalids, and the cost
+      of quarantine versus a broader field action. A different source means a different id,
+      injection colon 3 colon management. It stays hidden through week 2. The root-cause files
+      can quote it at week 3 or 4. The question is a planning question. Session 4 stores it as
+      evidence. Session 5 turns cost into a task.
+  - lines: 83-89
+    say: >-
+      Week 4 asks for a recommendation: contain the lot, expand the investigation, or do both,
+      plus the effectiveness check that would close it. That check is the D 6 idea in ordinary
+      words. The note stays invisible until the case week is 4. Running week 4 leaves the C A
+      P A open. D 7 and D 8 stay preliminary. Each week number is a gate. Future text stays
+      out of the record.

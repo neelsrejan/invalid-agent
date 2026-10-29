@@ -1,0 +1,89 @@
+title: "Session 9 · Clip 4 · RESUME_BULLETS.md"
+file: ../../snapshots/session-9/RESUME_BULLETS.md
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-3
+    say: >-
+      This is resume bullets dot m d, eight lines, and it is a quote sheet. Line 3 says the
+      bullets were copied from evals slash reports slash two zero two six dash one zero dash
+      two one dot m d. That is the snapshot report. The logic trace on the main notes an
+      October 20 name. This line points at October 21, and the counts match. N equals 22
+      synthetic scenarios, 4 held out. If someone asks where a number came from, name this
+      path and open that report.
+  - lines: 3
+    say: >-
+      Stay on line 3 for the fence around the page. These are not clinical accuracy claims.
+      Llama 3.1 8 B and Llama 3.2 1 B were not installed for that run, so the page has no
+      model-versus-model number. The local Ollama default, when a model is actually running,
+      is Llama 3.1 8 B, tag llama 3.1 colon 8 b. Hosted Streamlit is rules-only. The eval
+      table was two ranking policies on the deterministic backend. Line 3 is the answer when
+      someone hears twenty-two of twenty-two and asks whether the model was accurate.
+  - lines: 7
+    say: >-
+      Line 7 is the drift bullet, and you read it before the twenty-two of twenty-two line. On
+      4 of the drift scenarios a second stratum, a reagent lot, also cleared the evidence bar.
+      Top one stayed on the instrument. That second call is part of the result, not a footnote
+      to drop. How to read it. Top one can match the designed call and still leave another
+      stratum in the field. Drop this bullet, keep the perfect top one, and you have changed
+      the result.
+  - lines: 7
+    say: >-
+      Still on line 7, check the word four against the report before you name files. The
+      extra-stratum list has four rows. Drift clear, drift late, and drift noisy, each with
+      bad reagent lot behind drifting instrument. The fourth row is herring operator. Its
+      designed call is also the instrument, which is why the bullet groups it with the drift
+      scenarios. Say all four names if a reviewer opens the report. Top one stayed on the
+      instrument. The lot cleared the bar behind it.
+  - lines: 6
+    say: >-
+      Now line 6, and only with line 7 still in the same breath. Twenty-two seeded scenarios,
+      4 held out, gates not refit. The evidence ranker matched the designed call on 22 of 22,
+      including 3 red herrings and 1 lot bump that stayed no single cause. A ranker that only
+      read the week-zero note matched 3 of 22. The two fractions share the 22 synthetic files.
+      One is the evidence policy. One is the keyword policy. They are two rankers. Gates not
+      refit means the Session 3 thresholds stayed put.
+  - lines: 6
+    say: >-
+      Still on line 6, two clauses you will be asked to defend. Three red herrings are herring
+      lot, herring operator, and herring software. The week-zero note names the wrong cause,
+      and the evidence ranker matched the designed label. The one lot bump is weak lot. The
+      note said the lot. The bump was under the bar. The correct call was a refusal. The
+      keyword 3 of 22 are the flat files, where the note names no cause word. Twenty-two of
+      twenty-two counts those herrings and that refusal. It is the designed call on this set.
+  - lines: 5
+    say: >-
+      Line 5 is the portfolio bullet. Read it as deliverables, not as a detection rate. A
+      simulated 4-week investigation for a fictional panel, promised validity at least 98
+      percent. The loop produces a plan, stakeholder notes, a fishbone, 5 Whys, an eight D C A
+      P A record, and a 7-slide exec deck. Rates and costs are computed in code. A narrative
+      that introduces a number outside those facts is replaced by the template. This line is
+      the Friday inventory. The score lives on lines 6 and 7.
+  - lines: 8
+    say: >-
+      Line 8 is a third measurement, not a restatement of line 6. Week-zero graph checks on
+      the same 22 scenarios. Numeric fidelity 22 of 22. Five Whys citations 22 of 22.
+      Escalation matched the spec comparison, 22 of 22. Mean latency 0.55 seconds on the
+      deterministic backend. Read 0.55 as the mean wall time of that run, from the report. It
+      is not a service-level promise, and the backend was rules-only, so it is not a model
+      speed. Fidelity means the prose stayed inside the computed facts.
+  - lines: 3-8
+    say: >-
+      Speak the page in the safe order. Start on line 3. Copied from the October 21 report, 22
+      synthetic scenarios, 4 held out, not a clinical claim, and no model number because
+      neither Llama weight was installed. Then line 7, the second stratum, and the four file
+      names if asked. Then line 6, twenty-two of twenty-two beside three of twenty-two. Line 5
+      if they want the artifact list. Line 8 for fidelity, citations, escalation, and the 0.55
+      seconds. Line 6 by itself is how this page gets misread.
+  - lines: 5-8
+    say: >-
+      Match the question to the line. What did the loop produce? Line 5, the seven-slide deck
+      included. Was the model accurate? Line 3. Hosted Streamlit is rules-only. The local tag
+      is llama 3.1 colon 8 b when Ollama is running. Did the customer note work as a ranker?
+      Line 6, three of twenty-two. Where was top one right and still incomplete? Line 7. Did
+      the pages invent a rate? Line 8, fidelity 22 of 22. Every number on resume bullets dot m
+      d is a cell in the October 21 report.

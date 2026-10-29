@@ -1,0 +1,100 @@
+title: "Session 8 · Clip 1 · evals/run_eval.py"
+file: ../../snapshots/session-8/evals/run_eval.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is run underscore eval dot p y, the offline scorecard for Session 8. The docstring
+      scores the evidence ranker against a ranker that only reads the injection note. A
+      language model is not required. If backend ollama gets an answer, the report records the
+      probe. Otherwise it says the Llama comparison did not run. Every figure in the markdown
+      comes from this script's counters.
+  - lines: 17-24
+    say: >-
+      Lines 17 through 20 find the project folder. This file lives in evals, so the parent of
+      that folder is the repo root. Lines 19 and 20 put s r c on the import path when the
+      package is not installed, so a plain python command can import invalid agent. Lines 22
+      through 24 pull in the score's tools. Rank hypotheses ranks the evidence. Generate and
+      load scenario rebuild the table from the yaml seed.
+  - lines: 26-39
+    say: >-
+      Lines 26 through 39 are the naive policy, the tuple named underscore keywords. Each pair
+      is a word to hunt, then the cause label, and the first match wins. Software and version
+      sit before lot, so a sentence that names both still gets one call, the earlier word.
+      Instrument and drift map to drifting instrument. Reagent and lot map to bad reagent lot.
+      If no word hits, the function returns no single cause.
+  - lines: 47-57
+    say: >-
+      Keyword cause is that policy as a function. It keeps an injection only when its week is
+      at or before the week you pass. The default is week zero, so the scorecard hears only
+      the note that arrived with the complaint. It lowercases the text, joins the chunks, and
+      returns the cause of the first needle. No needle means no single cause. This function
+      never opens the table. The sentence is the whole input.
+  - lines: 60-67
+    say: >-
+      Underscore expect is the answer key, and it stays on our side of the comparison. If the
+      yaml has eval dot expect cause, that string is the label. If the root cause type is red
+      herring, the label is the type nested under the quoted key true. Otherwise the label is
+      the root cause type, or no single cause when that field is missing. Rank hypotheses is
+      called with the frame and the spec. The answer key is not one of its arguments.
+  - lines: 70-80
+    say: >-
+      Score scenario is the rank-only score. It does not call the graph or a model. Line 72
+      rebuilds the frame with generate. Line 73 reads the spec invalid rate, defaulting to
+      0.02, the two percent under a 98 percent validity promise. Line 74 calls rank hypotheses
+      with the frame and the spec. Line 76 reads the expect label only after that call
+      returns. Lines 78 through 80 keep a second cause when one exists and the top call is a
+      real cause.
+  - lines: 81-97
+    say: >-
+      The returned dictionary is one report row. Evidence is the cause at index zero. Top one
+      is true when that first cause equals the expect label. Top three is true when the expect
+      label sits anywhere in the first three causes. That is the softer credit, and it can
+      pass when the first cause was wrong. Keyword hit calls keyword cause at week zero.
+      Holdout and below bar are booleans from the eval block. Extra stratum is the second
+      cause. Rate, exceeds spec, k, and n come from overall rate.
+  - lines: 107-133
+    say: >-
+      Run graph checks is a second pass, separate from the ranker. It calls run case at week
+      zero and times it. Citations pass when every 5 Whys step has at least one citation and
+      every citation is in the catalog. Fidelity passes when the triage record, the r c a
+      record, and every status record say ok. Escalation passes when the memo's escalate flag
+      equals its exceeds spec flag. The return includes those three booleans and the seconds,
+      rounded to two decimals.
+  - lines: 136-175
+    say: >-
+      Model section names the local default, Meta Llama 3.1 8 B, tag llama 3.1 colon 8 b, set
+      by L L M model, and the smaller tag, Llama 3.2 1 B, llama 3.2 colon 1 b. The plan's old
+      seven B versus one point five B comparison is now those two Llama tags. Gemma 3 and
+      Phi-4 were not scored. Probe ollama runs only when the backend is ollama. On the
+      deterministic command the probe says not contacted. The table is two ranking policies. A
+      model that did not run gets no accuracy number.
+  - lines: 178-201
+    say: >-
+      Render report is where a program manager slows down. Holdout rows are the files marked
+      holdout, a slice you promise not to tune against. The other rows are the seen set. Top
+      one means the first cause matched the designed label. Top three asks only whether that
+      label appears in the first three. The markdown prints all, not held out, and holdout.
+      Underscore rate fills each cell as hits over n. The preamble says the prompts were not
+      edited against either split, and the Session 3 gates were not refit.
+  - lines: 203-231
+    say: >-
+      Failure notes still print after a clean top one list. If nothing was missed, line 213
+      says so and names the weak-lot case that should stay no single cause. Then every keyword
+      miss is listed. The sentence says those misses are the point of the comparison. If a
+      second stratum also cleared the bar, lines 222 through 225 name it and say top one
+      stayed with the injected cause. A below-bar file is listed on its own, because a correct
+      call there is a refusal.
+  - lines: 257-294
+    say: >-
+      Main is the command line. Backend defaults to deterministic. Limit zero means every
+      scenario. Limit 5 with smoke is what continuous integration runs. Smoke writes under out
+      and returns exit code 1 if evidence top one misses, or if fidelity, citations, or
+      escalation miss. Skip graph is the unit-test path. The default report path is evals,
+      slash reports, slash today's date, dot m d. The snapshot you open next is that dated
+      markdown, and the numbers in it are these counters.

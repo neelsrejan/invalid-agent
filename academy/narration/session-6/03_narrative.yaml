@@ -1,0 +1,96 @@
+title: "Session 6 · Clip 3 · src/invalid_agent/narrative.py"
+file: ../../snapshots/session-6/src/invalid_agent/narrative.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-11
+    say: >-
+      This is narrative dot p y, the sentences behind the three status notes. Templates may
+      only fill values that already live on the facts dictionary. The fidelity guard checks
+      the result either way. The customer, the internal team, and leadership must be able to
+      quote the same invalid rate. Audience changes the words around that rate. It does not
+      change the rate. A program manager can send any of the three notes without reconciling
+      three different percents.
+  - lines: 12-18
+    say: >-
+      System prompt, lines 12 through 18, is the instruction a model sees when one is actually
+      called. It says the note is a simulation and not for clinical use. It says to use only
+      numbers that appear in the facts. It forbids invented rates, intervals, counts, costs,
+      or dates. It also says not to state a root cause as confirmed when the facts call it a
+      hypothesis. The prompt still documents the same boundary the templates obey.
+  - lines: 21-32
+    say: >-
+      Prompt for, lines 21 through 27, builds the user message: the task name, an instruction
+      to quote numbers exactly as they appear in the facts, and the facts dumped as JSON.
+      Render, lines 30 through 32, is the deterministic path. It looks up the task name in the
+      templates dictionary and calls that function. A typo in the task name would fail here,
+      loudly, instead of sending a blank note.
+  - lines: 39-57
+    say: >-
+      Triage memo, lines 39 through 57, is the week 0 template from earlier sessions. We will
+      not re-teach that memo. Read it only to recognize the rate sentence. Invalid rate, the
+      count k of n, the Wilson 95 percent interval, promised validity, and the spec the rate
+      must stay at or below. The status header you are about to see uses that same sentence
+      shape. That is how a sentence stays faithful to the metrics object.
+  - lines: 114-121
+    say: >-
+      Underscore status header, lines 114 through 121, is the shared opening for all three
+      notes. It returns a list of lines, not a finished page. The title is passed in, so the
+      same function can say Customer update, Internal update, or Leadership update. Every note
+      then prints the simulation banner. Every note then prints the investigation week and the
+      R A G color from the facts. If the header changed shape, the tile and the file would
+      disagree.
+  - lines: 122-129
+    say: >-
+      Lines 122 through 129 are the rate sentence inside that shared header. Invalid rate, to
+      two decimals, then k of n, then the Wilson 95 percent interval, then promised validity,
+      then the spec. Customer, internal, and leadership all call this function, so the rate
+      line cannot drift. On the bad lot case that shared line is 3.67 percent. The customer
+      sees 3.67, and the internal note sees 3.67. There is no separate customer math.
+  - lines: 132-142
+    say: >-
+      Status customer, lines 132 through 142, starts with the header titled Customer update,
+      then the week's action sentence. It adds a fixed line: this note does not state a
+      confirmed cause. Search the template for bad underscore reagent underscore lot, and for
+      the phrase the root cause is. Neither string is there. The customer still sees the rate,
+      the color, and what to do this week. The boundary is in the note a customer would read,
+      not only in a code comment.
+  - lines: 145-156
+    say: >-
+      Status internal, lines 145 through 156, uses the same header, titled Internal update. It
+      then names the leading hypothesis as category, cause, and level. The next sentence says
+      this is a ranking, not a confirmed cause. If the hypothesis has prose, that prose is
+      pasted next, followed by the evidence ids. Plan version is included so a reader can
+      match the note to the Gantt that was written on the same lap.
+  - lines: 157-166
+    say: >-
+      Lines 157 through 166 finish the internal note. The plan version is printed, and the
+      reader is pointed at the Jira dry run for tasks in progress. If injection texts are on
+      the facts, they are pasted as bullets, verbatim. Verbatim matters for the guard. The
+      injection strings live on the facts, so the guard can mask those exact strings before it
+      scans for stray numbers. Week 0 has only the injections that have arrived by week 0.
+  - lines: 169-176
+    say: >-
+      Status leadership, lines 169 through 176, uses the same header, titled Leadership
+      update, and then adds the money. The cost sentence reads total dollars, then the invalid
+      count, then the unit cost in dollars. Those three numbers are the cost block computed in
+      status dot p y: k times the unit cost from the YAML. The template does not multiply
+      again, and it does not type a total by hand. The test looks for that word.
+  - lines: 177-185
+    say: >-
+      Lines 177 through 185 add the ask, a decision on how wide the hold should be. The
+      closing line says this is not a request to close the C A P A. Week 2 leadership is still
+      Red, because the rate is over spec and containment week has not arrived. Week 3 can move
+      to Amber when containment is on the plan. Green stays unavailable to bad lot, because
+      the measured field rate has not come back inside the spec.
+  - lines: 188-193
+    say: >-
+      The templates dictionary, lines 188 through 193, is the registry render looks up. Triage
+      maps to the week 0 memo. Status customer, status internal, and status leadership map to
+      the three functions you just read. Adding a fourth audience means adding a function and
+      a key here, and adding that audience to the loop in status dot p y. Next, the test
+      proves the week 0 plan and the week 2 plan are actually different.

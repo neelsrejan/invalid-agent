@@ -1,0 +1,94 @@
+title: "Session 6 · Clip 5 · src/invalid_agent/nodes/planner.py"
+file: ../../snapshots/session-6/src/invalid_agent/nodes/planner.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-7
+    say: >-
+      This clip stays inside planner dot p y, and it stays on two questions. How does a task
+      get a Jira status from sim underscore week versus the current week. And what actually
+      changes on the plan between week 2 and week 3. The docstring says dates are computed
+      from the field window, and that week 2 adds the lab director note. The bars can wait.
+      The loop near line 108 is what changes that.
+  - lines: 41-59
+    say: >-
+      Underscore task, lines 41 through 59, stamps each row with an id, an owner, and sim
+      underscore week. Sim underscore week is the investigation week the task belongs to, a
+      small integer, not a calendar date. Line 58 sets status to To Do and does not look at
+      the current week. The list is assembled first. The comparison near line 108 assigns
+      Done, In Progress, or To Do afterward. If you know SQL, sim underscore week is the key
+      you compare with the week parameter.
+  - lines: 68-79
+    say: >-
+      Lines 68 through 79 are the standing ten tasks. The last number in each call is sim
+      underscore week. T 1, T 2, and T 3 are week 0. T 4 and T 5 are week 1. T 6 and T 7 are
+      week 2. T 8 and T 9 are week 3: execute containment, and size the cost. T 10 is week 4,
+      the effectiveness check, still in the future at the end of a week 3 run. These ten rows
+      exist even in week 0. The diff is the rows appended after them.
+  - lines: 80-91
+    say: >-
+      Lines 80 through 91 are the week 2 diff. If week is at least 2, the function appends T
+      11. The name is written update for the lab director. Sim underscore week is 2, and it
+      depends on T 2. Week 0 and week 1 never take this branch, so their plan dot json has no
+      T 11. Week 2 and week 3 do. The standing ten tasks stay put. The stakeholder promise is
+      an extra row, added when the week earns it.
+  - lines: 92-103
+    say: >-
+      Lines 92 through 103 are the week 3 diff. If week is greater than or equal to 3, the
+      function appends T 12. The name is lane temperature review against the field rates. The
+      owner is Manufacturing. Sim underscore week is 3. It depends on T 5. Week 2 has T 11 and
+      does not have T 12. The plan can investigate a red herring and still keep the leading
+      stratum as the containment target.
+  - lines: 104-110
+    say: >-
+      Lines 104 through 110 set Jira status, and they are only a comparison of two integers.
+      For each task, if sim underscore week is less than the current week, status becomes
+      Done. If sim underscore week equals the current week, status becomes In Progress.
+      Otherwise status stays To Do. There is no date math in this decision, and there is no
+      call to Jira inside the loop. The sim week is the clock that counts.
+  - lines: 105-110
+    say: >-
+      Walk week 3 through lines 105 to 110. T 1, sim week 0, is Done. T 11, sim week 2, is
+      Done, which is what the status test asserts. T 8, T 9, and T 12 have sim week 3, so they
+      are In Progress. T 10, sim week 4, is still To Do. During week 2 itself, T 11 would have
+      been In Progress, because 2 equals 2. The file you open after a week 3 run is that last
+      pass, not the week 2 pass.
+  - lines: 112-120
+    say: >-
+      Lines 112 through 120 return the plan dictionary. Version is 1 when the week is less
+      than 2, and 2 from week 2 onward. Week 3 stays version 2 even after T 12 appears. The
+      version bump marks the lab director change, not every added row. We are not unpacking
+      that helper today. The point for status is that plan version on the decision log matches
+      this integer, so a note and a plan can be paired.
+  - lines: 189-200
+    say: >-
+      The register has a week 2 diff too. Lines 189 through 200 append R 4 only when the week
+      is 2 or later. The risk text says release testing passed while the field rate did not,
+      so the cause is disputed. Likelihood 4 times impact 3 is the score. The trend is up.
+      That is the same story as the week 2 decision: keep the field ranking after the release
+      report came back as a pass.
+  - lines: 201-222
+    say: >-
+      Lines 201 through 222 are the week 3 register diff. R 5 says a shipping temperature note
+      can be a red herring and pull the team off the leading cause. That is why T 12 exists,
+      and why the decision log refuses to switch the cause. R 6 says leadership may ask for
+      cost before it is sized, so the cost task shares week 3 with containment. The check that
+      follows requires every score to equal likelihood times impact.
+  - lines: 230-246
+    say: >-
+      Plan node, lines 230 through 246, is what the graph calls each lap. It reads the week,
+      takes the top hypothesis, and calls build plan and build risks for that week. It writes
+      three artifacts into the output root and into the week folder: the Gantt, the risk
+      register, and plan dot json. We are not opening the Gantt writer. Week 0's copy has no T
+      11 and no R 4. The week folders are the history.
+  - lines: 247-248
+    say: >-
+      Line 247 syncs that plan to jira underscore issues dot json in the output root. With no
+      token configured, the client is the dry run from Session 5. Sync updates a task's status
+      in place, so there is one T 1, not a new row each week. At the end of week 3 that file
+      shows T 1 Done, T 11 Done, and T 10 still To Do. The week folders hold each plan. This
+      JSON file holds the latest statuses.

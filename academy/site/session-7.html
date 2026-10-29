@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session 7 · A Streamlit dashboard, rules-only by default</title>
+<link rel="stylesheet" href="css/academy.css">
+
+<script>
+(function () {
+  var session = 7;
+  var ok = false;
+  try {
+    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var data = raw ? JSON.parse(raw) : null;
+    var prev = data && data.sessions && data.sessions[String(session - 1)];
+    ok = !!(prev && prev.passed);
+  } catch (e) { ok = false; }
+  if (!ok) document.documentElement.classList.add("is-locked");
+})();
+</script>
+</head>
+<body data-page="session" data-session="7">
+<div class="app">
+<aside class="nav">
+<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>
+<a class="item" href="index.html">Home</a>
+<div class="week">Week 1</div>
+<a class="item" data-session="1" href="session-1.html"><i class="dot"></i>S1 · PRD, backlog, and a skeleton that tests</a>
+<a class="item" data-session="2" href="session-2.html"><i class="dot"></i>S2 · A synthetic field file and the metrics</a>
+<a class="item" data-session="3" href="session-3.html"><i class="dot"></i>S3 · Week-0 triage memo and the fidelity guard</a>
+<div class="week">Week 2</div>
+<a class="item" data-session="4" href="session-4.html"><i class="dot"></i>S4 · Fishbone, 5 Whys, and an 8D/CAPA</a>
+<a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
+<a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three RAG notes</a>
+<div class="week">Week 3</div>
+<a class="item active" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
+<a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
+<div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
+</aside>
+<main class="main">
+
+<p class="kicker">Week 3 · Session 7 · tag session-7</p>
+<h1>A Streamlit dashboard, rules-only by default</h1>
+<p class="lede">A reviewer can move the week without a model download. Community Cloud stays deterministic. A local toggle, with LLM_MODEL unset, asks Ollama for Llama 3.2 1B.</p>
+<p class="note">Ticket INV-301 · about 70–90 minutes · artifact: Clickable week stepper: rate, p-chart, Pareto, projection</p>
+<div class="lock-screen">
+  <div class="panel">
+    <h2>This session is locked</h2>
+    <p>Pass Session 6 at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p><a class="button" href="session-6.html">Go to Session 6</a> <a class="button secondary" href="index.html">Home</a></p>
+  </div>
+</div>
+<div class="lesson">
+<h2>Read first</h2>
+<ul><li>`.streamlit/config.toml` for the navy theme and the telemetry switch.</li><li>`requirements.txt` — notice it does not install a weight file.</li></ul>
+<h2>Watch in this order</h2>
+<p class="note">Pause whenever you want. The line numbers match tag <code>session-7</code>, not whatever main looks like today.</p>
+<article class="clip">
+<h3>1. Session 7 · Clip 1 · app/streamlit_app.py</h3>
+<video controls preload="metadata" src="videos/session-7/01_streamlit.mp4">
+<a href="videos/session-7/01_streamlit.mp4">Download clip 1</a>
+</video>
+<p class="meta">6:11 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/app/streamlit_app.py">app/streamlit_app.py</a> at <code>session-7</code></p>
+</article><article class="clip">
+<h3>2. Session 7 · Clip 2 · src/invalid_agent/artifacts/charts.py</h3>
+<video controls preload="metadata" src="videos/session-7/02_charts.mp4">
+<a href="videos/session-7/02_charts.mp4">Download clip 2</a>
+</video>
+<p class="meta">5:27 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/src/invalid_agent/artifacts/charts.py">src/invalid_agent/artifacts/charts.py</a> at <code>session-7</code></p>
+</article><article class="clip">
+<h3>3. Session 7 · Clip 3 · src/invalid_agent/metrics/effectiveness.py</h3>
+<video controls preload="metadata" src="videos/session-7/03_effectiveness.mp4">
+<a href="videos/session-7/03_effectiveness.mp4">Download clip 3</a>
+</video>
+<p class="meta">5:18 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/src/invalid_agent/metrics/effectiveness.py">src/invalid_agent/metrics/effectiveness.py</a> at <code>session-7</code></p>
+</article><article class="clip">
+<h3>4. Session 7 · Clip 4 · tests/test_dashboard.py</h3>
+<video controls preload="metadata" src="videos/session-7/04_test_dashboard.mp4">
+<a href="videos/session-7/04_test_dashboard.mp4">Download clip 4</a>
+</video>
+<p class="meta">5:23 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/tests/test_dashboard.py">tests/test_dashboard.py</a> at <code>session-7</code></p>
+</article><article class="clip">
+<h3>5. Session 7 · Clip 5 · requirements.txt</h3>
+<video controls preload="metadata" src="videos/session-7/05_requirements.mp4">
+<a href="videos/session-7/05_requirements.mp4">Download clip 5</a>
+</video>
+<p class="meta">5:18 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/requirements.txt">requirements.txt</a> at <code>session-7</code></p>
+</article><article class="clip">
+<h3>6. Session 7 · Clip 6 · .streamlit/config.toml</h3>
+<video controls preload="metadata" src="videos/session-7/06_streamlit_config.mp4">
+<a href="videos/session-7/06_streamlit_config.mp4">Download clip 6</a>
+</video>
+<p class="meta">4:24 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/.streamlit/config.toml">.streamlit/config.toml</a> at <code>session-7</code></p>
+</article>
+<h2>Logic trace</h2>
+<p class="note"><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/docs/sessions/session-7/LOGIC_TRACE.md">LOGIC_TRACE.md at session-7</a></p>
+<div class="prose"><h1>Session 7 logic trace</h1>
+<p>Snapshot id: git tag <code>session-7</code>. Resolve the commit with <code>git rev-parse session-7^{}</code>.</p>
+<p>Laptop copy: check out the tag into <code>C:\Users\neels\Grok_Bot\Project_Agent\Session 7\</code>. This workspace has no Windows path, so the tag is the snapshot.</p>
+<h2>1. Goal</h2>
+<p>A Streamlit page a reviewer can click through: pick a scenario, move the week, and see the rate against the 2% spec, the p-chart, the Pareto, the strata, a before/after projection, and the week&rsquo;s memo, fishbone, 5 Whys, CAPA, plan, risks, and status notes. Rules-only is the default. The page carries the simulation banner.</p>
+<h2>2. What had to be true before Session 8</h2>
+<p><code>run_case</code> already returns the metrics, the hypotheses, and the markdown. The dashboard calls that function. It does not grow a second investigation loop. Session 8 can score the same scenarios the picker lists.</p>
+<h2>3. Why these libraries</h2>
+<ul>
+<li><strong>Streamlit</strong> is the page and the free host. <code>st.cache_data</code> keeps a week from recomputing when the reviewer switches a tab.</li>
+<li><strong>Plotly</strong> draws the p-chart, the Pareto, and the before/after chart in the browser. The PNG path for later slides stays on matplotlib, because Plotly&rsquo;s static export needs Kaleido and a browser binary we are not shipping.</li>
+<li>No new model library. Rules-only sets <code>LLM_BACKEND=deterministic</code>. That is what hosted Streamlit runs: Streamlit Cloud has no Ollama. Turning the toggle off on a local or self-hosted machine asks Ollama for <code>LLM_MODEL</code> when that variable is set, and for Llama 3.2 1B (<code>llama3.2:1b</code>) when it is not. <code>narrate</code> still replaces a missing or rejected draft with the template.</li>
+</ul>
+<h2>4. Code, and why it is shaped this way</h2>
+<p><code>app/streamlit_app.py</code> is the page. <code>streamlit_app.py</code> at the repo root runs that file with <code>runpy</code>, so both <code>streamlit run streamlit_app.py</code> and Streamlit Community Cloud&rsquo;s default filename work.</p>
+<ul>
+<li><code>_dashboard_model</code> (line 29) is the only place the page chooses a model name. An explicit <code>LLM_MODEL</code> wins. Rules-only does not call a model. Hosted Streamlit stays on that default. With the toggle off and <code>LLM_MODEL</code> unset, a local or self-hosted run asks for <code>HOSTED_LLM_MODEL</code> (<code>llama3.2:1b</code>).</li>
+<li><code>_run</code> (line 40) sets <code>LLM_BACKEND</code> for the call and puts <code>LLM_MODEL</code> on the environment only when the backend is not deterministic. It restores the previous environment afterwards, so a cached run cannot pin a model for the next CLI command in the same process. The cache key is scenario, week, backend, and model.</li>
+<li>The banner is the first markdown on the page (line 71). The spec line under the title restates validity ≥ 98%.</li>
+<li>KPI tiles use <code>result["metrics"]["overall"]</code> and the triage memo&rsquo;s escalate flag. RAG is read off the leadership note (<code>RAG: Red</code>, <code>RAG: Amber</code>, <code>RAG: Green</code>), which is the same string <code>status.py</code> wrote.</li>
+<li>The strata select box and the projection both call code that already existed: <code>rank_hypotheses</code> inside <code>run_case</code>, and <code>projection_summary</code> for the counterfactual. The caption repeats the projection label, including &ldquo;Not observed&rdquo;.</li>
+<li>Tabs render the markdown the graph already stored. The Gantt HTML stays a file under <code>out/dashboard/&lt;scenario&gt;/weekN/</code>. The task table on the page is the same plan.</li>
+</ul>
+<p><code>artifacts/charts.py</code> builds the three Plotly figures. Colors are navy <code>#0B3A5B</code>, teal <code>#1F7A8C</code>, and red <code>#B23A48</code> for rule-1 marks. No purple gradient.</p>
+<p><code>metrics/effectiveness.py</code> copies the frame, clears invalids on the leading stratum, and returns before/after rates. It does not rewrite the scenario file.</p>
+<p><code>.streamlit/config.toml</code> sets the navy theme, headless mode, and turns usage stats off. <code>requirements.txt</code> is the Streamlit Cloud install list. It does not install a GGUF.</p>
+<h2>5. What was documented, and why</h2>
+<p>The README model table names <code>llama3.1:8b</code> as the local default. Hosted Streamlit runs rules-only (deterministic). <code>llama3.2:1b</code> is the suggested small tag for local or self-hosted runs. Gemma 3 (<code>gemma3</code>) and Phi-4 (<code>phi4</code>) are other <code>LLM_MODEL</code> values. The page caption says when no model is called. <code>.env.example</code> lists the same single variable.</p>
+<h2>6. Stakeholder / Jira buy-in before Session 8</h2>
+<p>Ticket <strong>INV-301</strong>, epic <strong>INV-5</strong>: the dashboard. Neel still has to sign in to Streamlit Community Cloud himself and pick <code>app/streamlit_app.py</code>. This session does not create that account. No Jira token.</p>
+<h2>7. Approval → capability added</h2>
+<p><code>tests/test_dashboard.py</code> checks that removing the bad lot lowers the projected rate, and that <code>AppTest</code> renders the banner without an exception. <code>pytest</code> stays offline.</p>
+<h2>8. What a hiring manager can see</h2>
+<p>A decision page: the rate versus the promise, where the points leave the control limits, and the week&rsquo;s note to the customer. The numbers on the tiles are the metrics object, not a sentence the model wrote.</p>
+<h2>Line-by-line walkthrough</h2>
+<p>Check out <code>session-7</code> first.</p>
+<ol>
+<li>Open <code>app/streamlit_app.py</code>. <code>main</code> starts at <code>set_page_config</code>, then the banner HTML.</li>
+<li>The sidebar builds labels from every <code>scenarios/*.yaml</code>, defaulting the week slider to 0 and rules-only to on.</li>
+<li><code>_dashboard_model</code> reads <code>LLM_MODEL</code> from the environment before <code>load_settings</code> fills the local default, so an unset variable on this page means Llama 3.2 1B only when the toggle is off.</li>
+<li><code>_run</code> points <code>run_case</code> at <code>out/dashboard/&lt;stem&gt;/week&lt;N&gt;</code> and restores the environment in <code>finally</code>.</li>
+<li>Five metric tiles. The delta on the rate tile is percentage points versus the spec, colored inverse so &ldquo;above spec&rdquo; reads as bad.</li>
+<li><code>p_chart_figure</code> and <code>pareto_figure</code> take the dicts already on <code>result["metrics"]</code>.</li>
+<li><code>projection_summary</code> regenerates the frame from the scenario seed. Same rows as the graph. The chart is labeled as a projection.</li>
+<li>The six tabs are the strings on the result. Switching tabs does not call <code>run_case</code> again, because of the cache.</li>
+<li><code>tests/test_dashboard.py</code> <code>test_streamlit_app_renders_the_banner</code> loads the page with <code>AppTest</code> and asserts the disclaimer and at least one metric.</li>
+</ol>
+<h2>Quiz</h2>
+<p>See <code>QUIZ.md</code>.</p></div>
+<h2>Code at this tag</h2>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/session-7">Browse the whole tree for session-7</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/app/streamlit_app.py"><code>app/streamlit_app.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/src/invalid_agent/artifacts/charts.py"><code>src/invalid_agent/artifacts/charts.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/src/invalid_agent/metrics/effectiveness.py"><code>src/invalid_agent/metrics/effectiveness.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/tests/test_dashboard.py"><code>tests/test_dashboard.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/requirements.txt"><code>requirements.txt</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/session-7/.streamlit/config.toml"><code>.streamlit/config.toml</code></a></li></ul>
+<h2>Practice, on a private branch</h2>
+<div class="prose"><pre><code class="language-bash">git fetch --tags
+git switch -c practice/session-7 session-7
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest
+</code></pre>
+<p><code>_dashboard_model</code> is the only place the page chooses a model name. Add this to <code>tests/test_dashboard.py</code>:</p>
+<pre><code class="language-python">def test_toggle_asks_for_llama_32_only_when_rules_only_is_off(monkeypatch):
+    import importlib.util
+
+    monkeypatch.delenv(&quot;LLM_MODEL&quot;, raising=False)
+    path = ROOT / &quot;app&quot; / &quot;streamlit_app.py&quot;
+    spec = importlib.util.spec_from_file_location(&quot;dash_under_test&quot;, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module._dashboard_model(True) == &quot;llama3.1:8b&quot;
+    assert module._dashboard_model(False) == &quot;llama3.2:1b&quot;
+    monkeypatch.setenv(&quot;LLM_MODEL&quot;, &quot;phi4&quot;)
+    assert module._dashboard_model(False) == &quot;phi4&quot;
+</code></pre>
+<p><code>ROOT</code> is already defined in that file. Run <code>pytest tests/test_dashboard.py</code>.</p>
+<p><strong>Extra credit.</strong> Why does the hosted page still not call Llama 3.2 1B even though that tag is what the toggle asks for locally?</p></div>
+<h2>Quiz</h2>
+<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
+<div id="quiz"></div>
+</div>
+
+</main>
+</div>
+<script src="js/site-config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/academy.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+title: "Session 2 · Clip 6 · src/invalid_agent/metrics/pareto.py"
+file: ../../snapshots/session-2/src/invalid_agent/metrics/pareto.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-1
+    say: >-
+      This is Pareto dot p y, and it is small on purpose. A Pareto chart ranks categories from
+      most common to least and keeps a running share of the total. The name comes from
+      Vilfredo Pareto, and the picture is the 80 20 idea: a few codes usually hold most of the
+      pain. Here the categories are invalid codes. The printed summary shows the head of this
+      list, the first three codes and the share of invalids each one holds. Pandas does the
+      counting.
+  - lines: 10-14
+    say: >-
+      The function starts at line 10, and the column defaults to invalid code. First we keep
+      only rows whose invalid flag is true, and we copy that slice so a caller cannot be
+      surprised by a later edit. Total is how many invalid rows remain. If total is 0, we
+      return an empty list. A clean window has no Pareto, and the summary simply skips the
+      head line. We do not invent a bar for a code that never fired.
+  - lines: 15-21
+    say: >-
+      Lines 15 through 21 do the ranking. Pandas value counts tallies each distinct string and
+      returns the largest count first, which is already Pareto order. An empty string and a
+      missing value both become the word unspecified before the count. In this generator,
+      valid rows were dropped and invalid rows already received a real code, so unspecified is
+      a net for a flagged row that still has a blank.
+  - lines: 11-14
+    say: >-
+      Stay on the filter and see why it has to come first. Valid rows carry an empty code, on
+      purpose, from redraw. Count every row and that blank becomes most of the file, about 96
+      percent on bad lot, and the chart would say the top problem is a blank. That is true and
+      useless. A Pareto of failure modes has to be a Pareto of the failures. Shares then add
+      up over invalids only. One hundred percent means all of the invalids, not all of the
+      runs.
+  - lines: 22-34
+    say: >-
+      Lines 22 through 34 walk those counts into rows a caller can print. Cumulative starts at
+      0. Each code adds its count, then we store the code, the count, the share, and the
+      cumulative share. Share is this count over all invalids. Cumulative share is the running
+      sum over that same total. Walking largest first makes the running share climb fastest at
+      the head. The last row lands on 1, because the running sum ends at the total. That close
+      at 1 is the check that nothing was dropped.
+  - lines: 24-33
+    say: >-
+      Read one row the way you would in a meeting. Suppose internal control has 200 of 529
+      invalids. The count is 200 and the share is about 0.38, which the summary will print as
+      a percent. Add a next code of 80 and the cumulative share is 280 over 529. Teams often
+      act once the running share crosses about 80 percent. This function does not hard code
+      that cutoff. It returns the full ranked list, and the summary chooses to show three.
+  - lines: 15-21
+    say: >-
+      Value counts is the whole sort. Pandas orders by frequency descending, so we do not
+      write our own sort, and a tie stays put unless the counts change. There is no chart
+      library in this file. Session 2's artifact is the printed line. The summary multiplies
+      share by 100 and shows one decimal. A later picture can use this same list.
+  - lines: 10-21
+    say: >-
+      Run bad lot through it in your head. The baseline pass sprinkled all eight codes onto a
+      few background invalids, using the weights in seeds. The cause pass then redrew lot L
+      dash 4419 at 18 percent and put I N V dash I C on about 70 percent of those caused
+      invalids. Internal control should lead the head. The other codes remain, from the
+      background and from the 30 percent that did not get the dominant label. The leader
+      stands out.
+  - lines: 22-34
+    say: >-
+      Cumulative share is what you carry into a containment talk. One code's share says how
+      much of the invalid pain sits in that failure mode. The running share says how much you
+      cover if you work the first code, then the second, then the third. The lot stratum
+      answers where. The Pareto answers what kind of invalid. Together they support a sentence
+      like this: the excess sits on one lot, and those extra invalids are mostly internal
+      control failures.
+  - lines: 1-8
+    say: >-
+      This file stays tiny so every later caller shares one definition. Generate knows how to
+      stamp a code. The summary knows how to print. The ranking still gets its own module, and
+      Session 3's memo calls this same function. The docstring says largest count first, and
+      the body does that. There is no hidden grouping of code families. Internal control and
+      software compete on counts alone. A code with a single hit stays on the list, at the
+      tail, with a running share almost at 1.
+  - lines: 10-14
+    say: >-
+      The edges are part of the contract. No invalids means an empty list, not a crash and not
+      a fake bar. A blank code on an invalid row is counted as unspecified, so you see the
+      data problem instead of dropping the row in silence. Copying the filtered frame means
+      the summary and the memo can both call this without stepping on each other. Counts are
+      integers and shares are plain floats. A test can lock the first code and check that the
+      last running share is 1.
+  - lines: 28-34
+    say: >-
+      The Session 2 artifact is the printed summary, and this function supplies its last
+      analytic line, the Pareto head. After the strata and the Western Electric counts, you
+      get the top codes and their share of the invalids. That line, with the 3.67 percent
+      rate, the Wilson interval, and lot L dash 4419 near 17 percent, is what you can defend.
+      The YAML held the cause. The generator built the rows. The metrics computed the numbers.
+      Session 3 quotes this same head in the week zero memo.

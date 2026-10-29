@@ -1,0 +1,99 @@
+title: "Session 2 · Clip 2 · src/invalid_agent/sim/generate.py"
+file: ../../snapshots/session-2/src/invalid_agent/sim/generate.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-15
+    say: >-
+      This is generate dot p y. It turns bad lot dot yaml into one row per run. The docstring
+      says this is a reference lab. Site and instrument are independent, lots and software
+      share a calendar, and operators stand apart. NumPy draws the random numbers, Pandas
+      holds the table, and PyYAML reads the scenario. The demo command prints the rate, the
+      interval, the top strata, and any Western Electric hits. No language model is called
+      anywhere in this file.
+  - lines: 36-41
+    say: >-
+      Load scenario, at line 36, is YAML in and a dictionary out. PyYAML safe load reads the
+      file as data and will not run a pasted command. If the top of the file is not a mapping,
+      the function raises, so a bare list fails here instead of deep in the sampler. Line 40
+      stores the path on the dictionary, so a later message can name its file. The cause and
+      the calendar stay in data a reviewer can read, not in a branch an evaluation cannot see.
+  - lines: 44-60
+    say: >-
+      Levels, at line 44, lets sites and lots share one sampler. A bare string such as SITE
+      dash A becomes an id from day 0, with no real end, and weight 1. A mapping, like a lot,
+      keeps its id, start, end, and weight, and any missing piece gets those defaults. An
+      empty list raises. A scenario with no sites or no lots is a broken description, and we
+      stop rather than invent a blank column. Bad lot uses both shapes.
+  - lines: 165-173
+    say: >-
+      Generate, at line 165, promises the same scenario returns the same rows. Horizon
+      defaults to 180 and runs per day to 80. Line 169 multiplies them, so n is 14,400. Line
+      170 is the whole source of randomness, NumPy default r n g, started from seed 4419.
+      Every later draw comes from that one generator, in order. Day index repeats 0, then 1,
+      then 2, eighty times each. Dates are April 1, 2025 plus that index.
+  - lines: 63-72
+    say: >-
+      Assign, at line 63, paints one column. For each day it keeps levels whose window
+      contains that day, and if none match it uses the full list. Weights are scaled to sum to
+      1, the rows for that day are found, and the generator chooses. Site, instrument, lot,
+      software, and operator each call assign alone. Each call consumes its own choices.
+      Editing a software weight does not reshuffle the lot draws, which is why the lot rate
+      survived that edit during this session.
+  - lines: 175-198
+    say: >-
+      Lines 175 through 198 build the frame. Customers zip onto sites in order, so Northlake
+      rides with the first site. Shipping temperature is a normal draw around 20 degrees
+      Celsius, and hemolysis is the baseline lognormal. Both settings live in seeds dot p y.
+      The columns are the contract later sessions inherit: run id, date, day index, customer,
+      site, instrument, reagent lot, software, operator, hemolysis, shipping temperature,
+      invalid, and invalid code. Invalid starts false, and the code starts empty.
+  - lines: 199-204
+    say: >-
+      Lines 199 through 204 make the contrast in two passes. First, redraw marks every row at
+      the 1.2 percent baseline, with no dominant code. Then cause runs, and for this scenario
+      it redraws only L dash 4419 from day 120 on, at 18 percent. Rows outside that mask keep
+      the baseline flag. Two probabilities are not stacked on one row. The complement stays at
+      baseline, which is the gap a chi square test can see.
+  - lines: 111-116
+    say: >-
+      The bad reagent lot branch is lines 111 through 116. The mask needs both tests. The lot
+      equals L dash 4419, and the day index is at least 120. Both values come from the YAML,
+      so another lot changes data, not this function. Redraw writes the 0.18 rate and tags
+      those invalids with I N V dash I C. The return keeps other branches from firing. Just
+      above, a red herring follows the nested true cause and leaves the misleading sentence in
+      the YAML.
+  - lines: 75-94
+    say: >-
+      Redraw, at line 75, is the only writer of the invalid flag. It finds mask positions and
+      returns if none are set. The rate may be one number or a probability per row. A uniform
+      draw marks invalid where it falls under that probability. Codes are filled only on the
+      true flags, through sample codes. Valid rows in the mask get an empty code, so the
+      Pareto cannot count a good run as a failure. Dominant weight defaults to 0.7.
+  - lines: 117-162
+    say: >-
+      The rest of cause is the other ground truths, each a mask and a redraw. A drifting
+      instrument ramps from baseline up to a peak, and the code defaults to I N V dash S W.
+      Site temperature heats a fraction of one site and invalidates those rows only, so the
+      hot band is the signal. Software masks on the version string. Hemolysis redraws that
+      site from the severe lognormal and cuts on the index. An operator mask covers user
+      error. An unknown type raises.
+  - lines: 207-251
+    say: >-
+      Summarize, at line 207, only formats. It asks overall rate, stratified rates, the p
+      chart, and Pareto for numbers, then prints them. If a figure in that printout is wrong,
+      the bug is in the metrics or in this generator, not in a sentence. You get runs,
+      invalids, the rate, a Wilson 95 percent interval, and a spec line, then the top strata,
+      the Western Electric hits, and the code head. The last line says the data are synthetic,
+      not for clinical use.
+  - lines: 259-274
+    say: >-
+      Main, at line 259, is the demo you can run. It reads a scenario path, builds the frame,
+      writes a C S V, and prints the summary. That printout is the Session 2 artifact: a rate,
+      an interval, the strata, and the chart hits. Ticket I N V dash 108, the week zero memo,
+      will quote this row schema and this rate dictionary. Next we open rates dot p y and read
+      the Wilson formula the summary is already printing.

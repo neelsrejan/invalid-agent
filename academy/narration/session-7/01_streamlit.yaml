@@ -1,0 +1,99 @@
+title: "Session 7 · Clip 1 · app/streamlit_app.py"
+file: ../../snapshots/session-7/app/streamlit_app.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-20
+    say: >-
+      This is streamlit underscore app dot p y, the review page. Rules only is the default, so
+      the page runs with no model download. A root file of the same name uses runpy to launch
+      this one, which is how Community Cloud's default filename finds the app. Hosted
+      Streamlit Community Cloud has no Ollama and does not download a model. It stays on this
+      rules only default. The imports pull in the charts, run case, and the projection helper
+      the page will call.
+  - lines: 60-76
+    say: >-
+      Main starts at line 60. Set page config titles the tab Invalid Bot and uses a wide
+      layout. The first markdown is the banner, lines 62 through 74, a navy bar. The sentence
+      is Simulation. Synthetic data. Not for clinical use. Not a medical device. Line 76
+      states the promise under the title: validity at least 98 percent, so the invalid rate
+      stays at or below 2 percent. The banner is on screen before any tile or chart.
+  - lines: 78-88
+    say: >-
+      The sidebar starts at line 78. Underscore scenarios lists every YAML, and each label
+      joins the scenario id with its title. The select box defaults to the first case. The
+      slider is labeled investigation week, it runs from 0 through 4, and it starts at 0. Line
+      83 loads settings so a caption can show the backend that was configured before this
+      toggle. Moving the slider replays a later week. Inside run case, the graph still starts
+      at week 0 and walks forward.
+  - lines: 89-101
+    say: >-
+      Lines 89 through 93 are the rules only toggle. It defaults to on. The help text says on
+      means templates and computed numbers. Off means ask Ollama, and fall back to the
+      template if that model is unavailable. Line 94 asks underscore dashboard model for the
+      name to show. Line 95 captions the backend from settings, before this toggle. Community
+      Cloud should leave the toggle on. That host cannot run Ollama.
+  - lines: 29-36
+    say: >-
+      Underscore dashboard model, lines 29 through 36, is the only place this page chooses a
+      model name. It reads L L M underscore MODEL from the environment. If that variable is
+      set, the pinned tag wins. It does not ask load settings. Load settings would fill the
+      command line default, llama 3.1 colon 8 b, Meta Llama 3.1 8 B, whenever the variable is
+      unset. Toggle on, and unset, returns that 8 B name only as a label. No model is called.
+      Toggle off, and unset, returns the hosted constant, llama 3.2 colon 1 b.
+  - lines: 103-107
+    say: >-
+      Lines 103 through 107 turn the toggle into the call. Backend is deterministic when rules
+      only is on, and ollama when it is off. Community Cloud leaves the toggle on, so no model
+      is requested. On a local or self hosted machine, toggle off with L L M underscore MODEL
+      unset asks Ollama for Llama 3.2 1 B, tag llama 3.2 colon 1 b. If that model is missing,
+      the notes fall back to the template. Outside this page, the command line default remains
+      Meta Llama 3.1 8 B.
+  - lines: 39-53
+    say: >-
+      Underscore run, lines 39 through 53, uses st dot cache underscore data. The cache key is
+      scenario, week, backend, and model, so switching tabs does not run the week again.
+      Output goes to out slash dashboard slash the scenario slash week N. The call is run
+      case, the same graph as Session 6. Rules only does not set L L M underscore MODEL. The
+      finally block restores the old environment, so this run cannot pin a model for the next
+      command.
+  - lines: 109-125
+    say: >-
+      Lines 109 through 125 are five tiles from the metrics object, not from a model sentence.
+      The rate tile's delta is percentage points versus the spec, colored inverse so above
+      spec reads as bad. Next are the spec, the Wilson interval, and Escalate or Hold. The R A
+      G tile reads the leadership note for R A G colon Amber, Green, or Red, the string status
+      dot p y wrote. It does not recompute the color.
+  - lines: 127-134
+    say: >-
+      Lines 127 through 134 place the two charts a reviewer uses to see where the rate
+      misbehaves. The p chart figure is called with the p chart dictionary already on the
+      metrics. This page does not recompute control limits. The Pareto figure is called with
+      the Pareto rows already on the metrics. Rule 1 count is a small Python sum: how many
+      violations have rule equal to 1. The numbers under them came from the graph.
+  - lines: 136-145
+    say: >-
+      Lines 136 through 145 are the strata table. Strata means the rate broken out by a column
+      the scenario cares about, such as lot, instrument, site, or software version. The select
+      box lists the keys already on result metrics strata, and it starts at the first key.
+      Pandas builds a dataframe from that list of rows. This is the same cut a program manager
+      would ask for in SQL, group by the column and count the invalids.
+  - lines: 147-160
+    say: >-
+      Lines 147 through 160 are the before and after block. Generate rebuilds the field table
+      from the same seed, so the rows match the graph. Projection summary clears invalids on
+      the leading stratum and recomputes the rate. Observed is the rate in the file. Projected
+      is a what if: the rate if that stratum stopped failing. The caption repeats the helper's
+      label, including the words Not observed. The team has not measured a real field action.
+      If no stratum cleared the evidence bar, an info box says there is no removal projection.
+  - lines: 162-183
+    say: >-
+      Lines 162 through 183 are six tabs: triage memo, fishbone, 5 Whys, 8 D C A P A, plan and
+      risks, and status notes. They print markdown the graph already stored. Switching tabs
+      does not call run case again, because of the cache. The plan tab's task table matches
+      the Gantt file in the week folder. The status tab radios among customer, internal, and
+      leadership.

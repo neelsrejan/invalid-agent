@@ -1,0 +1,97 @@
+title: "Session 6 · Clip 2 · src/invalid_agent/nodes/status.py"
+file: ../../snapshots/session-6/src/invalid_agent/nodes/status.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-17
+    say: >-
+      This is status dot p y. Its job is the weekly note a program manager sends, plus the
+      decision log that records why. In this project, R A G means a status color: Red, Amber,
+      or Green. It is the traffic light on the investigation. The letters do not mean
+      retrieval augmented generation. Nothing in this file searches a document store. All
+      three notes pass through the numeric fidelity guard before they become files.
+  - lines: 20-25
+    say: >-
+      Rag color, lines 20 through 25, is the traffic light. Inside the spec, the color is
+      Green, even in week 0. Over spec at week 0, 1, or 2, the color is Red. Over spec from
+      week 3 on, the color is Amber. Amber means containment is on the plan, and effectiveness
+      has not been observed yet. The bad lot field file never shrinks, so that case never
+      turns Green. A Green light would claim the promise is met. The table does not say that.
+  - lines: 28-29
+    say: >-
+      Lines 28 and 29 are a tiny helper, underscore p c t. It takes a rate stored as a
+      fraction, multiplies by 100, and rounds to two decimals. So 0.0367 becomes 3.67, the
+      percent a stakeholder can read. The template later prints that already rounded number.
+      It does not do the arithmetic again in the sentence. You will see the same idea in the
+      shared header in narrative dot p y. One calculation, three audiences.
+  - lines: 100-108
+    say: >-
+      Build status facts, starting at line 100, is the only number source for the three notes.
+      It reads the scenario, the current week, the overall metrics, the top hypothesis, and
+      the plan. Line 106 takes cost per invalid from the scenario YAML, and it defaults to 85
+      dollars if that key is missing. Line 107 takes k, the invalid count, from the metrics
+      object. The facts dictionary is built before any sentence is written.
+  - lines: 109-143
+    say: >-
+      The return, lines 109 through 143, is what the templates may quote. Rag color sets Red,
+      Amber, or Green from the spec flag and the week. Line 141 sets cost: total dollars is k
+      times the unit cost from the YAML. The count, the unit, and the product sit on the facts
+      before any sentence. The overall block also holds the rate, the Wilson interval, and the
+      2 percent spec. A number never stored here fails the guard.
+  - lines: 32-40
+    say: >-
+      Underscore customer action, lines 32 through 40, is words for the customer, not a cause.
+      Week 0 checks the rate and requests no panel wide stop. Week 2 keeps the review on one
+      lot and puts the lab director note in the plan. Week 3 says containment is in progress
+      on that lot. No sentence names bad underscore reagent underscore lot, and none says the
+      root cause is. The customer can be asked for patience. The note cannot announce an
+      unconfirmed cause as fact.
+  - lines: 43-48
+    say: >-
+      Underscore ask, lines 43 through 48, is the decision leadership is being asked to make.
+      From week 3 on, the ask is to approve containment on the leading stratum, and not to
+      approve a panel wide stop. At week 2, the ask is to approve the lab director note, and
+      to hold a panel wide stop until the field table is challenged. Notice the shape. The
+      audience changes the request, and the numbers stay put.
+  - lines: 51-71
+    say: >-
+      Underscore decision, lines 51 through 71, writes one sentence for the decision log. It
+      does not score anything. The ranker already chose the hypothesis. This function records
+      what the team did with it. Week 2 records that release testing passed and the field
+      ranking stayed, and the lab director note was added. Week 3 records that the shipping
+      note did not take over the cause. Containment stays on the leading stratum. The row
+      stores the week, that sentence, the evidence ids, and the plan version.
+  - lines: 74-78
+    say: >-
+      Upsert decision, lines 74 through 78, keeps one row per week. Line 75 keeps every
+      existing row whose week is different from the new entry, which drops the old row for
+      this same week. Line 76 appends the new entry. Line 77 sorts by week number. A second
+      pass over week 1 replaces the week 1 sentence. That matters when someone reruns the
+      case. The log a hiring manager reads stays one decision per week, in week order.
+  - lines: 81-97
+    say: >-
+      Render decision log, lines 81 through 97, turns that list into decision underscore log
+      dot m d. The title is Decision log. The next line is the simulation banner: synthetic
+      data, not for clinical use. Then each row becomes a heading, Week and the number, the
+      decision sentence, a line that starts with Evidence and lists the ids, and the plan
+      version. This function does not invent a new reason. It prints the row upsert decision
+      just stored.
+  - lines: 146-169
+    say: >-
+      Status node, lines 146 through 169, is the lap the graph calls. It builds the facts
+      first, so the cost product exists before any sentence. The loop calls narrate for three
+      audiences: customer, internal, and leadership. Deterministic mode returns the template
+      plus a source footer. No model is required. Check narrative then runs on that exact
+      string. If it is not ok, line 159 raises, and the bad text never becomes a file. The
+      return replaces the three notes, the fidelity record, and the decision log on the state.
+  - lines: 172-182
+    say: >-
+      Underscore write, lines 172 through 182, saves two copies. The output root is
+      overwritten every lap, so after week 3 the log there has four headings. The week folder
+      is the snapshot for that week, and later laps leave it alone. Both copies get the
+      customer, internal, and leadership notes, plus decision underscore log dot m d. Week
+      folders are the history a test can diff. The root is the latest.

@@ -1,0 +1,105 @@
+title: "Session 4 · Clip 2 · src/invalid_agent/nodes/rca.py"
+file: ../../snapshots/session-4/src/invalid_agent/nodes/rca.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-6
+    say: >-
+      This is rca dot p y. It turns the top hypothesis into three quality records. A fishbone
+      is a cause diagram. Five Whys is a chain of why questions that must cite evidence. Eight
+      D is the eight-box quality form, and C A P A means corrective and preventive action. A
+      Why with no citation raises. An injection can be cited only after its week arrives.
+  - lines: 18-26
+    say: >-
+      Lines 18 through 26 are the six M list. Six M is the fishbone set: Man, Machine,
+      Material, Method, Measurement, and Environment. Each row is a cause, a category, and the
+      data column that would prove it. Material appears twice, the lot and hemolysis, because
+      they need different actions. Measurement has no column, and that bone is still drawn at
+      score zero.
+  - lines: 391-397
+    say: >-
+      R C A node starts at line 391. It reads the scenario and the week, defaulting the week
+      to 0. Generate rebuilds the synthetic table. Spec and promised validity come from the
+      YAML, or 0.02 and 0.98. Line 397 reuses hypotheses when triage already put them on the
+      state. Otherwise rank hypotheses runs on a fresh table. The node builds that frame once,
+      and the three records hang off the same ranking.
+  - lines: 68-82
+    say: >-
+      Index injections, line 68, turns notes into citation ids. Line 72 drops any note whose
+      week is greater than the case week. At week 0 the Q A lot note is invisible. At week 1
+      it can be cited. The id is injection, colon, the week, colon, the source in lowercase. A
+      second note from the same source that week gets a suffix starting at 2.
+  - lines: 398-400
+    say: >-
+      Lines 398 through 400 are where an injection becomes legal evidence. The catalog starts
+      as the metric sentences from triage. Catalog update copies in the notes this week is
+      allowed to see. Before that update, validate whys would reject an injection id as
+      unknown. After it, a Why may quote the note. The note still does not move the rank. It
+      only adds a sentence the chain is allowed to cite.
+  - lines: 100-133
+    say: >-
+      By cause drops no single cause. That call is a decision, never a bone. Build fishbone
+      walks the six M list. A miss gets score zero and says the branch did not clear the
+      evidence bar. A hit uses the catalog rate sentence, the same sentence Session 2
+      computed. Evidence for keeps only ids that exist in the catalog. Line 122 then asks for
+      the contrary citations.
+  - lines: 134-137
+    say: >-
+      Line 134 sorts by score descending, then category, then cause. The minus sign flips the
+      score, because Python sorts ascending. On bad lot the lot is the only non-zero score, so
+      Material, bad reagent lot, is rank 1. Hemolysis is also Material and stays at 0
+      underneath. Lines 135 and 136 number the ranks from 1. Fishbone dot m d prints in that
+      order.
+  - lines: 140-162
+    say: >-
+      Against picks a citation that argues with a branch. A passed release note attaches only
+      when the branch fired and the cause is bad reagent lot. From week 2, the R and D note is
+      that contrary evidence: release passed, and the field rate still moved. A branch with no
+      hit cites the overall rate. A live hit with no release note cites the customer
+      injection, which never names the lot.
+  - lines: 165-179
+    say: >-
+      Build whys takes hypotheses zero, the top call. When that cause is no single cause, it
+      builds the unresolved chain and does not borrow a later row to invent a lot. Otherwise
+      it calls whys for hit, and the terminal label is the cause, a colon, and the level. Line
+      178 runs validate whys while the steps are still a list, before any markdown exists.
+  - lines: 182-225
+    say: >-
+      Whys for hit builds five steps. Five Whys means you ask why until the cause is something
+      you can act on. Step 1 cites the overall rate and the spec. Step 2 cites the winning
+      stratum. Step 3 cites a different column, so the chain says why the next stratum lost.
+      Step 4 cites an injection that names the level, or the sample size if none has arrived.
+      For this lot, step 5 stops at a lot-level cause and quotes the sentence that names
+      L-4419.
+  - lines: 85-97
+    say: >-
+      Validate whys is the rule the test breaks on purpose. An empty citation list becomes
+      why, the step number, has no citation. The loop keeps going, so one error can name every
+      hole. An id missing from the catalog is an unknown id. Line 96 joins the messages and
+      raises Value Error. A single bad step fails the run. The chain has to show its evidence.
+  - lines: 283-306
+    say: >-
+      Build capa maps the top cause onto eight D: team, problem, containment, root cause,
+      corrective action, validation, prevention, and closure. C A P A is the name of that
+      write-up. For this lot, D 3 quarantines the implicated lot and leaves in-spec lots
+      running. D 6 checks that the rate returns to spec and the p chart shows no rule-1 point.
+      The hyphen holds the digit on the word. A before and after number is a projection until
+      follow-up exists.
+  - lines: 307-316
+    say: >-
+      Lines 307 through 313 are D M A I C: define, measure, analyze, improve, and control.
+      Define is D 1 and D 2. Measure lists the rate, the interval, the strata, the p chart,
+      and the Pareto. Analyze points at the fishbone and the five Whys. Improve is containment
+      and the corrective action. Control is the effectiveness check. Preliminary close is
+      true, so capa 8 d dot m d says D 7 and D 8 are planned.
+  - lines: 404-426
+    say: >-
+      Lines 404 through 406 render the three markdown strings. Lines 408 through 413 check the
+      Pydantic shape. A bad citation already raised inside build whys. Lines 414 through 418
+      run the fidelity guard. Known facts are the catalog sentences, the digits 0 through 8,
+      and the week. A pasted catalog sentence is masked. A stray digit fails the run, and the
+      rejected text is not returned.

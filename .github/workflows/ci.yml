@@ -24,3 +24,16 @@ jobs:
         run: python -m pytest
       - name: Eval smoke
         run: python evals/run_eval.py --backend deterministic --limit 5 --smoke
+
+  academy-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Rebuild the academy pages and diff
+        run: |
+          python -m pip install pyyaml==6.0.3 markdown==3.11.2
+          python academy/scripts/build_site.py
+          git diff --exit-code -- academy/site academy/content/QUIZ_ANSWERS.md

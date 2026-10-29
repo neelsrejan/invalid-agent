@@ -1,0 +1,99 @@
+title: "Session 3 · Clip 3 · src/invalid_agent/metrics/hypotheses.py"
+file: ../../snapshots/session-3/src/invalid_agent/metrics/hypotheses.py
+voice: en-US-AndrewNeural
+rate: "+0%"
+pause: 0.4
+style: monokai
+font_size: 18
+captions: true
+segments:
+  - lines: 1-13
+    say: >-
+      This is hypotheses dot p y. It ranks causes from the Session 2 frame, and it never calls
+      a language model. The docstring is the evidence bar. A level needs enough runs, enough
+      extra invalids versus everyone else, a lift of at least the minimum, and a chi square p
+      value under the alpha. Lift is the level's invalid rate divided by the rate in the
+      complement, the rows that are not that level. A lift of 1.8 means at least 1.8 times the
+      rest. Two close scores become no single cause.
+  - lines: 45-51
+    say: >-
+      Lines 45 through 51 are that bar, as constants. Minimum n is 80 runs, for the level and,
+      in the code below, for the complement too. A tiny slice cannot win. Minimum lift is 1.8.
+      Minimum excess is 15 extra invalids, the count above what the complement rate would have
+      produced. Alpha is 0.01, stricter than the usual 0.05. Close call ratio is 0.80. If the
+      second score is at least 80 percent of the first, we refuse to crown a winner.
+  - lines: 26-43
+    say: >-
+      Lines 26 through 43 map the table onto a fishbone. The category dictionary sends a bad
+      lot to Material, a drifting instrument to Machine, temperature to Environment, software
+      to Method, hemolysis to Material, and an operator to Man. Unresolved is its own bucket.
+      The column list under it pairs each column with a cause. Lot, instrument, software, and
+      operator are real columns. Temperature and hemolysis are bands we are about to add. A
+      cause this list does not name cannot appear.
+  - lines: 54-61
+    say: >-
+      With bands, at line 54, adds those two columns. It does not copy the frame first. The
+      caller copies. A shipping temperature at or above 30 degrees Celsius is excursion.
+      Everything else is controlled. A hemolysis index at or above 100 is high. The rest is
+      typical. Bands matter because a raw temperature column would treat every distinct degree
+      as its own group. One hot shipment must not look like a whole site. One high index must
+      not look like the site alone.
+  - lines: 117-131
+    say: >-
+      Rank hypotheses, at line 117, is the walkthrough's front door. It copies the frame, adds
+      the bands, and calls best level once per column in that cause list. A column with no
+      survivor is skipped. Each survivor is stamped with its cause, its fishbone category, and
+      a one line summary that includes the lift. Read the signature. The arguments are the
+      frame and the spec. Injections are not an argument. This function never reads the
+      injections.
+  - lines: 64-82
+    say: >-
+      Best level, at line 64, scores one column. Follow a lot. Group by the lot id. If that
+      lot has fewer than 80 runs, continue, which means skip it. Count its invalids. The
+      complement is every other row. The complement also needs 80 runs. If the lot's rate is
+      not higher than the complement, skip it. The 2 by 2 table is this level's invalid and
+      valid counts against the complement's. SciPy's chi square contingency returns the p
+      value.
+  - lines: 83-92
+    say: >-
+      Lines 83 through 92 are the three gates and the score. Excess is k minus the complement
+      rate times n, the extra invalids. If the p value is 0.01 or higher, or the lift is under
+      1.8, or the excess is under 15, the score is 0 and the level is skipped. A failure is
+      dropped, not given a small score that might still win a sort. A passing score multiplies
+      lift above 1, the log of the excess, and how small the p value is.
+  - lines: 93-114
+    say: >-
+      Lines 93 through 114 keep the winner inside the column. The row stores n, k, both rates,
+      the lift, the p value, the excess, and the score. Evidence ids are three strings: this
+      column and level's rate, its lift, and the overall rate. Session 4 may cite only ids
+      that exist. The best row is the maximum score, not the maximum rate.
+  - lines: 132-143
+    say: >-
+      Back in rank hypotheses, lines 132 through 143 decide the call. The list is sorted by
+      score, highest first. An empty list becomes unresolved, with the sentence that no
+      stratum cleared the bar. If two or more cleared it and the second score is at least 80
+      percent of the first, we prefix no single cause and keep both contenders. Otherwise the
+      list is returned as is, and index 0 is the call. Bad lot has one winner. The
+      instruments, near 4 percent, do not clear the bar, so they never enter this list.
+  - lines: 146-164
+    say: >-
+      Unresolved, at line 146, is the honest empty result. Cause is no single cause, category
+      Unresolved, and the level is empty. N and k are the overall counts, so you still see the
+      file size. Lift, p value, and excess are empty, and the score is 0. The summary string
+      says why: nobody cleared the bar, or two causes were too close to crown. Evidence ids
+      point at the overall rate, the interval, and the spec.
+  - lines: 167-194
+    say: >-
+      Evidence catalog, at line 167, is the dictionary Session 4 citations have to use. The
+      key is an id. The value is a sentence computed from the same frame: overall rate, Wilson
+      interval, spec, then every stratum's rate and n, including the temperature and hemolysis
+      bands, plus two control chart lines. An id that is not a key is not a citation. If a 5
+      Whys step cannot point at one of these keys, it does not ship.
+  - lines: 132-134
+    say: >-
+      The takeaway for the memo: this file, not the complaint text, picks the hypothesis. On
+      seed 4419 the only level that clears 80 runs, lift 1.8, 15 extra invalids, and p under
+      0.01 is lot L dash 4419. The memo line reads Material, bad reagent lot, that lot, about
+      17.10 percent versus a complement near 1.09 percent. Instruments around 4 percent fail a
+      gate and are left off on purpose. A loud email cannot create a score. The guard next
+      door is what stops a narrative from inventing a percent.

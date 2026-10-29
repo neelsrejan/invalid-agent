@@ -1,0 +1,820 @@
+"""Authoring copy for the academy quizzes.
+
+Each option is one sentence with no trailing explanation. The build shuffles
+the four texts and hashes the published letter. Explanations live in why and
+are shown only after grading. This module is not copied to GitHub Pages.
+The salted hash is a self-study speed bump, not protection.
+"""
+
+QUIZZES = {
+    1: [
+        {
+            "prompt": "Why is the invalid-rate spec computed from 0.98 instead of typed as its own literal?",
+            "choices": {
+                "a": "One shared constant keeps the promised validity and the two percent cap from drifting apart.",
+                "b": "The client importer blocks a bare number so the cap has to remain in a calculated custom field.",
+                "c": "The test runner refuses to compare two numeric literals so one of them has to be derived.",
+                "d": "Otherwise the interval helper drops its upper bound and the memo can print only a floor.",
+            },
+            "correct": "a",
+            "why": "SPEC_INVALID_RATE = round(1 - PROMISED_VALIDITY, 2). Ninety-eight percent valid means at most 2% invalid. One constant owns the promise.",
+        },
+        {
+            "prompt": "Which environment variables turn Jira on?",
+            "choices": {
+                "a": "A base URL plus an email plus a token are all required or the client gate stays false.",
+                "b": "The API token by itself enables the client even when the URL and the email stay blank.",
+                "c": "Setting the project key to INV is the entire switch with or without an email address.",
+                "d": "The openFDA key together with the account email opens the client and the token stays optional.",
+            },
+            "correct": "a",
+            "why": "The gate is all three: JIRA_BASE_URL or JIRA_URL, JIRA_EMAIL, and JIRA_API_TOKEN or JIRA_TOKEN. The longer names win when both aliases are set.",
+        },
+        {
+            "prompt": "What is wrong with the default frozen-dataclass repr?",
+            "choices": {
+                "a": "The generated view prints every stored field and also includes a planted API token.",
+                "b": "It hides the repository top so tests cannot locate the scenario folders on disk.",
+                "c": "It lowercases the model tag so the local runner cannot resolve llama3.1:8b at all.",
+                "d": "The test runner is blocked from calling that view so a planted token cannot reach a log.",
+            },
+            "correct": "a",
+            "why": "A planted secret in the token would show up in logs if repr were the default. The override prints the redacted view only.",
+        },
+        {
+            "prompt": "What is docs/jira/backlog.json, compared with the Jira sync added later?",
+            "choices": {
+                "a": "It is the active customer-escalation board and a following push posts onto those same INV identifiers.",
+                "b": "It is the rehearsal record of SIM investigation issues written only after the client is built.",
+                "c": "It is the week-zero triage memo stored as structured data so an escalate flag can be imported.",
+                "d": "It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109.",
+            },
+            "correct": "d",
+            "why": "This JSON is the three-sprint build board. Session 5 writes a different set, the fictional investigation, and those keys are SIM-* so the two files cannot be confused.",
+        },
+        {
+            "prompt": "Why is dependencies an empty list in Session 1 pyproject.toml?",
+            "choices": {
+                "a": "Nothing in this tag imports third-party libraries yet so the job skips those extra downloads.",
+                "b": "Python 3.11 blocks third-party imports which forces that array to stay vacant on purpose.",
+                "c": "The MIT license forbids third-party libraries and the installer blocks once that array is filled.",
+                "d": "The build tool refuses a filled array while the version is still 0.1.0 so the job would fail closed.",
+            },
+            "correct": "a",
+            "why": "Later sessions add a library only when code imports it. The local model, when you want one, is Meta Llama 3.1 8B via Ollama. It is not a dependency in this tag.",
+        },
+        {
+            "prompt": "What does find_repo_root look for?",
+            "choices": {
+                "a": "It stops at the first directory named out and treats that folder as proof of the project top.",
+                "b": "It requires the TOPDIR variable and ignores the project file whenever that variable is missing.",
+                "c": "It accepts the project file sitting beside the scenarios directory or beside the package directory.",
+                "d": "It searches for an active model server on port 11434 and treats that process as the project top.",
+            },
+            "correct": "c",
+            "why": "Walking parents until that pair appears keeps scenario paths correct when Streamlit's working directory is the repo and when the package is an editable install.",
+        },
+        {
+            "prompt": "LLM_BACKEND=rules-only becomes which backend?",
+            "choices": {
+                "a": "It resolves to deterministic because rules and rules-only and mock are three names for that engine.",
+                "b": "It resolves to the laptop model because rules means the local model should write the memo.",
+                "c": "It resolves to llamacpp because rules loads a GGUF even when the model path is vacant.",
+                "d": "It raises an error because rules is unrecognized and must not fall through to a silent template.",
+            },
+            "correct": "a",
+            "why": "rules, rules-only, and mock are synonyms for deterministic. An unknown name also falls back to deterministic, which is why a sloppy test can pass for the wrong reason.",
+        },
+        {
+            "prompt": "What does the Session 1 GitHub Actions workflow run?",
+            "choices": {
+                "a": "Python 3.13 is the sole interpreter and the job injects a client token for the active client.",
+                "b": "The job downloads Llama 3.1 8B and then the dashboard before pytest is allowed to start.",
+                "c": "The hosted app platform replaces the hosted runners for this job and pytest never starts.",
+                "d": "Python 3.11 and 3.12 do an editable install with the dev extra and then pytest with no secrets.",
+            },
+            "correct": "d",
+            "why": "The plan names 3.11. 3.12 is also gated because that is a laptop interpreter you may have. The workflow never needs a token.",
+        },
+    ],
+    2: [
+        {
+            "prompt": "Why does the generator redraw the cause mask instead of adding a second coin-flip on top of the baseline?",
+            "choices": {
+                "a": "Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched.",
+                "b": "Two Bernoulli draws cannot share one numeric function so the extra toss has to be applied through SQL.",
+                "c": "The scenario document forbids a starting frequency so the only failing rows are the ones on that pattern.",
+                "d": "Replacing the pattern lets the ranked chart count valid rows which a stacked probability would have dropped.",
+            },
+            "correct": "a",
+            "why": "The chi-square test needs a contrast: the cause stratum versus rows that stayed at the baseline rate. Adding probabilities would smear that contrast.",
+        },
+        {
+            "prompt": "What does the Wilson interval do for 0 invalids out of 100, and why?",
+            "choices": {
+                "a": "The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.",
+                "b": "It returns a negative lower bound and the caller clamps that bound back into the unit range before the memo may render.",
+                "c": "It raises because a zero event count makes the denominator undefined and the memo cannot render.",
+                "d": "It returns the two percent promise as both ends since a sample with no failures is treated as the promise.",
+            },
+            "correct": "a",
+            "why": "The formula's lower bound is 0 when k is 0. The snap stops a residue around 1e-18 from looking like a real rate in the memo.",
+        },
+        {
+            "prompt": "A lot and an instrument both look high. Which design choice makes those two claims separable?",
+            "choices": {
+                "a": "Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge.",
+                "b": "Each collection place owns exactly one gauge so the two columns are aliases of one draw.",
+                "c": "The batch id is copied into the gauge column which is what lines the two effects up.",
+                "d": "The revision flips when the bad batch starts so the cutover marks the batch rather than the gauge.",
+            },
+            "correct": "a",
+            "why": "The module docstring states the reference-lab assumption. bad_lot also runs both software versions for the whole horizon so a version cutover is not mistaken for the lot.",
+        },
+        {
+            "prompt": "Which four Western Electric rules does this p-chart implement?",
+            "choices": {
+                "a": "Only a single weekly point outside the two percent promise is checked and no zone tests run beyond that one comparison.",
+                "b": "Zones are a point past 3 sigma then 2 of 3 past 2 sigma then 4 of 5 past 1 sigma then 8 on one side.",
+                "c": "A two-sample comparison on every gauge is recomputed from scratch at the end of each day.",
+                "d": "Nelson tests 5 through 8 are the only ones used and the usual zone tests on a proportion plot are skipped.",
+            },
+            "correct": "b",
+            "why": "They run on z-scores in time order. Rule 4 needs every z in a window of 8 strictly on one side, so a point on the center line breaks the run.",
+        },
+        {
+            "prompt": "Where do the Mendeley hemolysis-index rows live in this repo?",
+            "choices": {
+                "a": "They sit in the hil table copied verbatim from that paper so the builder can sample records instead of a lognormal stand-in.",
+                "b": "The optional fetch module downloads those records on every build and caches them beside the scenario.",
+                "c": "They are absent and the seed module holds a lognormal stand-in plus the DOI and the source is only cited.",
+                "d": "They sit inside the week-zero memo as an appendix of raw values taken from that paper.",
+            },
+            "correct": "c",
+            "why": "HEMOLYSIS_BASELINE and HEMOLYSIS_SEVERE are not a fit to that file. DATA_LICENSES.md says the same thing. openfda.py can optionally ask for a count and swallows network errors. generate does not call it.",
+        },
+        {
+            "prompt": "What does numpy's default_rng buy the PM?",
+            "choices": {
+                "a": "A fresh random sample is drawn on every execution so the printed frequency can be adjusted for the meeting.",
+                "b": "A document plus a seed is the whole randomness source so one description reprints the field document.",
+                "c": "A call to the local model invents each record from the scenario title rather than from a seeded draw.",
+                "d": "The interval formula itself is what that helper evaluates in place of a random generator.",
+            },
+            "correct": "b",
+            "why": "generate does n = horizon times runs per day, then baseline, then the cause. summarize only formats metrics. If a printed number is wrong, the bug is in the generator or the metrics, not in a sentence.",
+        },
+        {
+            "prompt": "What does chi_square_by return when the table has a single level?",
+            "choices": {
+                "a": "It raises ZeroDivisionError because a one-row grid has no complement to compare against.",
+                "b": "The result is a probability of 0 and a huge statistic which forces the memo to escalate on any lone stratum.",
+                "c": "The interval of that lone stratum is handed back in place of the statistic.",
+                "d": "The result is probability 1 and statistic 0 because a calm scenario is not treated as an exception.",
+            },
+            "correct": "d",
+            "why": "One stratum, or a column of all zeros, means there is no evidence of a difference. Returning p = 1 lets the ranker move on instead of crashing the memo.",
+        },
+        {
+            "prompt": "What does the Pareto exclude?",
+            "choices": {
+                "a": "The most common failure code is left out so the chart shows only the long tail of rare codes.",
+                "b": "Any code whose share of failures is under 5 percent is dropped before the cumulative line is drawn.",
+                "c": "Records that belong to the injected batch are left out so the driver code cannot dominate the chart.",
+                "d": "Valid records are left out because an empty failure code must not count as a failure mode.",
+            },
+            "correct": "d",
+            "why": "pareto keeps rows where invalid is true, orders codes by count, and closes cumulative_share at 1. That chart is the PM's 'which failure mode' picture, and it is computed, not narrated.",
+        },
+    ],
+    3: [
+        {
+            "prompt": "What does the triage node store instead of the 14,400-row frame, and how does a later node get the rows back?",
+            "choices": {
+                "a": "It keeps the full grid on the graph state under a key and following steps read that key directly.",
+                "b": "It writes the CSV into the issue description and a following step parses that description into records.",
+                "c": "It asks Llama 3.1 8B to remember the grid and a following step prompts the model for the same records.",
+                "d": "Metrics and the catalog and the memo are kept and a following step calls generate again from the same seed.",
+            },
+            "correct": "d",
+            "why": "The state holds the scenario dict and empty lists for later artifacts. It does not hold a dataframe. Same seed, same 14,400 rows.",
+        },
+        {
+            "prompt": "Why does the bad-lot memo list one hypothesis rather than six?",
+            "choices": {
+                "a": "The memo has room for one guess sentence so extra strata are dropped while the text is formatted.",
+                "b": "Other strata miss a gate such as 80 runs or lift 1.8 or 15 excess failures or probability under 0.01.",
+                "c": "Stakeholder remarks outvote every stratum except the batch which is why only L-4419 remains on the page.",
+                "d": "A graph step may hand back only one string so several guesses cannot fit in the state at once.",
+            },
+            "correct": "b",
+            "why": "A level that fails a gate is dropped, not given a small score. L-4419 clears the bar. Instruments around 4% do not. Two close winners would become no_single_cause instead of a coin flip.",
+        },
+        {
+            "prompt": "Where does the planted sentence 'the invalid rate is 27.40%' die?",
+            "choices": {
+                "a": "Masking deletes 27.40 because that token looks like the batch id with the letters removed.",
+                "b": "The guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts.",
+                "c": "It survives masking and is not within 0.03 of a walked fact so it lands in unknown and ok stays false.",
+                "d": "The local model rewrites the line into the template before the guard ever scans the digits.",
+            },
+            "correct": "c",
+            "why": "Identifiers such as L-4419 are stripped only when that exact string is in the facts. 27.40 is not one of them. 3.67 is allowed because the stored rate 0.0367 contributes its percent form.",
+        },
+        {
+            "prompt": "What happens if the Ollama backend is selected and the process cannot reach it?",
+            "choices": {
+                "a": "The memo document is left blank so a reviewer can see that the model call failed outright.",
+                "b": "The program exits and deletes the opening memo so a failed draft cannot be mistaken for the finished text.",
+                "c": "The rejected draft is saved beside the memo with a warning banner and the bad number left intact.",
+                "d": "The narrator catches the exception and hands back the template without saving the failed draft.",
+            },
+            "correct": "d",
+            "why": "The template is rendered first. Deterministic mode returns it after a check. Any other backend that errors, returns empty text, or fails the guard is replaced. A broken template is a bug and raises.",
+        },
+        {
+            "prompt": "Why does rank_hypotheses ignore stakeholder injections?",
+            "choices": {
+                "a": "Those remarks are appended as extra field records before the statistic so a QA line can outrank a stratum.",
+                "b": "The scenario description has no such array yet so the ordering step has nothing to read.",
+                "c": "A driver has to come from the grid because a QA line does not get a vote on the ordering.",
+                "d": "The framework refuses string fields so a remark cannot enter the ordering function at all.",
+            },
+            "correct": "c",
+            "why": "Injections are text. Session 6 shows them to the status writer. They do not outrank the field file. evidence_catalog is what later citations are allowed to use.",
+        },
+        {
+            "prompt": "What does this tag do with --week other than 0?",
+            "choices": {
+                "a": "It runs the full multi-lap loop and writes a schedule and a diagram and a deck in one pass.",
+                "b": "It stops on purpose so this snapshot cannot pretend the weekly loop already exists.",
+                "c": "It skips the opening step and writes only the diagram using remarks as the guess.",
+                "d": "It switches the model name to llama3.2:1b and still writes the opening memo afterward.",
+            },
+            "correct": "b",
+            "why": "build_graph has one node, triage, edged to END. The weekly loop is a later session. Hosted Streamlit, when it arrives, stays rules-only. This tag's demo is the deterministic memo.",
+        },
+        {
+            "prompt": "Why httpx, and not LangChain's Ollama integration?",
+            "choices": {
+                "a": "httpx is the sole client that can speak to a Llama 3.1 server so any other adapter is skipped.",
+                "b": "The graph requires an httpx call inside every step including the path that never leaves the laptop.",
+                "c": "The job downloads model weights through httpx during pytest so the adapter has to be that library.",
+                "d": "One httpx call is easier to mock and that call is skipped when the engine is deterministic.",
+            },
+            "correct": "d",
+            "why": "langchain-core only supplies the role and content pairs. llama-cpp-python is not a dependency. It is imported only if that backend is selected, and a missing install falls back to the template.",
+        },
+        {
+            "prompt": "Why are lot ids removed from the narrative instead of added to the numeric allow-list?",
+            "choices": {
+                "a": "Removing the identifier keeps 4419 from being reused as a permitted frequency in the paragraph.",
+                "b": "The scanner finishes faster on a one-page memo by skipping identifier-shaped tokens on the way through.",
+                "c": "A schema model cannot hold strings and a batch id has to be coerced to a float before storage.",
+                "d": "The interval formula blocks integers and 4419 would otherwise break the computed bound.",
+            },
+            "correct": "a",
+            "why": "Masking L-4419 removes the identifier. It does not authorize the number 4419 anywhere else in the paragraph. The same idea later covers a software version such as 2.4.0.",
+        },
+    ],
+    4: [
+        {
+            "prompt": "Why is Measurement on the fishbone if the ranker has no measurement cause?",
+            "choices": {
+                "a": "That category is hard-coded to position 1 so a quality diagram always leads with the gauge.",
+                "b": "An empty bone scored at zero says that category was considered on the diagram reviewers expect.",
+                "c": "A remark that names a gauge forces the bone to carry a score even when no gauge column exists.",
+                "d": "The schema blocks a diagram object that has fewer than six filled bones whether or not they are empty.",
+            },
+            "correct": "b",
+            "why": "Dropping the bone would look like the category was never considered. Material appears twice, lot and hemolysis, because both are material and they are different actions.",
+        },
+        {
+            "prompt": "What does validate_whys reject, and when does it run?",
+            "choices": {
+                "a": "An empty citation array or an unknown id is refused inside the builder before any markdown exists.",
+                "b": "Any item whose answer is under 200 characters is refused and that happens only after the markdown document already exists.",
+                "c": "A diagram whose top score is zero is refused and the check is skipped entirely on a laptop.",
+                "d": "A citation of the overall frequency metric is banned from an item even when the catalog already contains it.",
+            },
+            "correct": "a",
+            "why": "A Why with no citation is an error, not a warning. The test plants citations [] and expects 'why 1 has no citation'. A broken chain never becomes a file.",
+        },
+        {
+            "prompt": "On bad_lot at week 0, can the 5 Whys cite the QA note about lot L-4419?",
+            "choices": {
+                "a": "Yes because every scenario entry is visible from the opening lap including the batch remark.",
+                "b": "Yes but only when that remark is attached to the gauge bone rather than to material.",
+                "c": "No because QA remarks are dropped from the catalog permanently whatever lap the case has reached.",
+                "d": "No because entries are kept only through the case lap and that QA remark belongs to lap 1.",
+            },
+            "correct": "d",
+            "why": "At week 1 the note becomes citable, with an id like injection:1:qa. catalog.update(injections) is what makes that id legal. Before that line, validate_whys would reject it.",
+        },
+        {
+            "prompt": "What is the effectiveness metric in D6, and why does the record not claim the rate already recovered?",
+            "choices": {
+                "a": "A customer-satisfaction score the model invents is the number that gets quoted and recovery is stated in that section.",
+                "b": "The target is a return to the promise with no zone-1 point because follow-up runs do not exist yet.",
+                "c": "The batch is treated as cured because the last section is closed and a healed frequency is quoted.",
+                "d": "A fresh chi-square the language model computes replaces the proportion plot as the success test.",
+            },
+            "correct": "b",
+            "why": "D7 and D8 are written and marked preliminary. The CAPA says so, so a reader does not think the investigation is already closed. The word rule-1 keeps that digit glued to a hyphen for the fidelity scanner.",
+        },
+        {
+            "prompt": "Where do DMAIC labels sit relative to the eight Ds?",
+            "choices": {
+                "a": "Each of the 8 sections is its own full cycle so the memo contains 8 separate full cycles from end to end.",
+                "b": "Define maps to the opening pair and measure to the metrics and analyze to the contrast and the diagram.",
+                "c": "Those names replace the three middle sections and the other headings are removed from the document.",
+                "d": "Those names appear only as a slide title in the final deck and are absent from this memo.",
+            },
+            "correct": "b",
+            "why": "A quality hiring manager looks for that mapping. The labels live in the CAPA file, not as a claim that an agent swarm did the analysis.",
+        },
+        {
+            "prompt": "On bad_lot, what is rank 1, and what must step 5 say?",
+            "choices": {
+                "a": "Method and a software driver come first and the fifth answer is required to name version 2.4.0 as the stop.",
+                "b": "The unclear-driver label comes first and the fifth answer invents L-4419 without a scored bone.",
+                "c": "The gauge category comes first because an empty bone sorts ahead of every scored branch on the diagram.",
+                "d": "Material and the bad reagent batch come first and the fifth answer names L-4419 in the catalog line.",
+            },
+            "correct": "d",
+            "why": "The sort is by descending score. The lot is the only non-zero score. Hemolysis is also Material and stays at 0 under it. no_single_cause is not a bone.",
+        },
+        {
+            "prompt": "What does step 3 of the 5 Whys have to cite?",
+            "choices": {
+                "a": "The same catalog line the previous answer already used is pasted again so the chain looks longer.",
+                "b": "A different column is required so the chain can show why the next stratum is not the driver.",
+                "c": "The client API token has to be quoted in that answer before any stratum contrast is allowed.",
+                "d": "Whatever line the model prefers is accepted and a missing catalog id is only a warning.",
+            },
+            "correct": "b",
+            "why": "Step 1 is overall versus spec. Step 2 is the winning stratum. Step 3 is the contrast. Step 4 cites an injection that names the level, or the stratum's n sentence when no injection has arrived.",
+        },
+        {
+            "prompt": "Which new package does Session 4 add?",
+            "choices": {
+                "a": "No new library is added and the prior fidelity guard is reused on the three markdown documents.",
+                "b": "A diagram drawing library is added so the six bones can be rendered as an image beside the markdown.",
+                "c": "An export helper is added so the record can be saved as a PDF from the chart figure.",
+                "d": "A tiny local model is added and the job downloads it before the diagram check is allowed to execute.",
+            },
+            "correct": "a",
+            "why": "The graph is triage then rca then END. run_case writes the memo plus fishbone.md, five_whys.md, and capa8d.md. Weeks above 0 only change which injections RCA can cite. The plan is Session 5.",
+        },
+    ],
+    5: [
+        {
+            "prompt": "Why is the Gantt PNG not fig.write_image?",
+            "choices": {
+                "a": "The chart library has no timeline trace so a schedule chart has to be drawn by hand in another tool.",
+                "b": "The export helper needs an extra browser library while the plotting path runs without that download.",
+                "c": "Picture files are banned from the tree which is why that export helper is never called on the schedule.",
+                "d": "The client blocks an attachment unless the extra browser library produced it so the plotting chart cannot be attached.",
+            },
+            "correct": "b",
+            "why": "The HTML is px.timeline so a reviewer can hover owners. include_plotlyjs cdn keeps that file smaller. The PNG draws one barh per task, reversed so T1 is on top, and a minimum width so a short task does not vanish.",
+        },
+        {
+            "prompt": "What is the dependency rule, and why is a string comparison of the dates safe?",
+            "choices": {
+                "a": "A task may open the day before its predecessor closes which is how overlap gets onto the chart.",
+                "b": "Predecessor links are comments inside the task record and the check that would inspect them is never called.",
+                "c": "Stamps are compared as month-day-year text which is why an ISO value would sort into the wrong place.",
+                "d": "A task opening must follow the predecessor closing and year-month-day stamps sort in calendar order.",
+            },
+            "correct": "d",
+            "why": "The end is exclusive: start plus days. The test walks T8, which starts when T6 ends, instead of trusting a comment. A hand-edited early start raises.",
+        },
+        {
+            "prompt": "What changes between week 0 and week 2 on the Gantt and the risk register?",
+            "choices": {
+                "a": "The second lap adds the lab-director task and the first hazard moves down while another hazard moves up.",
+                "b": "Every baseline task is deleted on the second lap and replaced by the lab-director set alone.",
+                "c": "The bars stay identical across those laps and only the memo title text is different.",
+                "d": "The disagreement hazard is removed on the second lap because release testing has already passed in the field.",
+            },
+            "correct": "a",
+            "why": "T12, lane temperature, waits for week 3. Baseline tasks stay, because a re-plan that throws away the fishbone review is not a re-plan. R4 is the disagreement between release testing and the field rate.",
+        },
+        {
+            "prompt": "Why are dry-run keys SIM-*?",
+            "choices": {
+                "a": "The construction board uses INV identifiers and SIM makes a rehearsal document obviously different.",
+                "b": "The hosted client blocks every project prefix except SIM so INV cannot be used in a rehearsal.",
+                "c": "A SIM prefix means the active site accepted the issue and then returned that identifier to the client.",
+                "d": "The epic identifier is copied from the scenario id and that id is the text SIM.",
+            },
+            "correct": "a",
+            "why": "With no token, sync writes jira_issues.json and does not open a socket. The file carries a simulation disclaimer. make_client returns DryRunJira unless all three Jira settings are present.",
+        },
+        {
+            "prompt": "What happens if the live Jira call raises?",
+            "choices": {
+                "a": "The API token is placed into the error text so the reader can see which credential failed.",
+                "b": "The client catches the failure and stores the exception class and saves the file without the token.",
+                "c": "The program deletes the schedule document because a failed push means the schedule is no longer valid.",
+                "d": "The client retries the post forever and the document is saved only after a success comes back.",
+            },
+            "correct": "b",
+            "why": "Tests pass a fake transport and never construct the real httpx client for the dry-run. A planted token must be absent from repr.",
+        },
+        {
+            "prompt": "What does the live test count on the second sync?",
+            "choices": {
+                "a": "Eleven additional posts are made one per task on every pass including the repeat pass.",
+                "b": "A deletion is sent against every SIM identifier so the repeat pass clears the board before rebuilding it.",
+                "c": "One post is sent whose body is the entire schedule instead of an epic plus separate stories.",
+                "d": "The repeat pass makes no further posts because a known task id is edited in place after the first pass.",
+            },
+            "correct": "d",
+            "why": "The first call is 11 posts: epic plus 10 tasks at week 0. The by_task map skips creator when the id exists and still refreshes summary, status, and owner. Descriptions use Jira's document format because API v3 rejects a plain string.",
+        },
+        {
+            "prompt": "Why does plan run after triage and not after the fishbone?",
+            "choices": {
+                "a": "The graph sorts step names alphabetically which places the scheduler behind the diagram step.",
+                "b": "The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule.",
+                "c": "The bar dates are an input to the guess ordering so the scheduler has to finish before any stratum is scored.",
+                "d": "A client project must already exist before any failure frequency is calculated from the grid.",
+            },
+            "correct": "b",
+            "why": "The order is triage, plan, rca, END. run_case creates the output directory before invoke, because the plan node writes files during the node using state out_dir.",
+        },
+        {
+            "prompt": "Who owns containment when the top cause is a lot, an instrument, or no single cause?",
+            "choices": {
+                "a": "Every task including the first response is owned by the language model rather than by a named function.",
+                "b": "The customer holds the first response for a batch and for a gauge and for a case with no clear driver.",
+                "c": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays.",
+                "d": "The client assigns a random holder whenever the issue identifier starts with SIM.",
+            },
+            "correct": "c",
+            "why": "The owner map is the staffing story on the Gantt. Score on the register is likelihood times impact, and a loop checks the product so a future edit cannot type the score by hand.",
+        },
+    ],
+    6: [
+        {
+            "prompt": "Why does triage not run on every lap of the loop?",
+            "choices": {
+                "a": "The graph allows only one step in a program so the opening step cannot be entered a second time.",
+                "b": "The opening step is deleted from the graph once the scheduler exists which is why later passes skip it.",
+                "c": "The field document is fixed by the seed so the pass re-enters at the scheduler.",
+                "d": "The customer remark overwrites the metrics so another opening pass would have nothing left to read.",
+            },
+            "correct": "c",
+            "why": "The conditional edge after status either ends or advances the week and returns to plan. Triage runs once. The week changes which injections and tasks are in scope.",
+        },
+        {
+            "prompt": "What makes week 2 Red on bad_lot, and why does the case never go Green?",
+            "choices": {
+                "a": "Healthy is reserved for a successful model call and the second lap does not invoke a model at all.",
+                "b": "The second lap turns healthy because release testing passed and the document is then marked cured.",
+                "c": "Frequency stays over the promise and containment waits so the second lap stays urgent and nothing is cured.",
+                "d": "A retrieval index is what the color names and urgent means that index missed the batch remark.",
+            },
+            "correct": "c",
+            "why": "In this project RAG is the Red / Amber / Green status color, not retrieval-augmented generation. rag_color returns Green only when the rate does not exceed the spec.",
+        },
+        {
+            "prompt": "What does the decision log record at week 2?",
+            "choices": {
+                "a": "Switch the leading driver to software because the release remark passed and the grid should follow it.",
+                "b": "Close the final section and ship the executive deck at the end of the second lap.",
+                "c": "Keep the field ordering after a reported release pass and add the lab-director remark to the schedule.",
+                "d": "Delete the first task because its simulation lap has already passed and the row is stale.",
+            },
+            "correct": "c",
+            "why": "Week 1's row says the QA note is a citation and does not get its own score. Week 3 says do not switch the cause onto the shipping note. One row per week is the diff a PM would show.",
+        },
+        {
+            "prompt": "How can the customer note mention a rate without the template doing arithmetic?",
+            "choices": {
+                "a": "The wording multiplies failures by 100 and divides by the row count inside the formatted text itself.",
+                "b": "The small local model types the percent on the hosted screen and the wording pastes that text unchanged.",
+                "c": "The percent is copied from the complaint line which is why no calculation runs inside the wording.",
+                "d": "The facts builder rounds frequency onto a percent field and the wording inserts that field for the guard.",
+            },
+            "correct": "d",
+            "why": "The three audience templates share _status_header, so the rate line cannot drift. Cost is invalids times the unit price, and both factors sit on the facts before any sentence is rendered.",
+        },
+        {
+            "prompt": "Where do you look to diff week 0 and week 2 without re-running anything?",
+            "choices": {
+                "a": "Compare the opening folder with the second because each is as of that lap and the top copy is newest.",
+                "b": "Use only the final client document which keeps a copy of every lap schedule inside one document.",
+                "c": "Compare the earlier tag with the following tag which is the opening versus second-lap schedule a reviewer would quote.",
+                "d": "Use the screen cache which stores each lap schedule under the audience selector key.",
+            },
+            "correct": "a",
+            "why": "Those week folders were written by plan_node on that lap, not reconstructed later. Week 0's register has no R4. Week 2's does.",
+        },
+        {
+            "prompt": "What must the customer note not do?",
+            "choices": {
+                "a": "It must name the batch and quote the chi-square probability and paste the five answers before the holding line.",
+                "b": "It must quote a different failure frequency from the one printed on the leadership version.",
+                "c": "It must not state a confirmed driver and internal text gets the guess while leadership gets the cost.",
+                "d": "It must include the client API token so the recipient can comment on the SIM issue directly.",
+            },
+            "correct": "c",
+            "why": "Internal pastes injection text verbatim so the guard can mask it. The customer action is a holding sentence. That split is the stakeholder skill the session is practicing.",
+        },
+        {
+            "prompt": "At the end of a week-3 run, which tasks are Done?",
+            "choices": {
+                "a": "Every task stays in progress until the final deck is written including the earliest task on the schedule.",
+                "b": "Integer comparison marks the lap-0 task finished and the lap-2 task finished while the lap-4 task stays open.",
+                "c": "The lap-2 task does not exist yet at the end of lap 3 so only the earliest task can be finished.",
+                "d": "Finished is applied only by an active client transition and a rehearsal document leaves every task open.",
+            },
+            "correct": "b",
+            "why": "The dry-run upsert from Session 5 refreshes status in place. The file at the end of week 3 shows the tasks whose week has passed as Done. No token is required.",
+        },
+        {
+            "prompt": "What does route_after_status return when the week that just finished is still below the target?",
+            "choices": {
+                "a": "The result is stop on every pass so the lap counter does not move at all.",
+                "b": "The result is the final wrap-up as soon as the first lap ends and the deck is written early.",
+                "c": "The result is advance which adds one to the lap and then edges back to the scheduler.",
+                "d": "The result is the opening step and the field document is redrawn from a new seed.",
+            },
+            "correct": "c",
+            "why": "The string end maps to LangGraph's END. There is no closeout node until Session 9. This tag's loop is plan, RCA, status.",
+        },
+    ],
+    7: [
+        {
+            "prompt": "Why is rules-only the default on the hosted page?",
+            "choices": {
+                "a": "The chart library cannot draw a proportion plot while a model is loaded so the deterministic path is what keeps the chart alive.",
+                "b": "The screen raises unless the engine is the local runner and the deterministic flag is how that engine gets chosen.",
+                "c": "The cloud app has no local runner and ships no weights so deterministic wording answers with no download.",
+                "d": "The job host serves the screen and forbids the language runtime so the screen has to stay on deterministic wording.",
+            },
+            "correct": "c",
+            "why": "A missing model is a fallback, not a crash. narrate still replaces a rejected draft with the template. The banner is the first thing on the page, including the clinical-use line.",
+        },
+        {
+            "prompt": "Which variable names the model, and what does the page request when rules-only is off and that variable is unset?",
+            "choices": {
+                "a": "The model name OLLAMA_MODEL overrides the other name and an absent value on the cloud screen downloads llama3.1:8b.",
+                "b": "The cloud screen always downloads Llama 3.1 8B and the toggle cannot change that model tag.",
+                "c": "LLM_MODEL wins when set and otherwise a local run asks for llama3.2:1b while commands stay on llama3.1:8b.",
+                "d": "There is no model name and with the toggle cleared the screen picks a model tag at random.",
+            },
+            "correct": "c",
+            "why": "HOSTED_LLM_MODEL is the small tag, Llama 3.2 1B. It is what the toggle asks for locally. Community Cloud stays on the rules-only default because Cloud cannot run Ollama. Gemma 3 and Phi-4 are other tags you can set yourself.",
+        },
+        {
+            "prompt": "Why does the before/after chart say the after series is not observed follow-up?",
+            "choices": {
+                "a": "The later bars are next-month complaints collected once the batch was quarantined in the field.",
+                "b": "The plotting library simulates a cured program and rewrites the scenario document with the new frequency.",
+                "c": "The later bars are a screenshot the recipient sent and then pasted on as watched results.",
+                "d": "Failures on the leading stratum of the same synthetic document are cleared and no new field data are collected.",
+            },
+            "correct": "d",
+            "why": "The function copies the frame and returns before/after rates. It does not rewrite the scenario file. bad_lot stays over spec in the observed series. The caption repeats the projection label.",
+        },
+        {
+            "prompt": "What is cached, and what is not recomputed when you only change the audience radio?",
+            "choices": {
+                "a": "Every selector click rebuilds the whole graph and ignores the stored result from the previous execution.",
+                "b": "The storage key is only the selector name so a new lap still serves the previous execution from memory.",
+                "c": "The cache key covers scenario and lap and engine and model while the selector only rereads stored text.",
+                "d": "Nothing is stored because the framework forbids that decorator on a cloud app of this kind.",
+            },
+            "correct": "c",
+            "why": "_run restores the environment in a finally block so a cached call cannot pin a model for the next CLI command in the same process. Switching tabs does not call run_case again.",
+        },
+        {
+            "prompt": "What does Neel still have to do before a public Streamlit URL exists?",
+            "choices": {
+                "a": "Commit a client API token so the cloud host can start a local model runner for the screen.",
+                "b": "Buy a charting license which is the gate the cloud host checks before the first deploy is allowed.",
+                "c": "Nothing further is required because this snapshot already published the address and the tree contains that link.",
+                "d": "Sign in on the cloud host with the code host and pick the app entry because the tree cannot do it.",
+            },
+            "correct": "d",
+            "why": "The root file uses runpy so both entry points work. Ticket INV-301 is the dashboard. The academy leaves streamlitUrl blank until that URL exists.",
+        },
+        {
+            "prompt": "Which colors mark the p-chart, and what is red for?",
+            "choices": {
+                "a": "A random palette gives one hue per functional owner and there is no fixed alarm hue for the zone-1 points.",
+                "b": "Navy 0B3A5B and teal 1F7A8C draw the line and B23A48 marks zone-1 points with no purple gradient.",
+                "c": "The alarm hue marks the projected bars and navy marks a model token sitting in the screen state.",
+                "d": "The figure is a static picture embedded by an export helper and the alarm hue is only the chart border.",
+            },
+            "correct": "b",
+            "why": "charts.py reads the p-chart dict and the Pareto dict the graph already computed. The static PNG path for slides stays on matplotlib because Plotly's export needs Kaleido, which is not shipped.",
+        },
+        {
+            "prompt": "What does requirements.txt deliberately leave out?",
+            "choices": {
+                "a": "A weight file stays out while data and graph and chart libraries and the app framework stay installed.",
+                "b": "The app framework itself is omitted so the cloud host is expected to serve the screen with another toolkit.",
+                "c": "The chart library is omitted because the cloud screen draws every chart with matplotlib alone.",
+                "d": "The test runner is omitted and the cloud host needs it in the install array before the app will boot.",
+            },
+            "correct": "a",
+            "why": "The comment at the top of the file says the default backend is deterministic. .streamlit/config.toml sets the navy theme, headless mode, and turns usage stats off.",
+        },
+        {
+            "prompt": "What does the dashboard test require the page to show?",
+            "choices": {
+                "a": "An active browser click is required and the job performs that click against the cloud host on every pull request.",
+                "b": "The screen downloads llama3.1:8b during the render check and fails closed if that weight is missing.",
+                "c": "The screen shows the clinical-use banner and a metric and dropping the bad batch lowers the projection.",
+                "d": "Flipping the selector changes the failure frequency shown on the metric tile.",
+            },
+            "correct": "c",
+            "why": "pytest stays offline. The numbers on the tiles are the metrics object, not a sentence the model wrote. The delta on the rate tile is colored so 'above spec' reads as bad.",
+        },
+    ],
+    8: [
+        {
+            "prompt": "What did the evidence ranker score on the 22 scenarios, and what did the keyword ranker score?",
+            "choices": {
+                "a": "Both approaches were perfect on all 22 documents so an opening remark is as accurate as the table.",
+                "b": "The table ordering hit 3 of 22 and the note ordering hit 22 of 22 on the same documents.",
+                "c": "The memo stores no counts and the perfect cell is typed into the opening readme by hand.",
+                "d": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named.",
+            },
+            "correct": "d",
+            "why": "Holdout was 4 of 22. Gates were not refit. Read the weak-lot row and the drift extra-stratum lines before quoting the 22/22 cell.",
+        },
+        {
+            "prompt": "Why is weak_lot a success when the evidence call is no_single_cause?",
+            "choices": {
+                "a": "An unclear label means generation failed so that scenario produced no grid that could be judged.",
+                "b": "The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch.",
+                "c": "The table ordering is mistaken on that scenario and the note ordering is the number a reader should quote.",
+                "d": "That scenario is one of the four held-out documents so it is excluded from the result entirely.",
+            },
+            "correct": "b",
+            "why": "The overall rate can still be over the 2% spec while no stratum clears lift 1.8. Withholding is the designed call. That is the opposite of forcing a cause to make the slide tidy.",
+        },
+        {
+            "prompt": "What extra call showed up on the drift scenarios, and did it change top-1?",
+            "choices": {
+                "a": "The leading name flipped to the reagent batch on all four shifting documents and the gauge fell to second place.",
+                "b": "A reagent-batch stratum also cleared the bar and the leading name stayed the drifting gauge on purpose.",
+                "c": "Those shifting documents were removed from the judged set once a second stratum appeared.",
+                "d": "Only the note ordering saw the gauge and the table ordering stayed on the reagent batch.",
+            },
+            "correct": "b",
+            "why": "A résumé bullet that keeps 22/22 and drops the second stratum is misleading. The failure note travels with the cell.",
+        },
+        {
+            "prompt": "Why does the report not claim a Llama 3.1 8B versus Llama 3.2 1B accuracy?",
+            "choices": {
+                "a": "The smaller llama tag won the comparison and that number is confidential so it stays out of the memo.",
+                "b": "An older llama pair is still the number a resume is supposed to quote in place of this table.",
+                "c": "No llama tag was installed and the table compares two ordering policies on the deterministic engine.",
+                "d": "The cloud host ran both llama tags across the full set and the two figures came out tied.",
+            },
+            "correct": "c",
+            "why": "The plan's model pair is now those two Llama tags. A model draft would still have to pass the numeric-fidelity check before it was shown. Do not quote the table as a model-accuracy number.",
+        },
+        {
+            "prompt": "Why is the red-herring key written \"true\" with quotes in the YAML?",
+            "choices": {
+                "a": "The marks around true force the batch id to be parsed as a float which is what the builder expects.",
+                "b": "The parser treats an unquoted true as a boolean and the builder looks up that string in the map.",
+                "c": "The marks around true tell the note ordering to skip the document so it cannot take the decoy.",
+                "d": "The document is a braced data format that requires marks around every name including true.",
+            },
+            "correct": "b",
+            "why": "herring_software's week-0 note says software. root_cause.true is the lot. The ranker does not receive eval.expect_cause. The note does not get to outvote the table.",
+        },
+        {
+            "prompt": "What does score_scenario refuse to pass into the ranker?",
+            "choices": {
+                "a": "The description seed stays out because it would let the ordering step rebuild the grid another way.",
+                "b": "The hidden expected label stays out of ordering because that block is the grade and not an input.",
+                "c": "The two percent promise stays out because it would let the ordering step decide escalate before it sees a stratum.",
+                "d": "The column array stays out because it would tell the ordering step which strata it is allowed to grade.",
+            },
+            "correct": "b",
+            "why": "keyword_cause only scans week-0 injection text, and software is before lot so a sentence that says both still has one call. It never opens the table.",
+        },
+        {
+            "prompt": "Why did version 2.4.0 need to be copied into the fidelity facts as a string?",
+            "choices": {
+                "a": "That token is the failure frequency on a software scenario so it belongs in the fact bag as a percent.",
+                "b": "An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there.",
+                "c": "The schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag.",
+                "d": "The note ordering treats 2.4 as its grade unless that token is listed in the fact bag.",
+            },
+            "correct": "b",
+            "why": "The terminal Why for a software hit says 2.4.0. Putting that token in the facts lets the sentence name the version without failing the guard. The test in test_rca locks it.",
+        },
+        {
+            "prompt": "What does CI run from this session's script?",
+            "choices": {
+                "a": "All 22 documents are sent to an active llama server and the job fails if that server is down.",
+                "b": "The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed.",
+                "c": "Nothing from the evaluation entry is executed and the memo is edited by hand before the job.",
+                "d": "A refit of the lift gate on the held-out split happens before the smoke limit is applied.",
+            },
+            "correct": "b",
+            "why": "The full report's counts come from a run of evals/run_eval.py. Session 9 copies those counts and does not invent a model comparison. Week-0 graph checks on the same 22 were fidelity 22/22, citations 22/22, escalation 22/22, mean latency about 0.55 seconds.",
+        },
+    ],
+    9: [
+        {
+            "prompt": "Why does week 4 not simply end on the status node?",
+            "choices": {
+                "a": "The lap memo cannot represent numbers above 3 so the fourth lap has to leave the graph entirely.",
+                "b": "The lap note is not the ending and the wrap-up confirms the last sections and builds the slides.",
+                "c": "The fourth lap deletes the schedule and starts the opening step again from a cleared guess list.",
+                "d": "A program outside the graph produces the slides and skips the fidelity check on purpose.",
+            },
+            "correct": "b",
+            "why": "route_after_status sends week 4 to closeout. Weeks 0 through 3 still end or advance, so earlier tests do not build a deck. preliminary_close becomes false once D7 and D8 are confirmed.",
+        },
+        {
+            "prompt": "What would be false about the deck if the projected rate were labeled as follow-up?",
+            "choices": {
+                "a": "The field document is not rewritten and clearing the leading stratum is only a counterfactual case.",
+                "b": "Calling those bars watched results is fair because the scenario document already contains the cured records.",
+                "c": "The forecast is a second scenario document the recipient signed so the watched label is a fair description.",
+                "d": "The slide tool requires the watched-results phrase on the impact frame or the file will not save.",
+            },
+            "correct": "a",
+            "why": "The effectiveness sentence includes the label 'Not observed follow-up.' The root-cause slide's chart is the observed weekly rate. The sentence under the recommendation says not to treat the projected rate as observed follow-up.",
+        },
+        {
+            "prompt": "Where does the dollar cost on the impact slide come from?",
+            "choices": {
+                "a": "It is a round number the model picks for an executive reader and it ignores both the row count and the unit price.",
+                "b": "It is failure count times unit price and on the bad batch that product is 529 times 85 with no typed total.",
+                "c": "It is the client points for the investigation epic multiplied by 1000 and then placed on the frame.",
+                "d": "It is the amount pasted from the complaint mail and the wording does not recompute that amount.",
+            },
+            "correct": "b",
+            "why": "build_closeout_facts computes the product and drops the frame before the record is stored. python-pptx writes the slide from those facts, so a slide cannot invent a cost. matplotlib with the Agg backend draws the chart PNG. Kaleido is not shipped.",
+        },
+        {
+            "prompt": "Which eval numbers are safe on a résumé, and which sentence has to sit next to them?",
+            "choices": {
+                "a": "Quote a perfect field accuracy because the table top choice was 22 of 22 and treat that cell as a clinical result.",
+                "b": "Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical.",
+                "c": "Quote the note ordering at 3 of 22 by itself and present that ratio as the accuracy of the whole ordering step.",
+                "d": "Quote any cell you like because the slides are a simulation and the disclaimer covers a comparison that was never run.",
+            },
+            "correct": "b",
+            "why": "RESUME_BULLETS.md puts the keyword miss and the drift second stratum in the same breath as 22/22. Quoting the first number alone would mislead. The disclaimer stays: synthetic, not clinical, not a device.",
+        },
+        {
+            "prompt": "How many slides does write_deck create, and what does a no_single_cause call recommend?",
+            "choices": {
+                "a": "One frame is produced and the model fills the title and the price and the recommendation into that lone frame.",
+                "b": "Twelve frames are produced with one for each client epic on the construction board plus the investigation tasks.",
+                "c": "Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum.",
+                "d": "Seven frames are produced and an unclear driver still says to quarantine the first batch named on the document.",
+            },
+            "correct": "c",
+            "why": "A single-cause call recommends containing that stratum and not expanding the pull. Colors are navy and teal, with the disclaimer in white on navy on the title slide. The test opens the pptx and checks seven slides, the disclaimer, the projection label, 3.67%, and L-4419.",
+        },
+        {
+            "prompt": "What is the local model default, and what does hosted Streamlit run?",
+            "choices": {
+                "a": "The cloud app downloads the larger tag on every load and executes that tag while building the slides.",
+                "b": "Both name settings are required and the cloud app refuses to boot if either one is absent.",
+                "c": "The small tag on the cloud app produces the slides which is why the on-laptop name goes unused.",
+                "d": "The name defaults to llama3.1:8b on the desktop runner and the cloud app stays deterministic.",
+            },
+            "correct": "d",
+            "why": "The README model table says the same thing. Gemma 3 and Phi-4 are other documented tags. Close-out itself is a template plus the fidelity guard. No new model library.",
+        },
+        {
+            "prompt": "What does the week-4 leadership injection on bad_lot ask for, and which ticket is the deck?",
+            "choices": {
+                "a": "It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6.",
+                "b": "It requests an active chat thread and this snapshot ships that thread as the wrap-up instead of slides.",
+                "c": "It requests a fine-tune of the table ordering on the full set and that tune is the fourth-lap deliverable.",
+                "d": "It requests issue INV-101 and the original brief is rewritten into slides without opening a new issue.",
+            },
+            "correct": "a",
+            "why": "Leadership's ask is the close-out. The ask slide says to approve the recommendation or send the case back for the wider pull, and not to treat the projection as follow-up.",
+        },
+        {
+            "prompt": "Which sentence belongs in a two-minute pitch of the whole system?",
+            "choices": {
+                "a": "The installed model reads the complaint and names the driver and the slides then quote cured rows as watched results.",
+                "b": "This is a medical device with a cleared claim of 22 of 22 and the cloud model writes it once a client token arrives.",
+                "c": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3.",
+                "d": "A client token is required before the lap can finish and the note-only number is quoted once shift cases drop out.",
+            },
+            "correct": "c",
+            "why": "The pitch keeps the disclaimer, the evidence bar, the herring result, and the second stratum. It does not turn the scorecard into a clinical claim. You can run the deterministic path with no API key.",
+        },
+    ],
+}
