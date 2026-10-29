@@ -33,7 +33,7 @@ QUIZZES = {
         {
             "prompt": "What is wrong with the default frozen-dataclass repr?",
             "choices": {
-                "a": "The       generated view prints every stored field including a planted API token.",
+                "a": "The generated view prints every stored field and also includes a planted API token.",
                 "b": "It hides the repository top so tests cannot locate the scenario folders on disk.",
                 "c": "It lowercases the model tag so the local runner cannot resolve llama3.1:8b at all.",
                 "d": "The test runner is blocked from calling that view so a planted token cannot reach a log.",
@@ -47,7 +47,7 @@ QUIZZES = {
                 "a": "It is the active customer-escalation board and a following push posts onto those same INV identifiers.",
                 "b": "It is the rehearsal record of SIM investigation issues written only after the client is built.",
                 "c": "It is the week-zero triage memo stored as structured data so an escalate flag can be imported.",
-                "d": "It is the three-sprint construction board and sprint 1 holds INV-101 through INV-109.",
+                "d": "It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109.",
             },
             "correct": "d",
             "why": "This JSON is the three-sprint build board. Session 5 writes a different set, the fictional investigation, and those keys are SIM-* so the two files cannot be confused.",
@@ -55,7 +55,7 @@ QUIZZES = {
         {
             "prompt": "Why is dependencies an empty list in Session 1 pyproject.toml?",
             "choices": {
-                "a": "Nothing    in this tag imports third-party libraries yet so the job skips those downloads.",
+                "a": "Nothing in this tag imports third-party libraries yet so the job skips those extra downloads.",
                 "b": "Python 3.11 blocks third-party imports which forces that array to stay vacant on purpose.",
                 "c": "The MIT license forbids third-party libraries and the installer blocks once that array is filled.",
                 "d": "The build tool refuses a filled array while the version is still 0.1.0 so the job would fail closed.",
@@ -68,7 +68,7 @@ QUIZZES = {
             "choices": {
                 "a": "It stops at the first directory named out and treats that folder as proof of the project top.",
                 "b": "It requires the TOPDIR variable and ignores the project file whenever that variable is missing.",
-                "c": "It   accepts the project file sitting beside the scenarios directory or the package directory.",
+                "c": "It accepts the project file sitting beside the scenarios directory or beside the package directory.",
                 "d": "It searches for an active model server on port 11434 and treats that process as the project top.",
             },
             "correct": "c",
@@ -80,7 +80,7 @@ QUIZZES = {
                 "a": "It resolves to deterministic because rules and rules-only and mock are three names for that engine.",
                 "b": "It resolves to the laptop model because rules means the local model should write the memo.",
                 "c": "It resolves to llamacpp because rules loads a GGUF even when the model path is vacant.",
-                "d": "It     raises an error because rules is unrecognized and must not fall through to a silent template.",
+                "d": "It raises an error because rules is unrecognized and must not fall through to a silent template.",
             },
             "correct": "a",
             "why": "rules, rules-only, and mock are synonyms for deterministic. An unknown name also falls back to deterministic, which is why a sloppy test can pass for the wrong reason.",
@@ -88,7 +88,7 @@ QUIZZES = {
         {
             "prompt": "What does the Session 1 GitHub Actions workflow run?",
             "choices": {
-                "a": "Python    3.13 is the sole interpreter and the job injects a client token for the active client.",
+                "a": "Python 3.13 is the sole interpreter and the job injects a client token for the active client.",
                 "b": "The job downloads Llama 3.1 8B and then the dashboard before pytest is allowed to start.",
                 "c": "The hosted app platform replaces the hosted runners for this job and pytest never starts.",
                 "d": "Python 3.11 and 3.12 do an editable install with the dev extra and then pytest with no secrets.",
@@ -104,7 +104,7 @@ QUIZZES = {
                 "a": "Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched.",
                 "b": "Two Bernoulli draws cannot share one numeric function so the extra toss has to be applied through SQL.",
                 "c": "The scenario document forbids a starting frequency so the only failing rows are the ones on that pattern.",
-                "d": "Replacing     the pattern lets the ranked chart count valid rows which a stacked probability would have dropped.",
+                "d": "Replacing the pattern lets the ranked chart count valid rows which a stacked probability would have dropped.",
             },
             "correct": "a",
             "why": "The chi-square test needs a contrast: the cause stratum versus rows that stayed at the baseline rate. Adding probabilities would smear that contrast.",
@@ -112,7 +112,7 @@ QUIZZES = {
         {
             "prompt": "What does the Wilson interval do for 0 invalids out of 100, and why?",
             "choices": {
-                "a": "The      analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.",
+                "a": "The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.",
                 "b": "It returns a negative lower bound and the caller clamps that bound back into the unit range before the memo may render.",
                 "c": "It raises because a zero event count makes the denominator undefined and the memo cannot render.",
                 "d": "It returns the two percent promise as both ends since a sample with no failures is treated as the promise.",
@@ -126,7 +126,7 @@ QUIZZES = {
                 "a": "Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge.",
                 "b": "Each collection place owns exactly one gauge so the two columns are aliases of one draw.",
                 "c": "The batch id is copied into the gauge column which is what lines the two effects up.",
-                "d": "The        revision flips when the bad batch starts so the cutover marks the batch rather than the gauge.",
+                "d": "The revision flips when the bad batch starts so the cutover marks the batch rather than the gauge.",
             },
             "correct": "a",
             "why": "The module docstring states the reference-lab assumption. bad_lot also runs both software versions for the whole horizon so a version cutover is not mistaken for the lot.",
@@ -181,7 +181,7 @@ QUIZZES = {
                 "a": "The most common failure code is left out so the chart shows only the long tail of rare codes.",
                 "b": "Any code whose share of failures is under 5 percent is dropped before the cumulative line is drawn.",
                 "c": "Records that belong to the injected batch are left out so the driver code cannot dominate the chart.",
-                "d": "Valid     records are left out because an empty failure code must not count as a failure mode.",
+                "d": "Valid records are left out because an empty failure code must not count as a failure mode.",
             },
             "correct": "d",
             "why": "pareto keeps rows where invalid is true, orders codes by count, and closes cumulative_share at 1. That chart is the PM's 'which failure mode' picture, and it is computed, not narrated.",
@@ -192,7 +192,7 @@ QUIZZES = {
             "prompt": "What does the triage node store instead of the 14,400-row frame, and how does a later node get the rows back?",
             "choices": {
                 "a": "It keeps the full grid on the graph state under a key and following steps read that key directly.",
-                "b": "It      writes the CSV into the issue description and a following step parses that description into records.",
+                "b": "It writes the CSV into the issue description and a following step parses that description into records.",
                 "c": "It asks Llama 3.1 8B to remember the grid and a following step prompts the model for the same records.",
                 "d": "Metrics and the catalog and the memo are kept and a following step calls generate again from the same seed.",
             },
@@ -214,7 +214,7 @@ QUIZZES = {
             "prompt": "Where does the planted sentence 'the invalid rate is 27.40%' die?",
             "choices": {
                 "a": "Masking deletes 27.40 because that token looks like the batch id with the letters removed.",
-                "b": "The  guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts.",
+                "b": "The guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts.",
                 "c": "It survives masking and is not within 0.03 of a walked fact so it lands in unknown and ok stays false.",
                 "d": "The local model rewrites the line into the template before the guard ever scans the digits.",
             },
@@ -260,7 +260,7 @@ QUIZZES = {
                 "a": "httpx is the sole client that can speak to a Llama 3.1 server so any other adapter is skipped.",
                 "b": "The graph requires an httpx call inside every step including the path that never leaves the laptop.",
                 "c": "The job downloads model weights through httpx during pytest so the adapter has to be that library.",
-                "d": "One     httpx call is easier to mock and that call is skipped when the engine is deterministic.",
+                "d": "One httpx call is easier to mock and that call is skipped when the engine is deterministic.",
             },
             "correct": "d",
             "why": "langchain-core only supplies the role and content pairs. llama-cpp-python is not a dependency. It is imported only if that backend is selected, and a missing install falls back to the template.",
@@ -361,7 +361,7 @@ QUIZZES = {
                 "a": "No new library is added and the prior fidelity guard is reused on the three markdown documents.",
                 "b": "A diagram drawing library is added so the six bones can be rendered as an image beside the markdown.",
                 "c": "An export helper is added so the record can be saved as a PDF from the chart figure.",
-                "d": "A  tiny local model is added and the job downloads it before the diagram check is allowed to execute.",
+                "d": "A tiny local model is added and the job downloads it before the diagram check is allowed to execute.",
             },
             "correct": "a",
             "why": "The graph is triage then rca then END. run_case writes the memo plus fishbone.md, five_whys.md, and capa8d.md. Weeks above 0 only change which injections RCA can cite. The plan is Session 5.",
@@ -372,7 +372,7 @@ QUIZZES = {
             "prompt": "Why is the Gantt PNG not fig.write_image?",
             "choices": {
                 "a": "The chart library has no timeline trace so a schedule chart has to be drawn by hand in another tool.",
-                "b": "The  export helper needs an extra browser library while the plotting path runs without that download.",
+                "b": "The export helper needs an extra browser library while the plotting path runs without that download.",
                 "c": "Picture files are banned from the tree which is why that export helper is never called on the schedule.",
                 "d": "The client blocks an attachment unless the extra browser library produced it so the plotting chart cannot be attached.",
             },
@@ -396,7 +396,7 @@ QUIZZES = {
                 "a": "The second lap adds the lab-director task and the first hazard moves down while another hazard moves up.",
                 "b": "Every baseline task is deleted on the second lap and replaced by the lab-director set alone.",
                 "c": "The bars stay identical across those laps and only the memo title text is different.",
-                "d": "The disagreement hazard is removed on the second lap because release testing has already passed.",
+                "d": "The disagreement hazard is removed on the second lap because release testing has already passed in the field.",
             },
             "correct": "a",
             "why": "T12, lane temperature, waits for week 3. Baseline tasks stay, because a re-plan that throws away the fishbone review is not a re-plan. R4 is the disagreement between release testing and the field rate.",
@@ -406,7 +406,7 @@ QUIZZES = {
             "choices": {
                 "a": "The construction board uses INV identifiers and SIM makes a rehearsal document obviously different.",
                 "b": "The hosted client blocks every project prefix except SIM so INV cannot be used in a rehearsal.",
-                "c": "A    SIM prefix means the active site accepted the issue and returned that identifier to the client.",
+                "c": "A SIM prefix means the active site accepted the issue and then returned that identifier to the client.",
                 "d": "The epic identifier is copied from the scenario id and that id is the text SIM.",
             },
             "correct": "a",
@@ -416,8 +416,8 @@ QUIZZES = {
             "prompt": "What happens if the live Jira call raises?",
             "choices": {
                 "a": "The API token is placed into the error text so the reader can see which credential failed.",
-                "b": "The client catches the failure and stores the exception class and saves the document without the token.",
-                "c": "The   program deletes the schedule document because a failed push means the schedule is no longer valid.",
+                "b": "The client catches the failure and stores the exception class and saves the file without the token.",
+                "c": "The program deletes the schedule document because a failed push means the schedule is no longer valid.",
                 "d": "The client retries the post forever and the document is saved only after a success comes back.",
             },
             "correct": "b",
@@ -440,7 +440,7 @@ QUIZZES = {
                 "a": "The graph sorts step names alphabetically which places the scheduler behind the diagram step.",
                 "b": "The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule.",
                 "c": "The bar dates are an input to the guess ordering so the scheduler has to finish before any stratum is scored.",
-                "d": "A  client project must already exist before any failure frequency is calculated from the grid.",
+                "d": "A client project must already exist before any failure frequency is calculated from the grid.",
             },
             "correct": "b",
             "why": "The order is triage, plan, rca, END. run_case creates the output directory before invoke, because the plan node writes files during the node using state out_dir.",
@@ -448,9 +448,9 @@ QUIZZES = {
         {
             "prompt": "Who owns containment when the top cause is a lot, an instrument, or no single cause?",
             "choices": {
-                "a": "Every      task including the first response is owned by the language model rather than by a named function.",
+                "a": "Every task including the first response is owned by the language model rather than by a named function.",
                 "b": "The customer holds the first response for a batch and for a gauge and for a case with no clear driver.",
-                "c": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays put.",
+                "c": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays.",
                 "d": "The client assigns a random holder whenever the issue identifier starts with SIM.",
             },
             "correct": "c",
@@ -483,7 +483,7 @@ QUIZZES = {
         {
             "prompt": "What does the decision log record at week 2?",
             "choices": {
-                "a": "Switch  the leading driver to software because the release remark passed and the grid should follow it.",
+                "a": "Switch the leading driver to software because the release remark passed and the grid should follow it.",
                 "b": "Close the final section and ship the executive deck at the end of the second lap.",
                 "c": "Keep the field ordering after a reported release pass and add the lab-director remark to the schedule.",
                 "d": "Delete the first task because its simulation lap has already passed and the row is stale.",
@@ -495,7 +495,7 @@ QUIZZES = {
             "prompt": "How can the customer note mention a rate without the template doing arithmetic?",
             "choices": {
                 "a": "The wording multiplies failures by 100 and divides by the row count inside the formatted text itself.",
-                "b": "The   small local model types the percent on the hosted screen and the wording pastes that text unchanged.",
+                "b": "The small local model types the percent on the hosted screen and the wording pastes that text unchanged.",
                 "c": "The percent is copied from the complaint line which is why no calculation runs inside the wording.",
                 "d": "The facts builder rounds frequency onto a percent field and the wording inserts that field for the guard.",
             },
@@ -527,7 +527,7 @@ QUIZZES = {
         {
             "prompt": "At the end of a week-3 run, which tasks are Done?",
             "choices": {
-                "a": "Every      task stays in progress until the final deck is written including the earliest task on the schedule.",
+                "a": "Every task stays in progress until the final deck is written including the earliest task on the schedule.",
                 "b": "Integer comparison marks the lap-0 task finished and the lap-2 task finished while the lap-4 task stays open.",
                 "c": "The lap-2 task does not exist yet at the end of lap 3 so only the earliest task can be finished.",
                 "d": "Finished is applied only by an active client transition and a rehearsal document leaves every task open.",
@@ -574,7 +574,7 @@ QUIZZES = {
             "prompt": "Why does the before/after chart say the after series is not observed follow-up?",
             "choices": {
                 "a": "The later bars are next-month complaints collected once the batch was quarantined in the field.",
-                "b": "The        plotting library simulates a cured program and rewrites the scenario document with the new frequency.",
+                "b": "The plotting library simulates a cured program and rewrites the scenario document with the new frequency.",
                 "c": "The later bars are a screenshot the recipient sent and then pasted on as watched results.",
                 "d": "Failures on the leading stratum of the same synthetic document are cleared and no new field data are collected.",
             },
@@ -641,10 +641,10 @@ QUIZZES = {
         {
             "prompt": "What did the evidence ranker score on the 22 scenarios, and what did the keyword ranker score?",
             "choices": {
-                "a": "Both      approaches were perfect on all 22 documents so an opening remark is as accurate as the table.",
+                "a": "Both approaches were perfect on all 22 documents so an opening remark is as accurate as the table.",
                 "b": "The table ordering hit 3 of 22 and the note ordering hit 22 of 22 on the same documents.",
-                "c": "The  memo stores no counts and the perfect cell is typed into the opening readme by hand.",
-                "d": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 where no driver was named.",
+                "c": "The memo stores no counts and the perfect cell is typed into the opening readme by hand.",
+                "d": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named.",
             },
             "correct": "d",
             "why": "Holdout was 4 of 22. Gates were not refit. Read the weak-lot row and the drift extra-stratum lines before quoting the 22/22 cell.",
@@ -653,8 +653,8 @@ QUIZZES = {
             "prompt": "Why is weak_lot a success when the evidence call is no_single_cause?",
             "choices": {
                 "a": "An unclear label means generation failed so that scenario produced no grid that could be judged.",
-                "b": "The batch bump stays under the lift gate so withholding is correct and notes still name the reagent batch.",
-                "c": "The  table ordering is mistaken on that scenario and the note ordering is the number a reader should quote.",
+                "b": "The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch.",
+                "c": "The table ordering is mistaken on that scenario and the note ordering is the number a reader should quote.",
                 "d": "That scenario is one of the four held-out documents so it is excluded from the result entirely.",
             },
             "correct": "b",
@@ -674,9 +674,9 @@ QUIZZES = {
         {
             "prompt": "Why does the report not claim a Llama 3.1 8B versus Llama 3.2 1B accuracy?",
             "choices": {
-                "a": "The      smaller llama tag won the comparison and that number is confidential so it stays out of the memo.",
+                "a": "The smaller llama tag won the comparison and that number is confidential so it stays out of the memo.",
                 "b": "An older llama pair is still the number a resume is supposed to quote in place of this table.",
-                "c": "Neither llama tag was installed and the table compares two ordering policies on the deterministic engine.",
+                "c": "No llama tag was installed and the table compares two ordering policies on the deterministic engine.",
                 "d": "The cloud host ran both llama tags across the full set and the two figures came out tied.",
             },
             "correct": "c",
@@ -685,8 +685,8 @@ QUIZZES = {
         {
             "prompt": "Why is the red-herring key written \"true\" with quotes in the YAML?",
             "choices": {
-                "a": "The    marks around true force the batch id to be parsed as a float which is what the builder expects.",
-                "b": "The parser treats an unquoted true as a boolean and the builder looks up that same string in the map.",
+                "a": "The marks around true force the batch id to be parsed as a float which is what the builder expects.",
+                "b": "The parser treats an unquoted true as a boolean and the builder looks up that string in the map.",
                 "c": "The marks around true tell the note ordering to skip the document so it cannot take the decoy.",
                 "d": "The document is a braced data format that requires marks around every name including true.",
             },
@@ -697,7 +697,7 @@ QUIZZES = {
             "prompt": "What does score_scenario refuse to pass into the ranker?",
             "choices": {
                 "a": "The description seed stays out because it would let the ordering step rebuild the grid another way.",
-                "b": "The    hidden expected label stays out of ordering because that block is the grade and not an input.",
+                "b": "The hidden expected label stays out of ordering because that block is the grade and not an input.",
                 "c": "The two percent promise stays out because it would let the ordering step decide escalate before it sees a stratum.",
                 "d": "The column array stays out because it would tell the ordering step which strata it is allowed to grade.",
             },
@@ -708,8 +708,8 @@ QUIZZES = {
             "prompt": "Why did version 2.4.0 need to be copied into the fidelity facts as a string?",
             "choices": {
                 "a": "That token is the failure frequency on a software scenario so it belongs in the fact bag as a percent.",
-                "b": "An identifier is stripped only when its exact text is already in the fact bag so 2.4.0 must be placed there.",
-                "c": "The    schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag.",
+                "b": "An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there.",
+                "c": "The schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag.",
                 "d": "The note ordering treats 2.4 as its grade unless that token is listed in the fact bag.",
             },
             "correct": "b",
@@ -718,8 +718,8 @@ QUIZZES = {
         {
             "prompt": "What does CI run from this session's script?",
             "choices": {
-                "a": "All    22 documents are sent to an active llama server and the job fails if that server is down.",
-                "b": "The entry runs under limit 5 with a smoke flag and fails when top choice or fidelity is missed.",
+                "a": "All 22 documents are sent to an active llama server and the job fails if that server is down.",
+                "b": "The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed.",
                 "c": "Nothing from the evaluation entry is executed and the memo is edited by hand before the job.",
                 "d": "A refit of the lift gate on the held-out split happens before the smoke limit is applied.",
             },
@@ -732,8 +732,8 @@ QUIZZES = {
             "prompt": "Why does week 4 not simply end on the status node?",
             "choices": {
                 "a": "The lap memo cannot represent numbers above 3 so the fourth lap has to leave the graph entirely.",
-                "b": "The lap note is not the ending and the wrap-up confirms the last sections then builds the slides.",
-                "c": "The   fourth lap deletes the schedule and starts the opening step again from a cleared guess list.",
+                "b": "The lap note is not the ending and the wrap-up confirms the last sections and builds the slides.",
+                "c": "The fourth lap deletes the schedule and starts the opening step again from a cleared guess list.",
                 "d": "A program outside the graph produces the slides and skips the fidelity check on purpose.",
             },
             "correct": "b",
@@ -742,7 +742,7 @@ QUIZZES = {
         {
             "prompt": "What would be false about the deck if the projected rate were labeled as follow-up?",
             "choices": {
-                "a": "The     field document is not rewritten and clearing the leading stratum is only a counterfactual.",
+                "a": "The field document is not rewritten and clearing the leading stratum is only a counterfactual case.",
                 "b": "Calling those bars watched results is fair because the scenario document already contains the cured records.",
                 "c": "The forecast is a second scenario document the recipient signed so the watched label is a fair description.",
                 "d": "The slide tool requires the watched-results phrase on the impact frame or the file will not save.",
@@ -765,7 +765,7 @@ QUIZZES = {
             "prompt": "Which eval numbers are safe on a résumé, and which sentence has to sit next to them?",
             "choices": {
                 "a": "Quote a perfect field accuracy because the table top choice was 22 of 22 and treat that cell as a clinical result.",
-                "b": "Quote         the table at 22 of 22 beside notes at 3 of 22 and the shift documents and do not call it clinical.",
+                "b": "Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical.",
                 "c": "Quote the note ordering at 3 of 22 by itself and present that ratio as the accuracy of the whole ordering step.",
                 "d": "Quote any cell you like because the slides are a simulation and the disclaimer covers a comparison that was never run.",
             },
@@ -777,7 +777,7 @@ QUIZZES = {
             "choices": {
                 "a": "One frame is produced and the model fills the title and the price and the recommendation into that lone frame.",
                 "b": "Twelve frames are produced with one for each client epic on the construction board plus the investigation tasks.",
-                "c": "Seven frames are produced and an unclear driver means the recommendation is not to contain a stratum.",
+                "c": "Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum.",
                 "d": "Seven frames are produced and an unclear driver still says to quarantine the first batch named on the document.",
             },
             "correct": "c",
@@ -797,7 +797,7 @@ QUIZZES = {
         {
             "prompt": "What does the week-4 leadership injection on bad_lot ask for, and which ticket is the deck?",
             "choices": {
-                "a": "It       wants the recommendation and the effectiveness check and the slides are INV-303 on epic INV-6.",
+                "a": "It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6.",
                 "b": "It requests an active chat thread and this snapshot ships that thread as the wrap-up instead of slides.",
                 "c": "It requests a fine-tune of the table ordering on the full set and that tune is the fourth-lap deliverable.",
                 "d": "It requests issue INV-101 and the original brief is rewritten into slides without opening a new issue.",
@@ -810,7 +810,7 @@ QUIZZES = {
             "choices": {
                 "a": "The installed model reads the complaint and names the driver and the slides then quote cured rows as watched results.",
                 "b": "This is a medical device with a cleared claim of 22 of 22 and the cloud model writes it once a client token arrives.",
-                "c": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection while the table hit 22 and notes hit 3.",
+                "c": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3.",
                 "d": "A client token is required before the lap can finish and the note-only number is quoted once shift cases drop out.",
             },
             "correct": "c",

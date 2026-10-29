@@ -11,13 +11,13 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 2. **B.** A base URL plus an email plus a token are all required or the client gate stays false.
 
-3. **C.** The       generated view prints every stored field including a planted API token.
+3. **C.** The generated view prints every stored field and also includes a planted API token.
 
-4. **D.** It is the three-sprint construction board and sprint 1 holds INV-101 through INV-109.
+4. **D.** It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109.
 
-5. **A.** Nothing    in this tag imports third-party libraries yet so the job skips those downloads.
+5. **A.** Nothing in this tag imports third-party libraries yet so the job skips those extra downloads.
 
-6. **B.** It   accepts the project file sitting beside the scenarios directory or the package directory.
+6. **B.** It accepts the project file sitting beside the scenarios directory or beside the package directory.
 
 7. **C.** It resolves to deterministic because rules and rules-only and mock are three names for that engine.
 
@@ -27,7 +27,7 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 1. **A.** Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched.
 
-2. **B.** The      analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.
+2. **B.** The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.
 
 3. **C.** Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge.
 
@@ -39,7 +39,7 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 7. **C.** The result is probability 1 and statistic 0 because a calm scenario is not treated as an exception.
 
-8. **D.** Valid     records are left out because an empty failure code must not count as a failure mode.
+8. **D.** Valid records are left out because an empty failure code must not count as a failure mode.
 
 ## Session 3
 
@@ -55,7 +55,7 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 6. **B.** It stops on purpose so this snapshot cannot pretend the weekly loop already exists.
 
-7. **C.** One     httpx call is easier to mock and that call is skipped when the engine is deterministic.
+7. **C.** One httpx call is easier to mock and that call is skipped when the engine is deterministic.
 
 8. **D.** Removing the identifier keeps 4419 from being reused as a permitted frequency in the paragraph.
 
@@ -79,7 +79,7 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 ## Session 5
 
-1. **A.** The  export helper needs an extra browser library while the plotting path runs without that download.
+1. **A.** The export helper needs an extra browser library while the plotting path runs without that download.
 
 2. **B.** A task opening must follow the predecessor closing and year-month-day stamps sort in calendar order.
 
@@ -87,13 +87,13 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 4. **D.** The construction board uses INV identifiers and SIM makes a rehearsal document obviously different.
 
-5. **A.** The client catches the failure and stores the exception class and saves the document without the token.
+5. **A.** The client catches the failure and stores the exception class and saves the file without the token.
 
 6. **B.** The repeat pass makes no further posts because a known task id is edited in place after the first pass.
 
 7. **C.** The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule.
 
-8. **D.** Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays put.
+8. **D.** Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays.
 
 ## Session 6
 
@@ -133,36 +133,36 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 ## Session 8
 
-1. **A.** The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 where no driver was named.
+1. **A.** The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named.
 
-2. **B.** The batch bump stays under the lift gate so withholding is correct and notes still name the reagent batch.
+2. **B.** The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch.
 
 3. **C.** A reagent-batch stratum also cleared the bar and the leading name stayed the drifting gauge on purpose.
 
-4. **D.** Neither llama tag was installed and the table compares two ordering policies on the deterministic engine.
+4. **D.** No llama tag was installed and the table compares two ordering policies on the deterministic engine.
 
-5. **A.** The parser treats an unquoted true as a boolean and the builder looks up that same string in the map.
+5. **A.** The parser treats an unquoted true as a boolean and the builder looks up that string in the map.
 
-6. **B.** The    hidden expected label stays out of ordering because that block is the grade and not an input.
+6. **B.** The hidden expected label stays out of ordering because that block is the grade and not an input.
 
-7. **C.** An identifier is stripped only when its exact text is already in the fact bag so 2.4.0 must be placed there.
+7. **C.** An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there.
 
-8. **D.** The entry runs under limit 5 with a smoke flag and fails when top choice or fidelity is missed.
+8. **D.** The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed.
 
 ## Session 9
 
-1. **A.** The lap note is not the ending and the wrap-up confirms the last sections then builds the slides.
+1. **A.** The lap note is not the ending and the wrap-up confirms the last sections and builds the slides.
 
-2. **B.** The     field document is not rewritten and clearing the leading stratum is only a counterfactual.
+2. **B.** The field document is not rewritten and clearing the leading stratum is only a counterfactual case.
 
 3. **C.** It is failure count times unit price and on the bad batch that product is 529 times 85 with no typed total.
 
-4. **D.** Quote         the table at 22 of 22 beside notes at 3 of 22 and the shift documents and do not call it clinical.
+4. **D.** Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical.
 
-5. **A.** Seven frames are produced and an unclear driver means the recommendation is not to contain a stratum.
+5. **A.** Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum.
 
 6. **B.** The name defaults to llama3.1:8b on the desktop runner and the cloud app stays deterministic.
 
-7. **C.** It       wants the recommendation and the effectiveness check and the slides are INV-303 on epic INV-6.
+7. **C.** It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6.
 
-8. **D.** Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection while the table hit 22 and notes hit 3.
+8. **D.** Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3.

@@ -59,6 +59,22 @@ def test_repeated_distractor_clause_fails_the_guesser_check():
         assert_guessers(items)
 
 
+def test_uniform_check_rejects_a_double_space():
+    item = {
+        "session": 1,
+        "prompt": "Why",
+        "choices": [
+            {"id": "a", "text": "The  generated view prints the planted token."},
+            {"id": "b", "text": "It hides the repository top from the tests."},
+            {"id": "c", "text": "It lowercases the model tag on this host."},
+            {"id": "d", "text": "The test runner blocks that view entirely."},
+        ],
+        "correct": "a",
+    }
+    with pytest.raises(SystemExit, match="double space"):
+        assert_uniform_options([item])
+
+
 def test_uniform_check_rejects_a_two_sentence_option():
     item = {
         "session": 1,

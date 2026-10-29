@@ -49,6 +49,11 @@ def _feature_clauses(text: str) -> int:
     return text.count(",") + text.count(";")
 
 
+def _visible(text: str) -> str:
+    """Length the browser shows. Runs of spaces collapse to one."""
+    return " ".join(text.split())
+
+
 def _median(values: list[int]) -> float:
     ordered = sorted(values)
     mid = len(ordered) // 2
@@ -60,7 +65,13 @@ def _median(values: list[int]) -> float:
 def assert_uniform_options(items: list[dict]) -> None:
     """Every option is one sentence, and lengths stay near the question median."""
     for item in items:
-        texts = [choice["text"].strip() for choice in item["choices"]]
+        raw = [choice["text"] for choice in item["choices"]]
+        for text in raw:
+            if "  " in text:
+                raise SystemExit(
+                    f"session {item['session']} option contains a double space: {text[:80]}"
+                )
+        texts = [_visible(text) for text in raw]
         for text in texts:
             if sentence_count(text) != 1:
                 raise SystemExit(
@@ -173,10 +184,10 @@ def guesser_probs(items: list[dict]) -> dict[str, dict[int, list[float]]]:
     out: dict[str, dict[int, list[float]]] = {name: {} for name in names}
     for session, questions in grouped.items():
         out["longest"][session] = [
-            _pick_expected(item, lambda choice: len(choice["text"])) for item in questions
+            _pick_expected(item, lambda choice: len(_visible(choice["text"]))) for item in questions
         ]
         out["shortest"][session] = [
-            _pick_expected(item, lambda choice: -len(choice["text"])) for item in questions
+            _pick_expected(item, lambda choice: -len(_visible(choice["text"]))) for item in questions
         ]
         out["most_sentences"][session] = [
             _pick_expected(item, lambda choice: sentence_count(choice["text"])) for item in questions

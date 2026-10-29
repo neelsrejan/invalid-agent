@@ -66,7 +66,7 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "The       generated view prints every stored field including a planted API token."
+            "text": "The generated view prints every stored field and also includes a planted API token."
           },
           {
             "id": "d",
@@ -95,7 +95,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "It is the three-sprint construction board and sprint 1 holds INV-101 through INV-109."
+            "text": "It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109."
           }
         ],
         "salt": "88a0929bc0363574",
@@ -108,7 +108,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Nothing    in this tag imports third-party libraries yet so the job skips those downloads."
+            "text": "Nothing in this tag imports third-party libraries yet so the job skips those extra downloads."
           },
           {
             "id": "b",
@@ -137,7 +137,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "It   accepts the project file sitting beside the scenarios directory or the package directory."
+            "text": "It accepts the project file sitting beside the scenarios directory or beside the package directory."
           },
           {
             "id": "c",
@@ -170,7 +170,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "It     raises an error because rules is unrecognized and must not fall through to a silent template."
+            "text": "It raises an error because rules is unrecognized and must not fall through to a silent template."
           }
         ],
         "salt": "8f5da9c3eef3b844",
@@ -183,7 +183,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Python    3.13 is the sole interpreter and the job injects a client token for the active client."
+            "text": "Python 3.13 is the sole interpreter and the job injects a client token for the active client."
           },
           {
             "id": "b",
@@ -225,7 +225,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Replacing     the pattern lets the ranked chart count valid rows which a stacked probability would have dropped."
+            "text": "Replacing the pattern lets the ranked chart count valid rows which a stacked probability would have dropped."
           }
         ],
         "salt": "5b5e70da3b1520de",
@@ -242,7 +242,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "The      analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo."
+            "text": "The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo."
           },
           {
             "id": "c",
@@ -263,7 +263,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The        revision flips when the bad batch starts so the cutover marks the batch rather than the gauge."
+            "text": "The revision flips when the bad batch starts so the cutover marks the batch rather than the gauge."
           },
           {
             "id": "b",
@@ -400,7 +400,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Valid     records are left out because an empty failure code must not count as a failure mode."
+            "text": "Valid records are left out because an empty failure code must not count as a failure mode."
           }
         ],
         "salt": "b07fdadfa4b089fc",
@@ -430,7 +430,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "It      writes the CSV into the issue description and a following step parses that description into records."
+            "text": "It writes the CSV into the issue description and a following step parses that description into records."
           }
         ],
         "salt": "704adf6e93902395",
@@ -480,7 +480,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The  guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts."
+            "text": "The guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts."
           }
         ],
         "salt": "8aac7c13409ac90b",
@@ -576,7 +576,7 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "One     httpx call is easier to mock and that call is skipped when the engine is deterministic."
+            "text": "One httpx call is easier to mock and that call is skipped when the engine is deterministic."
           },
           {
             "id": "d",
@@ -798,7 +798,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A  tiny local model is added and the job downloads it before the diagram check is allowed to execute."
+            "text": "A tiny local model is added and the job downloads it before the diagram check is allowed to execute."
           },
           {
             "id": "b",
@@ -828,7 +828,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The  export helper needs an extra browser library while the plotting path runs without that download."
+            "text": "The export helper needs an extra browser library while the plotting path runs without that download."
           },
           {
             "id": "b",
@@ -878,7 +878,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The disagreement hazard is removed on the second lap because release testing has already passed."
+            "text": "The disagreement hazard is removed on the second lap because release testing has already passed in the field."
           },
           {
             "id": "b",
@@ -907,7 +907,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "A    SIM prefix means the active site accepted the issue and returned that identifier to the client."
+            "text": "A SIM prefix means the active site accepted the issue and then returned that identifier to the client."
           },
           {
             "id": "c",
@@ -928,7 +928,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The client catches the failure and stores the exception class and saves the document without the token."
+            "text": "The client catches the failure and stores the exception class and saves the file without the token."
           },
           {
             "id": "b",
@@ -940,7 +940,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The   program deletes the schedule document because a failed push means the schedule is no longer valid."
+            "text": "The program deletes the schedule document because a failed push means the schedule is no longer valid."
           }
         ],
         "salt": "00af55c5ea95f202",
@@ -978,7 +978,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A  client project must already exist before any failure frequency is calculated from the grid."
+            "text": "A client project must already exist before any failure frequency is calculated from the grid."
           },
           {
             "id": "b",
@@ -1003,7 +1003,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Every      task including the first response is owned by the language model rather than by a named function."
+            "text": "Every task including the first response is owned by the language model rather than by a named function."
           },
           {
             "id": "b",
@@ -1015,7 +1015,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays put."
+            "text": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays."
           }
         ],
         "salt": "2f3a78be0caab485",
@@ -1095,7 +1095,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Switch  the leading driver to software because the release remark passed and the grid should follow it."
+            "text": "Switch the leading driver to software because the release remark passed and the grid should follow it."
           }
         ],
         "salt": "267f892434654159",
@@ -1108,7 +1108,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The   small local model types the percent on the hosted screen and the wording pastes that text unchanged."
+            "text": "The small local model types the percent on the hosted screen and the wording pastes that text unchanged."
           },
           {
             "id": "b",
@@ -1187,7 +1187,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "Every      task stays in progress until the final deck is written including the earliest task on the schedule."
+            "text": "Every task stays in progress until the final deck is written including the earliest task on the schedule."
           },
           {
             "id": "c",
@@ -1300,7 +1300,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The        plotting library simulates a cured program and rewrites the scenario document with the new frequency."
+            "text": "The plotting library simulates a cured program and rewrites the scenario document with the new frequency."
           }
         ],
         "salt": "e0bdbe9e62bf59fc",
@@ -1443,15 +1443,15 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 where no driver was named."
+            "text": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named."
           },
           {
             "id": "b",
-            "text": "Both      approaches were perfect on all 22 documents so an opening remark is as accurate as the table."
+            "text": "Both approaches were perfect on all 22 documents so an opening remark is as accurate as the table."
           },
           {
             "id": "c",
-            "text": "The  memo stores no counts and the perfect cell is typed into the opening readme by hand."
+            "text": "The memo stores no counts and the perfect cell is typed into the opening readme by hand."
           },
           {
             "id": "d",
@@ -1468,11 +1468,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The  table ordering is mistaken on that scenario and the note ordering is the number a reader should quote."
+            "text": "The table ordering is mistaken on that scenario and the note ordering is the number a reader should quote."
           },
           {
             "id": "b",
-            "text": "The batch bump stays under the lift gate so withholding is correct and notes still name the reagent batch."
+            "text": "The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch."
           },
           {
             "id": "c",
@@ -1526,11 +1526,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "The      smaller llama tag won the comparison and that number is confidential so it stays out of the memo."
+            "text": "The smaller llama tag won the comparison and that number is confidential so it stays out of the memo."
           },
           {
             "id": "d",
-            "text": "Neither llama tag was installed and the table compares two ordering policies on the deterministic engine."
+            "text": "No llama tag was installed and the table compares two ordering policies on the deterministic engine."
           }
         ],
         "salt": "7890e6fb3080a6c5",
@@ -1543,11 +1543,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The parser treats an unquoted true as a boolean and the builder looks up that same string in the map."
+            "text": "The parser treats an unquoted true as a boolean and the builder looks up that string in the map."
           },
           {
             "id": "b",
-            "text": "The    marks around true force the batch id to be parsed as a float which is what the builder expects."
+            "text": "The marks around true force the batch id to be parsed as a float which is what the builder expects."
           },
           {
             "id": "c",
@@ -1572,7 +1572,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "The    hidden expected label stays out of ordering because that block is the grade and not an input."
+            "text": "The hidden expected label stays out of ordering because that block is the grade and not an input."
           },
           {
             "id": "c",
@@ -1601,11 +1601,11 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "An identifier is stripped only when its exact text is already in the fact bag so 2.4.0 must be placed there."
+            "text": "An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there."
           },
           {
             "id": "d",
-            "text": "The    schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag."
+            "text": "The schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag."
           }
         ],
         "salt": "57bcc0bac62c18fd",
@@ -1622,7 +1622,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "All    22 documents are sent to an active llama server and the job fails if that server is down."
+            "text": "All 22 documents are sent to an active llama server and the job fails if that server is down."
           },
           {
             "id": "c",
@@ -1630,7 +1630,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "The entry runs under limit 5 with a smoke flag and fails when top choice or fidelity is missed."
+            "text": "The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed."
           }
         ],
         "salt": "15c51f71a75472dc",
@@ -1648,11 +1648,11 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "The lap note is not the ending and the wrap-up confirms the last sections then builds the slides."
+            "text": "The lap note is not the ending and the wrap-up confirms the last sections and builds the slides."
           },
           {
             "id": "b",
-            "text": "The   fourth lap deletes the schedule and starts the opening step again from a cleared guess list."
+            "text": "The fourth lap deletes the schedule and starts the opening step again from a cleared guess list."
           },
           {
             "id": "c",
@@ -1677,7 +1677,7 @@ window.QUIZZES = {
           },
           {
             "id": "b",
-            "text": "The     field document is not rewritten and clearing the leading stratum is only a counterfactual."
+            "text": "The field document is not rewritten and clearing the leading stratum is only a counterfactual case."
           },
           {
             "id": "c",
@@ -1735,7 +1735,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Quote         the table at 22 of 22 beside notes at 3 of 22 and the shift documents and do not call it clinical."
+            "text": "Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical."
           }
         ],
         "salt": "21ae2bfc46653180",
@@ -1748,7 +1748,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Seven frames are produced and an unclear driver means the recommendation is not to contain a stratum."
+            "text": "Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum."
           },
           {
             "id": "b",
@@ -1806,7 +1806,7 @@ window.QUIZZES = {
           },
           {
             "id": "c",
-            "text": "It       wants the recommendation and the effectiveness check and the slides are INV-303 on epic INV-6."
+            "text": "It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6."
           },
           {
             "id": "d",
@@ -1835,7 +1835,7 @@ window.QUIZZES = {
           },
           {
             "id": "d",
-            "text": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection while the table hit 22 and notes hit 3."
+            "text": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3."
           }
         ],
         "salt": "94aec47c194e385b",
