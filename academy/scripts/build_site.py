@@ -22,6 +22,7 @@ sys.path.insert(0, str(ACADEMY / "content"))
 
 from bank import QUIZZES  # noqa: E402
 from course import SESSIONS  # noqa: E402
+from pin import PIN_SHORT, PIN_TAG, assert_tag  # noqa: E402
 from quiz_checks import assert_guessers, assert_uniform_options  # noqa: E402
 
 REPO = "https://github.com/neelsrejan/invalid-agent"
@@ -71,6 +72,14 @@ def load_clips(session: int) -> list[dict]:
         spec = yaml.safe_load(script.read_text())
         raw = str(spec["file"]).replace("\\", "/")
         path = repo_path(raw, session) if "snapshots/" in raw else raw
+        spans = []
+        for segment in spec.get("segments") or []:
+            start_s, end_s = str(segment["lines"]).split("-", 1)
+            spans.append((int(start_s), int(end_s)))
+        if not spans:
+            raise SystemExit(f"{script.name} has no line ranges")
+        line_start = min(start for start, _end in spans)
+        line_end = max(end for _start, end in spans)
         seconds = clip_seconds(session, script.stem)
         clips.append(
             {
@@ -80,7 +89,7 @@ def load_clips(session: int) -> list[dict]:
                 "path": path,
                 "seconds": seconds,
                 "src": f"videos/session-{session}/{script.stem}.mp4",
-                "blob": f"{REPO}/blob/main/{path}",
+                "blob": f"{REPO}/blob/{PIN_TAG}/{path}#L{line_start}-L{line_end}",
             }
         )
     if not clips:
@@ -265,7 +274,7 @@ def home_body() -> str:
   </div>
 </div>
 <div class="cards">
-  <a class="link-card" id="link-github" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Clips cite the files on main.</p></a>
+  <a class="link-card" id="link-github" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Clips cite <code>{PIN_TAG}</code> ({PIN_SHORT}).</p></a>
   <a class="link-card" id="link-jira" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
   <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
 </div>
@@ -317,7 +326,7 @@ def session_body(session: dict, clips: list[dict]) -> str:
 <video controls preload="metadata" src="{html.escape(clip['src'])}">
 <a href="{html.escape(clip['src'])}">Download clip {i}</a>
 </video>
-<p class="meta">{clock(clip['seconds'])} · Andrew · <a href="{html.escape(clip['blob'])}">{html.escape(clip['path'])}</a> on <code>main</code></p>
+<p class="meta">{clock(clip['seconds'])} · Andrew · <a href="{html.escape(clip['blob'])}">{html.escape(clip['path'])}</a> at <code>{PIN_TAG}</code> (<code>{PIN_SHORT}</code>)</p>
 </article>"""
         )
     files = []
@@ -329,8 +338,8 @@ def session_body(session: dict, clips: list[dict]) -> str:
         files.append(f'<li><a href="{html.escape(clip["blob"])}"><code>{html.escape(clip["path"])}</code></a></li>')
     trace = md(session["trace"])
     practice = md(session["practice"])
-    tree = f"{REPO}/tree/main"
-    trace_blob = f"{REPO}/blob/main/docs/sessions/session-{n}/LOGIC_TRACE.md"
+    tree = f"{REPO}/tree/{PIN_TAG}"
+    trace_blob = f"{REPO}/blob/{PIN_TAG}/docs/sessions/session-{n}/LOGIC_TRACE.md"
     lock = ""
     if n > 1:
         lock = f"""
@@ -351,11 +360,11 @@ def session_body(session: dict, clips: list[dict]) -> str:
 <h2>Read first</h2>
 <ul>{reads}</ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>{PIN_TAG}</code> (<code>{PIN_SHORT}</code>).</p>
 {''.join(clip_html)}
 <h2>How this session connects</h2>
 <div class="prose">{trace}</div>
-<p class="note">The build diary is <a href="{html.escape(trace_blob)}">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="{html.escape(trace_blob)}">LOGIC_TRACE.md</a> at <code>{PIN_TAG}</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
 <p><a href="{tree}">Browse the repository</a></p>
 <ul>{''.join(files)}</ul>
@@ -426,7 +435,7 @@ def architecture_body() -> str:
 </div>
 <h2>Where to look</h2>
 <div class="cards">
-  <a class="link-card" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>The clips cite these files on main.</p></a>
+  <a class="link-card" href="{REPO}/tree/{PIN_TAG}"><div class="label">Repository</div><strong>GitHub</strong><p>The clips cite <code>{PIN_TAG}</code> ({PIN_SHORT}).</p></a>
   <a class="link-card" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
   <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
 </div>
@@ -434,6 +443,7 @@ def architecture_body() -> str:
 
 
 def main() -> None:
+    assert_tag()
     if len(QUIZZES) != 9:
         raise SystemExit("expected 9 quizzes")
     payload = quiz_payload()

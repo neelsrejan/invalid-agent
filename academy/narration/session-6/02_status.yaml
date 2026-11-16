@@ -8,17 +8,21 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 20-26
+  anchor: 'def rag_color(exceeds_spec: bool, week: int) -> str:'
   say: Green requires the rate to be back inside the spec. Red is an open breach before the containment
     week. Amber means containment is on the plan and the effect has not been observed. The color is a
     rule about the rate and the week, not a sentence the model picks.
 - lines: 32-41
+  anchor: 'def _customer_action(week: int) -> str:'
   say: The customer actions are words. They do not name the cause type and they do not say the root cause
     is confirmed. A later week can talk about the lot under review without turning the note into a finding.
 - lines: 100-144
+  anchor: 'def build_status_facts(state: CaseState) -> dict[str, Any]:'
   say: The facts dictionary is the only number source for the three notes. Cost is the invalid count times
     the unit cost from the scenario, computed here, not typed into the template. Rounded percents are
     what the guard will accept.
 - lines: 146-169
+  anchor: 'def status_node(state: CaseState) -> dict[str, Any]:'
   say: status_node narrates each audience, then runs the guard again. A new number fails the note. The
     decision log keeps one row per week, replaced if that week is written twice. The three strings are
     what get written to disk.

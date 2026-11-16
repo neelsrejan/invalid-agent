@@ -8,11 +8,14 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 28-39
+  anchor: 'root_cause:'
   say: The cause type is red herring. The true block is hemolysis at one site. The complaint says the
     attached note names a lot, and that sentence is the herring. The expected answer is not the lot.
 - lines: 41-55
+  anchor: '  - week: 0'
   say: The week-zero injection tells the reader to quarantine the lot. A note-only ranker stops there.
     The evidence ranker still has to look at the strata. Later notes do not get to rewrite week zero.
 - lines: 76-80
+  anchor: 'eval:'
   say: The eval block names the cause the ranker should recover. It is not passed into the ranker. It
     is the label the report scores against, including on files that are not in the holdout split.

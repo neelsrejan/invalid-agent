@@ -8,13 +8,16 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 27-45
+  anchor: 'def _walk_numbers(obj: Any, found: set[float]) -> None:'
   say: Walking the facts collects the raw value and, for a proportion between zero and one, the percent
     form as well. That is why a sentence may say 3.67 percent when the stored rate is the matching proportion,
     and why a nearby invention still fails.
 - lines: 60-72
+  anchor: 'def allowed_numbers(facts: Any) -> set[float]:'
   say: Allowed numbers are that walk. The tolerance is tighter on small values than on large ones, so
     a rounded percent can match and a different percent cannot. Identifiers are not added to this set.
 - lines: 74-88
+  anchor: 'def check_narrative(text: str, facts: Any) -> FidelityResult:'
   say: check_narrative strips dates, removes identifier strings so a lot id cannot be reused as a rate,
     and then every remaining number must sit near an allowed value. A miss returns not ok. Callers treat
     that as a failed draft, not as a warning to ignore.

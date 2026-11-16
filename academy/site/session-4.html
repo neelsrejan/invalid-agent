@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>After the week-0 run, open out/fishbone.md, out/five_whys.md, and out/capa8d.md.</li><li>Find the later QA injection in scenarios/bad_lot.yaml and notice week 0 is not allowed to cite it.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 4 · Fishbone, five Whys, and the 8D record</h3>
 <div class="overview"><h4>Architecture</h4><p>rca.py turns the ranked hypothesis into a 6M fishbone, a five-step Why chain, and an 8D record with DMAIC labels. Every Why step needs a citation that exists in the catalog. A missing citation raises before markdown is written. Injections are visible only once their week has arrived.</p></div>
 <video controls preload="metadata" src="videos/session-4/01_rca.mp4">
 <a href="videos/session-4/01_rca.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:33 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/rca.py">src/invalid_agent/nodes/rca.py</a> on <code>main</code></p>
+<p class="meta">1:33 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/rca.py#L68-L317">src/invalid_agent/nodes/rca.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 4 · A broken chain never becomes a file</h3>
 <div class="overview"><h4>Architecture</h4><p>The RCA tests are the rule, not a tour of the markdown. A Why with no citation is an error. An unknown citation id is an error. On the walkthrough lot the top bone is material and the chain names that lot. The tests do not call Jira or a model.</p></div>
 <video controls preload="metadata" src="videos/session-4/02_test_rca.mp4">
 <a href="videos/session-4/02_test_rca.mp4">Download clip 2</a>
 </video>
-<p class="meta">0:40 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/tests/test_rca.py">tests/test_rca.py</a> on <code>main</code></p>
+<p class="meta">0:40 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/tests/test_rca.py#L17-L53">tests/test_rca.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>The record is a 6M fishbone, a five-step Why chain, and an 8D/CAPA with DMAIC labels. Every step cites a catalog id. On the walkthrough lot the chain stops at that lot. Injections are filtered by week, so a note that has not arrived yet cannot be evidence.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-4/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-4/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/rca.py"><code>src/invalid_agent/nodes/rca.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/tests/test_rca.py"><code>tests/test_rca.py</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/rca.py#L68-L317"><code>src/invalid_agent/nodes/rca.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/tests/test_rca.py#L17-L53"><code>tests/test_rca.py</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>At week 0, name the injection the Why chain is not allowed to cite yet. Say why a missing citation is an error rather than a warning that still writes the file.</p></div>
 <h2>Quiz</h2>

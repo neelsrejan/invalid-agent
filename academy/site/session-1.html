@@ -38,28 +38,28 @@
 <h2>Read first</h2>
 <ul><li>PRD.md — the complaint, the 98 percent validity promise, and the list of work this repo will not do.</li><li>docs/jira/backlog.json — the build board. Sprint 1 is INV-101 through INV-109. It is not the investigation sync.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 1 · Settings and the secret boundary</h3>
 <div class="overview"><h4>Architecture</h4><p>config.py is the only place that reads the Jira token and the openFDA key. Printing the settings object shows a redacted view, so a log cannot become a leak. The invalid-rate cap is calculated from the 98 percent validity promise, and a missing or unknown model backend falls back to deterministic. That is the path CI runs.</p></div>
 <video controls preload="metadata" src="videos/session-1/01_config.mp4">
 <a href="videos/session-1/01_config.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:22 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/config.py">src/invalid_agent/config.py</a> on <code>main</code></p>
+<p class="meta">1:22 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/config.py#L14-L119">src/invalid_agent/config.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 1 · CI proves the repo, not the model</h3>
 <div class="overview"><h4>Architecture</h4><p>CI is the contract that a stranger can install the package and run the tests. It does not download a model, it does not hold a Jira token, and it does not call Ollama. A second job rebuilds the learning site and fails if the committed pages drift from the generator.</p></div>
 <video controls preload="metadata" src="videos/session-1/02_ci.mp4">
 <a href="videos/session-1/02_ci.mp4">Download clip 2</a>
 </video>
-<p class="meta">0:48 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/.github/workflows/ci.yml">.github/workflows/ci.yml</a> on <code>main</code></p>
+<p class="meta">0:48 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/.github/workflows/ci.yml#L1-L39">.github/workflows/ci.yml</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>Settings is the only place that reads the Jira token and the openFDA key. The printed object hides them. The invalid-rate cap is calculated from the validity promise so the two limits cannot drift. CI installs the package and runs pytest. It does not download a model and it does not post to Jira.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-1/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-1/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/config.py"><code>src/invalid_agent/config.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/.github/workflows/ci.yml"><code>.github/workflows/ci.yml</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/config.py#L14-L119"><code>src/invalid_agent/config.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/.github/workflows/ci.yml#L1-L39"><code>.github/workflows/ci.yml</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>On a private branch, run pytest before you change anything. Then write two sentences: why a printed settings object must not contain the token, and why docs/jira/backlog.json is a different artifact from the investigation issues a later session will write. Do not merge the branch.</p></div>
 <h2>Quiz</h2>

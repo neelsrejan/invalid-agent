@@ -8,10 +8,12 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 1-26
+  anchor: 'name: CI'
   say: The test job runs on two Python versions. It installs the package with the dev extra and runs pytest,
     then a five-scenario slice of the eval on the deterministic backend. There is no secret in the workflow.
     A green run means the repo works without an account.
 - lines: 28-39
+  anchor: '  academy-site:'
   say: The academy job installs the page generator and rebuilds the HTML. It fails if the site or the
     quiz answer key drifts from what the script writes. It does not render the videos. Those are produced
     locally, because the speech service is not part of CI.

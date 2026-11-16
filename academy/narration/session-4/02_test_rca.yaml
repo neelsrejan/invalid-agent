@@ -8,9 +8,11 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 17-31
+  anchor: 'def test_why_without_a_citation_is_rejected():'
   say: Two tests plant a failure. One step has no citations. Another cites an id that was never in the
     catalog. Both must raise. A warning that still wrote the file would be the wrong contract.
 - lines: 33-53
+  anchor: 'def test_bad_lot_fishbone_ranks_material_and_whys_end_on_the_lot():'
   say: The walkthrough scenario is checked as a record, not as a screenshot. Material ranks first, the
     chain ends on the lot, and the citations resolve. That is the behavior a later plan is allowed to
     trust.

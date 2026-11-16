@@ -8,18 +8,22 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 13-21
+  anchor: NAVY = RGBColor(0x0B, 0x3A, 0x5B)
   say: The palette is the same navy and teal as the dashboard. The deck is a real PowerPoint file, not
     an image of one, and not a slide a model composed.
 - lines: 80-111
+  anchor: 'def write_deck(path: Path, facts: dict[str, Any]) -> Path:'
   say: The title slide carries the scenario and the simulation banner. The banner is the same sentence
     as the memo and the Streamlit page. A reader who only opens the deck still sees that this is not a
     clinical result.
 - lines: 150-188
+  anchor: '    cause = _blank(prs)'
   say: The cause slide prints the observed rate and the projected rate, then the label that says the projection
     is not observed follow-up. The picture is the p-chart from the file, not a chart of the counterfactual.
     The options slide contains only when a single stratum cleared the bar, and it does not invent a second
     cost.
 - lines: 190-216
+  anchor: '    recommend = _blank(prs)'
   say: The recommendation slide uses the sentence close-out already computed. The ask is to approve that
     recommendation or send the case back. The last box repeats the warning not to treat the projected
     rate as follow-up.

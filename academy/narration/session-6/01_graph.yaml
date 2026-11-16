@@ -8,14 +8,17 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 25-38
+  anchor: 'def advance_week(state: CaseState) -> dict[str, int]:'
   say: Advancing the week adds one to the counter and nothing else. The decision log, the scenario, and
     the metrics stay on the state. After the status note, the route stops, advances, or, at week four,
     goes to close-out. A one-week run does not spin.
 - lines: 40-60
+  anchor: 'def build_graph():'
   say: The edges are the control flow. Triage leads to plan, plan to the record, the record to status.
     Status either ends, advances back to plan, or closes out. A loop hidden in the command line would
     have done the work and hidden the decision.
 - lines: 97-121
+  anchor: 'def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict[str, Any]:'
   say: run_case always starts at week zero and walks forward to the requested week. It writes the memo,
     the fidelity file, and the three quality records. Close-out, when it runs, adds the deck. The frame
     is regenerated inside the nodes from the seed.

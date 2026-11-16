@@ -8,14 +8,17 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 24-86
+  anchor: 'def build_closeout_facts(state: CaseState) -> dict[str, Any]:'
   say: The facts rebuild the rate, the projection, and the cost from the scenario seed. Cost is the invalid
     count times the unit cost. The effectiveness sentence keeps the label that follow-up was not observed.
     The frame is not one of the fields that gets stored.
 - lines: 87-147
+  anchor: 'def render_closeout(facts: dict[str, Any]) -> str:'
   say: The close-out note is a template filled from those facts. It does not ask a model for a new percentage.
     The recommendation depends on whether a single cause cleared the bar. No single cause does not become
     a quarantine.
 - lines: 148-167
+  anchor: 'def closeout_node(state: CaseState) -> dict[str, Any]:'
   say: The node runs the guard and raises on a miss. It writes the note, writes the deck from the same
     facts, and replaces the preliminary prevention and closure text. The deck path is the only new artifact
     path on the state.

@@ -8,14 +8,17 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 36-48
+  anchor: 'def _dashboard_model(rules_only: bool) -> str:'
   say: The page chooses a model name in one place. An explicit LLM_MODEL wins. Rules-only does not call
     a model. With the toggle off and no model set, a local run asks for the smaller Llama 3.2 tag. The
     hosted app does not take that path.
 - lines: 50-64
+  anchor: 'def _run(scenario_path: str, week: int, backend: str, model: str) -> dict:'
   say: The run sets the backend for the call and restores the previous environment afterwards, so a cached
     dashboard run cannot pin a model for the next command in the same process. The cache key is the scenario,
     the week, the backend, and the model.
 - lines: 70-117
+  anchor: 'def main() -> None:'
   say: The banner is the first thing on the page, and the title restates the 98 percent promise. The week
     slider and the rules-only toggle are the controls. Turning the toggle off asks Ollama and still falls
     back to the template if that model is not running. The tiles read the case result.

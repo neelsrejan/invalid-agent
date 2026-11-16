@@ -8,13 +8,16 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 54-69
+  anchor: 'class DryRunJira:'
   say: The dry-run client keeps a local mirror of the epic and the stories. Keys are minted with a SIM
     prefix so a rehearsal file cannot be mistaken for project INV on the build board. Sync reads the file,
     upserts, and writes it back.
 - lines: 71-111
+  anchor: 'class LiveJira:'
   say: The live client knows the REST shape and posts only when sync is called. A failure still leaves
     the local file, with the error recorded, so a demo does not lose the plan because the network failed.
     The token is not printed by the object's repr.
 - lines: 114-118
+  anchor: 'def make_client(settings: Settings, path: Path, transport: Transport | None = None):'
   say: make_client is the switch. The live client is constructed only when jira_enabled is true. Tests
     pass a fake transport and never need a token. CI takes this dry-run path.

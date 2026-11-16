@@ -82,7 +82,7 @@ The repo runs with no keys.
 - The panel, the customers, and the field file are synthetic. openFDA MAUDE, the Mendeley HIL DOI, and Zenodo CBC are cited in `DATA_LICENSES.md` and are not redistributed.
 - The projection clears the leading stratum on the same file. It is not observed follow-up. `bad_lot` never turns Green, because the file is not rewritten.
 - Laptop snapshot folders under `C:\Users\neels\Grok_Bot\Project_Agent\` are not created here. Annotated tags `session-1` through `session-9` are the snapshots. Check out the tag and copy the tree.
-- Narrated MP4s are the academy on GitHub Pages, not files in `main`. `walkthroughs/session-N.yaml` is still the beat list. `academy/narration/` is the full script.
+- Narrated MP4s are the academy on GitHub Pages, not files in `main`. Each session is two short clips pinned at tag `academy-v2` (`d057d3e`), not a line-by-line reading of every file. `academy/narration/` is that script. The logic traces under `docs/sessions/` remain the build diary.
 - No agent swarm, no extra integrations, no fine-tune.
 
 ## Layout
@@ -91,4 +91,4 @@ Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé 
 
 ## Academy
 
-`academy/` is the static course: an architecture note, a short narrated clip, a session summary, and an 8-question quiz on the boundaries. Pass at 80% to open the next session. Videos are published on the `gh-pages` branch so a clone of `main` stays light. See `academy/README.md`.
+`academy/` is the static course: two short clips a session, an architecture note, a session summary, and an 8-question quiz on the boundaries. The clips and the line links are pinned at tag `academy-v2` (`d057d3e`) so a later edit to main cannot move them. Pass at 80% to open the next session. Videos are published on the `gh-pages` branch so a clone of `main` stays light. See `academy/README.md`.

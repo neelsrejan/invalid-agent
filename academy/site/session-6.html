@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>Run the walkthrough through week 3 and compare out/week0 with out/week3.</li><li>Read the customer note and the internal note for the same week side by side.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 6 · The week is a graph edge</h3>
 <div class="overview"><h4>Architecture</h4><p>The case is one graph. Triage runs once, then plan, the quality record, and a status note repeat until the requested week. The field file does not change between weeks. Week four continues into close-out. The dataframe is not stored on the graph state.</p></div>
 <video controls preload="metadata" src="videos/session-6/01_graph.mp4">
 <a href="videos/session-6/01_graph.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:06 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/graph.py">src/invalid_agent/graph.py</a> on <code>main</code></p>
+<p class="meta">1:06 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/graph.py#L25-L121">src/invalid_agent/graph.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 6 · Three audiences, one rate</h3>
 <div class="overview"><h4>Architecture</h4><p>Customer, internal, and leadership notes share one rate line. The customer note does not state a cause as fact. The color is red, amber, or green, which the code calls RAG. It is not a retrieval index. The walkthrough file is not rewritten, so that case does not turn green.</p></div>
 <video controls preload="metadata" src="videos/session-6/02_status.mp4">
 <a href="videos/session-6/02_status.mp4">Download clip 2</a>
 </video>
-<p class="meta">1:15 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/status.py">src/invalid_agent/nodes/status.py</a> on <code>main</code></p>
+<p class="meta">1:15 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/status.py#L20-L169">src/invalid_agent/nodes/status.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>The loop is a graph edge back to the plan. Triage does not repeat, and the field file does not change. The three notes share a rate line. The customer copy does not state a cause. Leadership adds cost and the ask. The walkthrough stays over spec, so the color does not turn green.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-6/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-6/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/graph.py"><code>src/invalid_agent/graph.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/status.py"><code>src/invalid_agent/nodes/status.py</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/graph.py#L25-L121"><code>src/invalid_agent/graph.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/status.py#L20-L169"><code>src/invalid_agent/nodes/status.py</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>Compare the customer note with the internal note for the same week. Name the fact they must share, and name the conclusion the customer note is not allowed to state.</p></div>
 <h2>Quiz</h2>

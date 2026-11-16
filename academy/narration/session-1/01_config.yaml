@@ -9,15 +9,18 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 14-23
+  anchor: PROMISED_VALIDITY = 0.98
   say: The two spec constants are one promise. Ninety-eight percent valid means the invalid rate stays
     at or under two percent, and the cap is computed so the two cannot be edited apart. The default local
     model tag is Llama 3.1 8B. The smaller tag is only a suggestion for a laptop. Hosted Streamlit does
     not use either one.
 - lines: 43-94
+  anchor: 'class Settings:'
   say: Settings is frozen after it loads. Jira turns on only when the site, the email, and the token are
     all present. Two out of three stays off. The redacted view masks the token and the openFDA key, and
     the printed form of the object uses that view. The raw token is not interpolated into the string.
 - lines: 96-119
+  anchor: 'def load_settings() -> Settings:'
   say: load_settings reads the environment. Friendly names such as rules-only become deterministic, and
     an unknown name does too, so a typo on a demo falls back to the template instead of crashing. The
     longer Jira variable names win when both aliases are set. Nothing in this function opens a socket.

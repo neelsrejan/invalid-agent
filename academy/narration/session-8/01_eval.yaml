@@ -8,17 +8,21 @@ rate: +0%
 pause: 0.35
 segments:
 - lines: 47-57
+  anchor: 'def keyword_cause(scenario: dict[str, Any], week: int = 0) -> str:'
   say: The keyword policy scans notes that have already arrived and returns the first cause word it finds.
     It never opens the table. On a red herring it repeats the note.
 - lines: 70-97
+  anchor: 'def score_scenario(scenario: dict[str, Any]) -> dict[str, Any]:'
   say: The evidence score generates the frame and ranks hypotheses. Top one is the first cause. Top three
     is membership in the first three. The expected label comes from the scenario, and the ranker is not
     given that block. A second stratum that also cleared the bar is recorded, not hidden.
 - lines: 107-133
+  anchor: 'def run_graph_checks(scenario_name: str, out_dir: Path) -> dict[str, Any]:'
   say: The week-zero graph check reuses the case run. It records whether the fidelity guard passed, whether
     every Why citation resolves, and whether the escalate flag matches the spec comparison. Latency is
     the time of that run, not a model call.
 - lines: 136-153
+  anchor: 'def _model_section(backend: str) -> str:'
   say: The model section names the local default, the hosted rules-only path, and the smaller tag. It
     then says this command's table is two ranking policies. It refuses to print an accuracy number for
     a model that did not run.

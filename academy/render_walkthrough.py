@@ -290,15 +290,45 @@ def render_overview(title, text, idx, total, path):
     img.save(path)
 
 
-def resolve_code(script: Path, spec: dict) -> Path:
-    """Find the file the clip walks. Narration cites paths on the repo, not a tag snapshot."""
-    raw = Path(spec["file"])
-    root = Path(__file__).resolve().parents[1]
-    candidates = [raw, (script.parent / raw), (root / raw)]
-    for candidate in candidates:
-        if candidate.is_file():
-            return candidate.resolve()
-    raise SystemExit(f"code file not found: {spec['file']}")
+def resolve_code(script: Path, spec: dict) -> tuple[str, str]:
+    """Return (filename, source) from tag academy-v2, not the working tree."""
+    rel = str(spec["file"]).replace("\\", "/")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from pin import PIN_TAG, pinned_text
+
+    try:
+        text = pinned_text(rel)
+    except SystemExit:
+        raw = Path(rel)
+        root = Path(__file__).resolve().parents[1]
+        for candidate in (raw, script.parent / raw, root / raw):
+            if candidate.is_file():
+                raise SystemExit(
+                    f"{script.name} must be checked against {PIN_TAG}, and that object is missing for {rel}"
+                )
+        raise
+    return Path(rel).name, text
+
+
+def assert_anchors(script: Path, spec: dict, code: str) -> None:
+    rows = code.splitlines()
+    for segment in spec.get("segments") or []:
+        if segment.get("overview"):
+            continue
+        anchor = segment.get("anchor")
+        lines = segment.get("lines", segment.get("range"))
+        if not anchor or lines is None:
+            raise SystemExit(f"{script.name} segment {lines!r} is missing an anchor")
+        start, end = parse_range(lines)
+        if start < 1 or end > len(rows) or start > end:
+            raise SystemExit(f"{script.name}: line range {start}-{end} outside 1..{len(rows)}")
+        actual = rows[start - 1]
+        if actual != anchor:
+            raise SystemExit(
+                f"{script.name} {start}-{end} does not match the pinned file.\n"
+                f"  anchor: {anchor!r}\n"
+                f"  file:   {actual!r}"
+            )
 
 
 def overview_text(spec: dict) -> str:
@@ -310,11 +340,11 @@ def overview_text(spec: dict) -> str:
 
 def render(script: Path, out: Path, voice: str | None = None, keep: bool = False) -> dict:
     spec = (json.loads if script.suffix == ".json" else yaml.safe_load)(script.read_text())
-    code_path = resolve_code(script, spec)
-    code = code_path.read_text()
+    code_name, code = resolve_code(script, spec)
+    assert_anchors(script, spec, code)
     nlines = len(code.splitlines())
     cfg = {
-        "title": spec.get("title", code_path.name)[:110],
+        "title": spec.get("title", code_name)[:110],
         "voice": voice or spec.get("voice", "en-US-AndrewNeural"),
         "rate": spec.get("rate", "+0%"),
         "style": spec.get("style", "monokai"),
@@ -326,7 +356,7 @@ def render(script: Path, out: Path, voice: str | None = None, keep: bool = False
         # Academy standard. A script may not silently switch voices.
         print(f"overriding voice {cfg['voice']} -> en-US-AndrewNeural", file=sys.stderr)
         cfg["voice"] = "en-US-AndrewNeural"
-    lines = tokenize(code, code_path.name, cfg["style"])
+    lines = tokenize(code, code_name, cfg["style"])
     segs = spec["segments"]
     work = Path(tempfile.mkdtemp(prefix="wt_"))
     lh = int(cfg["font_size"] * 1.45)
