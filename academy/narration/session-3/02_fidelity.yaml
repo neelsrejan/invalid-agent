@@ -1,0 +1,20 @@
+title: Session 3 · A number must already exist
+file: src/invalid_agent/guards/numeric_fidelity.py
+overview: The fidelity guard sits between any prose and the reader. Triage, the quality record, the status
+  notes, and close-out all pass through it. It does not compute rates. It rejects a number that is not
+  already in the facts, which is why a model may rewrite wording and may not invent a percentage.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 27-45
+  say: Walking the facts collects the raw value and, for a proportion between zero and one, the percent
+    form as well. That is why a sentence may say 3.67 percent when the stored rate is the matching proportion,
+    and why a nearby invention still fails.
+- lines: 60-72
+  say: Allowed numbers are that walk. The tolerance is tighter on small values than on large ones, so
+    a rounded percent can match and a different percent cannot. Identifiers are not added to this set.
+- lines: 74-88
+  say: check_narrative strips dates, removes identifier strings so a lot id cannot be reused as a rate,
+    and then every remaining number must sit near an allowed value. A miss returns not ok. Callers treat
+    that as a failed draft, not as a warning to ignore.

@@ -1,0 +1,26 @@
+title: Session 2 · The YAML is the cause
+file: src/invalid_agent/sim/generate.py
+overview: generate.py turns a scenario file into one seeded table. The YAML names the cause, the calendar,
+  and the injections. The printed invalid rate is an output of this module, not a number stored in the
+  file. The language model is not called.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 36-63
+  say: load_scenario is YAML in and a dictionary out. Levels may be a plain id or a calendar with a start
+    day, an end day, and a weight. That calendar is how a lot enters distribution without a special case
+    in the sampler.
+- lines: 97-164
+  say: The cause function is the ground truth. It redraws only the rows in its mask, so the baseline and
+    the cause are not stacked into one probability. A bad lot, a drifting instrument, heat, hemolysis,
+    a flat rate, and a red herring are different masks. The misleading sentence in a herring stays in
+    the YAML for a later reader to abuse. This function does not rank a hypothesis.
+- lines: 165-206
+  say: generate builds the horizon from the seed. The same file always produces the same rows. Site, instrument,
+    lot, software, and operator are separate draws, so a lot effect can be told apart from an instrument.
+    The scenario id is stored on the frame. The frame itself is not kept on the case graph.
+- lines: 207-230
+  say: summarize prints the rate, the interval, the strata, the chart, and the Pareto by calling those
+    modules. It does not compute a second rate of its own. If the printout and the YAML disagree, the
+    printout is the output and the YAML is the input.

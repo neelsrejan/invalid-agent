@@ -1,0 +1,17 @@
+title: Session 1 · CI proves the repo, not the model
+file: .github/workflows/ci.yml
+overview: CI is the contract that a stranger can install the package and run the tests. It does not download
+  a model, it does not hold a Jira token, and it does not call Ollama. A second job rebuilds the learning
+  site and fails if the committed pages drift from the generator.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 1-26
+  say: The test job runs on two Python versions. It installs the package with the dev extra and runs pytest,
+    then a five-scenario slice of the eval on the deterministic backend. There is no secret in the workflow.
+    A green run means the repo works without an account.
+- lines: 28-39
+  say: The academy job installs the page generator and rebuilds the HTML. It fails if the site or the
+    quiz answer key drifts from what the script writes. It does not render the videos. Those are produced
+    locally, because the speech service is not part of CI.

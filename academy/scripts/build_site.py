@@ -54,21 +54,33 @@ def repo_path(file_field: str, session: int) -> str:
     return Path(text).name
 
 
+def clip_overview(spec: dict) -> str:
+    overview = spec.get("overview") or ""
+    if isinstance(overview, dict):
+        overview = overview.get("say") or overview.get("text") or ""
+    text = " ".join(str(overview).split())
+    if len(text) < 40:
+        raise SystemExit("clip is missing an architecture overview")
+    return text
+
+
 def load_clips(session: int) -> list[dict]:
     folder = ACADEMY / "narration" / f"session-{session}"
     clips = []
     for script in sorted(folder.glob("*.yaml")):
         spec = yaml.safe_load(script.read_text())
-        path = repo_path(spec["file"], session)
+        raw = str(spec["file"]).replace("\\", "/")
+        path = repo_path(raw, session) if "snapshots/" in raw else raw
         seconds = clip_seconds(session, script.stem)
         clips.append(
             {
                 "stem": script.stem,
                 "title": spec.get("title") or script.stem,
+                "overview": clip_overview(spec),
                 "path": path,
                 "seconds": seconds,
                 "src": f"videos/session-{session}/{script.stem}.mp4",
-                "blob": f"{REPO}/blob/session-{session}/{path}",
+                "blob": f"{REPO}/blob/main/{path}",
             }
         )
     if not clips:
@@ -169,6 +181,7 @@ def nav(active: int) -> str:
     parts = [
         '<a class="brand" href="index.html"><div class="mark">ia</div><div><strong>invalid-agent</strong><span>Academy</span></div></a>',
         f'<a class="item{" active" if active == 0 else ""}" href="index.html">Home</a>',
+        f'<a class="item{" active" if active == -1 else ""}" href="architecture.html">Architecture</a>',
     ]
     for week, ids in ((1, (1, 2, 3)), (2, (4, 5, 6)), (3, (7, 8, 9))):
         parts.append(f'<div class="week">Week {week}</div>')
@@ -183,7 +196,8 @@ def nav(active: int) -> str:
     return "\n".join(parts)
 
 
-def page(title: str, body: str, *, session: int, page_name: str) -> str:
+def page(title: str, body: str, *, session: int, page_name: str, active: int | None = None) -> str:
+    nav_active = session if active is None else active
     lock = ""
     if session > 1:
         lock = f"""
@@ -192,7 +206,7 @@ def page(title: str, body: str, *, session: int, page_name: str) -> str:
   var session = {session};
   var ok = false;
   try {{
-    var raw = localStorage.getItem("ia-academy-progress-v1");
+    var raw = localStorage.getItem("ia-academy-progress-v2");
     var data = raw ? JSON.parse(raw) : null;
     var prev = data && data.sessions && data.sessions[String(session - 1)];
     ok = !!(prev && prev.passed);
@@ -212,7 +226,7 @@ def page(title: str, body: str, *, session: int, page_name: str) -> str:
 <body data-page="{page_name}" data-session="{session}">
 <div class="app">
 <aside class="nav">
-{nav(session)}
+{nav(nav_active)}
 </aside>
 <main class="main">
 {body}
@@ -238,20 +252,20 @@ def home_body() -> str:
 </a>"""
         )
     return f"""
-<p class="kicker">Field-quality PM · nine git tags</p>
+<p class="kicker">Field-quality simulation · nine sessions · synthetic data</p>
 <h1>Learn the invalid-agent, session by session.</h1>
-<p class="lede">A simulated investigation, narrated against the code that built it. The language model does not do the arithmetic. You can study this from a locked-down work browser: the pages, the quizzes, and the videos are static files.</p>
+<p class="lede">A customer complaint on a fictional molecular panel, narrated against the code that investigates it. Rates are computed in Python. The model, when one is connected, only narrates. The pages, the quizzes, and the videos are static files.</p>
 <div class="progress-row">
   <div class="ring" data-progress style="--p:0"><span id="ring-label">0/9</span></div>
   <div>
     <strong id="progress-label">0 of 9 sessions passed</strong>
     <div class="bar" data-progress style="--p:0"><i></i></div>
-    <p class="note" id="progress-detail">Pass a quiz at 80% or better to open the next session. Retries are unlimited.</p>
+    <p class="note" id="progress-detail">Pass a quiz at 80% or better (7 of 8) to open the next session. Retries are unlimited.</p>
     <p class="note" id="lock-note"></p>
   </div>
 </div>
 <div class="cards">
-  <a class="link-card" id="link-github" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Each session links to its tag.</p></a>
+  <a class="link-card" id="link-github" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Clips cite the files on main.</p></a>
   <a class="link-card" id="link-jira" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
   <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
 </div>
@@ -268,8 +282,9 @@ LLM_BACKEND=ollama LLM_MODEL=llama3.1:8b python -m invalid_agent.graph --scenari
 
 ollama pull llama3.2:1b
 LLM_MODEL=llama3.2:1b</pre>
-<p class="note">Practice edits stay on a branch you create from the session tag. Do not merge them into main.</p>
+<p class="note">Practice notes stay on a branch you create. Do not merge them into main.</p>
 </div>
+<p class="note">The system map is on the <a href="architecture.html">architecture</a> page. Each session is a short summary, an architecture note before each clip, and a quiz on the boundaries.</p>
 <h2>Sessions</h2>
 <div class="session-grid">
 {''.join(cards)}
@@ -283,7 +298,7 @@ LLM_MODEL=llama3.2:1b</pre>
 </div>
 <textarea id="export-code" rows="3" readonly placeholder="Your code appears here"></textarea>
 <label for="import-code">Paste a code from your other computer</label>
-<textarea id="import-code" rows="3" placeholder="IA1...."></textarea>
+<textarea id="import-code" rows="3" placeholder="IA2...."></textarea>
 <div class="row"><button type="button" id="import-btn">Import progress</button></div>
 <p class="note" id="transfer-msg"></p>
 </div>
@@ -298,10 +313,11 @@ def session_body(session: dict, clips: list[dict]) -> str:
         clip_html.append(
             f"""<article class="clip">
 <h3>{i}. {html.escape(clip['title'])}</h3>
+<div class="overview"><h4>Architecture</h4><p>{html.escape(clip['overview'])}</p></div>
 <video controls preload="metadata" src="{html.escape(clip['src'])}">
 <a href="{html.escape(clip['src'])}">Download clip {i}</a>
 </video>
-<p class="meta">{clock(clip['seconds'])} · Andrew · <a href="{html.escape(clip['blob'])}">{html.escape(clip['path'])}</a> at <code>session-{n}</code></p>
+<p class="meta">{clock(clip['seconds'])} · Andrew · <a href="{html.escape(clip['blob'])}">{html.escape(clip['path'])}</a> on <code>main</code></p>
 </article>"""
         )
     files = []
@@ -311,39 +327,42 @@ def session_body(session: dict, clips: list[dict]) -> str:
             continue
         seen.add(clip["path"])
         files.append(f'<li><a href="{html.escape(clip["blob"])}"><code>{html.escape(clip["path"])}</code></a></li>')
-    trace_path = ROOT / "docs" / "sessions" / f"session-{n}" / "LOGIC_TRACE.md"
-    trace = md(trace_path.read_text())
+    trace = md(session["trace"])
     practice = md(session["practice"])
-    tree = f"{REPO}/tree/session-{n}"
-    trace_blob = f"{REPO}/blob/session-{n}/docs/sessions/session-{n}/LOGIC_TRACE.md"
-    return f"""
-<p class="kicker">Week {session['week']} · Session {n} · tag session-{n}</p>
-<h1>{html.escape(session['title'])}</h1>
-<p class="lede">{html.escape(session['blurb'])}</p>
-<p class="note">Ticket {html.escape(session['ticket'])} · about {html.escape(session['minutes'])} minutes · artifact: {html.escape(session['artifact'])}</p>
+    tree = f"{REPO}/tree/main"
+    trace_blob = f"{REPO}/blob/main/docs/sessions/session-{n}/LOGIC_TRACE.md"
+    lock = ""
+    if n > 1:
+        lock = f"""
 <div class="lock-screen">
   <div class="panel">
     <h2>This session is locked</h2>
-    <p>Pass Session {n - 1} at 80% or better to open the videos, the logic trace, the practice task, and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
+    <p>Pass Session {n - 1} at 80% or better (7 of 8) to open the videos and this quiz. Retries on the earlier quiz are unlimited. If you already passed it on another computer, import that progress code from the home page.</p>
     <p><a class="button" href="session-{n - 1}.html">Go to Session {n - 1}</a> <a class="button secondary" href="index.html">Home</a></p>
   </div>
-</div>
+</div>"""
+    return f"""
+<p class="kicker">Week {session['week']} · Session {n}</p>
+<h1>{html.escape(session['title'])}</h1>
+<p class="lede">{html.escape(session['blurb'])}</p>
+<p class="note">Ticket {html.escape(session['ticket'])} · about {html.escape(session['minutes'])} minutes · artifact: {html.escape(session['artifact'])}</p>
+{lock}
 <div class="lesson">
 <h2>Read first</h2>
 <ul>{reads}</ul>
 <h2>Watch in this order</h2>
-<p class="note">Pause whenever you want. The line numbers match tag <code>session-{n}</code>, not whatever main looks like today.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
 {''.join(clip_html)}
-<h2>Logic trace</h2>
-<p class="note"><a href="{html.escape(trace_blob)}">LOGIC_TRACE.md at session-{n}</a></p>
+<h2>How this session connects</h2>
 <div class="prose">{trace}</div>
-<h2>Code at this tag</h2>
-<p><a href="{tree}">Browse the whole tree for session-{n}</a></p>
+<p class="note">The build diary is <a href="{html.escape(trace_blob)}">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<h2>Code on main</h2>
+<p><a href="{tree}">Browse the repository</a></p>
 <ul>{''.join(files)}</ul>
-<h2>Practice, on a private branch</h2>
+<h2>Practice</h2>
 <div class="prose">{practice}</div>
 <h2>Quiz</h2>
-<p class="note">Eight questions. 80% to pass, which means 7 of 8. Explanations show after you submit. The salted hash is a self-study speed bump, not protection: the letter is not printed next to the question, but the four choices can be tried in the script.</p>
+<p class="note">Eight questions on architecture and design. 7 of 8 to pass. Explanations show after you submit. The salted hash is a self-study speed bump, not protection.</p>
 <div id="quiz"></div>
 </div>
 """
@@ -372,6 +391,46 @@ def write_answer_key(payload: dict) -> None:
             lines.append(f"{index}. **{winner['id'].upper()}.** {winner['text']}")
             lines.append("")
     (ACADEMY / "content" / "QUIZ_ANSWERS.md").write_text("\n".join(lines))
+
+
+def architecture_body() -> str:
+    stages = [
+        ("Scenario YAML", "The cause, the calendar, and the injections. The printed invalid rate is not stored here."),
+        ("Seeded generator", "One seed produces one field file. The same YAML always yields the same rows."),
+        ("Metrics in Python", "Rate, Wilson interval, chi-square, p-chart, Pareto, hypothesis score, cost, and the projection are code."),
+        ("One case graph", "Triage once, then plan, the quality record, and a status note until the requested week. Week 4 continues into close-out."),
+        ("Numeric-fidelity guard", "Prose may be rewritten. A number that is not already in the facts is rejected, and the template replaces that draft."),
+        ("Optional narrator", "The default backend is deterministic. Local Ollama uses Llama 3.1 8B. Hosted Streamlit stays rules-only, because Community Cloud has no Ollama."),
+        ("Artifacts", "Memo, fishbone, 5 Whys, 8D/CAPA, Gantt, risk register, three audience notes, the Streamlit page, and a seven-slide deck."),
+        ("Optional Jira", "All three secrets, or a JSON file of SIM keys and no socket. That file is not the build backlog in docs/jira/backlog.json."),
+    ]
+    cards = "".join(
+        f'<article class="stage"><strong>{html.escape(title)}</strong><p>{html.escape(text)}</p></article>'
+        for title, text in stages
+    )
+    return f"""
+<p class="kicker">How a case moves</p>
+<h1>Architecture</h1>
+<p class="lede">A simulated field-quality investigation. The language model does not calculate. The dataframe is not stored on the graph state. Each node regenerates it from the scenario seed.</p>
+<div class="stages">
+{cards}
+</div>
+<h2>What stays out</h2>
+<div class="panel">
+<ul>
+<li>The panel, the customers, and the field file are synthetic. This is not a medical device and not for clinical use.</li>
+<li>No agent swarm, no fine-tune, and no vector database. The status color is red, amber, or green. It is not retrieval.</li>
+<li>The projection clears the leading stratum on a copy of the same file. It is not observed follow-up, and the walkthrough file does not turn green.</li>
+<li>The build board is project INV. The investigation dry-run uses SIM keys. Those are different files.</li>
+</ul>
+</div>
+<h2>Where to look</h2>
+<div class="cards">
+  <a class="link-card" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>The clips cite these files on main.</p></a>
+  <a class="link-card" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
+  <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+</div>
+"""
 
 
 def main() -> None:
@@ -403,6 +462,9 @@ def main() -> None:
     (SITE / "js").mkdir(parents=True, exist_ok=True)
     (SITE / "js" / "quiz-data.js").write_text("window.QUIZZES = " + blob + ";\n")
     (SITE / "index.html").write_text(page("invalid-agent Academy", home_body(), session=0, page_name="home"))
+    (SITE / "architecture.html").write_text(
+        page("Architecture · invalid-agent Academy", architecture_body(), session=0, page_name="architecture", active=-1)
+    )
     (SITE / ".nojekyll").write_text("")
     for session in SESSIONS:
         clips = load_clips(session["id"])

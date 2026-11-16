@@ -1,0 +1,24 @@
+title: Session 5 · A four-week plan that can grow
+file: src/invalid_agent/nodes/planner.py
+overview: The plan, the owners, and the risk register are functions of the top hypothesis and the week.
+  Later weeks add tasks. They do not delete the baseline plan. A start that lands before its predecessor
+  finishes raises. Likelihood times impact is checked, not typed twice.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 22-40
+  say: The owner follows the cause. A lot is QA. An instrument or a temperature lane is manufacturing.
+    Software is R and D. No single cause stays with the program manager, which is the decision not to
+    quarantine yet. The schedule is anchored to the investigation start, not to today's date.
+- lines: 62-122
+  say: The baseline tasks fit inside four weeks. The lab-director task appears from week two. A lane-temperature
+    task waits for week three. Those are the injection-driven adds. The containment task's owner comes
+    from the map above. Re-planning keeps the earlier tasks and refreshes their status.
+- lines: 123-131
+  say: Dependencies compare dates as text. A task that starts before its predecessor ends raises. The
+    format has to stay sortable as text, which is why the dates are ISO dates and not a locale string.
+- lines: 153-229
+  say: Risks store likelihood times impact and raise if that product is wrong. A real cause in hand can
+    move one trend down. A disagreement between release data and the field can open another risk with
+    the trend up. Some risks wait until the week that stakeholder speaks.

@@ -1,0 +1,21 @@
+title: Session 9 · Confirm the record from facts
+file: src/invalid_agent/nodes/closeout.py
+overview: Close-out runs only after week four. It regenerates the frame, computes the projection and the
+  cost, and drops the frame before the record is stored. D7 and D8 are confirmed. An unknown number raises,
+  and the rejected text is not the file you ship.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 24-86
+  say: The facts rebuild the rate, the projection, and the cost from the scenario seed. Cost is the invalid
+    count times the unit cost. The effectiveness sentence keeps the label that follow-up was not observed.
+    The frame is not one of the fields that gets stored.
+- lines: 87-147
+  say: The close-out note is a template filled from those facts. It does not ask a model for a new percentage.
+    The recommendation depends on whether a single cause cleared the bar. No single cause does not become
+    a quarantine.
+- lines: 148-167
+  say: The node runs the guard and raises on a miss. It writes the note, writes the deck from the same
+    facts, and replaces the preliminary prevention and closure text. The deck path is the only new artifact
+    path on the state.

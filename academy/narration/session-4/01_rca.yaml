@@ -1,0 +1,26 @@
+title: Session 4 · Fishbone, five Whys, and the 8D record
+file: src/invalid_agent/nodes/rca.py
+overview: rca.py turns the ranked hypothesis into a 6M fishbone, a five-step Why chain, and an 8D record
+  with DMAIC labels. Every Why step needs a citation that exists in the catalog. A missing citation raises
+  before markdown is written. Injections are visible only once their week has arrived.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 68-98
+  say: index_injections keeps notes whose week is at or before the case week. A QA sentence dated later
+    is not evidence yet. validate_whys raises on an empty citation list and on an id that is not in the
+    catalog. A broken chain never becomes a file.
+- lines: 104-138
+  say: The fishbone copies the evidence for a hit and asks for a contrary citation. Branches sort by score.
+    A branch that did not fire still appears, with the overall rate as the reason it did not explain the
+    panel. Measurement can be an empty bone so the diagram is not missing a category.
+- lines: 165-226
+  say: The Why chain has five cited steps. The first is the rate against the spec. A later step has to
+    say why the next stratum is not the cause. On a lot, the chain is required to stop at that lot. When
+    the ranker returned no single cause, the chain still has five citations and does not invent a lot
+    to satisfy the test.
+- lines: 283-317
+  say: The CAPA maps the top cause to a containment and a corrective action in words. The effectiveness
+    check is named, and it says a before-and-after number is a projection until follow-up exists. Prevention
+    and closure are written and marked preliminary. This function does not close the case.

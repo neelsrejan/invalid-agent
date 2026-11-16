@@ -91,4 +91,4 @@ Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé 
 
 ## Academy
 
-`academy/` is the static course: one narrated clip per key file, the logic trace, a practice edit on a private branch, and an 8-question quiz. Pass at 80% to open the next session. Videos are published on the `gh-pages` branch so a clone of `main` stays light. See `academy/README.md`.
+`academy/` is the static course: an architecture note, a short narrated clip, a session summary, and an 8-question quiz on the boundaries. Pass at 80% to open the next session. Videos are published on the `gh-pages` branch so a clone of `main` stays light. See `academy/README.md`.

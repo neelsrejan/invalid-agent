@@ -7,162 +7,162 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 ## Session 1
 
-1. **A.** One shared constant keeps the promised validity and the two percent cap from drifting apart.
+1. **A.** One calculation keeps the ninety-eight percent promise and the two percent cap from drifting apart.
 
-2. **B.** A base URL plus an email plus a token are all required or the client gate stays false.
+2. **A.** A log or a traceback would otherwise copy the Jira token or the openFDA key into the output.
 
-3. **C.** The generated view prints every stored field and also includes a planted API token.
+3. **B.** A partial login is not a connection and the investigation still has to run with an empty environment.
 
-4. **D.** It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109.
+4. **D.** A reviewer can read the sprint backlog before any tracker login exists and import it later.
 
-5. **A.** Nothing in this tag imports third-party libraries yet so the job skips those extra downloads.
+5. **A.** A typo on a hosted demo should fall back to the template instead of crashing in front of a reviewer.
 
-6. **B.** It accepts the project file sitting beside the scenarios directory or beside the package directory.
+6. **D.** A stranger can install the package and test it without a token and without a running model.
 
-7. **C.** It resolves to deterministic because rules and rules-only and mock are three names for that engine.
+7. **B.** Multi-agent crews and fine-tuning and a vector database added only to claim retrieval are out.
 
-8. **D.** Python 3.11 and 3.12 do an editable install with the dev extra and then pytest with no secrets.
+8. **D.** A reader of the memo or the banner or the deck must not mistake the panel for a real complaint.
 
 ## Session 2
 
-1. **A.** Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched.
+1. **A.** The YAML names the cause and the knobs and the printed percent is an output of the generator.
 
-2. **B.** The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo.
+2. **C.** The complement stays at the baseline instead of stacking two probabilities on the same rows.
 
-3. **C.** Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge.
+3. **B.** A seed makes the investigation repeatable so a reviewer can regenerate the file and match it.
 
-4. **D.** Zones are a point past 3 sigma then 2 of 3 past 2 sigma then 4 of 5 past 1 sigma then 8 on one side.
+4. **A.** Being over the cap and having the whole Wilson interval clear it are different claims to make.
 
-5. **A.** They are absent and the seed module holds a lognormal stand-in plus the DOI and the source is only cited.
+5. **D.** A single stratum is not a difference and it must not always crash the scenario that has one.
 
-6. **B.** A document plus a seed is the whole randomness source so one description reprints the field document.
+6. **B.** Rates and charts and the Pareto are code so a later narrative cannot be the source of the arithmetic.
 
-7. **C.** The result is probability 1 and statistic 0 because a calm scenario is not treated as an exception.
+7. **A.** The Pareto counts invalid codes and drops valid rows and it is not the root-cause ranking.
 
-8. **D.** Valid records are left out because an empty failure code must not count as a failure mode.
+8. **D.** The parameters are a stand-in and the citation says where the shape came from without vendoring it.
 
 ## Session 3
 
-1. **A.** Metrics and the catalog and the memo are kept and a following step calls generate again from the same seed.
+1. **A.** The field file does not change between weeks so the opening memo is not rebuilt on every loop.
 
-2. **B.** Other strata miss a gate such as 80 runs or lift 1.8 or 15 excess failures or probability under 0.01.
+2. **C.** A sentence cannot outrank the table so a QA note does not get to choose the cause by itself.
 
-3. **C.** It survives masking and is not within 0.03 of a walked fact so it lands in unknown and ok stays false.
+3. **C.** A coin flip between two near scores would pretend the table named a winner it did not name.
 
-4. **D.** The narrator catches the exception and hands back the template without saving the failed draft.
+4. **D.** The guard does not compute a rate and it rejects a number that is not already in the facts.
 
-5. **A.** A driver has to come from the grid because a QA line does not get a vote on the ordering.
+5. **D.** The facts walk includes the percent form so three point six seven is allowed when the rate matches.
 
-6. **B.** It stops on purpose so this snapshot cannot pretend the weekly loop already exists.
+6. **B.** A lot id must not become a legal rate just because the string also contains digits.
 
-7. **C.** One httpx call is easier to mock and that call is skipped when the engine is deterministic.
+7. **A.** The draft fails and the template replaces it so the shipped sentence still matches the code.
 
-8. **D.** Removing the identifier keeps 4419 from being reused as a permitted frequency in the paragraph.
+8. **B.** Deterministic means a template plus the numbers Python already computed with no model required.
 
 ## Session 4
 
-1. **A.** An empty bone scored at zero says that category was considered on the diagram reviewers expect.
+1. **A.** A step that does not point at a catalog id is not evidence and it must not become a file.
 
-2. **B.** An empty citation array or an unknown id is refused inside the builder before any markdown exists.
+2. **A.** Injections are filtered by week so a note that has not arrived yet cannot be used as evidence.
 
-3. **C.** No because entries are kept only through the case lap and that QA remark belongs to lap 1.
+3. **D.** A branch that did not explain the panel is still part of the diagram with a reason it did not.
 
-4. **D.** The target is a return to the promise with no zone-1 point because follow-up runs do not exist yet.
+4. **B.** It still has five cited steps and it does not invent a lot to satisfy a test that wants one.
 
-5. **A.** Define maps to the opening pair and measure to the metrics and analyze to the contrast and the diagram.
+5. **C.** Prevention and closure are written early and marked preliminary so nobody thinks the case is closed.
 
-6. **B.** Material and the bad reagent batch come first and the fifth answer names L-4419 in the catalog line.
+6. **D.** Clearing the leading stratum on a copy of this file is not a result the field has delivered.
 
-7. **C.** A different column is required so the chain can show why the next stratum is not the driver.
+7. **B.** The test locks that a missing citation raises and that the walkthrough lot ranks as material.
 
-8. **D.** No new library is added and the prior fidelity guard is reused on the three markdown documents.
+8. **A.** The record names the cause and the containment words and a later session turns that into tasks.
 
 ## Session 5
 
-1. **A.** The export helper needs an extra browser library while the plotting path runs without that download.
+1. **D.** A re-plan that throws away the baseline is not a re-plan and the earlier tasks stay on the chart.
 
-2. **B.** A task opening must follow the predecessor closing and year-month-day stamps sort in calendar order.
+2. **C.** A lot is QA and an instrument is manufacturing and no single cause stays with the program manager.
 
-3. **C.** The second lap adds the lab-director task and the first hazard moves down while another hazard moves up.
+3. **B.** A task that begins before the work it depends on has finished is not an executable schedule.
 
-4. **D.** The construction board uses INV identifiers and SIM makes a rehearsal document obviously different.
+4. **A.** Plotly shows a chart a person can open and Matplotlib writes the picture the deck can embed.
 
-5. **A.** The client catches the failure and stores the exception class and saves the file without the token.
+5. **C.** The product is calculated and a mismatch raises so a hand-edited score cannot disagree with the factors.
 
-6. **B.** The repeat pass makes no further posts because a known task id is edited in place after the first pass.
+6. **A.** It writes SIM keys into a local JSON file and it does not open a socket to the live site.
 
-7. **C.** The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule.
+7. **B.** A rehearsal file must not be mistaken for the build board a reviewer imports by hand.
 
-8. **D.** Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays.
+8. **C.** CI has to exercise the dry-run path without a token and without opening a socket.
 
 ## Session 6
 
-1. **A.** The field document is fixed by the seed so the pass re-enters at the scheduler.
+1. **B.** The edge is the control flow so a reader can see when the case stops or advances or closes out.
 
-2. **B.** Frequency stays over the promise and containment waits so the second lap stays urgent and nothing is cured.
+2. **C.** What changes is which injections are visible and which tasks are in progress, not the rows.
 
-3. **C.** Keep the field ordering after a reported release pass and add the lab-director remark to the schedule.
+3. **C.** The audiences can differ in wording and they must not differ in the digits they quote.
 
-4. **D.** The facts builder rounds frequency onto a percent field and the wording inserts that field for the guard.
+4. **D.** The customer note must not state an unconfirmed cause as a fact leadership can treat as final.
 
-5. **A.** Compare the opening folder with the second because each is as of that lap and the top copy is newest.
+5. **A.** It is a rule about the rate and the week and it is not a retrieval index over the notes.
 
-6. **B.** It must not state a confirmed driver and internal text gets the guess while leadership gets the cost.
+6. **C.** The file is not rewritten and the rate stays over spec so green would be a lie.
 
-7. **C.** Integer comparison marks the lap-0 task finished and the lap-2 task finished while the lap-4 task stays open.
+7. **D.** The cost is the invalid count times the unit cost on the scenario computed in the facts.
 
-8. **D.** The result is advance which adds one to the lap and then edges back to the scheduler.
+8. **B.** A second pass replaces the row for that week so the log cannot double.
 
 ## Session 7
 
-1. **A.** The cloud app has no local runner and ships no weights so deterministic wording answers with no download.
+1. **B.** A second investigation would let the page drift from the memo and the chart and the notes.
 
-2. **B.** LLM_MODEL wins when set and otherwise a local run asks for llama3.2:1b while commands stay on llama3.1:8b.
+2. **D.** Hosted Streamlit has no Ollama so the public rules path must not require a model at all.
 
-3. **C.** Failures on the leading stratum of the same synthetic document are cleared and no new field data are collected.
+3. **A.** The caption says the projected result is not observed follow-up after clearing that stratum.
 
-4. **D.** The cache key covers scenario and lap and engine and model while the selector only rereads stored text.
+4. **C.** The original file stays intact and the copy is only the before-and-after picture.
 
-5. **A.** Sign in on the cloud host with the code host and pick the app entry because the tree cannot do it.
+5. **C.** A cached run must not pin a model for the next command in the same process.
 
-6. **B.** Navy 0B3A5B and teal 1F7A8C draw the line and B23A48 marks zone-1 points with no purple gradient.
+6. **B.** It installs the deterministic path and it does not install a local GGUF model file.
 
-7. **C.** A weight file stays out while data and graph and chart libraries and the app framework stay installed.
+7. **A.** A reviewer who only opens the dashboard still has to see the first panel is synthetic.
 
-8. **D.** The screen shows the clinical-use banner and a metric and dropping the bad batch lowers the projection.
+8. **A.** Turning the toggle off asks Ollama and falls back to the template if that model is not running.
 
 ## Session 8
 
-1. **A.** The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named.
+1. **A.** An evidence ranker that reads the table and a ranker that only reads the week-zero note.
 
-2. **B.** The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch.
+2. **D.** Llama weights were not required for this run so the table cannot be quoted as a model score.
 
-3. **C.** A reagent-batch stratum also cleared the bar and the leading name stayed the drifting gauge on purpose.
+3. **D.** The note names the wrong cause and the evidence ranker is allowed to disagree by reading the table.
 
-4. **D.** No llama tag was installed and the table compares two ordering policies on the deterministic engine.
+4. **B.** The miss stays next to the hit so a reader cannot quote the clean cell alone.
 
-5. **A.** The parser treats an unquoted true as a boolean and the builder looks up that string in the map.
+5. **B.** It reuses the case run for fidelity and citations and whether escalate matches the spec comparison.
 
-6. **B.** The hidden expected label stays out of ordering because that block is the grade and not an input.
+6. **C.** The short slice proves the harness still runs and the full table remains the one in the report.
 
-7. **C.** An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there.
+7. **D.** The label is how the report scores the file and handing it to the ranker would leak the answer.
 
-8. **D.** The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed.
+8. **C.** The bullet should keep the misses beside the hits including the keyword ranker result.
 
 ## Session 9
 
-1. **A.** The lap note is not the ending and the wrap-up confirms the last sections and builds the slides.
+1. **A.** Only a finished week four takes the close-out edge so earlier tests do not build a deck.
 
-2. **B.** The field document is not rewritten and clearing the leading stratum is only a counterfactual case.
+2. **D.** The nodes regenerate the frame from the seed and the case state does not keep the table.
 
-3. **C.** It is failure count times unit price and on the bad batch that product is 529 times 85 with no typed total.
+3. **D.** The slides are filled from the close-out facts so a cost has to already be that product.
 
-4. **D.** Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical.
+4. **A.** Contain that stratum and do not expand the hold and do not treat the projection as follow-up.
 
-5. **A.** Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum.
+5. **C.** No quarantine because no leading stratum cleared the evidence bar.
 
-6. **B.** The name defaults to llama3.1:8b on the desktop runner and the cloud app stays deterministic.
+6. **A.** The chart is the p-chart of the file that was investigated and the projection stays a label.
 
-7. **C.** It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6.
+7. **D.** The earlier record marked them preliminary and close-out is the step that confirms them.
 
-8. **D.** Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3.
+8. **B.** The note-only result and the cases where a second stratum also cleared the bar.

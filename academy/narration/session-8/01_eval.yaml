@@ -1,0 +1,24 @@
+title: Session 8 · Score two ranking policies
+file: evals/run_eval.py
+overview: The harness compares an evidence ranker, which reads the table, with a ranker that only reads
+  the week-zero note. Llama 3.1 8B and Llama 3.2 1B are not required for this run. The table is two policies
+  on the deterministic path, not a model-accuracy number.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 47-57
+  say: The keyword policy scans notes that have already arrived and returns the first cause word it finds.
+    It never opens the table. On a red herring it repeats the note.
+- lines: 70-97
+  say: The evidence score generates the frame and ranks hypotheses. Top one is the first cause. Top three
+    is membership in the first three. The expected label comes from the scenario, and the ranker is not
+    given that block. A second stratum that also cleared the bar is recorded, not hidden.
+- lines: 107-133
+  say: The week-zero graph check reuses the case run. It records whether the fidelity guard passed, whether
+    every Why citation resolves, and whether the escalate flag matches the spec comparison. Latency is
+    the time of that run, not a model call.
+- lines: 136-153
+  say: The model section names the local default, the hosted rules-only path, and the smaller tag. It
+    then says this command's table is two ranking policies. It refuses to print an accuracy number for
+    a model that did not run.

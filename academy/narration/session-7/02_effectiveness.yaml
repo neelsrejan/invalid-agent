@@ -1,0 +1,20 @@
+title: Session 7 · A projection, not follow-up
+file: src/invalid_agent/metrics/effectiveness.py
+overview: The projection copies the frame, clears invalids on the leading stratum, and reports before
+  and after. It does not rewrite the scenario file. The label says the result is not observed follow-up.
+  The walkthrough case never turns green for that reason.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 1-15
+  say: The module docstring is the contract. This is a counterfactual on the same file. Callers have to
+    keep that label. A chart without the label would look like a result the field had already delivered.
+- lines: 17-31
+  say: The function copies the frame and clears the invalid flag on the leading stratum only. If that
+    column or level is missing, it changes nothing and says so. The original scenario file is not opened
+    for writing.
+- lines: 33-43
+  say: The summary runs the same rate function on the original frame and on the copy. The label is a fixed
+    sentence, not a number the model composed. The projected frame is returned for the chart and is not
+    stored on the case as if it were new field data.

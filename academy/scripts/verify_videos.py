@@ -9,7 +9,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 VIDEO_ROOT = ROOT / "academy" / "build" / "videos"
-MIN_S, MAX_S = 170.0, 560.0  # about 3 to 9 minutes; Session 1's long clip is ~8:43
+# Sibling academies land between about half a minute and two minutes:
+# an architecture card, then a few ranges, not a line-by-line reading.
+MIN_S, MAX_S = 25.0, 180.0
 
 
 def probe(path: Path) -> dict:
@@ -31,15 +33,24 @@ def probe(path: Path) -> dict:
 
 
 def main() -> None:
-    files = sorted(VIDEO_ROOT.glob("session-*/*.mp4"))
-    if len(files) < 9:
-        print(f"expected videos for 9 sessions, found {len(files)} files", file=sys.stderr)
+    scripts = sorted(VIDEO_ROOT.glob("session-*/*.mp4"))
+    expected = []
+    narration = ROOT / "academy" / "narration"
+    for n in range(1, 10):
+        folder = narration / f"session-{n}"
+        yamls = sorted(folder.glob("*.yaml"))
+        if len(yamls) != 2:
+            print(f"{folder} should hold 2 clips, found {len(yamls)}", file=sys.stderr)
+            sys.exit(1)
+        for script in yamls:
+            expected.append(VIDEO_ROOT / f"session-{n}" / f"{script.stem}.mp4")
+    missing = [path for path in expected if not path.is_file()]
+    extra = [path for path in scripts if path not in expected]
+    if missing or extra:
+        print("missing:", ", ".join(str(p) for p in missing), file=sys.stderr)
+        print("extra:", ", ".join(str(p) for p in extra), file=sys.stderr)
         sys.exit(1)
-    sessions = sorted({p.parent.name for p in files})
-    missing = [f"session-{n}" for n in range(1, 10) if f"session-{n}" not in sessions]
-    if missing:
-        print("missing sessions:", ", ".join(missing), file=sys.stderr)
-        sys.exit(1)
+    files = expected
     rows = []
     bad = False
     for path in files:

@@ -1,0 +1,20 @@
+title: Session 2 · Rates stay in Python
+file: src/invalid_agent/metrics/rates.py
+overview: Rates, the Wilson interval, the spec comparison, and the chi-square live here. The week-0 memo
+  quotes this dictionary. It does not recompute the rate a second way, and a model is not asked to do
+  the arithmetic.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 20-40
+  say: The Wilson interval is written out so a reviewer can check it. A residue that should be zero is
+    snapped to zero, because the analytic lower bound is zero and floating point subtraction is not.
+- lines: 42-60
+  say: 'overall_rate returns both facts the memo needs: whether the point estimate is over the two percent
+    cap, and whether the whole interval clears that cap. Those are different claims. The function does
+    not decide the root cause.'
+- lines: 85-110
+  say: chi_square_by compares invalid and valid counts across the levels of one column. A single level,
+    or a column with no variation, returns a quiet p-value of one instead of raising. A quiet scenario
+    is not an exception.

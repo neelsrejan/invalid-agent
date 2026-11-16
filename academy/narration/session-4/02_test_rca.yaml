@@ -1,0 +1,16 @@
+title: Session 4 · A broken chain never becomes a file
+file: tests/test_rca.py
+overview: The RCA tests are the rule, not a tour of the markdown. A Why with no citation is an error.
+  An unknown citation id is an error. On the walkthrough lot the top bone is material and the chain names
+  that lot. The tests do not call Jira or a model.
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 17-31
+  say: Two tests plant a failure. One step has no citations. Another cites an id that was never in the
+    catalog. Both must raise. A warning that still wrote the file would be the wrong contract.
+- lines: 33-53
+  say: The walkthrough scenario is checked as a record, not as a screenshot. Material ranks first, the
+    chain ends on the lot, and the citations resolve. That is the behavior a later plan is allowed to
+    trust.
