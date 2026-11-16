@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>evals/reports/2026-10-20.md — both splits, and the failure notes under the table.</li><li>scenarios/herring_lot.yaml — the note and the true cause are different on purpose.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 8 · Score two ranking policies</h3>
 <div class="overview"><h4>Architecture</h4><p>The harness compares an evidence ranker, which reads the table, with a ranker that only reads the week-zero note. Llama 3.1 8B and Llama 3.2 1B are not required for this run. The table is two policies on the deterministic path, not a model-accuracy number.</p></div>
 <video controls preload="metadata" src="videos/session-8/01_eval.mp4">
 <a href="videos/session-8/01_eval.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:16 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/evals/run_eval.py">evals/run_eval.py</a> on <code>main</code></p>
+<p class="meta">1:16 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/evals/run_eval.py#L47-L153">evals/run_eval.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 8 · A note can name the wrong cause</h3>
 <div class="overview"><h4>Architecture</h4><p>A red-herring file keeps the true cause under a quoted key, because an unquoted true would be a boolean in YAML. The complaint and the week-zero note blame a reagent lot. The table does not. The evidence ranker is allowed to disagree with the note.</p></div>
 <video controls preload="metadata" src="videos/session-8/02_herring.mp4">
 <a href="videos/session-8/02_herring.mp4">Download clip 2</a>
 </video>
-<p class="meta">0:51 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/scenarios/herring_lot.yaml">scenarios/herring_lot.yaml</a> on <code>main</code></p>
+<p class="meta">0:51 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/scenarios/herring_lot.yaml#L28-L80">scenarios/herring_lot.yaml</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>The evidence ranker matched the planted cause on this constructed set, including the held-out files. The note-only ranker matched a few flat files and repeated the note on the red herrings. Four drift files also cleared a lot stratum, and top-1 stayed on the instrument. The report is two policies on the deterministic backend, not a Llama accuracy number.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-8/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-8/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/evals/run_eval.py"><code>evals/run_eval.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/scenarios/herring_lot.yaml"><code>scenarios/herring_lot.yaml</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/evals/run_eval.py#L47-L153"><code>evals/run_eval.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/scenarios/herring_lot.yaml#L28-L80"><code>scenarios/herring_lot.yaml</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>From the eval report, choose one number you would quote and one number you would refuse to drop. The second number is a miss that has to travel with the hit. Do not describe the table as a model score.</p></div>
 <h2>Quiz</h2>

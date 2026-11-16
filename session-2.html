@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>scenarios/bad_lot.yaml — lot, start day, and stratum rate are the knobs. The printed rate is not in this file.</li><li>scenarios/README.md — the YAML is the process, not an answer key of rates.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 2 · The YAML is the cause</h3>
 <div class="overview"><h4>Architecture</h4><p>generate.py turns a scenario file into one seeded table. The YAML names the cause, the calendar, and the injections. The printed invalid rate is an output of this module, not a number stored in the file. The language model is not called.</p></div>
 <video controls preload="metadata" src="videos/session-2/01_generate.mp4">
 <a href="videos/session-2/01_generate.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:30 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/sim/generate.py">src/invalid_agent/sim/generate.py</a> on <code>main</code></p>
+<p class="meta">1:30 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/sim/generate.py#L36-L230">src/invalid_agent/sim/generate.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 2 · Rates stay in Python</h3>
 <div class="overview"><h4>Architecture</h4><p>Rates, the Wilson interval, the spec comparison, and the chi-square live here. The week-0 memo quotes this dictionary. It does not recompute the rate a second way, and a model is not asked to do the arithmetic.</p></div>
 <video controls preload="metadata" src="videos/session-2/02_rates.mp4">
 <a href="videos/session-2/02_rates.mp4">Download clip 2</a>
 </video>
-<p class="meta">0:55 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/metrics/rates.py">src/invalid_agent/metrics/rates.py</a> on <code>main</code></p>
+<p class="meta">0:55 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/metrics/rates.py#L20-L110">src/invalid_agent/metrics/rates.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>A seed makes the walkthrough file repeatable. The generator draws a baseline, then redraws only the cause mask. Rates, the Wilson interval, the p-chart, and the Pareto are functions of that table. The language model is not in this session, and the printed percent is an output.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-2/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-2/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/sim/generate.py"><code>src/invalid_agent/sim/generate.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/metrics/rates.py"><code>src/invalid_agent/metrics/rates.py</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/sim/generate.py#L36-L230"><code>src/invalid_agent/sim/generate.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/metrics/rates.py#L20-L110"><code>src/invalid_agent/metrics/rates.py</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>Generate the walkthrough scenario. Name the three knobs in the YAML that are inputs, and point at one number in the printout that is not stored in the file. Leave that number out of the YAML.</p></div>
 <h2>Quiz</h2>

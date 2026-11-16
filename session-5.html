@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>Run python -m invalid_agent.graph --scenario bad_lot --week 2 and open the Gantt, risk_register.md, and jira_issues.json.</li><li>Confirm the issue keys start with SIM- and that the lab-director task exists at week 2.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 5 · A four-week plan that can grow</h3>
 <div class="overview"><h4>Architecture</h4><p>The plan, the owners, and the risk register are functions of the top hypothesis and the week. Later weeks add tasks. They do not delete the baseline plan. A start that lands before its predecessor finishes raises. Likelihood times impact is checked, not typed twice.</p></div>
 <video controls preload="metadata" src="videos/session-5/01_planner.mp4">
 <a href="videos/session-5/01_planner.mp4">Download clip 1</a>
 </video>
-<p class="meta">1:23 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/planner.py">src/invalid_agent/nodes/planner.py</a> on <code>main</code></p>
+<p class="meta">1:23 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/planner.py#L22-L229">src/invalid_agent/nodes/planner.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 5 · Dry-run unless all three secrets exist</h3>
 <div class="overview"><h4>Architecture</h4><p>The Jira client uses the same gate as settings. Without a site, an email, and a token, sync writes SIM keys to a JSON file and does not open a socket. Those keys are the fictional investigation. They are not the build-board keys in the backlog file.</p></div>
 <video controls preload="metadata" src="videos/session-5/02_jira.mp4">
 <a href="videos/session-5/02_jira.mp4">Download clip 2</a>
 </video>
-<p class="meta">0:59 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/integrations/jira.py">src/invalid_agent/integrations/jira.py</a> on <code>main</code></p>
+<p class="meta">0:59 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/integrations/jira.py#L54-L118">src/invalid_agent/integrations/jira.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>Owners, dates, and dependencies come from the top cause. Later weeks add tasks and can move a risk&rsquo;s trend. The HTML chart and the PNG are two views of that plan. Without all three Jira settings the client writes a JSON file of SIM issues. That file is not the build backlog.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-5/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-5/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/planner.py"><code>src/invalid_agent/nodes/planner.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/integrations/jira.py"><code>src/invalid_agent/integrations/jira.py</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/planner.py#L22-L229"><code>src/invalid_agent/nodes/planner.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/integrations/jira.py#L54-L118"><code>src/invalid_agent/integrations/jira.py</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>Run week 2 with no Jira variables set. Confirm the written keys start with SIM and that the command did not need a token. Say, in one sentence, how that file differs from docs/jira/backlog.json.</p></div>
 <h2>Quiz</h2>

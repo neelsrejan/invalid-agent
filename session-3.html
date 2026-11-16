@@ -58,28 +58,28 @@
 <h2>Read first</h2>
 <ul><li>Run python -m invalid_agent.graph --scenario bad_lot --week 0 and open out/week0_triage.md.</li><li>The fidelity JSON beside it should name the deterministic backend when you have not selected a model.</li></ul>
 <h2>Watch in this order</h2>
-<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>main</code>.</p>
+<p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
 <h3>1. Session 3 · The week-0 memo</h3>
 <div class="overview"><h4>Architecture</h4><p>Triage runs once, at the start of the case. It writes the escalation memo from the metrics dictionary: the rate, the interval, the spec, the strata, the severity, and the first hypothesis. The complaint text is copied from the scenario. The memo does not calculate a new rate while it writes.</p></div>
 <video controls preload="metadata" src="videos/session-3/01_triage.mp4">
 <a href="videos/session-3/01_triage.mp4">Download clip 1</a>
 </video>
-<p class="meta">0:51 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/triage.py">src/invalid_agent/nodes/triage.py</a> on <code>main</code></p>
+<p class="meta">0:51 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/triage.py#L79-L204">src/invalid_agent/nodes/triage.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article><article class="clip">
 <h3>2. Session 3 · A number must already exist</h3>
 <div class="overview"><h4>Architecture</h4><p>The fidelity guard sits between any prose and the reader. Triage, the quality record, the status notes, and close-out all pass through it. It does not compute rates. It rejects a number that is not already in the facts, which is why a model may rewrite wording and may not invent a percentage.</p></div>
 <video controls preload="metadata" src="videos/session-3/02_fidelity.mp4">
 <a href="videos/session-3/02_fidelity.mp4">Download clip 2</a>
 </video>
-<p class="meta">1:03 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/guards/numeric_fidelity.py">src/invalid_agent/guards/numeric_fidelity.py</a> on <code>main</code></p>
+<p class="meta">1:03 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/guards/numeric_fidelity.py#L27-L88">src/invalid_agent/guards/numeric_fidelity.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
 <div class="prose"><p>Triage runs once, at the start of the case. The memo interpolates the metrics dict, and the hypothesis list comes from the strata, not from a stakeholder sentence. The guard rejects a narrative number the facts do not contain. If a model is attached later, it may rewrite wording, and the template replaces a draft that fails.</p></div>
-<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/main/docs/sessions/session-3/LOGIC_TRACE.md">LOGIC_TRACE.md</a>. The clips on this page walk the same responsibility in the current tree.</p>
+<p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-3/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
-<p><a href="https://github.com/neelsrejan/invalid-agent/tree/main">Browse the repository</a></p>
-<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/nodes/triage.py"><code>src/invalid_agent/nodes/triage.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/main/src/invalid_agent/guards/numeric_fidelity.py"><code>src/invalid_agent/guards/numeric_fidelity.py</code></a></li></ul>
+<p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
+<ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/nodes/triage.py#L79-L204"><code>src/invalid_agent/nodes/triage.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/guards/numeric_fidelity.py#L27-L88"><code>src/invalid_agent/guards/numeric_fidelity.py</code></a></li></ul>
 <h2>Practice</h2>
 <div class="prose"><p>Run the week-0 graph on the walkthrough scenario. Explain why a percentage that is not in the facts has to be rejected even when the sentence sounds more precise than the memo.</p></div>
 <h2>Quiz</h2>
