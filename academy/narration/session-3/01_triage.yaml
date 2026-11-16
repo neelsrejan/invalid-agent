@@ -1,0 +1,20 @@
+title: Session 3 · The week-0 memo
+file: src/invalid_agent/nodes/triage.py
+overview: 'Triage runs once, at the start of the case. It writes the escalation memo from the metrics
+  dictionary: the rate, the interval, the spec, the strata, the severity, and the first hypothesis. The
+  complaint text is copied from the scenario. The memo does not calculate a new rate while it writes.'
+voice: en-US-AndrewNeural
+rate: +0%
+pause: 0.35
+segments:
+- lines: 79-136
+  anchor: 'def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) -> dict[str,
+    Any]:'
+  say: build_facts is the only number source for the memo. It rounds the values the guard will later accept,
+    including the percent form of a proportion. The hypothesis sentence is built from those same fields.
+    A stakeholder injection is not an input here.
+- lines: 156-204
+  anchor: 'def triage_node(state: CaseState) -> dict[str, Any]:'
+  say: triage_node regenerates the frame from the scenario seed, ranks hypotheses, fills the facts, and
+    narrates the memo. The draft goes through the fidelity guard. A failure raises, and the rejected text
+    is not the file that gets written. The node does not loop.

@@ -3,8 +3,8 @@
 (function (root) {
   "use strict";
 
-  var KEY = "ia-academy-progress-v1";
-  var SIG_PREFIX = "invalid-agent-academy|";
+  var KEY = "ia-academy-progress-v2";
+  var SIG_PREFIX = "invalid-agent-academy-v2|";
 
   function rightRotate(value, amount) {
     return (value >>> amount) | (value << (32 - amount));
@@ -68,7 +68,7 @@
   }
 
   function emptyState() {
-    return { version: 1, sessions: {} };
+    return { version: 2, sessions: {} };
   }
 
   function load() {
@@ -76,7 +76,7 @@
       var raw = root.localStorage && root.localStorage.getItem(KEY);
       if (!raw) return emptyState();
       var data = JSON.parse(raw);
-      if (!data || data.version !== 1 || !data.sessions) return emptyState();
+      if (!data || data.version !== 2 || !data.sessions) return emptyState();
       return data;
     } catch (err) {
       return emptyState();
@@ -119,17 +119,17 @@
     var json = JSON.stringify(state);
     var payload = bytesToB64Url(new TextEncoder().encode(json));
     var sig = sha256(SIG_PREFIX + payload).slice(0, 12);
-    return "IA1." + payload + "." + sig;
+    return "IA2." + payload + "." + sig;
   }
 
   function importState(code) {
     var text = String(code || "").trim().replace(/\s+/g, "");
     var parts = text.split(".");
-    if (parts.length !== 3 || parts[0] !== "IA1") throw new Error("That code does not start with IA1.");
+    if (parts.length !== 3 || parts[0] !== "IA2") throw new Error("That code does not start with IA2.");
     var sig = sha256(SIG_PREFIX + parts[1]).slice(0, 12);
     if (sig !== parts[2]) throw new Error("The checksum does not match. Copy the whole code.");
     var data = JSON.parse(b64UrlToString(parts[1]));
-    if (!data || data.version !== 1 || !data.sessions) throw new Error("The progress payload is not a version 1 record.");
+    if (!data || data.version !== 2 || !data.sessions) throw new Error("The progress payload is not a version 2 record.");
     return data;
   }
 
@@ -191,7 +191,7 @@
     if (detail) {
       detail.textContent = done === 9
         ? "You have passed every quiz. The close-out deck is the last artifact."
-        : "Pass a quiz at 80% or better to open the next session. Retries are unlimited.";
+        : "Pass a quiz at 80% or better (7 of 8) to open the next session. Retries are unlimited.";
     }
     document.querySelectorAll(".session-card").forEach(function (card) {
       var n = Number(card.getAttribute("data-session"));

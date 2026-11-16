@@ -172,11 +172,11 @@ async def _tts_one(text, voice, rate, out, sem):
 
     async with sem:
         last = None
-        for attempt in range(5):
+        for attempt in range(8):
             try:
                 await asyncio.wait_for(
                     edge_tts.Communicate(text, voice, rate=rate).save(out),
-                    timeout=40,
+                    timeout=60,
                 )
                 if os.path.getsize(out) > 8000:
                     return "edge-tts"
@@ -187,12 +187,13 @@ async def _tts_one(text, voice, rate, out, sem):
                     f"  edge-tts attempt {attempt + 1} failed ({exc.__class__.__name__}: {exc})",
                     file=sys.stderr,
                 )
-                await asyncio.sleep(1.6 * (attempt + 1))
+                await asyncio.sleep(2.0 * (attempt + 1))
         raise RuntimeError(f"edge-tts failed for a segment: {last}")
 
 
 def synthesize_all(texts, cfg, paths):
-    sem = asyncio.Semaphore(2)
+    # One request at a time. Parallel calls to this voice often return no audio.
+    sem = asyncio.Semaphore(1)
 
     async def run():
         return await asyncio.gather(
@@ -270,15 +271,80 @@ def encode_clip(png, mp3, mp4, pad):
     return dur
 
 
+def render_overview(title, text, idx, total, path):
+    """Architecture card shown before the line walkthrough."""
+    img = Image.new("RGB", (W, H), (18, 28, 36))
+    d = ImageDraw.Draw(img)
+    small = ImageFont.truetype(SANS, 20)
+    body = ImageFont.truetype(SANS, 26)
+    d.rectangle([0, 0, W, TITLE_H], fill=(12, 22, 32))
+    d.text((20, 14), title[:110], font=small, fill=(235, 235, 235))
+    prog = f"{idx}/{total}  ·  architecture"
+    d.text((W - 20 - d.textlength(prog, font=small), 14), prog, font=small, fill=(255, 196, 0))
+    d.rectangle([0, H - CAP_H, W, H], fill=(14, 14, 18))
+    lines = wrap_px(d, text, body, W - 80)
+    y = TITLE_H + 36
+    for line in lines[:12]:
+        d.text((40, y), line, font=body, fill=(235, 235, 235))
+        y += 34
+    img.save(path)
+
+
+def resolve_code(script: Path, spec: dict) -> tuple[str, str]:
+    """Return (filename, source) from tag academy-v2, not the working tree."""
+    rel = str(spec["file"]).replace("\\", "/")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from pin import PIN_TAG, pinned_text
+
+    try:
+        text = pinned_text(rel)
+    except SystemExit:
+        raw = Path(rel)
+        root = Path(__file__).resolve().parents[1]
+        for candidate in (raw, script.parent / raw, root / raw):
+            if candidate.is_file():
+                raise SystemExit(
+                    f"{script.name} must be checked against {PIN_TAG}, and that object is missing for {rel}"
+                )
+        raise
+    return Path(rel).name, text
+
+
+def assert_anchors(script: Path, spec: dict, code: str) -> None:
+    rows = code.splitlines()
+    for segment in spec.get("segments") or []:
+        if segment.get("overview"):
+            continue
+        anchor = segment.get("anchor")
+        lines = segment.get("lines", segment.get("range"))
+        if not anchor or lines is None:
+            raise SystemExit(f"{script.name} segment {lines!r} is missing an anchor")
+        start, end = parse_range(lines)
+        if start < 1 or end > len(rows) or start > end:
+            raise SystemExit(f"{script.name}: line range {start}-{end} outside 1..{len(rows)}")
+        actual = rows[start - 1]
+        if actual != anchor:
+            raise SystemExit(
+                f"{script.name} {start}-{end} does not match the pinned file.\n"
+                f"  anchor: {anchor!r}\n"
+                f"  file:   {actual!r}"
+            )
+
+
+def overview_text(spec: dict) -> str:
+    overview = spec.get("overview") or ""
+    if isinstance(overview, dict):
+        overview = overview.get("say") or overview.get("text") or ""
+    return " ".join(str(overview).split())
+
+
 def render(script: Path, out: Path, voice: str | None = None, keep: bool = False) -> dict:
     spec = (json.loads if script.suffix == ".json" else yaml.safe_load)(script.read_text())
-    code_path = (script.parent / spec["file"]).resolve()
-    if not code_path.is_file():
-        raise SystemExit(f"code file not found: {code_path}")
-    code = code_path.read_text()
+    code_name, code = resolve_code(script, spec)
+    assert_anchors(script, spec, code)
     nlines = len(code.splitlines())
     cfg = {
-        "title": spec.get("title", code_path.name)[:110],
+        "title": spec.get("title", code_name)[:110],
         "voice": voice or spec.get("voice", "en-US-AndrewNeural"),
         "rate": spec.get("rate", "+0%"),
         "style": spec.get("style", "monokai"),
@@ -290,7 +356,7 @@ def render(script: Path, out: Path, voice: str | None = None, keep: bool = False
         # Academy standard. A script may not silently switch voices.
         print(f"overriding voice {cfg['voice']} -> en-US-AndrewNeural", file=sys.stderr)
         cfg["voice"] = "en-US-AndrewNeural"
-    lines = tokenize(code, code_path.name, cfg["style"])
+    lines = tokenize(code, code_name, cfg["style"])
     segs = spec["segments"]
     work = Path(tempfile.mkdtemp(prefix="wt_"))
     lh = int(cfg["font_size"] * 1.45)
@@ -303,6 +369,13 @@ def render(script: Path, out: Path, voice: str | None = None, keep: bool = False
             raise SystemExit(f"{script.name}: line range {hl} outside 1..{nlines}")
         ranges.append(hl)
         texts.append(" ".join(str(s["say"] if "say" in s else s["text"]).split()))
+    intro = overview_text(spec)
+    if intro:
+        ranges.insert(0, (0, 0))
+        texts.insert(0, intro)
+        segs.insert(0, {"overview": True, "say": intro, "caption": intro})
+    elif not spec.get("segments"):
+        raise SystemExit(f"{script.name} has no architecture overview and no segments")
     mp3s = [work / f"a{i:03}.mp3" for i in range(1, len(segs) + 1)]
     print(f"speaking {len(segs)} segments with edge-tts…", flush=True)
     engines = synthesize_all(texts, cfg, mp3s)
@@ -313,6 +386,13 @@ def render(script: Path, out: Path, voice: str | None = None, keep: bool = False
     jobs = []
     for i, s in enumerate(segs, 1):
         hl = ranges[i - 1]
+        if s.get("overview"):
+            png = work / f"f{i:03}.png"
+            mp4 = work / f"c{i:03}.mp4"
+            render_overview(cfg["title"], texts[i - 1], i, len(segs), png)
+            jobs.append((png, mp3s[i - 1], mp4, cfg["pad"], hl))
+            clips.append(mp4)
+            continue
         if hl[0] - 1 < top + 1 or hl[1] > top + visible - 2:
             top = max(
                 0,

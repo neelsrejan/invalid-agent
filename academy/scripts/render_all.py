@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -34,8 +35,25 @@ def main() -> None:
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
     wanted = args.sessions or list(range(1, 10))
-    materialize(wanted)
+    needs_snapshot = False
+    for n in wanted:
+        folder = ACADEMY / "narration" / f"session-{n}"
+        for script in folder.glob("*.yaml"):
+            if "snapshots/" in script.read_text():
+                needs_snapshot = True
+    if needs_snapshot:
+        materialize(wanted)
     out_root = ACADEMY / "build" / "videos"
+    durations_path = ACADEMY / "content" / "durations.json"
+    durations = json.loads(durations_path.read_text()) if durations_path.exists() else {}
+    # Drop timings for clips this render no longer publishes.
+    live = set()
+    for n in range(1, 10):
+        folder = ACADEMY / "narration" / f"session-{n}"
+        if folder.is_dir():
+            for script in folder.glob("*.yaml"):
+                live.add(f"session-{n}/{script.stem}")
+    durations = {key: value for key, value in durations.items() if key in live}
     for n in wanted:
         folder = ACADEMY / "narration" / f"session-{n}"
         scripts = sorted(folder.glob("*.yaml"))
@@ -49,7 +67,9 @@ def main() -> None:
             last = None
             for attempt in range(1, 4):
                 try:
-                    render(script, dest)
+                    info = render(script, dest)
+                    durations[f"session-{n}/{script.stem}"] = info["seconds"]
+                    durations_path.write_text(json.dumps(dict(sorted(durations.items())), indent=2) + "\n")
                     last = None
                     break
                 except Exception as exc:  # noqa: BLE001 — retry a flaky speech call
