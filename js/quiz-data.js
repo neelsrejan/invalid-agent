@@ -4,203 +4,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s1q1",
-        "prompt": "Why is the invalid-rate spec computed from 0.98 instead of typed as its own literal?",
+        "prompt": "Why is the invalid-rate cap calculated from the validity promise?",
         "choices": [
           {
             "id": "a",
-            "text": "One shared constant keeps the promised validity and the two percent cap from drifting apart."
+            "text": "One calculation keeps the ninety-eight percent promise and the two percent cap from drifting apart."
           },
           {
             "id": "b",
-            "text": "The client importer blocks a bare number so the cap has to remain in a calculated custom field."
+            "text": "The test runner rejects a second numeric literal so the cap has to be produced by a formula in code."
           },
           {
             "id": "c",
-            "text": "Otherwise the interval helper drops its upper bound and the memo can print only a floor."
+            "text": "The language model recomputes the cap each week so the constant in code is only a comment for readers."
           },
           {
             "id": "d",
-            "text": "The test runner refuses to compare two numeric literals so one of them has to be derived."
+            "text": "The tracker importer stores only calculated fields so a typed two percent would be dropped on import."
           }
         ],
         "salt": "1648a87e8b2a3dee",
         "answerHash": "f801faab7f187e2a9bcd4f066ba3eae7f7433b50a3f161a8f266c8f88db6f412",
-        "explain": "U1BFQ19JTlZBTElEX1JBVEUgPSByb3VuZCgxIC0gUFJPTUlTRURfVkFMSURJVFksIDIpLiBOaW5ldHktZWlnaHQgcGVyY2VudCB2YWxpZCBtZWFucyBhdCBtb3N0IDIlIGludmFsaWQuIE9uZSBjb25zdGFudCBvd25zIHRoZSBwcm9taXNlLg=="
+        "explain": "TmluZXR5LWVpZ2h0IHBlcmNlbnQgdmFsaWQgbWVhbnMgYXQgbW9zdCB0d28gcGVyY2VudCBpbnZhbGlkLiBPbmUgY29uc3RhbnQgb3ducyB0aGF0IHByb21pc2Uu"
       },
       {
         "id": "s1q2",
-        "prompt": "Which environment variables turn Jira on?",
+        "prompt": "Why does printing the settings object hide the token?",
         "choices": [
           {
             "id": "a",
-            "text": "The API token by itself enables the client even when the URL and the email stay blank."
+            "text": "A log or a traceback would otherwise copy the Jira token or the openFDA key into the output."
           },
           {
             "id": "b",
-            "text": "A base URL plus an email plus a token are all required or the client gate stays false."
+            "text": "The token is stored inside the model file so the dashboard can reload it after a restart of the process."
           },
           {
             "id": "c",
-            "text": "The openFDA key together with the account email opens the client and the token stays optional."
+            "text": "The token is hashed into the validity promise so the spec comparison can detect a rotated secret."
           },
           {
             "id": "d",
-            "text": "Setting the project key to INV is the entire switch with or without an email address."
+            "text": "The token selects which scenario seed to draw so hiding it keeps the field file from changing."
           }
         ],
         "salt": "397bee6cce6b881a",
-        "answerHash": "3978a0788df4f9f2b461f8b38fc9ee6b0d0ccc9f4680c83b3fd7afb94fe8b64e",
-        "explain": "VGhlIGdhdGUgaXMgYWxsIHRocmVlOiBKSVJBX0JBU0VfVVJMIG9yIEpJUkFfVVJMLCBKSVJBX0VNQUlMLCBhbmQgSklSQV9BUElfVE9LRU4gb3IgSklSQV9UT0tFTi4gVGhlIGxvbmdlciBuYW1lcyB3aW4gd2hlbiBib3RoIGFsaWFzZXMgYXJlIHNldC4="
+        "answerHash": "a60293dbe4625543c1d8c2a45309f433180eaae1fad4dc7512cbafb6f2be90ed",
+        "explain": "U2VjcmV0cyBzdGF5IGluIHRoZSBlbnZpcm9ubWVudC4gVGhlIHJlcHIgaXMgdGhlIGJvdW5kYXJ5IHRoYXQga2VlcHMgdGhlbSBvdXQgb2YgbG9ncy4="
       },
       {
         "id": "s1q3",
-        "prompt": "What is wrong with the default frozen-dataclass repr?",
+        "prompt": "Why does Jira stay off until three values are set?",
         "choices": [
           {
             "id": "a",
-            "text": "The test runner is blocked from calling that view so a planted token cannot reach a log."
+            "text": "The openFDA key is the third value and without it the client refuses to write even a local file."
           },
           {
             "id": "b",
-            "text": "It lowercases the model tag so the local runner cannot resolve llama3.1:8b at all."
+            "text": "A partial login is not a connection and the investigation still has to run with an empty environment."
           },
           {
             "id": "c",
-            "text": "The generated view prints every stored field and also includes a planted API token."
+            "text": "The project key alone opens the live board even when the email and the token are still blank."
           },
           {
             "id": "d",
-            "text": "It hides the repository top so tests cannot locate the scenario folders on disk."
+            "text": "Any two of the three values are enough because the client can infer the missing one from the host."
           }
         ],
         "salt": "7eeae6e7843514b8",
-        "answerHash": "8342474d6b061f1d1d45d1e6e4354d360977e162e1e497f2749fc4267b0f55c9",
-        "explain": "QSBwbGFudGVkIHNlY3JldCBpbiB0aGUgdG9rZW4gd291bGQgc2hvdyB1cCBpbiBsb2dzIGlmIHJlcHIgd2VyZSB0aGUgZGVmYXVsdC4gVGhlIG92ZXJyaWRlIHByaW50cyB0aGUgcmVkYWN0ZWQgdmlldyBvbmx5Lg=="
+        "answerHash": "ebe8997eac473b6aaee9acf3b850d95c80afdeab293768388ce70020ad906787",
+        "explain": "VGhlIGdhdGUgaXMgdGhlIHNpdGUgYW5kIHRoZSBlbWFpbCBhbmQgdGhlIHRva2VuLiBUd28gb3V0IG9mIHRocmVlIHN0YXlzIGEgZHJ5IHJ1bi4="
       },
       {
         "id": "s1q4",
-        "prompt": "What is docs/jira/backlog.json, compared with the Jira sync added later?",
+        "prompt": "Why did the build backlog start as a JSON file?",
         "choices": [
           {
             "id": "a",
-            "text": "It is the rehearsal record of SIM investigation issues written only after the client is built."
+            "text": "The file is produced only after the client exists so the first session cannot be reviewed without it."
           },
           {
             "id": "b",
-            "text": "It is the active customer-escalation board and a following push posts onto those same INV identifiers."
+            "text": "The file is the live investigation board and a later push posts onto those same INV identifiers."
           },
           {
             "id": "c",
-            "text": "It is the week-zero triage memo stored as structured data so an escalate flag can be imported."
+            "text": "The numeric guard parses only JSON so the sprint stories have to live in that format to be checked."
           },
           {
             "id": "d",
-            "text": "It is the three-sprint construction board and sprint 1 holds the issues INV-101 through INV-109."
+            "text": "A reviewer can read the sprint backlog before any tracker login exists and import it later."
           }
         ],
         "salt": "88a0929bc0363574",
         "answerHash": "3d585eac6126938425d1f0fbc4ed24ed98d2b8f4306b95e111ecc6d0022e4d83",
-        "explain": "VGhpcyBKU09OIGlzIHRoZSB0aHJlZS1zcHJpbnQgYnVpbGQgYm9hcmQuIFNlc3Npb24gNSB3cml0ZXMgYSBkaWZmZXJlbnQgc2V0LCB0aGUgZmljdGlvbmFsIGludmVzdGlnYXRpb24sIGFuZCB0aG9zZSBrZXlzIGFyZSBTSU0tKiBzbyB0aGUgdHdvIGZpbGVzIGNhbm5vdCBiZSBjb25mdXNlZC4="
+        "explain": "VGhlIGJ1aWxkIGJvYXJkIGFuZCB0aGUgaW52ZXN0aWdhdGlvbiBzeW5jIGFyZSBkaWZmZXJlbnQgYXJ0aWZhY3RzLiBUaGUgZmlsZSBpcyB0aGUgYnVpbGQgYm9hcmQu"
       },
       {
         "id": "s1q5",
-        "prompt": "Why is dependencies an empty list in Session 1 pyproject.toml?",
+        "prompt": "Why does an unknown model backend become deterministic?",
         "choices": [
           {
             "id": "a",
-            "text": "Nothing in this tag imports third-party libraries yet so the job skips those extra downloads."
+            "text": "A typo on a hosted demo should fall back to the template instead of crashing in front of a reviewer."
           },
           {
             "id": "b",
-            "text": "The build tool refuses a filled array while the version is still 0.1.0 so the job would fail closed."
+            "text": "An unknown name raises so the template cannot run and the operator must fix the setting first."
           },
           {
             "id": "c",
-            "text": "Python 3.11 blocks third-party imports which forces that array to stay vacant on purpose."
+            "text": "An unknown name selects Llama 3.1 8B so the demo still narrates with the local default model."
           },
           {
             "id": "d",
-            "text": "The MIT license forbids third-party libraries and the installer blocks once that array is filled."
+            "text": "An unknown name loads a GGUF from disk even when the model path variable is left empty."
           }
         ],
         "salt": "7e3e843c6a8a3b5a",
         "answerHash": "49220412a55943e480e72fbd242c491da6b5a8b54ad5cb4db692dd50f0c5e65c",
-        "explain": "TGF0ZXIgc2Vzc2lvbnMgYWRkIGEgbGlicmFyeSBvbmx5IHdoZW4gY29kZSBpbXBvcnRzIGl0LiBUaGUgbG9jYWwgbW9kZWwsIHdoZW4geW91IHdhbnQgb25lLCBpcyBNZXRhIExsYW1hIDMuMSA4QiB2aWEgT2xsYW1hLiBJdCBpcyBub3QgYSBkZXBlbmRlbmN5IGluIHRoaXMgdGFnLg=="
+        "explain": "VGhlIGRlZmF1bHQgcGF0aCBpcyBydWxlcy4gQSBtaXNzcGVsbGVkIGJhY2tlbmQgbXVzdCBub3QgdGFrZSB0aGUgZGVtbyBkb3duLg=="
       },
       {
         "id": "s1q6",
-        "prompt": "What does find_repo_root look for?",
+        "prompt": "Why does CI run pytest with no secrets?",
         "choices": [
           {
             "id": "a",
-            "text": "It stops at the first directory named out and treats that folder as proof of the project top."
+            "text": "The job downloads Llama 3.1 8B and the dashboard before pytest is allowed to start on the runner."
           },
           {
             "id": "b",
-            "text": "It accepts the project file sitting beside the scenarios directory or beside the package directory."
+            "text": "The job posts the build backlog to project INV so the board stays in sync with every push."
           },
           {
             "id": "c",
-            "text": "It searches for an active model server on port 11434 and treats that process as the project top."
+            "text": "The job refuses to start unless a token is present so a fork cannot run the suite anonymously."
           },
           {
             "id": "d",
-            "text": "It requires the TOPDIR variable and ignores the project file whenever that variable is missing."
+            "text": "A stranger can install the package and test it without a token and without a running model."
           }
         ],
         "salt": "e4d4cab896481ed3",
-        "answerHash": "5f61387bbdd731e3d408cde426de7e5d195bdbae75c2f28be480567777c19d26",
-        "explain": "V2Fsa2luZyBwYXJlbnRzIHVudGlsIHRoYXQgcGFpciBhcHBlYXJzIGtlZXBzIHNjZW5hcmlvIHBhdGhzIGNvcnJlY3Qgd2hlbiBTdHJlYW1saXQncyB3b3JraW5nIGRpcmVjdG9yeSBpcyB0aGUgcmVwbyBhbmQgd2hlbiB0aGUgcGFja2FnZSBpcyBhbiBlZGl0YWJsZSBpbnN0YWxsLg=="
+        "answerHash": "d582bf283ecededfda6d6b338f2a792a94d5a3fbfbded698ee5bf3185eaea86a",
+        "explain": "Q0kgaXMgdGhlIGNvbnRyYWN0IHRoYXQgdGhlIHJlcG8gcnVucy4gQWNjb3VudHMgYXJlIG9wdGlvbmFsIGFuZCBzdGF5IG91dCBvZiB0aGUgd29ya2Zsb3cu"
       },
       {
         "id": "s1q7",
-        "prompt": "LLM_BACKEND=rules-only becomes which backend?",
+        "prompt": "What is deliberately out of scope for this repo?",
         "choices": [
           {
             "id": "a",
-            "text": "It resolves to the laptop model because rules means the local model should write the memo."
+            "text": "A local Ollama install is out of scope because every narrative has to come from a paid host."
           },
           {
             "id": "b",
-            "text": "It resolves to llamacpp because rules loads a GGUF even when the model path is vacant."
+            "text": "Multi-agent crews and fine-tuning and a vector database added only to claim retrieval are out."
           },
           {
             "id": "c",
-            "text": "It resolves to deterministic because rules and rules-only and mock are three names for that engine."
+            "text": "A Streamlit page is out of scope because the investigation artifacts are markdown files only."
           },
           {
             "id": "d",
-            "text": "It raises an error because rules is unrecognized and must not fall through to a silent template."
+            "text": "An optional Jira dry-run is out of scope because every sync must open a socket to a live site."
           }
         ],
         "salt": "8f5da9c3eef3b844",
-        "answerHash": "e85fedb4dc2a86fe8d6c3753c8ddd133d6d5c3e7a7150e2aee2dbbe68527221c",
-        "explain": "cnVsZXMsIHJ1bGVzLW9ubHksIGFuZCBtb2NrIGFyZSBzeW5vbnltcyBmb3IgZGV0ZXJtaW5pc3RpYy4gQW4gdW5rbm93biBuYW1lIGFsc28gZmFsbHMgYmFjayB0byBkZXRlcm1pbmlzdGljLCB3aGljaCBpcyB3aHkgYSBzbG9wcHkgdGVzdCBjYW4gcGFzcyBmb3IgdGhlIHdyb25nIHJlYXNvbi4="
+        "answerHash": "58253e23aa0fa04c800c431a756c5e1461e2d712ec4498eb7752dfe2ef30efb8",
+        "explain": "VGhlIFBSRCBuYW1lcyB0aGUgd29yayB0aGlzIHBvcnRmb2xpbyB3aWxsIG5vdCBwcmV0ZW5kIHRvIGhhdmUgZG9uZS4="
       },
       {
         "id": "s1q8",
-        "prompt": "What does the Session 1 GitHub Actions workflow run?",
+        "prompt": "Why is the simulation banner part of the framing?",
         "choices": [
           {
             "id": "a",
-            "text": "Python 3.13 is the sole interpreter and the job injects a client token for the active client."
+            "text": "The banner is required by the PostgreSQL license whenever a table holds a facility name."
           },
           {
             "id": "b",
-            "text": "The job downloads Llama 3.1 8B and then the dashboard before pytest is allowed to start."
+            "text": "The banner switches the ranker from the evidence policy to the note-only policy at week zero."
           },
           {
             "id": "c",
-            "text": "The hosted app platform replaces the hosted runners for this job and pytest never starts."
+            "text": "The banner is the only place the two percent cap is defined so later modules import it from there."
           },
           {
             "id": "d",
-            "text": "Python 3.11 and 3.12 do an editable install with the dev extra and then pytest with no secrets."
+            "text": "A reader of the memo or the banner or the deck must not mistake the panel for a real complaint."
           }
         ],
         "salt": "ac8759af61bd85bb",
         "answerHash": "4ee92197ae0279b570e90476871799309b91b97434467a8b5dd3ddd6f0da9458",
-        "explain": "VGhlIHBsYW4gbmFtZXMgMy4xMS4gMy4xMiBpcyBhbHNvIGdhdGVkIGJlY2F1c2UgdGhhdCBpcyBhIGxhcHRvcCBpbnRlcnByZXRlciB5b3UgbWF5IGhhdmUuIFRoZSB3b3JrZmxvdyBuZXZlciBuZWVkcyBhIHRva2VuLg=="
+        "explain": "VGhlIHBhbmVsIGFuZCB0aGUgY3VzdG9tZXJzIGFyZSBmaWN0aW9uYWwuIFRoZSBsYWJlbCBpcyBob3cgdGhhdCBzdGF5cyB2aXNpYmxlLg=="
       }
     ]
   },
@@ -209,203 +209,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s2q1",
-        "prompt": "Why does the generator redraw the cause mask instead of adding a second coin-flip on top of the baseline?",
+        "prompt": "Why is the printed invalid rate absent from the scenario file?",
         "choices": [
           {
             "id": "a",
-            "text": "Stacking two draws raises the complement or double-counts the pattern and replacing it leaves others untouched."
+            "text": "The YAML names the cause and the knobs and the printed percent is an output of the generator."
           },
           {
             "id": "b",
-            "text": "The scenario document forbids a starting frequency so the only failing rows are the ones on that pattern."
+            "text": "The percent is typed into the file after the first run so later sessions can quote it directly."
           },
           {
             "id": "c",
-            "text": "Two Bernoulli draws cannot share one numeric function so the extra toss has to be applied through SQL."
+            "text": "The YAML stores the percent under a different key so the generator can skip recomputing it."
           },
           {
             "id": "d",
-            "text": "Replacing the pattern lets the ranked chart count valid rows which a stacked probability would have dropped."
+            "text": "The language model writes the percent into the YAML once the Wilson interval has been checked."
           }
         ],
         "salt": "5b5e70da3b1520de",
         "answerHash": "cf5fc030b594f0c552203596098f90f33e1c4bdf784646569b182ca2c41cd50b",
-        "explain": "VGhlIGNoaS1zcXVhcmUgdGVzdCBuZWVkcyBhIGNvbnRyYXN0OiB0aGUgY2F1c2Ugc3RyYXR1bSB2ZXJzdXMgcm93cyB0aGF0IHN0YXllZCBhdCB0aGUgYmFzZWxpbmUgcmF0ZS4gQWRkaW5nIHByb2JhYmlsaXRpZXMgd291bGQgc21lYXIgdGhhdCBjb250cmFzdC4="
+        "explain": "SW5wdXRzIGFyZSB0aGUgbG90IGFuZCB0aGUgc3RhcnQgZGF5IGFuZCB0aGUgc3RyYXR1bSByYXRlLiBUaGUgcHJpbnRvdXQgaXMgdGhlIGNoZWNrLg=="
       },
       {
         "id": "s2q2",
-        "prompt": "What does the Wilson interval do for 0 invalids out of 100, and why?",
+        "prompt": "Why draw the cause as a redraw of one mask?",
         "choices": [
           {
             "id": "a",
-            "text": "It raises because a zero event count makes the denominator undefined and the memo cannot render."
+            "text": "The mask is how the model decides which code belongs on the Pareto chart for that week."
           },
           {
             "id": "b",
-            "text": "The analytic lower bound is zero and residue under 1e-12 snaps back to zero before the memo."
+            "text": "Stacking the baseline probability and the cause probability makes a rare lot easier to see."
           },
           {
             "id": "c",
-            "text": "It returns a negative lower bound and the caller clamps that bound back into the unit range before the memo may render."
+            "text": "The complement stays at the baseline instead of stacking two probabilities on the same rows."
           },
           {
             "id": "d",
-            "text": "It returns the two percent promise as both ends since a sample with no failures is treated as the promise."
+            "text": "The mask deletes the other lots so the chi-square test always has a single level to score."
           }
         ],
         "salt": "91c2c89da5b68c4d",
-        "answerHash": "0645ba74a5e518587bce1a63de86081b6b7d241c69cda1749ea0b1f7f744546f",
-        "explain": "VGhlIGZvcm11bGEncyBsb3dlciBib3VuZCBpcyAwIHdoZW4gayBpcyAwLiBUaGUgc25hcCBzdG9wcyBhIHJlc2lkdWUgYXJvdW5kIDFlLTE4IGZyb20gbG9va2luZyBsaWtlIGEgcmVhbCByYXRlIGluIHRoZSBtZW1vLg=="
+        "answerHash": "0a37a3a1c835784d479f5f02cd02cd63d4d7b94fa47c24109f84019c90699ea2",
+        "explain": "VHdvIGVmZmVjdHMgb24gb25lIHJvdyB3b3VsZCBubyBsb25nZXIgYmUgc2VwYXJhYmxlLiBUaGUgcmVkcmF3IGtlZXBzIHRoZW0gYXBhcnQu"
       },
       {
         "id": "s2q3",
-        "prompt": "A lot and an instrument both look high. Which design choice makes those two claims separable?",
+        "prompt": "Why must the same YAML produce the same table?",
         "choices": [
           {
             "id": "a",
-            "text": "The revision flips when the bad batch starts so the cutover marks the batch rather than the gauge."
+            "text": "The dashboard caches the first draw and refuses to open a scenario whose seed is stable."
           },
           {
             "id": "b",
-            "text": "The batch id is copied into the gauge column which is what lines the two effects up."
+            "text": "A seed makes the investigation repeatable so a reviewer can regenerate the file and match it."
           },
           {
             "id": "c",
-            "text": "Place and gauge and batch and revision and operator are independent so a place is not tied to one gauge."
+            "text": "A new draw each run lets the memo quote a fresh interval without changing the scenario knobs."
           },
           {
             "id": "d",
-            "text": "Each collection place owns exactly one gauge so the two columns are aliases of one draw."
+            "text": "The tracker requires a different row count on every import so the seed is ignored on purpose."
           }
         ],
         "salt": "aa25122e5ee177ef",
-        "answerHash": "4ae9c48e172e800cc45b05272fb1fb8cfb0477f7db5b12a39dec4ca50f84d9c3",
-        "explain": "VGhlIG1vZHVsZSBkb2NzdHJpbmcgc3RhdGVzIHRoZSByZWZlcmVuY2UtbGFiIGFzc3VtcHRpb24uIGJhZF9sb3QgYWxzbyBydW5zIGJvdGggc29mdHdhcmUgdmVyc2lvbnMgZm9yIHRoZSB3aG9sZSBob3Jpem9uIHNvIGEgdmVyc2lvbiBjdXRvdmVyIGlzIG5vdCBtaXN0YWtlbiBmb3IgdGhlIGxvdC4="
+        "answerHash": "1ddefa5d3db5f7252a83869fc28e4be3e44f9da92efc228be1740e72c6b40d86",
+        "explain": "VGhlIHNjZW5hcmlvIGlzIGEgZmlsZSwgbm90IGEgbW9vZC4gVGhlIHNlZWQgaXMgdGhlIGVudGlyZSBzb3VyY2Ugb2YgcmFuZG9tbmVzcy4="
       },
       {
         "id": "s2q4",
-        "prompt": "Which four Western Electric rules does this p-chart implement?",
+        "prompt": "Why does the rate module return both a point comparison and an interval comparison?",
         "choices": [
           {
             "id": "a",
-            "text": "Nelson tests 5 through 8 are the only ones used and the usual zone tests on a proportion plot are skipped."
+            "text": "Being over the cap and having the whole Wilson interval clear it are different claims to make."
           },
           {
             "id": "b",
-            "text": "Only a single weekly point outside the two percent promise is checked and no zone tests run beyond that one comparison."
+            "text": "The interval is only a display hint and the escalate decision ignores it in every later session."
           },
           {
             "id": "c",
-            "text": "A two-sample comparison on every gauge is recomputed from scratch at the end of each day."
+            "text": "The two comparisons are aliases and they are true under exactly the same condition on every file."
           },
           {
             "id": "d",
-            "text": "Zones are a point past 3 sigma then 2 of 3 past 2 sigma then 4 of 5 past 1 sigma then 8 on one side."
+            "text": "The point estimate is dropped once the interval exists so the memo can print a single boolean."
           }
         ],
         "salt": "f2ef2e7deccd4f1c",
-        "answerHash": "e54f24960022ebe6fcbb99d0cea06fcd12f2195787b45bd744a2d65150325751",
-        "explain": "VGhleSBydW4gb24gei1zY29yZXMgaW4gdGltZSBvcmRlci4gUnVsZSA0IG5lZWRzIGV2ZXJ5IHogaW4gYSB3aW5kb3cgb2YgOCBzdHJpY3RseSBvbiBvbmUgc2lkZSwgc28gYSBwb2ludCBvbiB0aGUgY2VudGVyIGxpbmUgYnJlYWtzIHRoZSBydW4u"
+        "answerHash": "be7a28a039a4a179475c410e3b11a12d0b3616f92be626d1eb3d33542ce738ed",
+        "explain": "QSBwb2ludCBlc3RpbWF0ZSBvdmVyIHR3byBwZXJjZW50IGlzIG5vdCB0aGUgc2FtZSBzZW50ZW5jZSBhcyBhbiBpbnRlcnZhbCB0aGF0IGNsZWFycyB0d28gcGVyY2VudC4="
       },
       {
         "id": "s2q5",
-        "prompt": "Where do the Mendeley hemolysis-index rows live in this repo?",
+        "prompt": "Why does a one-level chi-square return a quiet result?",
         "choices": [
           {
             "id": "a",
-            "text": "They are absent and the seed module holds a lognormal stand-in plus the DOI and the source is only cited."
+            "text": "A single stratum means the file is corrupt and the generator is supposed to raise and stop."
           },
           {
             "id": "b",
-            "text": "They sit inside the week-zero memo as an appendix of raw values taken from that paper."
+            "text": "A single stratum disables the Wilson interval so the memo can skip the spec comparison entirely."
           },
           {
             "id": "c",
-            "text": "The optional fetch module downloads those records on every build and caches them beside the scenario."
+            "text": "A single stratum is treated as a confirmed cause so the p-value is forced down to zero."
           },
           {
             "id": "d",
-            "text": "They sit in the hil table copied verbatim from that paper so the builder can sample records instead of a lognormal stand-in."
+            "text": "A single stratum is not a difference and it must not always crash the scenario that has one."
           }
         ],
         "salt": "c56fcf3b3ee766c0",
-        "answerHash": "b9058b86ee7ad29a1abfc66fd01c7cfc2c3f5f1346a44ebb54b7da1f4e0b0452",
-        "explain": "SEVNT0xZU0lTX0JBU0VMSU5FIGFuZCBIRU1PTFlTSVNfU0VWRVJFIGFyZSBub3QgYSBmaXQgdG8gdGhhdCBmaWxlLiBEQVRBX0xJQ0VOU0VTLm1kIHNheXMgdGhlIHNhbWUgdGhpbmcuIG9wZW5mZGEucHkgY2FuIG9wdGlvbmFsbHkgYXNrIGZvciBhIGNvdW50IGFuZCBzd2FsbG93cyBuZXR3b3JrIGVycm9ycy4gZ2VuZXJhdGUgZG9lcyBub3QgY2FsbCBpdC4="
+        "answerHash": "795c498059515727575a14638a4735bad94ad87d030eb721fa3d0d1f88312b3c",
+        "explain": "UXVpZXQgZGF0YSBpcyBhIHJlc3VsdC4gSXQgaXMgbm90IGFuIGV4Y2VwdGlvbiBmb3IgdGhlIGNhbGxlciB0byBjYXRjaC4="
       },
       {
         "id": "s2q6",
-        "prompt": "What does numpy's default_rng buy the PM?",
+        "prompt": "Why is the language model absent from this session's calculations?",
         "choices": [
           {
             "id": "a",
-            "text": "A call to the local model invents each record from the scenario title rather than from a seeded draw."
+            "text": "The model is absent because the YAML format cannot store a prompt next to the stratum rate."
           },
           {
             "id": "b",
-            "text": "A document plus a seed is the whole randomness source so one description reprints the field document."
+            "text": "Rates and charts and the Pareto are code so a later narrative cannot be the source of the arithmetic."
           },
           {
             "id": "c",
-            "text": "The interval formula itself is what that helper evaluates in place of a random generator."
+            "text": "The model is absent because CI refuses to install Python packages that import a numeric library."
           },
           {
             "id": "d",
-            "text": "A fresh random sample is drawn on every execution so the printed frequency can be adjusted for the meeting."
+            "text": "The model computes the Wilson interval and Python only formats the sentence around that number."
           }
         ],
         "salt": "a6700a25f200619a",
         "answerHash": "74e834a50646443fa419f46be74b4d4b2e53b41ea6d630641529262c6e342e41",
-        "explain": "Z2VuZXJhdGUgZG9lcyBuID0gaG9yaXpvbiB0aW1lcyBydW5zIHBlciBkYXksIHRoZW4gYmFzZWxpbmUsIHRoZW4gdGhlIGNhdXNlLiBzdW1tYXJpemUgb25seSBmb3JtYXRzIG1ldHJpY3MuIElmIGEgcHJpbnRlZCBudW1iZXIgaXMgd3JvbmcsIHRoZSBidWcgaXMgaW4gdGhlIGdlbmVyYXRvciBvciB0aGUgbWV0cmljcywgbm90IGluIGEgc2VudGVuY2Uu"
+        "explain": "Tm90aGluZyBpbiB0aGUgZmllbGQgZmlsZSBhc2tzIGEgbW9kZWwgdG8gZG8gYXJpdGhtZXRpYy4gVGhhdCBib3VuZGFyeSBzdGFydHMgaGVyZS4="
       },
       {
         "id": "s2q7",
-        "prompt": "What does chi_square_by return when the table has a single level?",
+        "prompt": "What does the Pareto decide?",
         "choices": [
           {
             "id": "a",
-            "text": "The interval of that lone stratum is handed back in place of the statistic."
+            "text": "The Pareto counts invalid codes and drops valid rows and it is not the root-cause ranking."
           },
           {
             "id": "b",
-            "text": "It raises ZeroDivisionError because a one-row grid has no complement to compare against."
+            "text": "The Pareto chooses the root cause by picking the code with the largest count on the chart."
           },
           {
             "id": "c",
-            "text": "The result is probability 1 and statistic 0 because a calm scenario is not treated as an exception."
+            "text": "The Pareto reads the week-zero note and repeats the first cause word it finds in that text."
           },
           {
             "id": "d",
-            "text": "The result is a probability of 0 and a huge statistic which forces the memo to escalate on any lone stratum."
+            "text": "The Pareto clears the leading stratum and reports the projected rate after that removal."
           }
         ],
         "salt": "5f9fec985ab3e5d2",
-        "answerHash": "5fae69c475991953914c82532e4f646c750eb3cb659abffc9190b69e67f99fac",
-        "explain": "T25lIHN0cmF0dW0sIG9yIGEgY29sdW1uIG9mIGFsbCB6ZXJvcywgbWVhbnMgdGhlcmUgaXMgbm8gZXZpZGVuY2Ugb2YgYSBkaWZmZXJlbmNlLiBSZXR1cm5pbmcgcCA9IDEgbGV0cyB0aGUgcmFua2VyIG1vdmUgb24gaW5zdGVhZCBvZiBjcmFzaGluZyB0aGUgbWVtby4="
+        "answerHash": "487f392056fc4d1f7dfd9c83a457b818e6c7f9c5b3f652712f9b02fc9f3a9a30",
+        "explain": "V2hpY2ggY29kZXMgZG9taW5hdGUgaXMgYSBjaGFydCBvZiB0aGUgZmlsZS4gVGhlIHJhbmtlciBpcyBhIGxhdGVyIHN0ZXAu"
       },
       {
         "id": "s2q8",
-        "prompt": "What does the Pareto exclude?",
+        "prompt": "Why cite the hemolysis source without redistributing the file?",
         "choices": [
           {
             "id": "a",
-            "text": "Any code whose share of failures is under 5 percent is dropped before the cumulative line is drawn."
+            "text": "The published file is required at runtime and CI downloads it before the unit tests start."
           },
           {
             "id": "b",
-            "text": "Records that belong to the injected batch are left out so the driver code cannot dominate the chart."
+            "text": "The stand-in parameters are a fit to that file so the citation is only a bibliography nicety."
           },
           {
             "id": "c",
-            "text": "The most common failure code is left out so the chart shows only the long tail of rare codes."
+            "text": "The published file is copied into the repo so the generator can sample the original rows."
           },
           {
             "id": "d",
-            "text": "Valid records are left out because an empty failure code must not count as a failure mode."
+            "text": "The parameters are a stand-in and the citation says where the shape came from without vendoring it."
           }
         ],
         "salt": "b07fdadfa4b089fc",
         "answerHash": "4da747491769f41a07a1d67b29be30ab773fd2174ada3ca3408f2a51682d3f28",
-        "explain": "cGFyZXRvIGtlZXBzIHJvd3Mgd2hlcmUgaW52YWxpZCBpcyB0cnVlLCBvcmRlcnMgY29kZXMgYnkgY291bnQsIGFuZCBjbG9zZXMgY3VtdWxhdGl2ZV9zaGFyZSBhdCAxLiBUaGF0IGNoYXJ0IGlzIHRoZSBQTSdzICd3aGljaCBmYWlsdXJlIG1vZGUnIHBpY3R1cmUsIGFuZCBpdCBpcyBjb21wdXRlZCwgbm90IG5hcnJhdGVkLg=="
+        "explain": "REFUQV9MSUNFTlNFUyBhbHJlYWR5IHNheXMgdGhvc2Ugc291cmNlcyBhcmUgY2l0ZWQgYW5kIG5vdCByZWRpc3RyaWJ1dGVkLg=="
       }
     ]
   },
@@ -414,203 +414,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s3q1",
-        "prompt": "What does the triage node store instead of the 14,400-row frame, and how does a later node get the rows back?",
+        "prompt": "Why does triage run once?",
         "choices": [
           {
             "id": "a",
-            "text": "Metrics and the catalog and the memo are kept and a following step calls generate again from the same seed."
+            "text": "The field file does not change between weeks so the opening memo is not rebuilt on every loop."
           },
           {
             "id": "b",
-            "text": "It keeps the full grid on the graph state under a key and following steps read that key directly."
+            "text": "Triage is skipped entirely once a model is attached because the model writes the memo from scratch."
           },
           {
             "id": "c",
-            "text": "It asks Llama 3.1 8B to remember the grid and a following step prompts the model for the same records."
+            "text": "Triage runs once per audience so the customer note and the leadership note get different rates."
           },
           {
             "id": "d",
-            "text": "It writes the CSV into the issue description and a following step parses that description into records."
+            "text": "Triage runs again after each injection so the escalate flag can flip without a new rate."
           }
         ],
         "salt": "704adf6e93902395",
         "answerHash": "3ab7e168e8a7ea27dd6cd4805a426ab0f56ccfcc8c41017b34b430174434d5a5",
-        "explain": "VGhlIHN0YXRlIGhvbGRzIHRoZSBzY2VuYXJpbyBkaWN0IGFuZCBlbXB0eSBsaXN0cyBmb3IgbGF0ZXIgYXJ0aWZhY3RzLiBJdCBkb2VzIG5vdCBob2xkIGEgZGF0YWZyYW1lLiBTYW1lIHNlZWQsIHNhbWUgMTQsNDAwIHJvd3Mu"
+        "explain": "TGF0ZXIgd2Vla3MgY2hhbmdlIHdoaWNoIG5vdGVzIGFyZSB2aXNpYmxlLiBUaGV5IGRvIG5vdCByZWRyYXcgdGhlIGNvbXBsYWludC4="
       },
       {
         "id": "s3q2",
-        "prompt": "Why does the bad-lot memo list one hypothesis rather than six?",
+        "prompt": "Why does the ranker ignore stakeholder injections?",
         "choices": [
           {
             "id": "a",
-            "text": "A graph step may hand back only one string so several guesses cannot fit in the state at once."
+            "text": "Injections are ignored because the fidelity guard deletes any text that is not a percentage."
           },
           {
             "id": "b",
-            "text": "Other strata miss a gate such as 80 runs or lift 1.8 or 15 excess failures or probability under 0.01."
+            "text": "Injections are ignored because the YAML parser drops every note before the ranker is called."
           },
           {
             "id": "c",
-            "text": "Stakeholder remarks outvote every stratum except the batch which is why only L-4419 remains on the page."
+            "text": "A sentence cannot outrank the table so a QA note does not get to choose the cause by itself."
           },
           {
             "id": "d",
-            "text": "The memo has room for one guess sentence so extra strata are dropped while the text is formatted."
+            "text": "Injections are the only evidence and the table is used only to decorate the memo after the rank."
           }
         ],
         "salt": "1708eb66038a7db0",
-        "answerHash": "171bf9799569f00e3780d76096163e381f2b5ea084bea28daed7dd5ce9b9f218",
-        "explain": "QSBsZXZlbCB0aGF0IGZhaWxzIGEgZ2F0ZSBpcyBkcm9wcGVkLCBub3QgZ2l2ZW4gYSBzbWFsbCBzY29yZS4gTC00NDE5IGNsZWFycyB0aGUgYmFyLiBJbnN0cnVtZW50cyBhcm91bmQgNCUgZG8gbm90LiBUd28gY2xvc2Ugd2lubmVycyB3b3VsZCBiZWNvbWUgbm9fc2luZ2xlX2NhdXNlIGluc3RlYWQgb2YgYSBjb2luIGZsaXAu"
+        "answerHash": "ed311161d86e1679e7fd8b35936cf5986ba3b1c07f448ca118b8ce4c2a6f3d39",
+        "explain": "VGhlIHJhbmsgY29tZXMgZnJvbSBzdXBwb3J0IGFuZCBsaWZ0IGFuZCBleGNlc3MgaW52YWxpZHMuIFRoZSBub3RlIGlzIG5vdCBhIHZvdGUu"
       },
       {
         "id": "s3q3",
-        "prompt": "Where does the planted sentence 'the invalid rate is 27.40%' die?",
+        "prompt": "Why can two close scores become no single cause?",
         "choices": [
           {
             "id": "a",
-            "text": "The local model rewrites the line into the template before the guard ever scans the digits."
+            "text": "No single cause means the file was empty so the generator must be run again with a new seed."
           },
           {
             "id": "b",
-            "text": "Masking deletes 27.40 because that token looks like the batch id with the letters removed."
+            "text": "The higher score is always kept and the second score is stored only as a display footnote."
           },
           {
             "id": "c",
-            "text": "It survives masking and is not within 0.03 of a walked fact so it lands in unknown and ok stays false."
+            "text": "A coin flip between two near scores would pretend the table named a winner it did not name."
           },
           {
             "id": "d",
-            "text": "The guard accepts 27.40 because 27 sits close to the investigation lap number stored beside the facts."
+            "text": "The lower score is deleted so the fishbone has a single bone and an empty citation list."
           }
         ],
         "salt": "8aac7c13409ac90b",
         "answerHash": "ce38f801b7de07dcf99146fb52e33898ca248cbdaf8f8ae07df9045b5a163b45",
-        "explain": "SWRlbnRpZmllcnMgc3VjaCBhcyBMLTQ0MTkgYXJlIHN0cmlwcGVkIG9ubHkgd2hlbiB0aGF0IGV4YWN0IHN0cmluZyBpcyBpbiB0aGUgZmFjdHMuIDI3LjQwIGlzIG5vdCBvbmUgb2YgdGhlbS4gMy42NyBpcyBhbGxvd2VkIGJlY2F1c2UgdGhlIHN0b3JlZCByYXRlIDAuMDM2NyBjb250cmlidXRlcyBpdHMgcGVyY2VudCBmb3JtLg=="
+        "explain": "VGhlIGdhdGUgcmVmdXNlcyBhIHBob3RvIGZpbmlzaC4gVW5jZXJ0YWludHkgc3RheXMgbGFiZWxlZCBhcyB1bmNlcnRhaW50eS4="
       },
       {
         "id": "s3q4",
-        "prompt": "What happens if the Ollama backend is selected and the process cannot reach it?",
+        "prompt": "What does the fidelity guard compute?",
         "choices": [
           {
             "id": "a",
-            "text": "The rejected draft is saved beside the memo with a warning banner and the bad number left intact."
+            "text": "The guard downloads the local model and rejects the memo when that model is not installed."
           },
           {
             "id": "b",
-            "text": "The memo document is left blank so a reviewer can see that the model call failed outright."
+            "text": "The guard recomputes the Wilson interval and replaces the memo when its own interval is tighter."
           },
           {
             "id": "c",
-            "text": "The program exits and deletes the opening memo so a failed draft cannot be mistaken for the finished text."
+            "text": "The guard chooses the root cause by scoring every sentence against the six-M branches."
           },
           {
             "id": "d",
-            "text": "The narrator catches the exception and hands back the template without saving the failed draft."
+            "text": "The guard does not compute a rate and it rejects a number that is not already in the facts."
           }
         ],
         "salt": "0fc9ec0466f832cb",
         "answerHash": "adc07f255476f50bb6f4968426be1f84a7b378c1d61ff202414196134e80d3ba",
-        "explain": "VGhlIHRlbXBsYXRlIGlzIHJlbmRlcmVkIGZpcnN0LiBEZXRlcm1pbmlzdGljIG1vZGUgcmV0dXJucyBpdCBhZnRlciBhIGNoZWNrLiBBbnkgb3RoZXIgYmFja2VuZCB0aGF0IGVycm9ycywgcmV0dXJucyBlbXB0eSB0ZXh0LCBvciBmYWlscyB0aGUgZ3VhcmQgaXMgcmVwbGFjZWQuIEEgYnJva2VuIHRlbXBsYXRlIGlzIGEgYnVnIGFuZCByYWlzZXMu"
+        "explain": "UHJvc2UgY2FuIGNoYW5nZS4gQSBuZXcgZGlnaXQgY2Fubm90LiBUaGF0IGlzIHRoZSB3aG9sZSBqb2Igb2YgdGhlIGd1YXJkLg=="
       },
       {
         "id": "s3q5",
-        "prompt": "Why does rank_hypotheses ignore stakeholder injections?",
+        "prompt": "Why may a proportion appear as a percent in the memo?",
         "choices": [
           {
             "id": "a",
-            "text": "A driver has to come from the grid because a QA line does not get a vote on the ordering."
+            "text": "Percents are stripped before the scan so a writer can invent a percent without failing the check."
           },
           {
             "id": "b",
-            "text": "The framework refuses string fields so a remark cannot enter the ordering function at all."
+            "text": "The percent form is computed by the model and the guard trusts it because the model saw the facts."
           },
           {
             "id": "c",
-            "text": "The scenario description has no such array yet so the ordering step has nothing to read."
+            "text": "Any percent is allowed once a proportion exists because the guard only checks that a percent sign is present."
           },
           {
             "id": "d",
-            "text": "Those remarks are appended as extra field records before the statistic so a QA line can outrank a stratum."
+            "text": "The facts walk includes the percent form so three point six seven is allowed when the rate matches."
           }
         ],
         "salt": "749f56b8d4991b45",
-        "answerHash": "e55be4afc1042e8c30f68855e83db7ecd70899c8e147615a000513cc12c58e64",
-        "explain": "SW5qZWN0aW9ucyBhcmUgdGV4dC4gU2Vzc2lvbiA2IHNob3dzIHRoZW0gdG8gdGhlIHN0YXR1cyB3cml0ZXIuIFRoZXkgZG8gbm90IG91dHJhbmsgdGhlIGZpZWxkIGZpbGUuIGV2aWRlbmNlX2NhdGFsb2cgaXMgd2hhdCBsYXRlciBjaXRhdGlvbnMgYXJlIGFsbG93ZWQgdG8gdXNlLg=="
+        "answerHash": "cff23214a407b1bdc0053b31184689e7a7f82b2719617c4bc233564f13a6da00",
+        "explain": "Um91bmRpbmcgaW50byBhIHBlcmNlbnQgaXMgc3RpbGwgdGhlIHNhbWUgZmFjdC4gQSBkaWZmZXJlbnQgcGVyY2VudCBpcyBub3Qu"
       },
       {
         "id": "s3q6",
-        "prompt": "What does this tag do with --week other than 0?",
+        "prompt": "Why are identifiers removed instead of added to the allow-list?",
         "choices": [
           {
             "id": "a",
-            "text": "It switches the model name to llama3.2:1b and still writes the opening memo afterward."
+            "text": "Identifiers are removed because the YAML schema forbids letters inside a numeric fact."
           },
           {
             "id": "b",
-            "text": "It stops on purpose so this snapshot cannot pretend the weekly loop already exists."
+            "text": "A lot id must not become a legal rate just because the string also contains digits."
           },
           {
             "id": "c",
-            "text": "It runs the full multi-lap loop and writes a schedule and a diagram and a deck in one pass."
+            "text": "Lot ids are added as permitted rates so a sentence can use 4419 as an invalid percentage."
           },
           {
             "id": "d",
-            "text": "It skips the opening step and writes only the diagram using remarks as the guess."
+            "text": "Identifiers are removed so the memo is not allowed to name the lot that the ranker selected."
           }
         ],
         "salt": "dd757ad561f4552a",
         "answerHash": "476d9e5092d9c1cf8b444918d5bb9edffc5ea76ca41e236a82841873ea4126b2",
-        "explain": "YnVpbGRfZ3JhcGggaGFzIG9uZSBub2RlLCB0cmlhZ2UsIGVkZ2VkIHRvIEVORC4gVGhlIHdlZWtseSBsb29wIGlzIGEgbGF0ZXIgc2Vzc2lvbi4gSG9zdGVkIFN0cmVhbWxpdCwgd2hlbiBpdCBhcnJpdmVzLCBzdGF5cyBydWxlcy1vbmx5LiBUaGlzIHRhZydzIGRlbW8gaXMgdGhlIGRldGVybWluaXN0aWMgbWVtby4="
+        "explain": "TC00NDE5IGlzIGEgbmFtZS4gSXQgaXMgbm90IHBlcm1pc3Npb24gdG8gcHJpbnQgNDQxOSBhcyBhIHJhdGUu"
       },
       {
         "id": "s3q7",
-        "prompt": "Why httpx, and not LangChain's Ollama integration?",
+        "prompt": "What happens when a draft introduces a number the facts do not contain?",
         "choices": [
           {
             "id": "a",
-            "text": "The job downloads model weights through httpx during pytest so the adapter has to be that library."
+            "text": "The draft fails and the template replaces it so the shipped sentence still matches the code."
           },
           {
             "id": "b",
-            "text": "The graph requires an httpx call inside every step including the path that never leaves the laptop."
+            "text": "The draft is kept with a warning comment and the dashboard shows both versions side by side."
           },
           {
             "id": "c",
-            "text": "One httpx call is easier to mock and that call is skipped when the engine is deterministic."
+            "text": "The draft is sent to Jira as a SIM issue so a person can approve the new number on the board."
           },
           {
             "id": "d",
-            "text": "httpx is the sole client that can speak to a Llama 3.1 server so any other adapter is skipped."
+            "text": "The draft is kept and the unknown number is appended to the facts so the next reader will accept it."
           }
         ],
         "salt": "87adf0c5fd9f6348",
-        "answerHash": "dc7b1f05638e5ffebd6fd3851e6eb7eab46e0bc8ef6aad6f36ec9c273c3a5c8d",
-        "explain": "bGFuZ2NoYWluLWNvcmUgb25seSBzdXBwbGllcyB0aGUgcm9sZSBhbmQgY29udGVudCBwYWlycy4gbGxhbWEtY3BwLXB5dGhvbiBpcyBub3QgYSBkZXBlbmRlbmN5LiBJdCBpcyBpbXBvcnRlZCBvbmx5IGlmIHRoYXQgYmFja2VuZCBpcyBzZWxlY3RlZCwgYW5kIGEgbWlzc2luZyBpbnN0YWxsIGZhbGxzIGJhY2sgdG8gdGhlIHRlbXBsYXRlLg=="
+        "answerHash": "8350c3e6d73eb9ba29273f27ab601a4214c399bf2c1685c51e7a06a5bcd4523d",
+        "explain": "QSBmYWlsZWQgZHJhZnQgaXMgbm90IGEgZmlsZSB5b3Ugc2hpcC4gVGhlIHRlbXBsYXRlIGlzIHRoZSBmYWxsYmFjay4="
       },
       {
         "id": "s3q8",
-        "prompt": "Why are lot ids removed from the narrative instead of added to the numeric allow-list?",
+        "prompt": "Why is deterministic the default narrator?",
         "choices": [
           {
             "id": "a",
-            "text": "A schema model cannot hold strings and a batch id has to be coerced to a float before storage."
+            "text": "Deterministic means the ranker is skipped and the week-zero note is copied into the memo."
           },
           {
             "id": "b",
-            "text": "The interval formula blocks integers and 4419 would otherwise break the computed bound."
+            "text": "Deterministic means a template plus the numbers Python already computed with no model required."
           },
           {
             "id": "c",
-            "text": "The scanner finishes faster on a one-page memo by skipping identifier-shaped tokens on the way through."
+            "text": "Deterministic means the hosted Streamlit page calls Ollama and caches the reply for a week."
           },
           {
             "id": "d",
-            "text": "Removing the identifier keeps 4419 from being reused as a permitted frequency in the paragraph."
+            "text": "Deterministic means the local Llama 3.1 8B weights are downloaded on first import of the package."
           }
         ],
         "salt": "cb34da6250585deb",
-        "answerHash": "86bcd6fcc431eca8164b7568d62fc16ec626444f751bab6d73b1719bb46b8c6f",
-        "explain": "TWFza2luZyBMLTQ0MTkgcmVtb3ZlcyB0aGUgaWRlbnRpZmllci4gSXQgZG9lcyBub3QgYXV0aG9yaXplIHRoZSBudW1iZXIgNDQxOSBhbnl3aGVyZSBlbHNlIGluIHRoZSBwYXJhZ3JhcGguIFRoZSBzYW1lIGlkZWEgbGF0ZXIgY292ZXJzIGEgc29mdHdhcmUgdmVyc2lvbiBzdWNoIGFzIDIuNC4wLg=="
+        "answerHash": "e71b854750b537a5714fcb231dbbc95c4370663b70c6f9e808cffda47ca23364",
+        "explain": "VGhlIHJlcG8gaGFzIHRvIHJ1biB3aXRoIG5vIGtleSBhbmQgbm8gbW9kZWwuIFRoZSB0ZW1wbGF0ZSBpcyB0aGF0IHBhdGgu"
       }
     ]
   },
@@ -619,203 +619,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s4q1",
-        "prompt": "Why is Measurement on the fishbone if the ranker has no measurement cause?",
+        "prompt": "Why is a Why with no citation an error?",
         "choices": [
           {
             "id": "a",
-            "text": "An empty bone scored at zero says that category was considered on the diagram reviewers expect."
+            "text": "A step that does not point at a catalog id is not evidence and it must not become a file."
           },
           {
             "id": "b",
-            "text": "That category is hard-coded to position 1 so a quality diagram always leads with the gauge."
+            "text": "A missing citation is a warning and the markdown is still written so a reviewer can fill it in."
           },
           {
             "id": "c",
-            "text": "The schema blocks a diagram object that has fewer than six filled bones whether or not they are empty."
+            "text": "A missing citation tells the planner to skip the week and jump straight to the executive deck."
           },
           {
             "id": "d",
-            "text": "A remark that names a gauge forces the bone to carry a score even when no gauge column exists."
+            "text": "A missing citation is filled with the lot id automatically so the chain always has five steps."
           }
         ],
         "salt": "b3bfe52c32388dbf",
         "answerHash": "8f0383343c59fa6296f77321617fcb7daa970ffa175ce4a9dbe890c7bbb4e097",
-        "explain": "RHJvcHBpbmcgdGhlIGJvbmUgd291bGQgbG9vayBsaWtlIHRoZSBjYXRlZ29yeSB3YXMgbmV2ZXIgY29uc2lkZXJlZC4gTWF0ZXJpYWwgYXBwZWFycyB0d2ljZSwgbG90IGFuZCBoZW1vbHlzaXMsIGJlY2F1c2UgYm90aCBhcmUgbWF0ZXJpYWwgYW5kIHRoZXkgYXJlIGRpZmZlcmVudCBhY3Rpb25zLg=="
+        "explain": "VGhlIGNoYWluIGlzIGEgcXVhbGl0eSByZWNvcmQuIEFuIHVuc3VwcG9ydGVkIHN0ZXAgaXMgYSBkZWZlY3QgaW4gdGhlIHJlY29yZC4="
       },
       {
         "id": "s4q2",
-        "prompt": "What does validate_whys reject, and when does it run?",
+        "prompt": "Why can a later QA note stay invisible at week zero?",
         "choices": [
           {
             "id": "a",
-            "text": "Any item whose answer is under 200 characters is refused and that happens only after the markdown document already exists."
+            "text": "Injections are filtered by week so a note that has not arrived yet cannot be used as evidence."
           },
           {
             "id": "b",
-            "text": "An empty citation array or an unknown id is refused inside the builder before any markdown exists."
+            "text": "Week zero reads every injection in the file so the future note is citable on the opening day."
           },
           {
             "id": "c",
-            "text": "A diagram whose top score is zero is refused and the check is skipped entirely on a laptop."
+            "text": "Week zero hides the note because the fidelity guard deletes any sentence that mentions a lot."
           },
           {
             "id": "d",
-            "text": "A citation of the overall frequency metric is banned from an item even when the catalog already contains it."
+            "text": "Week zero hides the note because the customer audience is not allowed to see internal text ever."
           }
         ],
         "salt": "93be1754b6c9245e",
-        "answerHash": "f85e115777c0f9f6fd61a4792ff4b6f564db8ec996ee49c2091e5cb317af528c",
-        "explain": "QSBXaHkgd2l0aCBubyBjaXRhdGlvbiBpcyBhbiBlcnJvciwgbm90IGEgd2FybmluZy4gVGhlIHRlc3QgcGxhbnRzIGNpdGF0aW9ucyBbXSBhbmQgZXhwZWN0cyAnd2h5IDEgaGFzIG5vIGNpdGF0aW9uJy4gQSBicm9rZW4gY2hhaW4gbmV2ZXIgYmVjb21lcyBhIGZpbGUu"
+        "answerHash": "54f914b78359419e81dd044a5e9617770bffbe76fb4006430647517bc44d9908",
+        "explain": "TGVhdmluZyB0aGUgbm90ZSBpbiB0aGUgWUFNTCBpcyBub3QgdGhlIHNhbWUgYXMgbGV0dGluZyB0aGUgb3BlbmluZyByZWNvcmQgcXVvdGUgaXQu"
       },
       {
         "id": "s4q3",
-        "prompt": "On bad_lot at week 0, can the 5 Whys cite the QA note about lot L-4419?",
+        "prompt": "Why does the fishbone keep a branch that did not fire?",
         "choices": [
           {
             "id": "a",
-            "text": "Yes but only when that remark is attached to the gauge bone rather than to material."
+            "text": "A silent branch is promoted to rank one so the record always has a measurement cause."
           },
           {
             "id": "b",
-            "text": "Yes because every scenario entry is visible from the opening lap including the batch remark."
+            "text": "An empty branch is deleted so the diagram only shows the winning cause and nothing else in view."
           },
           {
             "id": "c",
-            "text": "No because entries are kept only through the case lap and that QA remark belongs to lap 1."
+            "text": "A silent branch is where the model is allowed to invent a cause the table did not score."
           },
           {
             "id": "d",
-            "text": "No because QA remarks are dropped from the catalog permanently whatever lap the case has reached."
+            "text": "A branch that did not explain the panel is still part of the diagram with a reason it did not."
           }
         ],
         "salt": "d02672bcc70a5833",
-        "answerHash": "5b0c70ce0f3df9b829e998367e2294c9cac99c6ec7f3f61ab7fb60c6b7335d94",
-        "explain": "QXQgd2VlayAxIHRoZSBub3RlIGJlY29tZXMgY2l0YWJsZSwgd2l0aCBhbiBpZCBsaWtlIGluamVjdGlvbjoxOnFhLiBjYXRhbG9nLnVwZGF0ZShpbmplY3Rpb25zKSBpcyB3aGF0IG1ha2VzIHRoYXQgaWQgbGVnYWwuIEJlZm9yZSB0aGF0IGxpbmUsIHZhbGlkYXRlX3doeXMgd291bGQgcmVqZWN0IGl0Lg=="
+        "answerHash": "e37da516a3de3cc2cfa24be6310291e8422cd4c89979e42588f65d8cdfb98fe9",
+        "explain": "VGhlIHNpeC1NIHBpY3R1cmUgaXMgY29tcGxldGUgb24gcHVycG9zZS4gQSBtaXNzaW5nIGJvbmUgd291bGQgbG9vayBsaWtlIGEgc2tpcHBlZCBxdWVzdGlvbi4="
       },
       {
         "id": "s4q4",
-        "prompt": "What is the effectiveness metric in D6, and why does the record not claim the rate already recovered?",
+        "prompt": "What does the chain do when the ranker returns no single cause?",
         "choices": [
           {
             "id": "a",
-            "text": "A customer-satisfaction score the model invents is the number that gets quoted and recovery is stated in that section."
+            "text": "It invents a lot so the bad-lot test still passes and the CAPA can name a containment owner."
           },
           {
             "id": "b",
-            "text": "A fresh chi-square the language model computes replaces the proportion plot as the success test."
+            "text": "It still has five cited steps and it does not invent a lot to satisfy a test that wants one."
           },
           {
             "id": "c",
-            "text": "The batch is treated as cured because the last section is closed and a healed frequency is quoted."
+            "text": "It copies the week-zero note into every step so the chain matches the keyword ranker."
           },
           {
             "id": "d",
-            "text": "The target is a return to the promise with no zone-1 point because follow-up runs do not exist yet."
+            "text": "It stops after one step because five citations are required only when a stratum won."
           }
         ],
         "salt": "449c20a72f81b969",
-        "answerHash": "a8048f939d0e7be00ac755b9cb35f475a9446c6b65e0f35834c70be5818667f2",
-        "explain": "RDcgYW5kIEQ4IGFyZSB3cml0dGVuIGFuZCBtYXJrZWQgcHJlbGltaW5hcnkuIFRoZSBDQVBBIHNheXMgc28sIHNvIGEgcmVhZGVyIGRvZXMgbm90IHRoaW5rIHRoZSBpbnZlc3RpZ2F0aW9uIGlzIGFscmVhZHkgY2xvc2VkLiBUaGUgd29yZCBydWxlLTEga2VlcHMgdGhhdCBkaWdpdCBnbHVlZCB0byBhIGh5cGhlbiBmb3IgdGhlIGZpZGVsaXR5IHNjYW5uZXIu"
+        "answerHash": "3953efe07e96b0f1de5bdb7b64bde0c552ba71a45da395e173f3ae594fea3c0c",
+        "explain": "Tm8gc2luZ2xlIGNhdXNlIGlzIGEgcmVhbCBvdXRjb21lLiBUaGUgcmVjb3JkIGhhcyB0byBiZSBhYmxlIHRvIHNheSBpdC4="
       },
       {
         "id": "s4q5",
-        "prompt": "Where do DMAIC labels sit relative to the eight Ds?",
+        "prompt": "Why are D7 and D8 marked preliminary in this record?",
         "choices": [
           {
             "id": "a",
-            "text": "Define maps to the opening pair and measure to the metrics and analyze to the contrast and the diagram."
+            "text": "Prevention and closure are omitted until week four because the CAPA schema forbids those fields."
           },
           {
             "id": "b",
-            "text": "Each of the 8 sections is its own full cycle so the memo contains 8 separate full cycles from end to end."
+            "text": "Prevention and closure are the projection numbers and they are marked preliminary when over spec."
           },
           {
             "id": "c",
-            "text": "Those names appear only as a slide title in the final deck and are absent from this memo."
+            "text": "Prevention and closure are written early and marked preliminary so nobody thinks the case is closed."
           },
           {
             "id": "d",
-            "text": "Those names replace the three middle sections and the other headings are removed from the document."
+            "text": "Prevention and closure are copied from the Jira epic so they match the live board exactly."
           }
         ],
         "salt": "6ea08b9512df6622",
-        "answerHash": "7cf8c3f505e0deaea7cfcc04dcad393b201f2288b286d2433fcefef03a7a7724",
-        "explain": "QSBxdWFsaXR5IGhpcmluZyBtYW5hZ2VyIGxvb2tzIGZvciB0aGF0IG1hcHBpbmcuIFRoZSBsYWJlbHMgbGl2ZSBpbiB0aGUgQ0FQQSBmaWxlLCBub3QgYXMgYSBjbGFpbSB0aGF0IGFuIGFnZW50IHN3YXJtIGRpZCB0aGUgYW5hbHlzaXMu"
+        "answerHash": "8d4aace6293d3f450f23e18affc7d2a89f74dc997fbde46ad227470c5dc6ed41",
+        "explain": "VGhlIGludmVzdGlnYXRpb24gaXMgbm90IGZpbmlzaGVkIHdoZW4gdGhlIGZpc2hib25lIGlzLiBUaGUgbGFiZWxzIHNheSBzby4="
       },
       {
         "id": "s4q6",
-        "prompt": "On bad_lot, what is rank 1, and what must step 5 say?",
+        "prompt": "Why does the effectiveness line call the before-and-after a projection?",
         "choices": [
           {
             "id": "a",
-            "text": "The gauge category comes first because an empty bone sorts ahead of every scored branch on the diagram."
+            "text": "The projection is the Wilson interval so the word projected is only a synonym for the confidence bound."
           },
           {
             "id": "b",
-            "text": "Material and the bad reagent batch come first and the fifth answer names L-4419 in the catalog line."
+            "text": "The projection is the keyword ranker's answer and it is labeled so readers know it read the note."
           },
           {
             "id": "c",
-            "text": "Method and a software driver come first and the fifth answer is required to name version 2.4.0 as the stop."
+            "text": "The projection is observed follow-up from a later field file that the generator writes at week four."
           },
           {
             "id": "d",
-            "text": "The unclear-driver label comes first and the fifth answer invents L-4419 without a scored bone."
+            "text": "Clearing the leading stratum on a copy of this file is not a result the field has delivered."
           }
         ],
         "salt": "3f3a9a31af48a4e2",
-        "answerHash": "3efecb62ef3827334e73e908055bcb332d55c9b0ef959a7ad0ac48bb59da01d3",
-        "explain": "VGhlIHNvcnQgaXMgYnkgZGVzY2VuZGluZyBzY29yZS4gVGhlIGxvdCBpcyB0aGUgb25seSBub24temVybyBzY29yZS4gSGVtb2x5c2lzIGlzIGFsc28gTWF0ZXJpYWwgYW5kIHN0YXlzIGF0IDAgdW5kZXIgaXQuIG5vX3NpbmdsZV9jYXVzZSBpcyBub3QgYSBib25lLg=="
+        "answerHash": "9e9b53660aa7ea08c3f5bfac3bdc31878ee71dea98c0ff4f8fe7980230ba0020",
+        "explain": "VGhlIHNjZW5hcmlvIGZpbGUgaXMgbm90IHJld3JpdHRlbi4gQSBjbGVhcmVkIHN0cmF0dW0gaXMgYSBjb3VudGVyZmFjdHVhbC4="
       },
       {
         "id": "s4q7",
-        "prompt": "What does step 3 of the 5 Whys have to cite?",
+        "prompt": "What does the RCA test lock?",
         "choices": [
           {
             "id": "a",
-            "text": "Whatever line the model prefers is accepted and a missing catalog id is only a warning."
+            "text": "The test locks that the dashboard banner is absent when rules-only mode is turned off."
           },
           {
             "id": "b",
-            "text": "The client API token has to be quoted in that answer before any stratum contrast is allowed."
+            "text": "The test locks that a missing citation raises and that the walkthrough lot ranks as material."
           },
           {
             "id": "c",
-            "text": "A different column is required so the chain can show why the next stratum is not the driver."
+            "text": "The test locks the Jira token so a dry-run cannot write a SIM key into the JSON file."
           },
           {
             "id": "d",
-            "text": "The same catalog line the previous answer already used is pasted again so the chain looks longer."
+            "text": "The test locks the Gantt dates so a task cannot start before its predecessor ends."
           }
         ],
         "salt": "6eb0462f25d2fd76",
-        "answerHash": "22b149c105d650695e10d76a27982f33abae6d06ab7b623f672be60d2ec068cf",
-        "explain": "U3RlcCAxIGlzIG92ZXJhbGwgdmVyc3VzIHNwZWMuIFN0ZXAgMiBpcyB0aGUgd2lubmluZyBzdHJhdHVtLiBTdGVwIDMgaXMgdGhlIGNvbnRyYXN0LiBTdGVwIDQgY2l0ZXMgYW4gaW5qZWN0aW9uIHRoYXQgbmFtZXMgdGhlIGxldmVsLCBvciB0aGUgc3RyYXR1bSdzIG4gc2VudGVuY2Ugd2hlbiBubyBpbmplY3Rpb24gaGFzIGFycml2ZWQu"
+        "answerHash": "d7e4dc5b4fc407e60df2a88a297302ae1b11849b88238b2fd4c76dba9545c4fc",
+        "explain": "VGhlIHRlc3RzIGFyZSB0aGUgcnVsZS4gQSBjaGFpbiB0aGF0IHdyaXRlcyBhbnl3YXkgd291bGQgYmUgdGhlIHdyb25nIGNvbnRyYWN0Lg=="
       },
       {
         "id": "s4q8",
-        "prompt": "Which new package does Session 4 add?",
+        "prompt": "Why is the planner not part of this record?",
         "choices": [
           {
             "id": "a",
-            "text": "A tiny local model is added and the job downloads it before the diagram check is allowed to execute."
+            "text": "The record names the cause and the containment words and a later session turns that into tasks."
           },
           {
             "id": "b",
-            "text": "A diagram drawing library is added so the six bones can be rendered as an image beside the markdown."
+            "text": "The planner is the ranker so the fishbone does not need a separate hypothesis list."
           },
           {
             "id": "c",
-            "text": "An export helper is added so the record can be saved as a PDF from the chart figure."
+            "text": "The planner writes the citations and the RCA module only renders them as markdown."
           },
           {
             "id": "d",
-            "text": "No new library is added and the prior fidelity guard is reused on the three markdown documents."
+            "text": "The planner runs first and the fishbone only copies the task names into the five Why steps."
           }
         ],
         "salt": "305d08e0d687d061",
-        "answerHash": "31c34248597c9155a4b535a7e2b9f7d65732c73047df5033219f4304c449cf5c",
-        "explain": "VGhlIGdyYXBoIGlzIHRyaWFnZSB0aGVuIHJjYSB0aGVuIEVORC4gcnVuX2Nhc2Ugd3JpdGVzIHRoZSBtZW1vIHBsdXMgZmlzaGJvbmUubWQsIGZpdmVfd2h5cy5tZCwgYW5kIGNhcGE4ZC5tZC4gV2Vla3MgYWJvdmUgMCBvbmx5IGNoYW5nZSB3aGljaCBpbmplY3Rpb25zIFJDQSBjYW4gY2l0ZS4gVGhlIHBsYW4gaXMgU2Vzc2lvbiA1Lg=="
+        "answerHash": "d7e398798648a0ad8056155d65e3661bb82e9bcb0a85e11f4827efcb2a008cb5",
+        "explain": "UmFua2luZyBhbmQgdGhlIHF1YWxpdHkgcmVjb3JkIGNvbWUgYmVmb3JlIHRoZSBzY2hlZHVsZS4gVGhleSBhcmUgbm90IHRoZSBzYW1lIG1vZHVsZS4="
       }
     ]
   },
@@ -824,203 +824,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s5q1",
-        "prompt": "Why is the Gantt PNG not fig.write_image?",
+        "prompt": "Why do later weeks add tasks instead of replacing the plan?",
         "choices": [
           {
             "id": "a",
-            "text": "The export helper needs an extra browser library while the plotting path runs without that download."
+            "text": "Later weeks delete the baseline so the Gantt only shows the newest note's task and drops the rest."
           },
           {
             "id": "b",
-            "text": "The client blocks an attachment unless the extra browser library produced it so the plotting chart cannot be attached."
+            "text": "Later weeks replace the owner map so every task belongs to the program manager by week four."
           },
           {
             "id": "c",
-            "text": "Picture files are banned from the tree which is why that export helper is never called on the schedule."
+            "text": "Later weeks freeze the dates and refuse to add a task even when a new stakeholder speaks."
           },
           {
             "id": "d",
-            "text": "The chart library has no timeline trace so a schedule chart has to be drawn by hand in another tool."
+            "text": "A re-plan that throws away the baseline is not a re-plan and the earlier tasks stay on the chart."
           }
         ],
         "salt": "5605f72faeb11c80",
-        "answerHash": "db6794d12da490793bad62fcffaea9b3cc69d9f90faecd21423488d3f9b4802f",
-        "explain": "VGhlIEhUTUwgaXMgcHgudGltZWxpbmUgc28gYSByZXZpZXdlciBjYW4gaG92ZXIgb3duZXJzLiBpbmNsdWRlX3Bsb3RseWpzIGNkbiBrZWVwcyB0aGF0IGZpbGUgc21hbGxlci4gVGhlIFBORyBkcmF3cyBvbmUgYmFyaCBwZXIgdGFzaywgcmV2ZXJzZWQgc28gVDEgaXMgb24gdG9wLCBhbmQgYSBtaW5pbXVtIHdpZHRoIHNvIGEgc2hvcnQgdGFzayBkb2VzIG5vdCB2YW5pc2gu"
+        "answerHash": "4b1a575018eeaa887735045cbc93b060cdde9930fa33dd23e17b30a97cd5fb92",
+        "explain": "VGhlIGxhYi1kaXJlY3RvciBhc2sgc2hvd3MgdXAgd2hlbiBpdHMgd2VlayBhcnJpdmVzLiBUaGUgZmlzaGJvbmUgcmV2aWV3IGRvZXMgbm90IGRpc2FwcGVhci4="
       },
       {
         "id": "s5q2",
-        "prompt": "What is the dependency rule, and why is a string comparison of the dates safe?",
+        "prompt": "Why does the owner follow the cause?",
         "choices": [
           {
             "id": "a",
-            "text": "Stamps are compared as month-day-year text which is why an ISO value would sort into the wrong place."
+            "text": "The owner is the customer named in the complaint so the containment task is always external."
           },
           {
             "id": "b",
-            "text": "A task opening must follow the predecessor closing and year-month-day stamps sort in calendar order."
+            "text": "The owner is chosen by the language model from the audience list on the status note."
           },
           {
             "id": "c",
-            "text": "Predecessor links are comments inside the task record and the check that would inspect them is never called."
+            "text": "A lot is QA and an instrument is manufacturing and no single cause stays with the program manager."
           },
           {
             "id": "d",
-            "text": "A task may open the day before its predecessor closes which is how overlap gets onto the chart."
+            "text": "Every cause is owned by the program manager so the Gantt has a single color for every bar."
           }
         ],
         "salt": "1fd73dfa8ef8435f",
-        "answerHash": "4ed06174e77e96c78411832c61ec424e0173955f532ed94059795685dee75a3a",
-        "explain": "VGhlIGVuZCBpcyBleGNsdXNpdmU6IHN0YXJ0IHBsdXMgZGF5cy4gVGhlIHRlc3Qgd2Fsa3MgVDgsIHdoaWNoIHN0YXJ0cyB3aGVuIFQ2IGVuZHMsIGluc3RlYWQgb2YgdHJ1c3RpbmcgYSBjb21tZW50LiBBIGhhbmQtZWRpdGVkIGVhcmx5IHN0YXJ0IHJhaXNlcy4="
+        "answerHash": "12366d2a6761fb481c5cddd4e76caa5a9153abec7f353f44fb895deb1fdbaa36",
+        "explain": "UXVhcmFudGluZSBhIGxvdCBhbmQgc2VydmljZSBhbiBpbnN0cnVtZW50IGFyZSBkaWZmZXJlbnQgd29yay4gVGhlIG93bmVyIHNheXMgd2hvIGRvZXMgaXQu"
       },
       {
         "id": "s5q3",
-        "prompt": "What changes between week 0 and week 2 on the Gantt and the risk register?",
+        "prompt": "Why is a start before the predecessor ends rejected?",
         "choices": [
           {
             "id": "a",
-            "text": "The disagreement hazard is removed on the second lap because release testing has already passed in the field."
+            "text": "The check only warns and the HTML chart still draws the early bar in a different color."
           },
           {
             "id": "b",
-            "text": "The bars stay identical across those laps and only the memo title text is different."
+            "text": "A task that begins before the work it depends on has finished is not an executable schedule."
           },
           {
             "id": "c",
-            "text": "The second lap adds the lab-director task and the first hazard moves down while another hazard moves up."
+            "text": "Overlapping dates are required so the Gantt can show parallel work inside the same week."
           },
           {
             "id": "d",
-            "text": "Every baseline task is deleted on the second lap and replaced by the lab-director set alone."
+            "text": "The check is skipped for ISO dates because text comparison would sort them out of order."
           }
         ],
         "salt": "0b6527d5129bd6de",
-        "answerHash": "f53caa0efa1232676c9601ab66fa0f4498652630861b0f66d5c022009d794a9e",
-        "explain": "VDEyLCBsYW5lIHRlbXBlcmF0dXJlLCB3YWl0cyBmb3Igd2VlayAzLiBCYXNlbGluZSB0YXNrcyBzdGF5LCBiZWNhdXNlIGEgcmUtcGxhbiB0aGF0IHRocm93cyBhd2F5IHRoZSBmaXNoYm9uZSByZXZpZXcgaXMgbm90IGEgcmUtcGxhbi4gUjQgaXMgdGhlIGRpc2FncmVlbWVudCBiZXR3ZWVuIHJlbGVhc2UgdGVzdGluZyBhbmQgdGhlIGZpZWxkIHJhdGUu"
+        "answerHash": "974293e33908b02845247eadcb4c48494f666d5669c8ca56b722ae03fda69d90",
+        "explain": "VGhlIGRlcGVuZGVuY3kgcnVsZSBpcyBwYXJ0IG9mIHRoZSBwbGFuIG9iamVjdC4gQSBwcmV0dHkgY2hhcnQgZG9lcyBub3QgZ2V0IHRvIGlnbm9yZSBpdC4="
       },
       {
         "id": "s5q4",
-        "prompt": "Why are dry-run keys SIM-*?",
+        "prompt": "Why are there both an HTML chart and a PNG?",
         "choices": [
           {
             "id": "a",
-            "text": "The epic identifier is copied from the scenario id and that id is the text SIM."
+            "text": "Plotly shows a chart a person can open and Matplotlib writes the picture the deck can embed."
           },
           {
             "id": "b",
-            "text": "A SIM prefix means the active site accepted the issue and then returned that identifier to the client."
+            "text": "Both files are written by the Jira client so the live board can show a thumbnail of the plan."
           },
           {
             "id": "c",
-            "text": "The hosted client blocks every project prefix except SIM so INV cannot be used in a rehearsal."
+            "text": "The HTML is produced by the model and the PNG is a screenshot of the Streamlit page."
           },
           {
             "id": "d",
-            "text": "The construction board uses INV identifiers and SIM makes a rehearsal document obviously different."
+            "text": "The PNG is the interactive chart and the HTML is a fallback for browsers that cannot run it."
           }
         ],
         "salt": "9da334efd4f63eaa",
-        "answerHash": "f29af06093fed25d74e4d9873b85e05cc06ffdf1aada964c09ce2e9b18c41cc0",
-        "explain": "V2l0aCBubyB0b2tlbiwgc3luYyB3cml0ZXMgamlyYV9pc3N1ZXMuanNvbiBhbmQgZG9lcyBub3Qgb3BlbiBhIHNvY2tldC4gVGhlIGZpbGUgY2FycmllcyBhIHNpbXVsYXRpb24gZGlzY2xhaW1lci4gbWFrZV9jbGllbnQgcmV0dXJucyBEcnlSdW5KaXJhIHVubGVzcyBhbGwgdGhyZWUgSmlyYSBzZXR0aW5ncyBhcmUgcHJlc2VudC4="
+        "answerHash": "28908618487f351e27eacdfc3d8437c7861d1ec8b71a71ccabfdd7010899f406",
+        "explain": "VGhlIHN0YXRpYyBleHBvcnQgdGhhdCBuZWVkcyBhIGJyb3dzZXIgaXMgbm90IHdoYXQgdGhpcyByZXBvIHNoaXBzLiBUaGUgUE5HIGlzIHRoZSBvdGhlciBwYXRoLg=="
       },
       {
         "id": "s5q5",
-        "prompt": "What happens if the live Jira call raises?",
+        "prompt": "Why check likelihood times impact instead of typing the product?",
         "choices": [
           {
             "id": "a",
-            "text": "The client catches the failure and stores the exception class and saves the file without the token."
+            "text": "The product is typed twice and the factors are comments so a reviewer can change only the total."
           },
           {
             "id": "b",
-            "text": "The client retries the post forever and the document is saved only after a success comes back."
+            "text": "The product is supplied by the Jira priority field so the local register does not store numbers."
           },
           {
             "id": "c",
-            "text": "The API token is placed into the error text so the reader can see which credential failed."
+            "text": "The product is calculated and a mismatch raises so a hand-edited score cannot disagree with the factors."
           },
           {
             "id": "d",
-            "text": "The program deletes the schedule document because a failed push means the schedule is no longer valid."
+            "text": "The product is ignored and the trend word is the only field the register is allowed to store."
           }
         ],
         "salt": "00af55c5ea95f202",
-        "answerHash": "2780d2e4534d212dfe491b4476aa7a1dfb9f992e0b8355a7db326e0c53beb1d9",
-        "explain": "VGVzdHMgcGFzcyBhIGZha2UgdHJhbnNwb3J0IGFuZCBuZXZlciBjb25zdHJ1Y3QgdGhlIHJlYWwgaHR0cHggY2xpZW50IGZvciB0aGUgZHJ5LXJ1bi4gQSBwbGFudGVkIHRva2VuIG11c3QgYmUgYWJzZW50IGZyb20gcmVwci4="
+        "answerHash": "c29e05a8c70557c1dfebe6256126a3df4d87411a283195423ef717c9c68df66a",
+        "explain": "QSByaXNrIHNjb3JlIHRoYXQgZG9lcyBub3QgZXF1YWwgaXRzIGZhY3RvcnMgaXMgYSBicm9rZW4gY29udHJvbCwgbm90IGEgZm9ybWF0dGluZyBjaG9pY2Uu"
       },
       {
         "id": "s5q6",
-        "prompt": "What does the live test count on the second sync?",
+        "prompt": "What does the dry-run write when no token is set?",
         "choices": [
           {
             "id": "a",
-            "text": "A deletion is sent against every SIM identifier so the repeat pass clears the board before rebuilding it."
+            "text": "It writes SIM keys into a local JSON file and it does not open a socket to the live site."
           },
           {
             "id": "b",
-            "text": "The repeat pass makes no further posts because a known task id is edited in place after the first pass."
+            "text": "It writes the build backlog over docs/jira/backlog.json so the two boards stay identical."
           },
           {
             "id": "c",
-            "text": "Eleven additional posts are made one per task on every pass including the repeat pass."
+            "text": "It opens a socket to the live site and creates INV issues on the build board."
           },
           {
             "id": "d",
-            "text": "One post is sent whose body is the entire schedule instead of an epic plus separate stories."
+            "text": "It refuses to run and the plan is not written until all three Jira values are present."
           }
         ],
         "salt": "54f918147ac804c9",
-        "answerHash": "cfee1bc1c7df628ea3622a0ad61f075f8f7b4148616b6642578134eefa48ee47",
-        "explain": "VGhlIGZpcnN0IGNhbGwgaXMgMTEgcG9zdHM6IGVwaWMgcGx1cyAxMCB0YXNrcyBhdCB3ZWVrIDAuIFRoZSBieV90YXNrIG1hcCBza2lwcyBjcmVhdG9yIHdoZW4gdGhlIGlkIGV4aXN0cyBhbmQgc3RpbGwgcmVmcmVzaGVzIHN1bW1hcnksIHN0YXR1cywgYW5kIG93bmVyLiBEZXNjcmlwdGlvbnMgdXNlIEppcmEncyBkb2N1bWVudCBmb3JtYXQgYmVjYXVzZSBBUEkgdjMgcmVqZWN0cyBhIHBsYWluIHN0cmluZy4="
+        "answerHash": "ac013b7f3b40bc9501e6976819448e1fed66a8321f6533020b464aef051d708a",
+        "explain": "U0lNIGtleXMgYXJlIHRoZSBmaWN0aW9uYWwgaW52ZXN0aWdhdGlvbi4gVGhleSBhcmUgbm90IHRoZSBzcHJpbnQgc3Rvcmllcy4="
       },
       {
         "id": "s5q7",
-        "prompt": "Why does plan run after triage and not after the fishbone?",
+        "prompt": "Why are SIM keys a different series from INV keys?",
         "choices": [
           {
             "id": "a",
-            "text": "A client project must already exist before any failure frequency is calculated from the grid."
+            "text": "SIM keys are rejected by the fidelity guard so they can never appear in the status note."
           },
           {
             "id": "b",
-            "text": "The bar dates are an input to the guess ordering so the scheduler has to finish before any stratum is scored."
+            "text": "A rehearsal file must not be mistaken for the build board a reviewer imports by hand."
           },
           {
             "id": "c",
-            "text": "The scheduler reads the top guess only and the diagram step neither reads nor writes that schedule."
+            "text": "The two prefixes are aliases and a later import merges them into one issue without a check."
           },
           {
             "id": "d",
-            "text": "The graph sorts step names alphabetically which places the scheduler behind the diagram step."
+            "text": "SIM keys are the sprint stories and INV keys are created only when the dry-run fails."
           }
         ],
         "salt": "ba424e0ed43edd12",
-        "answerHash": "6e6f34aa83f9512b2669dd6203a5f73105785d08c63cf8b646986df54ebb059b",
-        "explain": "VGhlIG9yZGVyIGlzIHRyaWFnZSwgcGxhbiwgcmNhLCBFTkQuIHJ1bl9jYXNlIGNyZWF0ZXMgdGhlIG91dHB1dCBkaXJlY3RvcnkgYmVmb3JlIGludm9rZSwgYmVjYXVzZSB0aGUgcGxhbiBub2RlIHdyaXRlcyBmaWxlcyBkdXJpbmcgdGhlIG5vZGUgdXNpbmcgc3RhdGUgb3V0X2Rpci4="
+        "answerHash": "3f67931e44ab47bc1b589b818573e1ce0562ffa5425c69ce3a638f202fe933c0",
+        "explain": "VGhlIGJ1aWxkIGJvYXJkIGlzIHRoZSBwb3J0Zm9saW8gYmFja2xvZy4gVGhlIGRyeS1ydW4gaXMgdGhlIGNhc2UuIE1peGluZyB0aGVtIHdvdWxkIGxpZS4="
       },
       {
         "id": "s5q8",
-        "prompt": "Who owns containment when the top cause is a lot, an instrument, or no single cause?",
+        "prompt": "Why do the tests pass a fake transport?",
         "choices": [
           {
             "id": "a",
-            "text": "Every task including the first response is owned by the language model rather than by a named function."
+            "text": "The fake transport still calls the live site and only skips authentication on the runner."
           },
           {
             "id": "b",
-            "text": "The customer holds the first response for a batch and for a gauge and for a case with no clear driver."
+            "text": "The fake transport downloads the Llama weights so the sync test can narrate the issue body."
           },
           {
             "id": "c",
-            "text": "The client assigns a random holder whenever the issue identifier starts with SIM."
+            "text": "CI has to exercise the dry-run path without a token and without opening a socket."
           },
           {
             "id": "d",
-            "text": "Quality holds a batch and manufacturing a gauge and development the code while an unclear driver stays."
+            "text": "The fake transport is used only when the three secrets are present in the CI environment."
           }
         ],
         "salt": "2f3a78be0caab485",
-        "answerHash": "9e5df0b1b477f87ed045f5a7229bbb3cb088471ef3fde8177be9c5c44859ece6",
-        "explain": "VGhlIG93bmVyIG1hcCBpcyB0aGUgc3RhZmZpbmcgc3Rvcnkgb24gdGhlIEdhbnR0LiBTY29yZSBvbiB0aGUgcmVnaXN0ZXIgaXMgbGlrZWxpaG9vZCB0aW1lcyBpbXBhY3QsIGFuZCBhIGxvb3AgY2hlY2tzIHRoZSBwcm9kdWN0IHNvIGEgZnV0dXJlIGVkaXQgY2Fubm90IHR5cGUgdGhlIHNjb3JlIGJ5IGhhbmQu"
+        "answerHash": "4cf18a45adc3a3366344a2ae4764292fd63059a54486c3d30869757c30ec2336",
+        "explain": "T3B0aW9uYWwgaW50ZWdyYXRpb24gbWVhbnMgdGhlIHN1aXRlIGlzIGdyZWVuIHdpdGggYW4gZW1wdHkgZW52aXJvbm1lbnQu"
       }
     ]
   },
@@ -1029,203 +1029,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s6q1",
-        "prompt": "Why does triage not run on every lap of the loop?",
+        "prompt": "Why is the week a graph edge instead of a hidden loop?",
         "choices": [
           {
             "id": "a",
-            "text": "The field document is fixed by the seed so the pass re-enters at the scheduler."
+            "text": "The edge deletes the decision log each week so the status note cannot repeat a prior ask."
           },
           {
             "id": "b",
-            "text": "The graph allows only one step in a program so the opening step cannot be entered a second time."
+            "text": "The edge is the control flow so a reader can see when the case stops or advances or closes out."
           },
           {
             "id": "c",
-            "text": "The customer remark overwrites the metrics so another opening pass would have nothing left to read."
+            "text": "The edge reruns triage so the opening memo is rewritten after every injection arrives."
           },
           {
             "id": "d",
-            "text": "The opening step is deleted from the graph once the scheduler exists which is why later passes skip it."
+            "text": "A hidden loop is required because the graph library cannot return to a node it has already run."
           }
         ],
         "salt": "348cbf7de3078da9",
-        "answerHash": "a944e5f9ab87f343f2f4c2daa39f391f2d93b5401a1ecaa92295ee9429d54e37",
-        "explain": "VGhlIGNvbmRpdGlvbmFsIGVkZ2UgYWZ0ZXIgc3RhdHVzIGVpdGhlciBlbmRzIG9yIGFkdmFuY2VzIHRoZSB3ZWVrIGFuZCByZXR1cm5zIHRvIHBsYW4uIFRyaWFnZSBydW5zIG9uY2UuIFRoZSB3ZWVrIGNoYW5nZXMgd2hpY2ggaW5qZWN0aW9ucyBhbmQgdGFza3MgYXJlIGluIHNjb3BlLg=="
+        "answerHash": "c77f7c19539bd14c26926691b968b55b05c7ecf3c9f29df4f5eb94c330a8b7d3",
+        "explain": "QSBsb29wIGluIHRoZSBjb21tYW5kIGxpbmUgd291bGQgaGF2ZSBkb25lIHRoZSB3b3JrIGFuZCBoaWRkZW4gdGhlIGRlY2lzaW9uLg=="
       },
       {
         "id": "s6q2",
-        "prompt": "What makes week 2 Red on bad_lot, and why does the case never go Green?",
+        "prompt": "Why does the field file stay the same across weeks?",
         "choices": [
           {
             "id": "a",
-            "text": "Healthy is reserved for a successful model call and the second lap does not invoke a model at all."
+            "text": "Each week redraws the table with a new seed so the rate can fall back under the cap."
           },
           {
             "id": "b",
-            "text": "Frequency stays over the promise and containment waits so the second lap stays urgent and nothing is cured."
+            "text": "The file is rewritten when containment starts so the walkthrough case can turn green."
           },
           {
             "id": "c",
-            "text": "The second lap turns healthy because release testing passed and the document is then marked cured."
+            "text": "What changes is which injections are visible and which tasks are in progress, not the rows."
           },
           {
             "id": "d",
-            "text": "A retrieval index is what the color names and urgent means that index missed the batch remark."
+            "text": "The file is replaced by the projection so week four shows the counterfactual as observed data."
           }
         ],
         "salt": "0e31370362844a87",
-        "answerHash": "cca9c88d3e74a00c0008f6cfa6cf8e9bb4c2d8cdaf4b808e3b0e2f370f294e78",
-        "explain": "SW4gdGhpcyBwcm9qZWN0IFJBRyBpcyB0aGUgUmVkIC8gQW1iZXIgLyBHcmVlbiBzdGF0dXMgY29sb3IsIG5vdCByZXRyaWV2YWwtYXVnbWVudGVkIGdlbmVyYXRpb24uIHJhZ19jb2xvciByZXR1cm5zIEdyZWVuIG9ubHkgd2hlbiB0aGUgcmF0ZSBkb2VzIG5vdCBleGNlZWQgdGhlIHNwZWMu"
+        "answerHash": "0a6d725c9ce1128ff481a71bde276031501e17f94cd377c328f56323ac7a67dc",
+        "explain": "VGhlIGNvbXBsYWludCBpcyBvbmUgZmlsZS4gVGhlIHdlZWtzIGFyZSBuZXcgaW5mb3JtYXRpb24gYWJvdXQgdGhhdCBmaWxlLg=="
       },
       {
         "id": "s6q3",
-        "prompt": "What does the decision log record at week 2?",
+        "prompt": "Why do the three notes share one rate line?",
         "choices": [
           {
             "id": "a",
-            "text": "Close the final section and ship the executive deck at the end of the second lap."
+            "text": "The customer note omits the rate and only the leadership note is allowed to print a percent."
           },
           {
             "id": "b",
-            "text": "Delete the first task because its simulation lap has already passed and the row is stale."
+            "text": "The shared line is written by the model and the guard checks only the customer copy."
           },
           {
             "id": "c",
-            "text": "Keep the field ordering after a reported release pass and add the lab-director remark to the schedule."
+            "text": "The audiences can differ in wording and they must not differ in the digits they quote."
           },
           {
             "id": "d",
-            "text": "Switch the leading driver to software because the release remark passed and the grid should follow it."
+            "text": "Each audience gets its own rate so the customer can be shown a calmer number than leadership."
           }
         ],
         "salt": "267f892434654159",
         "answerHash": "0fa87c1669e4aba17c2a1a87b5435d9c80f75e52b2857482d984d7a97cf9fc17",
-        "explain": "V2VlayAxJ3Mgcm93IHNheXMgdGhlIFFBIG5vdGUgaXMgYSBjaXRhdGlvbiBhbmQgZG9lcyBub3QgZ2V0IGl0cyBvd24gc2NvcmUuIFdlZWsgMyBzYXlzIGRvIG5vdCBzd2l0Y2ggdGhlIGNhdXNlIG9udG8gdGhlIHNoaXBwaW5nIG5vdGUuIE9uZSByb3cgcGVyIHdlZWsgaXMgdGhlIGRpZmYgYSBQTSB3b3VsZCBzaG93Lg=="
+        "explain": "T25lIGFuYWx5c2lzLCB0aHJlZSB2aWV3cy4gQSBkcmlmdGVkIHBlcmNlbnQgd291bGQgYmUgdGhyZWUgZGlmZmVyZW50IGNhc2VzLg=="
       },
       {
         "id": "s6q4",
-        "prompt": "How can the customer note mention a rate without the template doing arithmetic?",
+        "prompt": "What is the customer note not allowed to state?",
         "choices": [
           {
             "id": "a",
-            "text": "The small local model types the percent on the hosted screen and the wording pastes that text unchanged."
+            "text": "The customer note must include the unit cost so the lab can see the leadership ask."
           },
           {
             "id": "b",
-            "text": "The percent is copied from the complaint line which is why no calculation runs inside the wording."
+            "text": "The customer note must quote every internal injection verbatim including the release-test note."
           },
           {
             "id": "c",
-            "text": "The wording multiplies failures by 100 and divides by the row count inside the formatted text itself."
+            "text": "The customer note must name the cause type so the lab can quarantine the right lot immediately."
           },
           {
             "id": "d",
-            "text": "The facts builder rounds frequency onto a percent field and the wording inserts that field for the guard."
+            "text": "The customer note must not state an unconfirmed cause as a fact leadership can treat as final."
           }
         ],
         "salt": "666a134f18becf06",
         "answerHash": "77f770c99ea7da6748d2c74a843b5fea3c134e51cc005f19508aefcee7c7e70b",
-        "explain": "VGhlIHRocmVlIGF1ZGllbmNlIHRlbXBsYXRlcyBzaGFyZSBfc3RhdHVzX2hlYWRlciwgc28gdGhlIHJhdGUgbGluZSBjYW5ub3QgZHJpZnQuIENvc3QgaXMgaW52YWxpZHMgdGltZXMgdGhlIHVuaXQgcHJpY2UsIGFuZCBib3RoIGZhY3RvcnMgc2l0IG9uIHRoZSBmYWN0cyBiZWZvcmUgYW55IHNlbnRlbmNlIGlzIHJlbmRlcmVkLg=="
+        "explain": "SW50ZXJuYWwgY29weSBjYW4gbmFtZSB0aGUgaHlwb3RoZXNpcy4gVGhlIGN1c3RvbWVyIGNvcHkgc3RheXMgaW5zaWRlIHdoYXQgaXMgY29uZmlybWVkLg=="
       },
       {
         "id": "s6q5",
-        "prompt": "Where do you look to diff week 0 and week 2 without re-running anything?",
+        "prompt": "What does the red amber green color mean?",
         "choices": [
           {
             "id": "a",
-            "text": "Compare the opening folder with the second because each is as of that lap and the top copy is newest."
+            "text": "It is a rule about the rate and the week and it is not a retrieval index over the notes."
           },
           {
             "id": "b",
-            "text": "Compare the earlier tag with the following tag which is the opening versus second-lap schedule a reviewer would quote."
+            "text": "It is the Jira priority field and red means the dry-run failed to open a socket."
           },
           {
             "id": "c",
-            "text": "Use only the final client document which keeps a copy of every lap schedule inside one document."
+            "text": "It is a vector search over the injections and the color is the nearest cause label."
           },
           {
             "id": "d",
-            "text": "Use the screen cache which stores each lap schedule under the audience selector key."
+            "text": "It is the model confidence and green means Llama 3.1 8B accepted the draft."
           }
         ],
         "salt": "755749f7c0fae2b6",
         "answerHash": "74c9b14945fb4b8abc8121cbfe73f638210079858c815800061ec1ef87fc222b",
-        "explain": "VGhvc2Ugd2VlayBmb2xkZXJzIHdlcmUgd3JpdHRlbiBieSBwbGFuX25vZGUgb24gdGhhdCBsYXAsIG5vdCByZWNvbnN0cnVjdGVkIGxhdGVyLiBXZWVrIDAncyByZWdpc3RlciBoYXMgbm8gUjQuIFdlZWsgMidzIGRvZXMu"
+        "explain": "UkFHIGluIHRoaXMgcmVwbyBpcyB0aGUgc3RhdHVzIGNvbG9yLiBUaGUgUFJEIGtlZXBzIGEgdmVjdG9yIGRhdGFiYXNlIG91dCBvZiBzY29wZS4="
       },
       {
         "id": "s6q6",
-        "prompt": "What must the customer note not do?",
+        "prompt": "Why does the walkthrough case not turn green?",
         "choices": [
           {
             "id": "a",
-            "text": "It must include the client API token so the recipient can comment on the SIM issue directly."
+            "text": "The case turns green at week four because close-out confirms D7 and D8 on this file."
           },
           {
             "id": "b",
-            "text": "It must not state a confirmed driver and internal text gets the guess while leadership gets the cost."
+            "text": "Green is reserved for the projection and the observed chart is never allowed to use it."
           },
           {
             "id": "c",
-            "text": "It must quote a different failure frequency from the one printed on the leadership version."
+            "text": "The file is not rewritten and the rate stays over spec so green would be a lie."
           },
           {
             "id": "d",
-            "text": "It must name the batch and quote the chi-square probability and paste the five answers before the holding line."
+            "text": "Green is defined as amber plus a model draft so this case turns green at week three."
           }
         ],
         "salt": "18033037414f7c25",
-        "answerHash": "af819f5cc804b8589cb70ac6db844bb7553369e850de513f086e6482a88dc0c4",
-        "explain": "SW50ZXJuYWwgcGFzdGVzIGluamVjdGlvbiB0ZXh0IHZlcmJhdGltIHNvIHRoZSBndWFyZCBjYW4gbWFzayBpdC4gVGhlIGN1c3RvbWVyIGFjdGlvbiBpcyBhIGhvbGRpbmcgc2VudGVuY2UuIFRoYXQgc3BsaXQgaXMgdGhlIHN0YWtlaG9sZGVyIHNraWxsIHRoZSBzZXNzaW9uIGlzIHByYWN0aWNpbmcu"
+        "answerHash": "3364b41d309bd05cd54e976c014ab96a89c84aa5a46ccbfe0352f71f5df039e0",
+        "explain": "QW1iZXIgbWVhbnMgdGhlIGFjdGlvbiBpcyBvbiB0aGUgcGxhbi4gSXQgZG9lcyBub3QgbWVhbiB0aGUgZmllbGQgcmVjb3ZlcmVkLg=="
       },
       {
         "id": "s6q7",
-        "prompt": "At the end of a week-3 run, which tasks are Done?",
+        "prompt": "Where does the cost figure come from?",
         "choices": [
           {
             "id": "a",
-            "text": "Finished is applied only by an active client transition and a rehearsal document leaves every task open."
+            "text": "The cost is estimated by the model from the complaint text and then checked for tone only."
           },
           {
             "id": "b",
-            "text": "Every task stays in progress until the final deck is written including the earliest task on the schedule."
+            "text": "The cost is typed into the leadership template so the note can quote a round dollar amount."
           },
           {
             "id": "c",
-            "text": "Integer comparison marks the lap-0 task finished and the lap-2 task finished while the lap-4 task stays open."
+            "text": "The cost is the Jira story-point field multiplied by a rate stored in the backlog JSON."
           },
           {
             "id": "d",
-            "text": "The lap-2 task does not exist yet at the end of lap 3 so only the earliest task can be finished."
+            "text": "The cost is the invalid count times the unit cost on the scenario computed in the facts."
           }
         ],
         "salt": "ebe74b486508e880",
-        "answerHash": "58a6a85c026b4afe63fa699b9d8fb3a4f35df8373a47e5a89458128688ae94c2",
-        "explain": "VGhlIGRyeS1ydW4gdXBzZXJ0IGZyb20gU2Vzc2lvbiA1IHJlZnJlc2hlcyBzdGF0dXMgaW4gcGxhY2UuIFRoZSBmaWxlIGF0IHRoZSBlbmQgb2Ygd2VlayAzIHNob3dzIHRoZSB0YXNrcyB3aG9zZSB3ZWVrIGhhcyBwYXNzZWQgYXMgRG9uZS4gTm8gdG9rZW4gaXMgcmVxdWlyZWQu"
+        "answerHash": "a17a91b4b474ea126ce32f692932124b16166c958c627fbc6ece2a873804358d",
+        "explain": "QSBkb2xsYXIgYW1vdW50IGluIHRoZSBub3RlIGhhcyB0byBiZSBhIHByb2R1Y3QgdGhlIGNvZGUgY2FuIHJlY29tcHV0ZS4="
       },
       {
         "id": "s6q8",
-        "prompt": "What does route_after_status return when the week that just finished is still below the target?",
+        "prompt": "Why does the decision log keep one row per week?",
         "choices": [
           {
             "id": "a",
-            "text": "The result is stop on every pass so the lap counter does not move at all."
+            "text": "Each pass appends a new row so a week that is replayed shows up twice in the leadership note."
           },
           {
             "id": "b",
-            "text": "The result is the opening step and the field document is redrawn from a new seed."
+            "text": "A second pass replaces the row for that week so the log cannot double."
           },
           {
             "id": "c",
-            "text": "The result is the final wrap-up as soon as the first lap ends and the deck is written early."
+            "text": "The log is cleared at every advance so only the latest week survives on the state."
           },
           {
             "id": "d",
-            "text": "The result is advance which adds one to the lap and then edges back to the scheduler."
+            "text": "The log is written to the build backlog and each week creates a new INV story."
           }
         ],
         "salt": "2bd81e211dd86782",
-        "answerHash": "94f1ed30d38144dd09c60ffbdc3dd5015070456a2c90fe754149e63130500f7e",
-        "explain": "VGhlIHN0cmluZyBlbmQgbWFwcyB0byBMYW5nR3JhcGgncyBFTkQuIFRoZXJlIGlzIG5vIGNsb3Nlb3V0IG5vZGUgdW50aWwgU2Vzc2lvbiA5LiBUaGlzIHRhZydzIGxvb3AgaXMgcGxhbiwgUkNBLCBzdGF0dXMu"
+        "answerHash": "2950001cad604bdb703be962358604f80379856ca53753dc02a1c67e1ac99637",
+        "explain": "VGhlIHdlZWtseSByZWNvcmQgaXMgYSBkaWZmLiBBIGR1cGxpY2F0ZWQgd2VlayB3b3VsZCBsb29rIGxpa2UgdHdvIGRlY2lzaW9ucy4="
       }
     ]
   },
@@ -1234,203 +1234,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s7q1",
-        "prompt": "Why is rules-only the default on the hosted page?",
+        "prompt": "Why does the dashboard call the case graph instead of a second loop?",
         "choices": [
           {
             "id": "a",
-            "text": "The cloud app has no local runner and ships no weights so deterministic wording answers with no download."
+            "text": "The page trains a model on the selected scenario and stores the weights next to the chart."
           },
           {
             "id": "b",
-            "text": "The chart library cannot draw a proportion plot while a model is loaded so the deterministic path is what keeps the chart alive."
+            "text": "A second investigation would let the page drift from the memo and the chart and the notes."
           },
           {
             "id": "c",
-            "text": "The screen raises unless the engine is the local runner and the deterministic flag is how that engine gets chosen."
+            "text": "The page recomputes rates in the browser so it can show a number the graph has not produced."
           },
           {
             "id": "d",
-            "text": "The job host serves the screen and forbids the language runtime so the screen has to stay on deterministic wording."
+            "text": "The page reads the build backlog and renders sprint stories as if they were the investigation."
           }
         ],
         "salt": "573fe1424ad5e481",
-        "answerHash": "5b1e7cdc1262c9c835810aed6c85ceb48167bf7220b8d28b2427d94f279fb8b1",
-        "explain": "QSBtaXNzaW5nIG1vZGVsIGlzIGEgZmFsbGJhY2ssIG5vdCBhIGNyYXNoLiBuYXJyYXRlIHN0aWxsIHJlcGxhY2VzIGEgcmVqZWN0ZWQgZHJhZnQgd2l0aCB0aGUgdGVtcGxhdGUuIFRoZSBiYW5uZXIgaXMgdGhlIGZpcnN0IHRoaW5nIG9uIHRoZSBwYWdlLCBpbmNsdWRpbmcgdGhlIGNsaW5pY2FsLXVzZSBsaW5lLg=="
+        "answerHash": "40d9834fe471f82944d4c7f164bf68bb93e4cb1c448a4c5c0dff4201003c5d0f",
+        "explain": "VGhlIGRhc2hib2FyZCBpcyBhIHZpZXcgb2YgdGhlIHNhbWUgcnVuLiBJdCBpcyBub3QgYW5vdGhlciBwcm9kdWN0Lg=="
       },
       {
         "id": "s7q2",
-        "prompt": "Which variable names the model, and what does the page request when rules-only is off and that variable is unset?",
+        "prompt": "Why is rules-only the default on the page?",
         "choices": [
           {
             "id": "a",
-            "text": "There is no model name and with the toggle cleared the screen picks a model tag at random."
+            "text": "Rules-only switches the ranker to the note-only policy for every scenario in the picker."
           },
           {
             "id": "b",
-            "text": "LLM_MODEL wins when set and otherwise a local run asks for llama3.2:1b while commands stay on llama3.1:8b."
+            "text": "Rules-only disables the fidelity guard so the template can include numbers the facts omit."
           },
           {
             "id": "c",
-            "text": "The model name OLLAMA_MODEL overrides the other name and an absent value on the cloud screen downloads llama3.1:8b."
+            "text": "Rules-only downloads Llama 3.1 8B into the browser so the hosted page can narrate offline."
           },
           {
             "id": "d",
-            "text": "The cloud screen always downloads Llama 3.1 8B and the toggle cannot change that model tag."
+            "text": "Hosted Streamlit has no Ollama so the public rules path must not require a model at all."
           }
         ],
         "salt": "7acc16b44f33dcb2",
-        "answerHash": "3f5a1e63c8b1ebc9350c134499bf5aa48ecfa79b075437e62da50d768fa3baf2",
-        "explain": "SE9TVEVEX0xMTV9NT0RFTCBpcyB0aGUgc21hbGwgdGFnLCBMbGFtYSAzLjIgMUIuIEl0IGlzIHdoYXQgdGhlIHRvZ2dsZSBhc2tzIGZvciBsb2NhbGx5LiBDb21tdW5pdHkgQ2xvdWQgc3RheXMgb24gdGhlIHJ1bGVzLW9ubHkgZGVmYXVsdCBiZWNhdXNlIENsb3VkIGNhbm5vdCBydW4gT2xsYW1hLiBHZW1tYSAzIGFuZCBQaGktNCBhcmUgb3RoZXIgdGFncyB5b3UgY2FuIHNldCB5b3Vyc2VsZi4="
+        "answerHash": "8e357e23a21fa8683697479d2656da8c8e3c7cbf43ef28a91dc92a730e3a713b",
+        "explain": "VGhlIGhvc3RlZCBkZW1vIGlzIHRoZSBkZXRlcm1pbmlzdGljIHBhdGguIEEgbG9jYWwgbW9kZWwgaXMgYSBkaWZmZXJlbnQgbWFjaGluZS4="
       },
       {
         "id": "s7q3",
-        "prompt": "Why does the before/after chart say the after series is not observed follow-up?",
+        "prompt": "What must the projection caption say?",
         "choices": [
           {
             "id": "a",
-            "text": "The later bars are a screenshot the recipient sent and then pasted on as watched results."
+            "text": "The caption says the projected result is not observed follow-up after clearing that stratum."
           },
           {
             "id": "b",
-            "text": "The later bars are next-month complaints collected once the batch was quarantined in the field."
+            "text": "The caption says the projected rate is observed follow-up after the containment shipped."
           },
           {
             "id": "c",
-            "text": "Failures on the leading stratum of the same synthetic document are cleared and no new field data are collected."
+            "text": "The caption says the projected rate is the keyword ranker's cause for that scenario."
           },
           {
             "id": "d",
-            "text": "The plotting library simulates a cured program and rewrites the scenario document with the new frequency."
+            "text": "The caption says the projected rate is the Wilson interval of the original file."
           }
         ],
         "salt": "e0bdbe9e62bf59fc",
-        "answerHash": "3d2ddfb135232243b22aa53128ffb54b2c6cb670dd53086d67bccba5f87131dd",
-        "explain": "VGhlIGZ1bmN0aW9uIGNvcGllcyB0aGUgZnJhbWUgYW5kIHJldHVybnMgYmVmb3JlL2FmdGVyIHJhdGVzLiBJdCBkb2VzIG5vdCByZXdyaXRlIHRoZSBzY2VuYXJpbyBmaWxlLiBiYWRfbG90IHN0YXlzIG92ZXIgc3BlYyBpbiB0aGUgb2JzZXJ2ZWQgc2VyaWVzLiBUaGUgY2FwdGlvbiByZXBlYXRzIHRoZSBwcm9qZWN0aW9uIGxhYmVsLg=="
+        "answerHash": "48ea81bb4541f72bfd345dbbec07cd9d79d72ee750fdc14a0cc04d0fd9da26de",
+        "explain": "VGhlIGZ1bmN0aW9uIHJldHVybnMgYSBmaXhlZCBsYWJlbC4gVGhlIHBhZ2UgZG9lcyBub3QgZ2V0IHRvIGRyb3AgaXQu"
       },
       {
         "id": "s7q4",
-        "prompt": "What is cached, and what is not recomputed when you only change the audience radio?",
+        "prompt": "Why does the projection not rewrite the scenario?",
         "choices": [
           {
             "id": "a",
-            "text": "Every selector click rebuilds the whole graph and ignores the stored result from the previous execution."
+            "text": "Rewriting the scenario is how week four turns the walkthrough file green for the deck."
           },
           {
             "id": "b",
-            "text": "The storage key is only the selector name so a new lap still serves the previous execution from memory."
+            "text": "Rewriting the scenario is required so the next dashboard refresh sees the contained lot."
           },
           {
             "id": "c",
-            "text": "Nothing is stored because the framework forbids that decorator on a cloud app of this kind."
+            "text": "The original file stays intact and the copy is only the before-and-after picture."
           },
           {
             "id": "d",
-            "text": "The cache key covers scenario and lap and engine and model while the selector only rereads stored text."
+            "text": "Rewriting the scenario stores the counterfactual on the graph state as the new field file."
           }
         ],
         "salt": "b22b1bb5615bd234",
-        "answerHash": "cf41ba2dda45ccdccf9cb3b94ae68fb1b802346ae09b1422dedc2e95659c55e6",
-        "explain": "X3J1biByZXN0b3JlcyB0aGUgZW52aXJvbm1lbnQgaW4gYSBmaW5hbGx5IGJsb2NrIHNvIGEgY2FjaGVkIGNhbGwgY2Fubm90IHBpbiBhIG1vZGVsIGZvciB0aGUgbmV4dCBDTEkgY29tbWFuZCBpbiB0aGUgc2FtZSBwcm9jZXNzLiBTd2l0Y2hpbmcgdGFicyBkb2VzIG5vdCBjYWxsIHJ1bl9jYXNlIGFnYWluLg=="
+        "answerHash": "447592b03545cf2ad523382a32d36e9799a12f926a0ce559e36917ea65757ded",
+        "explain": "QSBjb3VudGVyZmFjdHVhbCB0aGF0IG92ZXJ3cml0ZXMgdGhlIGNhc2Ugd291bGQgbWFrZSB0aGUgbWlzcyBkaXNhcHBlYXIu"
       },
       {
         "id": "s7q5",
-        "prompt": "What does Neel still have to do before a public Streamlit URL exists?",
+        "prompt": "Why restore the environment after a dashboard run?",
         "choices": [
           {
             "id": "a",
-            "text": "Sign in on the cloud host with the code host and pick the app entry because the tree cannot do it."
+            "text": "The environment is left changed so the next pytest run uses the model the toggle selected."
           },
           {
             "id": "b",
-            "text": "Nothing further is required because this snapshot already published the address and the tree contains that link."
+            "text": "The environment is restored so rules-only becomes the permanent backend for the command line."
           },
           {
             "id": "c",
-            "text": "Commit a client API token so the cloud host can start a local model runner for the screen."
+            "text": "A cached run must not pin a model for the next command in the same process."
           },
           {
             "id": "d",
-            "text": "Buy a charting license which is the gate the cloud host checks before the first deploy is allowed."
+            "text": "The environment is restored so the Jira token is written into the page config for the host."
           }
         ],
         "salt": "d2a33e926656e5ca",
-        "answerHash": "b63af5af590b8cbc97cad65087c5e92af48de25138e3cfdb618afd794e2dcb13",
-        "explain": "VGhlIHJvb3QgZmlsZSB1c2VzIHJ1bnB5IHNvIGJvdGggZW50cnkgcG9pbnRzIHdvcmsuIFRpY2tldCBJTlYtMzAxIGlzIHRoZSBkYXNoYm9hcmQuIFRoZSBhY2FkZW15IGxlYXZlcyBzdHJlYW1saXRVcmwgYmxhbmsgdW50aWwgdGhhdCBVUkwgZXhpc3RzLg=="
+        "answerHash": "72877c2368c17be6be06fb73109e262ad0713cb89b6e2bcf2ef261d967e92ce9",
+        "explain": "VGhlIHBhZ2UgaXMgYSB2aXNpdG9yLiBJdCBzaG91bGQgbm90IHJlY29uZmlndXJlIHRoZSBwcm9jZXNzIGl0IGJvcnJvd2VkLg=="
       },
       {
         "id": "s7q6",
-        "prompt": "Which colors mark the p-chart, and what is red for?",
+        "prompt": "What does the hosted requirements file install?",
         "choices": [
           {
             "id": "a",
-            "text": "The figure is a static picture embedded by an export helper and the alarm hue is only the chart border."
+            "text": "It installs the UCSD review files so the dashboard can score a fit label."
           },
           {
             "id": "b",
-            "text": "Navy 0B3A5B and teal 1F7A8C draw the line and B23A48 marks zone-1 points with no purple gradient."
+            "text": "It installs the deterministic path and it does not install a local GGUF model file."
           },
           {
             "id": "c",
-            "text": "A random palette gives one hue per functional owner and there is no fixed alarm hue for the zone-1 points."
+            "text": "It installs a local model file so Community Cloud can run Llama 3.1 8B on the free tier."
           },
           {
             "id": "d",
-            "text": "The alarm hue marks the projected bars and navy marks a model token sitting in the screen state."
+            "text": "It installs the Jira client credentials so the hosted page can sync the live board."
           }
         ],
         "salt": "ba7dce9e8a01664a",
         "answerHash": "b9ac2aac7c1794c011f6c1b12a389c09892a49a2ad4a4ad45f067aca481d4afe",
-        "explain": "Y2hhcnRzLnB5IHJlYWRzIHRoZSBwLWNoYXJ0IGRpY3QgYW5kIHRoZSBQYXJldG8gZGljdCB0aGUgZ3JhcGggYWxyZWFkeSBjb21wdXRlZC4gVGhlIHN0YXRpYyBQTkcgcGF0aCBmb3Igc2xpZGVzIHN0YXlzIG9uIG1hdHBsb3RsaWIgYmVjYXVzZSBQbG90bHkncyBleHBvcnQgbmVlZHMgS2FsZWlkbywgd2hpY2ggaXMgbm90IHNoaXBwZWQu"
+        "explain": "Q2xvdWQgaGFzIG5vIE9sbGFtYS4gVGhlIGluc3RhbGwgbGlzdCBkb2VzIG5vdCBwcmV0ZW5kIG90aGVyd2lzZS4="
       },
       {
         "id": "s7q7",
-        "prompt": "What does requirements.txt deliberately leave out?",
+        "prompt": "Why is the simulation banner the first thing on the page?",
         "choices": [
           {
             "id": "a",
-            "text": "The chart library is omitted because the cloud screen draws every chart with matplotlib alone."
+            "text": "A reviewer who only opens the dashboard still has to see the first panel is synthetic."
           },
           {
             "id": "b",
-            "text": "The app framework itself is omitted so the cloud host is expected to serve the screen with another toolkit."
+            "text": "The banner is hidden when rules-only is on so the hosted page looks like a production tool."
           },
           {
             "id": "c",
-            "text": "A weight file stays out while data and graph and chart libraries and the app framework stay installed."
+            "text": "The banner is a CSS theme and it does not carry the not-for-clinical-use sentence."
           },
           {
             "id": "d",
-            "text": "The test runner is omitted and the cloud host needs it in the install array before the app will boot."
+            "text": "The banner is the spec constant and later modules import the two percent cap from that div."
           }
         ],
         "salt": "5d265b0f400a07e3",
-        "answerHash": "19058a6d12b638bbe40cecb92dd0f14214ee732a3912da9fa7553fd2b5202785",
-        "explain": "VGhlIGNvbW1lbnQgYXQgdGhlIHRvcCBvZiB0aGUgZmlsZSBzYXlzIHRoZSBkZWZhdWx0IGJhY2tlbmQgaXMgZGV0ZXJtaW5pc3RpYy4gLnN0cmVhbWxpdC9jb25maWcudG9tbCBzZXRzIHRoZSBuYXZ5IHRoZW1lLCBoZWFkbGVzcyBtb2RlLCBhbmQgdHVybnMgdXNhZ2Ugc3RhdHMgb2ZmLg=="
+        "answerHash": "dbd77c456940516671d8f9daecc5e24438f85b0eaecb5c9830989db72c222e8b",
+        "explain": "VGhlIHNhbWUgc2VudGVuY2UgaXMgb24gdGhlIG1lbW8gYW5kIHRoZSBkZWNrLiBUaGUgcGFnZSBkb2VzIG5vdCBnZXQgYSBzb2Z0ZXIgb25lLg=="
       },
       {
         "id": "s7q8",
-        "prompt": "What does the dashboard test require the page to show?",
+        "prompt": "What does the page show for a local model toggle?",
         "choices": [
           {
             "id": "a",
-            "text": "Flipping the selector changes the failure frequency shown on the metric tile."
+            "text": "Turning the toggle off asks Ollama and falls back to the template if that model is not running."
           },
           {
             "id": "b",
-            "text": "An active browser click is required and the job performs that click against the cloud host on every pull request."
+            "text": "Turning the toggle off is what the hosted Streamlit page does for every visitor."
           },
           {
             "id": "c",
-            "text": "The screen downloads llama3.1:8b during the render check and fails closed if that weight is missing."
+            "text": "Turning the toggle off trains a new ranker and replaces the evidence policy for that scenario."
           },
           {
             "id": "d",
-            "text": "The screen shows the clinical-use banner and a metric and dropping the bad batch lowers the projection."
+            "text": "Turning the toggle off writes the model name into the scenario YAML as the root cause."
           }
         ],
         "salt": "b93a90e8549423f0",
-        "answerHash": "6f0c2ea554e7cda4bc7c60790e9bec877af462506d9dd5f7106bd7a3dfa980b3",
-        "explain": "cHl0ZXN0IHN0YXlzIG9mZmxpbmUuIFRoZSBudW1iZXJzIG9uIHRoZSB0aWxlcyBhcmUgdGhlIG1ldHJpY3Mgb2JqZWN0LCBub3QgYSBzZW50ZW5jZSB0aGUgbW9kZWwgd3JvdGUuIFRoZSBkZWx0YSBvbiB0aGUgcmF0ZSB0aWxlIGlzIGNvbG9yZWQgc28gJ2Fib3ZlIHNwZWMnIHJlYWRzIGFzIGJhZC4="
+        "answerHash": "2d14f0ff518002cec3365481ae37e5105024fd6865aa68f55803a09db6af6e4b",
+        "explain": "VGhlIHRvZ2dsZSBpcyBhIGxvY2FsIGNob2ljZS4gSXQgaXMgbm90IHRoZSBwdWJsaWMgZGVwbG95bWVudC4="
       }
     ]
   },
@@ -1439,203 +1439,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s8q1",
-        "prompt": "What did the evidence ranker score on the 22 scenarios, and what did the keyword ranker score?",
+        "prompt": "What does the scorecard compare?",
         "choices": [
           {
             "id": "a",
-            "text": "The table hit 22 of 22 for top choice and top three while notes hit 3 of 22 with no driver named."
+            "text": "An evidence ranker that reads the table and a ranker that only reads the week-zero note."
           },
           {
             "id": "b",
-            "text": "Both approaches were perfect on all 22 documents so an opening remark is as accurate as the table."
+            "text": "The build backlog against the SIM file on how many issues share an identifier."
           },
           {
             "id": "c",
-            "text": "The memo stores no counts and the perfect cell is typed into the opening readme by hand."
+            "text": "The Streamlit page against the PowerPoint deck on how often a visitor clicks the banner."
           },
           {
             "id": "d",
-            "text": "The table ordering hit 3 of 22 and the note ordering hit 22 of 22 on the same documents."
+            "text": "Llama 3.1 8B against Llama 3.2 1B on the same prompts with both weights installed."
           }
         ],
         "salt": "1f7a97edfa9bf876",
         "answerHash": "8495c5d9261ed99ce1b1b923348159cceeca047ec98bbea2f67c518db1c78f3c",
-        "explain": "SG9sZG91dCB3YXMgNCBvZiAyMi4gR2F0ZXMgd2VyZSBub3QgcmVmaXQuIFJlYWQgdGhlIHdlYWstbG90IHJvdyBhbmQgdGhlIGRyaWZ0IGV4dHJhLXN0cmF0dW0gbGluZXMgYmVmb3JlIHF1b3RpbmcgdGhlIDIyLzIyIGNlbGwu"
+        "explain": "VGhlIHJlcG9ydCBpcyB0d28gcG9saWNpZXMuIEl0IGlzIG5vdCBhIG1vZGVsLWFjY3VyYWN5IG51bWJlci4="
       },
       {
         "id": "s8q2",
-        "prompt": "Why is weak_lot a success when the evidence call is no_single_cause?",
+        "prompt": "Why is the table not a Llama accuracy number?",
         "choices": [
           {
             "id": "a",
-            "text": "The table ordering is mistaken on that scenario and the note ordering is the number a reader should quote."
+            "text": "The table is a model score and the deterministic label is only the name of the logging backend."
           },
           {
             "id": "b",
-            "text": "The batch bump stays under the lift gate so withholding is right and notes still name the reagent batch."
+            "text": "Both weights were installed and the higher scoring model is the one the résumé quotes."
           },
           {
             "id": "c",
-            "text": "That scenario is one of the four held-out documents so it is excluded from the result entirely."
+            "text": "The table becomes a model score once the hosted Streamlit page has been opened once."
           },
           {
             "id": "d",
-            "text": "An unclear label means generation failed so that scenario produced no grid that could be judged."
+            "text": "Llama weights were not required for this run so the table cannot be quoted as a model score."
           }
         ],
         "salt": "70854749f7f893fc",
-        "answerHash": "3342878f3212eedda588a9d41181ebae22cfb6ce41c08b136cda52216910c565",
-        "explain": "VGhlIG92ZXJhbGwgcmF0ZSBjYW4gc3RpbGwgYmUgb3ZlciB0aGUgMiUgc3BlYyB3aGlsZSBubyBzdHJhdHVtIGNsZWFycyBsaWZ0IDEuOC4gV2l0aGhvbGRpbmcgaXMgdGhlIGRlc2lnbmVkIGNhbGwuIFRoYXQgaXMgdGhlIG9wcG9zaXRlIG9mIGZvcmNpbmcgYSBjYXVzZSB0byBtYWtlIHRoZSBzbGlkZSB0aWR5Lg=="
+        "answerHash": "4c23cb9c38f79232a9ac52a87752b6264826382926fba76f20ead698f75c9108",
+        "explain": "RG8gbm90IHByb21vdGUgYSByYW5raW5nIHBvbGljeSBpbnRvIGEgY2xhaW0gYWJvdXQgYSBtb2RlbCB0aGF0IGRpZCBub3QgcnVuLg=="
       },
       {
         "id": "s8q3",
-        "prompt": "What extra call showed up on the drift scenarios, and did it change top-1?",
+        "prompt": "What does a red herring do to the two rankers?",
         "choices": [
           {
             "id": "a",
-            "text": "The leading name flipped to the reagent batch on all four shifting documents and the gauge fell to second place."
+            "text": "Both rankers follow the note because the true cause is stored as an unquoted boolean."
           },
           {
             "id": "b",
-            "text": "Those shifting documents were removed from the judged set once a second stratum appeared."
+            "text": "The herring removes the eval label so neither ranker can be scored on that file."
           },
           {
             "id": "c",
-            "text": "A reagent-batch stratum also cleared the bar and the leading name stayed the drifting gauge on purpose."
+            "text": "The note-only ranker ignores the note and the evidence ranker repeats the lot the complaint names."
           },
           {
             "id": "d",
-            "text": "Only the note ordering saw the gauge and the table ordering stayed on the reagent batch."
+            "text": "The note names the wrong cause and the evidence ranker is allowed to disagree by reading the table."
           }
         ],
         "salt": "c8e7a637fa35ef3c",
-        "answerHash": "771e59623494fc099e03e32125beebf8d690b6be533374abd78713532cf72da5",
-        "explain": "QSByw6lzdW3DqSBidWxsZXQgdGhhdCBrZWVwcyAyMi8yMiBhbmQgZHJvcHMgdGhlIHNlY29uZCBzdHJhdHVtIGlzIG1pc2xlYWRpbmcuIFRoZSBmYWlsdXJlIG5vdGUgdHJhdmVscyB3aXRoIHRoZSBjZWxsLg=="
+        "answerHash": "1ac89738ace7b27fd1900488b7daef7d32ad593d6cae971a03aff9cf39745d30",
+        "explain": "VGhlIHF1b3RlZCB0cnVlIGtleSBleGlzdHMgc28gWUFNTCBkb2VzIG5vdCB0dXJuIHRoZSBjYXVzZSBpbnRvIGEgYm9vbGVhbi4gVGhlIG5vdGUgY2FuIHN0aWxsIGxpZS4="
       },
       {
         "id": "s8q4",
-        "prompt": "Why does the report not claim a Llama 3.1 8B versus Llama 3.2 1B accuracy?",
+        "prompt": "Why record a second stratum that also cleared the bar?",
         "choices": [
           {
             "id": "a",
-            "text": "An older llama pair is still the number a resume is supposed to quote in place of this table."
+            "text": "A second stratum replaces top-one so the report shows the lot even when the instrument won."
           },
           {
             "id": "b",
-            "text": "The cloud host ran both llama tags across the full set and the two figures came out tied."
+            "text": "The miss stays next to the hit so a reader cannot quote the clean cell alone."
           },
           {
             "id": "c",
-            "text": "The smaller llama tag won the comparison and that number is confidential so it stays out of the memo."
+            "text": "A second stratum is deleted so top-one is the only number a résumé bullet is allowed to keep."
           },
           {
             "id": "d",
-            "text": "No llama tag was installed and the table compares two ordering policies on the deterministic engine."
+            "text": "A second stratum is a holdout flag and it removes the file from the scored set."
           }
         ],
         "salt": "7890e6fb3080a6c5",
-        "answerHash": "d2795dfd4546725b252dc76b6c091f4d20032dbf10eb937598ce7397916b04c2",
-        "explain": "VGhlIHBsYW4ncyBtb2RlbCBwYWlyIGlzIG5vdyB0aG9zZSB0d28gTGxhbWEgdGFncy4gQSBtb2RlbCBkcmFmdCB3b3VsZCBzdGlsbCBoYXZlIHRvIHBhc3MgdGhlIG51bWVyaWMtZmlkZWxpdHkgY2hlY2sgYmVmb3JlIGl0IHdhcyBzaG93bi4gRG8gbm90IHF1b3RlIHRoZSB0YWJsZSBhcyBhIG1vZGVsLWFjY3VyYWN5IG51bWJlci4="
+        "answerHash": "dc3072c1d9f4a946f09edd3bf758cf2f2efcb48467e0047fe0a2dc2b6c7515d6",
+        "explain": "Rm91ciBkcmlmdCBmaWxlcyBjbGVhcmVkIGEgbG90IGFzIHdlbGwuIFRvcC1vbmUgc3RheWVkIG9uIHRoZSBpbnN0cnVtZW50LiBUaGF0IG5vdGUgdHJhdmVscy4="
       },
       {
         "id": "s8q5",
-        "prompt": "Why is the red-herring key written \"true\" with quotes in the YAML?",
+        "prompt": "What does the week-zero graph check add?",
         "choices": [
           {
             "id": "a",
-            "text": "The parser treats an unquoted true as a boolean and the builder looks up that string in the map."
+            "text": "It calls Ollama five times and records which draft the guard rejected as a model error."
           },
           {
             "id": "b",
-            "text": "The marks around true force the batch id to be parsed as a float which is what the builder expects."
+            "text": "It reuses the case run for fidelity and citations and whether escalate matches the spec comparison."
           },
           {
             "id": "c",
-            "text": "The document is a braced data format that requires marks around every name including true."
+            "text": "It publishes the report to the Jira build board as an INV story on every CI push."
           },
           {
             "id": "d",
-            "text": "The marks around true tell the note ordering to skip the document so it cannot take the decoy."
+            "text": "It rewrites the scenario seeds so the next scorecard run uses a fresh random draw."
           }
         ],
         "salt": "04f27cf10dc8d444",
-        "answerHash": "60935c30e43914aa7c994dcdd64da5b9cf58c48b799ace5066ac9272e0202d86",
-        "explain": "aGVycmluZ19zb2Z0d2FyZSdzIHdlZWstMCBub3RlIHNheXMgc29mdHdhcmUuIHJvb3RfY2F1c2UudHJ1ZSBpcyB0aGUgbG90LiBUaGUgcmFua2VyIGRvZXMgbm90IHJlY2VpdmUgZXZhbC5leHBlY3RfY2F1c2UuIFRoZSBub3RlIGRvZXMgbm90IGdldCB0byBvdXR2b3RlIHRoZSB0YWJsZS4="
+        "answerHash": "ac3ef2c69009698ef7c50aba43161f620b04f24cefc448ff6743bb00ccfa0891",
+        "explain": "VGhlIHNjb3JlY2FyZCBpcyBub3Qgb25seSB0b3Atb25lLiBBIG1lbW8gdGhhdCBpbnZlbnRzIGEgbnVtYmVyIHdvdWxkIHN0aWxsIGZhaWwu"
       },
       {
         "id": "s8q6",
-        "prompt": "What does score_scenario refuse to pass into the ranker?",
+        "prompt": "Why does CI run only a short slice of the eval?",
         "choices": [
           {
             "id": "a",
-            "text": "The two percent promise stays out because it would let the ordering step decide escalate before it sees a stratum."
+            "text": "The short slice is the holdout and the full run is not allowed to see those files."
           },
           {
             "id": "b",
-            "text": "The hidden expected label stays out of ordering because that block is the grade and not an input."
+            "text": "The short slice replaces the full report so the résumé quotes five scenarios instead of the full set."
           },
           {
             "id": "c",
-            "text": "The description seed stays out because it would let the ordering step rebuild the grid another way."
+            "text": "The short slice proves the harness still runs and the full table remains the one in the report."
           },
           {
             "id": "d",
-            "text": "The column array stays out because it would tell the ordering step which strata it is allowed to grade."
+            "text": "The short slice trains the ranker and the full run only prints the training accuracy."
           }
         ],
         "salt": "08157241d4804410",
-        "answerHash": "1ef0bb6c3b5bbaf5c97b23ca44efab6c3b1de9e07388d777a173a462573bb44d",
-        "explain": "a2V5d29yZF9jYXVzZSBvbmx5IHNjYW5zIHdlZWstMCBpbmplY3Rpb24gdGV4dCwgYW5kIHNvZnR3YXJlIGlzIGJlZm9yZSBsb3Qgc28gYSBzZW50ZW5jZSB0aGF0IHNheXMgYm90aCBzdGlsbCBoYXMgb25lIGNhbGwuIEl0IG5ldmVyIG9wZW5zIHRoZSB0YWJsZS4="
+        "answerHash": "9004fcbe6ca2cb2ed29b0c5b391836ace383d9b30d42a1fdb6855f007768e264",
+        "explain": "Q0kgaXMgYSBzbW9rZSB0ZXN0LiBJdCBpcyBub3QgYSBzZWNvbmQgc21hbGxlciBjbGFpbSBhYm91dCB0aGUgc2FtZSB3b3JrLg=="
       },
       {
         "id": "s8q7",
-        "prompt": "Why did version 2.4.0 need to be copied into the fidelity facts as a string?",
+        "prompt": "Why is the expected cause kept out of the ranker?",
         "choices": [
           {
             "id": "a",
-            "text": "That token is the failure frequency on a software scenario so it belongs in the fact bag as a percent."
+            "text": "The ranker receives the expected label so top-one can be checked inside the scoring function."
           },
           {
             "id": "b",
-            "text": "The note ordering treats 2.4 as its grade unless that token is listed in the fact bag."
+            "text": "The label is optional and when it is missing the evidence ranker copies the keyword result."
           },
           {
             "id": "c",
-            "text": "An identifier is stripped only when its exact text is in the fact bag so 2.4.0 must be placed there."
+            "text": "The expected label is written into the week-zero note so both policies see the answer."
           },
           {
             "id": "d",
-            "text": "The schema holds release text only after it is coerced to a float which is why 2.4.0 is placed in the bag."
+            "text": "The label is how the report scores the file and handing it to the ranker would leak the answer."
           }
         ],
         "salt": "57bcc0bac62c18fd",
-        "answerHash": "d7e4802e1fcbc3f169d37bed8a7ad6d0a30f5072a8f45ad5b14bf018ccb908f6",
-        "explain": "VGhlIHRlcm1pbmFsIFdoeSBmb3IgYSBzb2Z0d2FyZSBoaXQgc2F5cyAyLjQuMC4gUHV0dGluZyB0aGF0IHRva2VuIGluIHRoZSBmYWN0cyBsZXRzIHRoZSBzZW50ZW5jZSBuYW1lIHRoZSB2ZXJzaW9uIHdpdGhvdXQgZmFpbGluZyB0aGUgZ3VhcmQuIFRoZSB0ZXN0IGluIHRlc3RfcmNhIGxvY2tzIGl0Lg=="
+        "answerHash": "df3fbb97005f6e5e7b8394b0d0bbcb517880e36bfcbae7563fcbf93bf9079b23",
+        "explain": "VGhlIHNjZW5hcmlvIG1heSBzdG9yZSB0aGUgYW5zd2VyLiBUaGUgcmFua2VyIGRvZXMgbm90IGdldCB0byByZWFkIHRoYXQgYmxvY2su"
       },
       {
         "id": "s8q8",
-        "prompt": "What does CI run from this session's script?",
+        "prompt": "What should a résumé bullet refuse to drop?",
         "choices": [
           {
             "id": "a",
-            "text": "Nothing from the evaluation entry is executed and the memo is edited by hand before the job."
+            "text": "The bullet should drop the deterministic label and call the table a Llama 3.1 8B accuracy."
           },
           {
             "id": "b",
-            "text": "All 22 documents are sent to an active llama server and the job fails if that server is down."
+            "text": "The bullet should drop the keyword result so the evidence cell can stand as the whole story."
           },
           {
             "id": "c",
-            "text": "A refit of the lift gate on the held-out split happens before the smoke limit is applied."
+            "text": "The bullet should keep the misses beside the hits including the keyword ranker result."
           },
           {
             "id": "d",
-            "text": "The entry runs at limit 5 with a smoke flag and fails when top choice or fidelity is missed."
+            "text": "The bullet should drop the drift-file note so a second stratum does not complicate the sentence."
           }
         ],
         "salt": "15c51f71a75472dc",
-        "answerHash": "ef94a8d4fb7f9baf50d6f730bfa8d96211f50e023b12303d79b29135dbda4608",
-        "explain": "VGhlIGZ1bGwgcmVwb3J0J3MgY291bnRzIGNvbWUgZnJvbSBhIHJ1biBvZiBldmFscy9ydW5fZXZhbC5weS4gU2Vzc2lvbiA5IGNvcGllcyB0aG9zZSBjb3VudHMgYW5kIGRvZXMgbm90IGludmVudCBhIG1vZGVsIGNvbXBhcmlzb24uIFdlZWstMCBncmFwaCBjaGVja3Mgb24gdGhlIHNhbWUgMjIgd2VyZSBmaWRlbGl0eSAyMi8yMiwgY2l0YXRpb25zIDIyLzIyLCBlc2NhbGF0aW9uIDIyLzIyLCBtZWFuIGxhdGVuY3kgYWJvdXQgMC41NSBzZWNvbmRzLg=="
+        "answerHash": "aefcbfa4129ff455e0abb2bbbf5f11aff3056288f1eb6fc34cc548d959210a0f",
+        "explain": "UXVvdGluZyB0aGUgZmlyc3QgbnVtYmVyIGFsb25lIHdvdWxkIG1pc2xlYWQuIFRoZSByZXBvcnQgYWxyZWFkeSBzYXlzIHNvLg=="
       }
     ]
   },
@@ -1644,203 +1644,203 @@ window.QUIZZES = {
     "questions": [
       {
         "id": "s9q1",
-        "prompt": "Why does week 4 not simply end on the status node?",
+        "prompt": "When does close-out run?",
         "choices": [
           {
             "id": "a",
-            "text": "The lap note is not the ending and the wrap-up confirms the last sections and builds the slides."
+            "text": "Only a finished week four takes the close-out edge so earlier tests do not build a deck."
           },
           {
             "id": "b",
-            "text": "The fourth lap deletes the schedule and starts the opening step again from a cleared guess list."
+            "text": "Close-out runs after every audience note so each week gets its own seven-slide file."
           },
           {
             "id": "c",
-            "text": "A program outside the graph produces the slides and skips the fidelity check on purpose."
+            "text": "Close-out runs when the Jira dry-run writes a SIM key because that is the definition of done."
           },
           {
             "id": "d",
-            "text": "The lap memo cannot represent numbers above 3 so the fourth lap has to leave the graph entirely."
+            "text": "Close-out runs at week zero so the deck exists before the first status note is written."
           }
         ],
         "salt": "890b0e2c9ce37da1",
         "answerHash": "31941e977a032b7d3d9dbdd34d9e0653114d09befb420925c1883f0abd9ee76f",
-        "explain": "cm91dGVfYWZ0ZXJfc3RhdHVzIHNlbmRzIHdlZWsgNCB0byBjbG9zZW91dC4gV2Vla3MgMCB0aHJvdWdoIDMgc3RpbGwgZW5kIG9yIGFkdmFuY2UsIHNvIGVhcmxpZXIgdGVzdHMgZG8gbm90IGJ1aWxkIGEgZGVjay4gcHJlbGltaW5hcnlfY2xvc2UgYmVjb21lcyBmYWxzZSBvbmNlIEQ3IGFuZCBEOCBhcmUgY29uZmlybWVkLg=="
+        "explain": "V2Vla3MgemVybyB0aHJvdWdoIHRocmVlIHN0aWxsIGVuZCBvciBhZHZhbmNlLiBUaGUgZGVjayBpcyB0aGUgd2Vlay1mb3VyIGNvbnRpbnVhdGlvbi4="
       },
       {
         "id": "s9q2",
-        "prompt": "What would be false about the deck if the projected rate were labeled as follow-up?",
+        "prompt": "Why drop the frame before the close-out record is stored?",
         "choices": [
           {
             "id": "a",
-            "text": "The forecast is a second scenario document the recipient signed so the watched label is a fair description."
+            "text": "The frame is written into the PowerPoint as a hidden sheet so a reviewer can edit the rows."
           },
           {
             "id": "b",
-            "text": "The field document is not rewritten and clearing the leading stratum is only a counterfactual case."
+            "text": "The frame is stored on the graph so the deck can recompute a new rate while it draws slides."
           },
           {
             "id": "c",
-            "text": "The slide tool requires the watched-results phrase on the impact frame or the file will not save."
+            "text": "The frame is posted to Jira as an attachment so the live board holds the field file."
           },
           {
             "id": "d",
-            "text": "Calling those bars watched results is fair because the scenario document already contains the cured records."
+            "text": "The nodes regenerate the frame from the seed and the case state does not keep the table."
           }
         ],
         "salt": "74109de835691552",
-        "answerHash": "4cec79727ccdfcb3a5a4493eda09abc013052a391b12e53ea0275cbc50cc9c77",
-        "explain": "VGhlIGVmZmVjdGl2ZW5lc3Mgc2VudGVuY2UgaW5jbHVkZXMgdGhlIGxhYmVsICdOb3Qgb2JzZXJ2ZWQgZm9sbG93LXVwLicgVGhlIHJvb3QtY2F1c2Ugc2xpZGUncyBjaGFydCBpcyB0aGUgb2JzZXJ2ZWQgd2Vla2x5IHJhdGUuIFRoZSBzZW50ZW5jZSB1bmRlciB0aGUgcmVjb21tZW5kYXRpb24gc2F5cyBub3QgdG8gdHJlYXQgdGhlIHByb2plY3RlZCByYXRlIGFzIG9ic2VydmVkIGZvbGxvdy11cC4="
+        "answerHash": "8b7efc70acbc4a8eb02146d3aa1f634d7004606ca397b095e006dd4c7821fe3b",
+        "explain": "VGhlIGRhdGFmcmFtZSBpcyBub3QgcGFydCBvZiB0aGUgc3RhdGUuIENsb3NlLW91dCBmb2xsb3dzIHRoYXQgcnVsZSB0b28u"
       },
       {
         "id": "s9q3",
-        "prompt": "Where does the dollar cost on the impact slide come from?",
+        "prompt": "Why can a slide not invent a cost?",
         "choices": [
           {
             "id": "a",
-            "text": "It is the amount pasted from the complaint mail and the wording does not recompute that amount."
+            "text": "The slides leave the cost blank because a projection is not allowed to print a dollar amount."
           },
           {
             "id": "b",
-            "text": "It is a round number the model picks for an executive reader and it ignores both the row count and the unit price."
+            "text": "The deck is composed by the model from the complaint and the cost is whatever that draft says."
           },
           {
             "id": "c",
-            "text": "It is failure count times unit price and on the bad batch that product is 529 times 85 with no typed total."
+            "text": "The deck reads the build backlog and uses story points as the dollar figure on the ask slide."
           },
           {
             "id": "d",
-            "text": "It is the client points for the investigation epic multiplied by 1000 and then placed on the frame."
+            "text": "The slides are filled from the close-out facts so a cost has to already be that product."
           }
         ],
         "salt": "068eee5576b06244",
-        "answerHash": "ff774e35190a709c58109776df1bed64e329973282847c596791918aa8524ab9",
-        "explain": "YnVpbGRfY2xvc2VvdXRfZmFjdHMgY29tcHV0ZXMgdGhlIHByb2R1Y3QgYW5kIGRyb3BzIHRoZSBmcmFtZSBiZWZvcmUgdGhlIHJlY29yZCBpcyBzdG9yZWQuIHB5dGhvbi1wcHR4IHdyaXRlcyB0aGUgc2xpZGUgZnJvbSB0aG9zZSBmYWN0cywgc28gYSBzbGlkZSBjYW5ub3QgaW52ZW50IGEgY29zdC4gbWF0cGxvdGxpYiB3aXRoIHRoZSBBZ2cgYmFja2VuZCBkcmF3cyB0aGUgY2hhcnQgUE5HLiBLYWxlaWRvIGlzIG5vdCBzaGlwcGVkLg=="
+        "answerHash": "f91ac09bba6c6414da730d7d1a142c31f2036f804573d657299f29dbbca790df",
+        "explain": "cHl0aG9uLXBwdHggaXMgYSByZW5kZXJlci4gSXQgaXMgbm90IGEgc2Vjb25kIGNhbGN1bGF0b3Iu"
       },
       {
         "id": "s9q4",
-        "prompt": "Which eval numbers are safe on a résumé, and which sentence has to sit next to them?",
+        "prompt": "What does a single cause recommend?",
         "choices": [
           {
             "id": "a",
-            "text": "Quote any cell you like because the slides are a simulation and the disclaimer covers a comparison that was never run."
+            "text": "Contain that stratum and do not expand the hold and do not treat the projection as follow-up."
           },
           {
             "id": "b",
-            "text": "Quote a perfect field accuracy because the table top choice was 22 of 22 and treat that cell as a clinical result."
+            "text": "Contain every stratum that appears in the Pareto so the hold matches the full code chart."
           },
           {
             "id": "c",
-            "text": "Quote the note ordering at 3 of 22 by itself and present that ratio as the accuracy of the whole ordering step."
+            "text": "Quarantine the lot named in the week-zero note even when the table ranked something else."
           },
           {
             "id": "d",
-            "text": "Quote the table result at 22 of 22 beside the notes at 3 of 22 and the shift documents and do not call it clinical."
+            "text": "Widen the pull before any field action and leave the leading stratum in distribution."
           }
         ],
         "salt": "21ae2bfc46653180",
-        "answerHash": "a99aac7db2ef159b63915867f50912009860ed78e4882fc201ea01dc1d6a3f30",
-        "explain": "UkVTVU1FX0JVTExFVFMubWQgcHV0cyB0aGUga2V5d29yZCBtaXNzIGFuZCB0aGUgZHJpZnQgc2Vjb25kIHN0cmF0dW0gaW4gdGhlIHNhbWUgYnJlYXRoIGFzIDIyLzIyLiBRdW90aW5nIHRoZSBmaXJzdCBudW1iZXIgYWxvbmUgd291bGQgbWlzbGVhZC4gVGhlIGRpc2NsYWltZXIgc3RheXM6IHN5bnRoZXRpYywgbm90IGNsaW5pY2FsLCBub3QgYSBkZXZpY2Uu"
+        "answerHash": "689cd51ca5cd483721639fb36b7343d9e32e7e4edb926a126dcd6739b93bb08c",
+        "explain": "VGhlIHJlY29tbWVuZGF0aW9uIG1hdGNoZXMgdGhlIHJhbmsuIEl0IGRvZXMgbm90IG1hdGNoIHRoZSBsb3VkZXN0IG5vdGUu"
       },
       {
         "id": "s9q5",
-        "prompt": "How many slides does write_deck create, and what does a no_single_cause call recommend?",
+        "prompt": "What does no single cause recommend?",
         "choices": [
           {
             "id": "a",
-            "text": "Seven blank frames are produced and an unclear driver means the recommendation is not to contain a stratum."
+            "text": "Quarantine the site in the complaint because the customer asked for a written position."
           },
           {
             "id": "b",
-            "text": "Twelve frames are produced with one for each client epic on the construction board plus the investigation tasks."
+            "text": "Quarantine the first lot in the YAML because a deck always needs a containment slide."
           },
           {
             "id": "c",
-            "text": "One frame is produced and the model fills the title and the price and the recommendation into that lone frame."
+            "text": "No quarantine because no leading stratum cleared the evidence bar."
           },
           {
             "id": "d",
-            "text": "Seven frames are produced and an unclear driver still says to quarantine the first batch named on the document."
+            "text": "Skip the deck because a recommendation is allowed only when a lot won the ranking."
           }
         ],
         "salt": "3720eeda6bc40cb3",
-        "answerHash": "ca4e3b8746b2ab38072072b44baa78d4662337d18574cd9a9be847dd93fd01be",
-        "explain": "QSBzaW5nbGUtY2F1c2UgY2FsbCByZWNvbW1lbmRzIGNvbnRhaW5pbmcgdGhhdCBzdHJhdHVtIGFuZCBub3QgZXhwYW5kaW5nIHRoZSBwdWxsLiBDb2xvcnMgYXJlIG5hdnkgYW5kIHRlYWwsIHdpdGggdGhlIGRpc2NsYWltZXIgaW4gd2hpdGUgb24gbmF2eSBvbiB0aGUgdGl0bGUgc2xpZGUuIFRoZSB0ZXN0IG9wZW5zIHRoZSBwcHR4IGFuZCBjaGVja3Mgc2V2ZW4gc2xpZGVzLCB0aGUgZGlzY2xhaW1lciwgdGhlIHByb2plY3Rpb24gbGFiZWwsIDMuNjclLCBhbmQgTC00NDE5Lg=="
+        "answerHash": "b6d8dfcc250ff6bedadaa2f20a46534cf72c6a12edf7f7a797a903ad58b26bb7",
+        "explain": "VGhlIGhvbmVzdCBvdXRjb21lIGlzIGFsbG93ZWQgdG8gYmUgdGhlIHJlY29tbWVuZGF0aW9uLiBUaGUgc2xpZGUgc2F5cyBkbyBub3QgY29udGFpbi4="
       },
       {
         "id": "s9q6",
-        "prompt": "What is the local model default, and what does hosted Streamlit run?",
+        "prompt": "Why does the cause slide show the observed chart?",
         "choices": [
           {
             "id": "a",
-            "text": "Both name settings are required and the cloud app refuses to boot if either one is absent."
+            "text": "The chart is the p-chart of the file that was investigated and the projection stays a label."
           },
           {
             "id": "b",
-            "text": "The name defaults to llama3.1:8b on the desktop runner and the cloud app stays deterministic."
+            "text": "The chart is omitted on purpose and the slide prints only the projected percent."
           },
           {
             "id": "c",
-            "text": "The cloud app downloads the larger tag on every load and executes that tag while building the slides."
+            "text": "The chart is the counterfactual after the leading stratum is cleared so it looks like recovery."
           },
           {
             "id": "d",
-            "text": "The small tag on the cloud app produces the slides which is why the on-laptop name goes unused."
+            "text": "The chart is a screenshot of the Jira board so the ask slide can show the SIM epic."
           }
         ],
         "salt": "ae5cb36718eed753",
-        "answerHash": "22dffa53b1f33978df950b51825853aa9bc298e6e88566913e8b8c33433d7843",
-        "explain": "VGhlIFJFQURNRSBtb2RlbCB0YWJsZSBzYXlzIHRoZSBzYW1lIHRoaW5nLiBHZW1tYSAzIGFuZCBQaGktNCBhcmUgb3RoZXIgZG9jdW1lbnRlZCB0YWdzLiBDbG9zZS1vdXQgaXRzZWxmIGlzIGEgdGVtcGxhdGUgcGx1cyB0aGUgZmlkZWxpdHkgZ3VhcmQuIE5vIG5ldyBtb2RlbCBsaWJyYXJ5Lg=="
+        "answerHash": "c8691c255c62b84115b276c627f4d1182a48629e2bed2385b9846399506ac0cf",
+        "explain": "T2JzZXJ2ZWQgYW5kIHByb2plY3RlZCBhcmUgZGlmZmVyZW50IHBpY3R1cmVzLiBUaGUgc2xpZGUga2VlcHMgdGhlbSBkaXN0aW5jdC4="
       },
       {
         "id": "s9q7",
-        "prompt": "What does the week-4 leadership injection on bad_lot ask for, and which ticket is the deck?",
+        "prompt": "Why confirm D7 and D8 only at week four?",
         "choices": [
           {
             "id": "a",
-            "text": "It requests an active chat thread and this snapshot ships that thread as the wrap-up instead of slides."
+            "text": "They are confirmed by the keyword ranker when the note names a cause the table did not."
           },
           {
             "id": "b",
-            "text": "It requests issue INV-101 and the original brief is rewritten into slides without opening a new issue."
+            "text": "They are confirmed by importing the build backlog because those fields live on the INV epic."
           },
           {
             "id": "c",
-            "text": "It wants the recommendation and the effectiveness check and those slides are issue INV-303 on epic INV-6."
+            "text": "They are confirmed at week zero so the preliminary mark in the earlier CAPA is a mistake."
           },
           {
             "id": "d",
-            "text": "It requests a fine-tune of the table ordering on the full set and that tune is the fourth-lap deliverable."
+            "text": "The earlier record marked them preliminary and close-out is the step that confirms them."
           }
         ],
         "salt": "21d89c3eb0d52b05",
-        "answerHash": "8e90ba850a8f18c14075cda0cb3069c4d5791632ef800c4c9bb4246fb3bd3e59",
-        "explain": "TGVhZGVyc2hpcCdzIGFzayBpcyB0aGUgY2xvc2Utb3V0LiBUaGUgYXNrIHNsaWRlIHNheXMgdG8gYXBwcm92ZSB0aGUgcmVjb21tZW5kYXRpb24gb3Igc2VuZCB0aGUgY2FzZSBiYWNrIGZvciB0aGUgd2lkZXIgcHVsbCwgYW5kIG5vdCB0byB0cmVhdCB0aGUgcHJvamVjdGlvbiBhcyBmb2xsb3ctdXAu"
+        "answerHash": "4ad7cf3ebe5cff7a9c7d7014ec1c17e860ec5ccdf62ca957d0b3ebcd2cd1bb7a",
+        "explain": "UHJlbGltaW5hcnkgbWVhbnMgbm90IGNsb3NlZC4gV2VlayBmb3VyIGlzIHRoZSBjbG9zZS4="
       },
       {
         "id": "s9q8",
-        "prompt": "Which sentence belongs in a two-minute pitch of the whole system?",
+        "prompt": "What must the résumé keep next to the evidence-ranker cell?",
         "choices": [
           {
             "id": "a",
-            "text": "The installed model reads the complaint and names the driver and the slides then quote cured rows as watched results."
+            "text": "Only the evidence cell because the keyword result is a debugging log and not part of the claim."
           },
           {
             "id": "b",
-            "text": "A client token is required before the lap can finish and the note-only number is quoted once shift cases drop out."
+            "text": "The note-only result and the cases where a second stratum also cleared the bar."
           },
           {
             "id": "c",
-            "text": "This is a medical device with a cleared claim of 22 of 22 and the cloud model writes it once a client token arrives."
+            "text": "A model accuracy for Llama 3.1 8B computed by treating the deterministic table as that model."
           },
           {
             "id": "d",
-            "text": "Strata over a fixed bar are kept and a wrong remark loses and the chart is a projection and the table hit 22 with notes at 3."
+            "text": "The hosted Streamlit URL as proof that the ranker ran in the cloud on Community Cloud."
           }
         ],
         "salt": "94aec47c194e385b",
-        "answerHash": "159302c3666f54f13df13d3d1e00a2ecacd20505b1cbc3a3698e385050940760",
-        "explain": "VGhlIHBpdGNoIGtlZXBzIHRoZSBkaXNjbGFpbWVyLCB0aGUgZXZpZGVuY2UgYmFyLCB0aGUgaGVycmluZyByZXN1bHQsIGFuZCB0aGUgc2Vjb25kIHN0cmF0dW0uIEl0IGRvZXMgbm90IHR1cm4gdGhlIHNjb3JlY2FyZCBpbnRvIGEgY2xpbmljYWwgY2xhaW0uIFlvdSBjYW4gcnVuIHRoZSBkZXRlcm1pbmlzdGljIHBhdGggd2l0aCBubyBBUEkga2V5Lg=="
+        "answerHash": "c1fca9926b5db8de71e1880823a34d33e2186c1496a822450f4d846054b446de",
+        "explain": "VGhlIGJ1bGxldHMgYXJlIGNvcGllZCBmcm9tIHRoZSByZXBvcnQuIFRoZXkgZG8gbm90IGdldCB0byBzYW5kIHRoZSBtaXNzZXMgb2ZmLg=="
       }
     ]
   }
