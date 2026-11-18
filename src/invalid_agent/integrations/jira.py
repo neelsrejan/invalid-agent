@@ -68,6 +68,23 @@ class DryRunJira:
         return _upsert(existing, plan, self.project, self.mode, creator=_local_creator(existing), path=self.path)
 
 
+def source_label(plan: dict[str, Any]) -> str:
+    """openfda for the public MAUDE cases, simulation for the synthetic file."""
+    if plan.get("data_backend") == "openfda" or plan.get("denominator") == "reported_events":
+        return "openfda"
+    return "simulation"
+
+
+def case_label(plan: dict[str, Any]) -> str:
+    raw = str(plan.get("scenario_id") or "case")
+    safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in raw)
+    return f"case-{safe}"
+
+
+def _search_jql(project: str, plan: dict[str, Any]) -> str:
+    return f'project = {project} AND labels = "{case_label(plan)}"'
+
+
 class LiveJira:
     mode = "live"
 
@@ -82,39 +99,162 @@ class LiveJira:
     def __repr__(self) -> str:
         return f"LiveJira(project={self.project!r}, email={self._email!r})"
 
+    def search(self, jql: str) -> list[dict[str, Any]]:
+        payload = self._transport.request(
+            "POST",
+            "/rest/api/3/search/jql",
+            {"jql": jql, "maxResults": 50, "fields": ["summary", "labels", "status"]},
+        )
+        issues = payload.get("issues") or []
+        return list(issues) if isinstance(issues, list) else []
+
     def sync(self, plan: dict[str, Any]) -> dict[str, Any]:
         existing = _read(self.path)
-        error = ""
+        source = source_label(plan)
+        label = case_label(plan)
+        try:
+            found = self.search(_search_jql(self.project, plan))
+        except Exception as exc:
+            return _record_failure(existing, self.path, self.project, self.mode, exc, self._email)
+        if found:
+            payload = _from_remote(found, plan, self.project, self.mode, source, label)
+            _write(self.path, payload)
+            return payload
 
-        def creator(kind: str, summary: str, body: str) -> dict[str, Any]:
-            payload = {
-                "fields": {
-                    "project": {"key": self.project},
-                    "summary": summary[:255],
-                    "issuetype": {"name": "Epic" if kind == "epic" else "Task"},
-                    "labels": ["invalid-bot", "simulation"],
-                    "description": _adf(body),
-                }
+        def creator(kind: str, summary: str, body: str, parent_key: str = "") -> dict[str, Any]:
+            fields: dict[str, Any] = {
+                "project": {"key": self.project},
+                "summary": summary[:255],
+                "issuetype": {"name": "Epic" if kind == "epic" else "Task"},
+                "labels": ["invalid-bot", source, label],
+                "description": _adf(body),
             }
+            # Team-managed Jira Cloud parents a task to an epic with this field.
+            if parent_key and kind != "epic":
+                fields["parent"] = {"key": parent_key}
+            payload = {"fields": fields}
             created = self._transport.request("POST", "/rest/api/3/issue", payload)
             return {"id": str(created.get("id", "")), "key": str(created.get("key", ""))}
 
         try:
             return _upsert(existing, plan, self.project, self.mode, creator=creator, path=self.path)
         except Exception as exc:  # the demo still has the local file
-            error = f"{type(exc).__name__}"
-            existing["mode"] = self.mode
-            existing["error"] = error
-            existing.setdefault("issues", [])
-            existing.setdefault("project", self.project)
-            _write(self.path, existing)
-            return existing
+            return _record_failure(existing, self.path, self.project, self.mode, exc, self._email)
+
+
+class ReadOnlyJira:
+    """Public-page client. Search and link. Never creates an issue."""
+
+    mode = "live-read"
+
+    def __init__(self, settings: Settings, path: Path, transport: Transport | None = None) -> None:
+        self.project = settings.jira_project_key
+        self.path = path
+        self._email = settings.jira_email
+        self._transport = transport or HttpxTransport(
+            settings.jira_base_url, settings.jira_email, settings.jira_api_token
+        )
+
+    def __repr__(self) -> str:
+        return f"ReadOnlyJira(project={self.project!r}, email={self._email!r})"
+
+    def sync(self, plan: dict[str, Any]) -> dict[str, Any]:
+        source = source_label(plan)
+        label = case_label(plan)
+        try:
+            payload = self._transport.request(
+                "POST",
+                "/rest/api/3/search/jql",
+                {"jql": _search_jql(self.project, plan), "maxResults": 50, "fields": ["summary", "labels", "status"]},
+            )
+            found = list(payload.get("issues") or [])
+        except Exception as exc:
+            existing = _read(self.path)
+            return _record_failure(existing, self.path, self.project, self.mode, exc, self._email)
+        record = _from_remote(found, plan, self.project, self.mode, source, label)
+        if not found:
+            record["note"] = "No live issues yet. The owner runs: python -m invalid_agent.integrations.jira seed"
+        _write(self.path, record)
+        return record
+
+
+def doctor(settings: Settings, transport: Transport | None = None) -> dict[str, Any]:
+    """Check a Jira Cloud Free site. Does nothing when the three secrets are absent."""
+    if not settings.jira_enabled:
+        return {
+            "ok": False,
+            "reason": "Set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN. Two out of three stays a dry run.",
+        }
+    client = transport or HttpxTransport(settings.jira_base_url, settings.jira_email, settings.jira_api_token)
+    myself = client.request("GET", "/rest/api/3/myself")
+    project = client.request("GET", f"/rest/api/3/project/{settings.jira_project_key}")
+    meta = client.request("GET", f"/rest/api/3/issue/createmeta/{settings.jira_project_key}/issuetypes")
+    raw_types = meta.get("issueTypes") if isinstance(meta, dict) else meta
+    if isinstance(meta, dict) and "values" in meta:
+        raw_types = meta["values"]
+    names = sorted({str(item.get("name", "")) for item in (raw_types or []) if isinstance(item, dict)})
+    missing = [name for name in ("Epic", "Task") if name not in names]
+    return {
+        "ok": not missing,
+        "account": str(myself.get("emailAddress") or myself.get("displayName") or ""),
+        "project": str(project.get("key") or settings.jira_project_key),
+        "issue_types": names,
+        "missing_issue_types": missing,
+        "hint": ""
+        if not missing
+        else "Create a team-managed Jira software project so Epic and Task exist by those names.",
+    }
 
 
 def make_client(settings: Settings, path: Path, transport: Transport | None = None):
+    """The investigation loop never creates issues.
+
+    With credentials this is a read of issues the owner already seeded.
+    Without credentials it is the SIM-* dry run.
+    """
     if settings.jira_enabled:
-        return LiveJira(settings, path, transport=transport)
+        return ReadOnlyJira(settings, path, transport=transport)
     return DryRunJira(path, project=settings.jira_project_key)
+
+
+def seed_cases(settings: Settings, transport: Transport | None = None) -> list[dict[str, Any]]:
+    """Create the public-case issues once. A second run finds them and does not post."""
+    from invalid_agent.nodes.planner import build_plan
+    from invalid_agent.sim.generate import load_scenario
+
+    if not settings.jira_enabled:
+        raise SystemExit(
+            "Refusing to seed Jira. Set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN. "
+            "The public page does not create issues."
+        )
+    results = []
+    for name in ("openfda_ooi", "openfda_jje"):
+        scenario = load_scenario(settings.repo_root / "cases" / f"{name}.yaml")
+        plan = build_plan(scenario, {"cause": "no_single_cause", "level": "none"}, 0)
+        client = LiveJira(settings, settings.out_dir / f"jira_seed_{name}.json", transport=transport)
+        results.append({"scenario_id": name, "result": client.sync(plan)})
+    return results
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+    import json
+
+    from invalid_agent.config import load_dotenv, load_settings
+
+    load_dotenv()
+    parser = argparse.ArgumentParser(description="Check Jira, or seed the public cases once.")
+    parser.add_argument("command", nargs="?", choices=["doctor", "seed"], default="doctor")
+    args = parser.parse_args(argv)
+    settings = load_settings()
+    if args.command == "seed":
+        seeded = seed_cases(settings)
+        print(json.dumps({"ok": True, "cases": [row["scenario_id"] for row in seeded]}, indent=2))
+        return
+    report = doctor(settings)
+    print(json.dumps(report, indent=2))
+    if not report.get("ok"):
+        raise SystemExit(1)
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -137,8 +277,8 @@ def _local_creator(existing: dict[str, Any]):
             used = max(used, int(issue["key"].split("-")[1]))
     counter = {"n": used}
 
-    def creator(kind: str, summary: str, body: str) -> dict[str, Any]:
-        del kind, summary, body
+    def creator(kind: str, summary: str, body: str, parent_key: str = "") -> dict[str, Any]:
+        del kind, summary, body, parent_key
         counter["n"] += 1
         number = counter["n"]
         return {"id": str(number), "key": f"SIM-{number}"}
@@ -159,7 +299,7 @@ def _upsert(
         minted = creator(
             "epic",
             f"Investigation {plan.get('scenario_id', '')}: {plan.get('top_cause', '')}".strip(),
-            "Synthetic investigation. Not for clinical use.",
+            str(plan.get("disclaimer") or "Not for clinical use."),
         )
         epic = {
             "task_id": "EPIC",
@@ -175,7 +315,12 @@ def _upsert(
             by_task[task["id"]]["summary"] = task["name"]
             by_task[task["id"]]["owner"] = task["owner"]
             continue
-        minted = creator("task", task["name"], f"Owner: {task['owner']}. Depends on: {', '.join(task['depends_on']) or 'nothing'}.")
+        minted = creator(
+            "task",
+            task["name"],
+            f"Owner: {task['owner']}. Depends on: {', '.join(task['depends_on']) or 'nothing'}.",
+            parent_key=str(epic.get("key") or ""),
+        )
         created = {
             "task_id": task["id"],
             "key": minted.get("key", ""),
@@ -191,9 +336,62 @@ def _upsert(
     payload = {
         "mode": mode,
         "project": project,
+        "source": source_label(plan),
+        "labels": ["invalid-bot", source_label(plan), case_label(plan)],
         "epic": epic,
         "issues": issues,
-        "disclaimer": "Simulation. Not a live customer escalation.",
+        "disclaimer": str(plan.get("disclaimer") or "Simulation. Not a live customer escalation."),
     }
     _write(path, payload)
     return payload
+
+
+def _from_remote(
+    found: list[dict[str, Any]],
+    plan: dict[str, Any],
+    project: str,
+    mode: str,
+    source: str,
+    label: str,
+) -> dict[str, Any]:
+    epic = None
+    issues: list[dict[str, Any]] = []
+    for item in found:
+        fields = item.get("fields") or {}
+        summary = str(fields.get("summary") or "")
+        row = {
+            "key": str(item.get("key") or ""),
+            "id": str(item.get("id") or ""),
+            "summary": summary,
+            "task_id": str(item.get("key") or ""),
+        }
+        if epic is None and summary.startswith("Investigation "):
+            epic = {"task_id": "EPIC", "key": row["key"], "id": row["id"], "summary": summary}
+        else:
+            issues.append(row)
+    return {
+        "mode": mode,
+        "project": project,
+        "source": source,
+        "labels": ["invalid-bot", source, label],
+        "epic": epic or {},
+        "issues": issues,
+        "disclaimer": str(plan.get("disclaimer") or "Not for clinical use."),
+    }
+
+
+def _record_failure(existing: dict[str, Any], path: Path, project: str, mode: str, exc: Exception, email: str) -> dict[str, Any]:
+    detail = str(exc)
+    if email:
+        detail = detail.replace(email, "***")
+    existing["mode"] = mode
+    existing["error"] = type(exc).__name__
+    existing["error_detail"] = detail[:300]
+    existing.setdefault("issues", [])
+    existing.setdefault("project", project)
+    _write(path, existing)
+    return existing
+
+
+if __name__ == "__main__":
+    main()

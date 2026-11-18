@@ -257,6 +257,9 @@ def write_dataset(df: pd.DataFrame, path: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Generate a synthetic field file and print the SPC summary.")
     parser.add_argument("scenario", help="Path to a scenario YAML, e.g. scenarios/bad_lot.yaml")
     parser.add_argument("--out", default="", help="CSV path. Default: <out>/<scenario id>.csv")

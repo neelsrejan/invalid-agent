@@ -142,7 +142,7 @@ def _model_section(backend: str) -> str:
             "## Model comparison",
             "",
             "Local default: Meta Llama 3.1 8B, Ollama tag `llama3.1:8b`, set by `LLM_MODEL`.",
-            "Hosted Streamlit runs rules-only (deterministic); Streamlit Cloud has no Ollama.",
+            "Hosted Streamlit narrates with Groq's free tier; Streamlit Cloud has no Ollama. CI stays deterministic.",
             "Suggested small tag for local or self-hosted runs: Llama 3.2 1B, tag `llama3.2:1b`.",
             "Documented alternatives, same variable: Gemma 3 (`gemma3`) and Phi-4 (`phi4`).",
             "",
@@ -256,6 +256,9 @@ def render_report(rows: list[dict[str, Any]], graph_rows: list[dict[str, Any]], 
 
 
 def main(argv: list[str] | None = None) -> int:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Score Invalid Bot scenarios offline.")
     parser.add_argument("--backend", default="deterministic", choices=["deterministic", "ollama", "llamacpp"])
     parser.add_argument("--limit", type=int, default=0, help="Score only the first N scenarios. 0 means all.")

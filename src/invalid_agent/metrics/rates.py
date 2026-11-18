@@ -39,12 +39,23 @@ def wilson_interval(k: int, n: int, confidence: float = 0.95) -> tuple[float, fl
     return (low, high)
 
 
-def overall_rate(df: pd.DataFrame, spec_invalid_rate: float, promised_validity: float = 0.98) -> dict[str, Any]:
-    """Point estimate, Wilson 95% interval, and the spec comparison."""
+def overall_rate(
+    df: pd.DataFrame,
+    spec_invalid_rate: float,
+    promised_validity: float = 0.98,
+    spec_estimable: bool = True,
+) -> dict[str, Any]:
+    """Point estimate, Wilson 95% interval, and the spec comparison.
+
+    ``spec_estimable`` is false for MAUDE. The 2% figure stays on the result
+    as the stated promise, and ``exceeds_spec`` stays false because a share
+    of reported events is not a run-level invalid rate.
+    """
     n = int(len(df))
     k = int(df["invalid"].astype(bool).sum())
     low, high = wilson_interval(k, n) if n else (0.0, 0.0)
     rate = (k / n) if n else 0.0
+    comparable = bool(spec_estimable)
     return {
         "n": n,
         "k": k,
@@ -54,8 +65,9 @@ def overall_rate(df: pd.DataFrame, spec_invalid_rate: float, promised_validity: 
         "confidence": 0.95,
         "spec_invalid_rate": float(spec_invalid_rate),
         "promised_validity": float(promised_validity),
-        "exceeds_spec": bool(rate > spec_invalid_rate),
-        "ci_entirely_above_spec": bool(low > spec_invalid_rate),
+        "spec_estimable": comparable,
+        "exceeds_spec": bool(comparable and rate > spec_invalid_rate),
+        "ci_entirely_above_spec": bool(comparable and low > spec_invalid_rate),
     }
 
 

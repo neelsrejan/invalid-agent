@@ -64,12 +64,13 @@ def resolve_scenario(name: str, root: Path) -> Path:
     candidate = Path(name)
     if candidate.is_file():
         return candidate
-    in_folder = root / "scenarios" / name
-    if in_folder.is_file():
-        return in_folder
-    with_suffix = in_folder.with_suffix(".yaml")
-    if with_suffix.is_file():
-        return with_suffix
+    for folder in ("scenarios", "cases"):
+        in_folder = root / folder / name
+        if in_folder.is_file():
+            return in_folder
+        with_suffix = in_folder.with_suffix(".yaml")
+        if with_suffix.is_file():
+            return with_suffix
     raise SystemExit(f"scenario not found: {name}")
 
 
@@ -121,17 +122,26 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
 
 
 def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.config import load_dotenv
+    from invalid_agent.data.frame import DataUnavailable
+
+    load_dotenv()
+
     parser = argparse.ArgumentParser(description="Run the Invalid Bot case graph.")
     parser.add_argument("--scenario", required=True, help="Scenario id or YAML path, e.g. bad_lot")
     parser.add_argument("--week", type=int, required=True)
     parser.add_argument("--out", default="", help="Output directory. Default: ./out")
     args = parser.parse_args(argv)
-    result = run_case(args.scenario, args.week, Path(args.out) if args.out else None)
+    try:
+        result = run_case(args.scenario, args.week, Path(args.out) if args.out else None)
+    except DataUnavailable as exc:
+        raise SystemExit(str(exc)) from exc
     print(f"Wrote {result['memo_path']}")
     if result.get("deck_path"):
         print(f"Wrote {result['deck_path']}")
     print(f"Escalate: {result['triage_memo']['escalate']}  severity: {result['triage_memo']['severity']}")
-    print("Simulation. Synthetic data. Not for clinical use.")
+    banner = str(result.get("scenario", {}).get("banner") or "Simulation. Synthetic data. Not for clinical use.")
+    print(banner)
 
 
 if __name__ == "__main__":

@@ -7,13 +7,14 @@ after their week has arrived; they never create a score.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from invalid_agent.case.schemas import CAPA8D, Fishbone, FishboneBranch, FiveWhys, WhyStep
 from invalid_agent.case.state import CaseState
 from invalid_agent.guards.numeric_fidelity import check_narrative
 from invalid_agent.metrics.hypotheses import evidence_catalog, rank_hypotheses
-from invalid_agent.sim.generate import generate
+from invalid_agent.data.frame import load_frame
 
 _BRANCH_SPECS = (
     ("bad_reagent_lot", "Material", "reagent_lot"),
@@ -23,6 +24,11 @@ _BRANCH_SPECS = (
     ("user_process_error", "Man", "operator"),
     ("site_temperature", "Environment", "temp_band"),
     ("measurement_system", "Measurement", None),
+)
+
+_OPENFDA_BRANCHES = (
+    ("reported_manufacturer", "Material", "manufacturer"),
+    ("reported_brand", "Machine", "brand_name"),
 )
 
 _CONTAINMENT = {
@@ -45,6 +51,14 @@ _CONTAINMENT = {
     "user_process_error": (
         "Remove the implicated operator from the assay until retraining and a supervised run are done."
     ),
+    "reported_manufacturer": (
+        "Do not quarantine a reagent lot from this table. The signal is a higher invalid-type share "
+        "of public reports at one manufacturer. Ask that manufacturer for the run denominator before any field action."
+    ),
+    "reported_brand": (
+        "Do not pull every brand. Limit the follow-up to the brand whose invalid-type share cleared the bar, "
+        "and still ask for a run denominator."
+    ),
     "no_single_cause": (
         "Do not quarantine a lot or an instrument on this evidence. Widen the data pull before a field action."
     ),
@@ -53,6 +67,12 @@ _CONTAINMENT = {
     ),
 }
 
+# A 1-of-1 lot is 100% by arithmetic. It is not a next-best cause.
+MIN_CONTRAST_N = 5
+
+_N_RUNS = re.compile(r"has (\d+) runs\.?\s*$")
+
+
 _CORRECTIVE = {
     "bad_reagent_lot": "Disposition the lot, and add a field sentinel to release testing for the failure code that dominated.",
     "drifting_instrument": "Service the instrument and require a passing control run before it returns to the queue.",
@@ -60,6 +80,13 @@ _CORRECTIVE = {
     "software_version": "Roll the version back in the field and gate the next build on the invalid-rate spec.",
     "preanalytical_hemolysis": "Add a hemolysis-index hold at the implicated site before the panel is run.",
     "user_process_error": "Retrain the operator and add the step they missed to the competency check.",
+    "reported_manufacturer": (
+        "Request the manufacturer's run denominator and the invalid-type counts for the same window. "
+        "Do not open a lot disposition from MAUDE alone."
+    ),
+    "reported_brand": (
+        "Ask the brand owner for the run denominator. Do not write a field action from the report share alone."
+    ),
     "no_single_cause": "Keep the investigation open. Do not write a single-cause corrective action.",
     "measurement_system": "No corrective action on the measurement system.",
 }
@@ -108,7 +135,11 @@ def build_fishbone(
 ) -> dict[str, Any]:
     found = _by_cause(hypotheses)
     branches: list[dict[str, Any]] = []
-    for cause, category, column in _BRANCH_SPECS:
+    specs = list(_BRANCH_SPECS)
+    for extra in _OPENFDA_BRANCHES:
+        if extra[0] in found:
+            specs.append(extra)
+    for cause, category, column in specs:
         hit = found.get(cause)
         if hit is None:
             statement = "This branch did not clear the evidence bar."
@@ -225,18 +256,42 @@ def _whys_for_hit(hit: dict[str, Any], catalog: dict[str, str], injections: dict
     return steps
 
 
+def _catalog_n(catalog: dict[str, str], rate_key: str) -> int:
+    """Run count stored beside a rate sentence. Unknown counts are left eligible."""
+    text = catalog.get(rate_key[: -len("rate")] + "n", "")
+    match = _N_RUNS.search(text.strip())
+    if match is None:
+        return MIN_CONTRAST_N
+    return int(match.group(1))
+
+
+def _contrast_eligible(key: str, catalog: dict[str, str]) -> bool:
+    if not key.endswith(":rate") or key.startswith("metric:overall"):
+        return False
+    return _catalog_n(catalog, key) >= MIN_CONTRAST_N
+
+
 def _contrast_id(hit: dict[str, Any], catalog: dict[str, str]) -> str:
     """Prefer a different column's rate sentence so the third Why is a real contrast."""
     prefix = f"metric:{hit['column']}:"
     for key in catalog:
-        if key.endswith(":rate") and not key.startswith(prefix) and not key.startswith("metric:overall"):
-            return key
+        if key.startswith(prefix) or not _contrast_eligible(key, catalog):
+            continue
+        return key
     return "metric:overall:rate"
 
 
 def _whys_unresolved(catalog: dict[str, str]) -> list[dict[str, Any]]:
-    lot_key = _first_rate(catalog, "reagent_lot")
-    instrument_key = _first_rate(catalog, "instrument")
+    if any(key.startswith("metric:manufacturer:") for key in catalog):
+        second_key = _first_rate(catalog, "manufacturer")
+        second_question = "Why is one manufacturer not the cause?"
+        third_key = _first_rate(catalog, "brand_name")
+        third_question = "Why is one brand not the cause?"
+    else:
+        second_key = _first_rate(catalog, "reagent_lot")
+        second_question = "Why is a reagent lot not the cause?"
+        third_key = _first_rate(catalog, "instrument")
+        third_question = "Why is an instrument not the cause?"
     steps = [
         {
             "number": 1,
@@ -246,15 +301,15 @@ def _whys_unresolved(catalog: dict[str, str]) -> list[dict[str, Any]]:
         },
         {
             "number": 2,
-            "question": "Why is a reagent lot not the cause?",
-            "answer": catalog[lot_key],
-            "citations": [lot_key],
+            "question": second_question,
+            "answer": catalog[second_key],
+            "citations": [second_key],
         },
         {
             "number": 3,
-            "question": "Why is an instrument not the cause?",
-            "answer": catalog[instrument_key],
-            "citations": [instrument_key],
+            "question": third_question,
+            "answer": catalog[third_key],
+            "citations": [third_key],
         },
         {
             "number": 4,
@@ -275,9 +330,36 @@ def _whys_unresolved(catalog: dict[str, str]) -> list[dict[str, Any]]:
 def _first_rate(catalog: dict[str, str], column: str) -> str:
     prefix = f"metric:{column}:"
     for key in catalog:
-        if key.startswith(prefix) and key.endswith(":rate"):
+        if key.startswith(prefix) and _contrast_eligible(key, catalog):
             return key
     return "metric:overall:rate"
+
+
+def stratum_levels(catalog: dict[str, str]) -> list[str]:
+    """Lot and model ids that appear in metric:<dim>:<value>:rate keys.
+
+    A numeric lot such as 10713760 is a label. The fidelity scan strips it
+    only when the exact string is in the facts.
+    """
+    levels: list[str] = []
+    for key in catalog:
+        if not (key.startswith("metric:") and key.endswith(":rate")):
+            continue
+        body = key[len("metric:") : -len(":rate")]
+        _column, separator, level = body.partition(":")
+        if separator and level and level not in levels:
+            levels.append(level)
+    return levels
+
+
+def structure_numbers(hypothesis_count: int, branch_count: int) -> list[int]:
+    """Integers a heading may print. Rank 9 has to be inside the list.
+
+    ``range(0, max(9, len(hypotheses) + 1))`` is the floor. Branch count is
+    included so nine fishbone ranks are allowed when the openFDA branches fire.
+    """
+    end = max(9, hypothesis_count + 1, branch_count + 1)
+    return list(range(0, end))
 
 
 def build_capa(top: dict[str, Any], catalog: dict[str, str]) -> dict[str, Any]:
@@ -316,11 +398,11 @@ def build_capa(top: dict[str, Any], catalog: dict[str, str]) -> dict[str, Any]:
     return record.model_dump()
 
 
-def _markdown_fishbone(fishbone: dict[str, Any]) -> str:
+def _markdown_fishbone(fishbone: dict[str, Any], banner: str) -> str:
     lines = [
         "# Fishbone",
         "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
+        f"**{banner}**",
         "",
         "Branches are the 6M set. Rank is by the evidence score. A branch that did not clear the bar stays on the diagram at score zero.",
         "",
@@ -338,11 +420,11 @@ def _markdown_fishbone(fishbone: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _markdown_whys(whys: dict[str, Any]) -> str:
+def _markdown_whys(whys: dict[str, Any], banner: str) -> str:
     lines = [
         "# 5 Whys",
         "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
+        f"**{banner}**",
         "",
         f"Top call: {whys['cause']}. Terminal: {whys['terminal_cause']}.",
         "",
@@ -359,11 +441,11 @@ def _markdown_whys(whys: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _markdown_capa(capa: dict[str, Any]) -> str:
+def _markdown_capa(capa: dict[str, Any], banner: str) -> str:
     lines = [
         "# 8D / CAPA",
         "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
+        f"**{banner}**",
         "",
         "DMAIC labels: " + "; ".join(f"{key} = {value}" for key, value in capa["dmaic"].items()) + ".",
         "",
@@ -391,9 +473,10 @@ def _markdown_capa(capa: dict[str, Any]) -> str:
 def rca_node(state: CaseState) -> dict[str, Any]:
     scenario = state["scenario"]
     week = int(state.get("week", 0))
-    df = generate(scenario)
+    df = load_frame(scenario)
     spec = float(scenario.get("spec_invalid_rate", 0.02))
     promised = float(scenario.get("promised_validity", 0.98))
+    banner = str(scenario.get("banner") or "Simulation. Synthetic data. Not for clinical use.")
     hypotheses = state.get("hypotheses") or rank_hypotheses(df, spec)
     catalog = dict(state.get("evidence_catalog") or evidence_catalog(df, spec, promised))
     injections = index_injections(scenario, week)
@@ -401,9 +484,9 @@ def rca_node(state: CaseState) -> dict[str, Any]:
     fishbone = build_fishbone(hypotheses, catalog, injections)
     whys = build_whys(hypotheses, catalog, injections)
     capa = build_capa(hypotheses[0], catalog)
-    fishbone["markdown"] = _markdown_fishbone(fishbone)
-    whys["markdown"] = _markdown_whys(whys)
-    capa["markdown"] = _markdown_capa(capa)
+    fishbone["markdown"] = _markdown_fishbone(fishbone, banner)
+    whys["markdown"] = _markdown_whys(whys, banner)
+    capa["markdown"] = _markdown_capa(capa, banner)
     # Schema check. A bad citation already raised in build_whys.
     Fishbone(branches=[FishboneBranch(**{k: b[k] for k in FishboneBranch.model_fields}) for b in fishbone["branches"]])
     FiveWhys(
@@ -415,13 +498,21 @@ def rca_node(state: CaseState) -> dict[str, Any]:
     # Level ids such as 2.4.0 are labels. They have to be in the facts as
     # strings so the fidelity scan does not read the version as a rate.
     labels = [str(item["level"]) for item in hypotheses if item.get("level")]
+    labels.extend(stratum_levels(catalog))
     for version in scenario.get("software_versions") or []:
         if isinstance(version, dict) and version.get("id"):
             labels.append(str(version["id"]))
-    facts = {"catalog": catalog, "labels": labels, "structure": [0, 1, 2, 3, 4, 5, 6, 7, 8], "week": week}
+    facts = {
+        "catalog": catalog,
+        "labels": labels,
+        "structure": structure_numbers(len(hypotheses), len(fishbone["branches"])),
+        "week": week,
+    }
     fidelity = check_narrative(combined, facts).to_dict()
     if not fidelity["ok"]:
-        raise RuntimeError(f"RCA prose failed the fidelity guard: {fidelity['unknown']}")
+        raise RuntimeError(
+            f"RCA prose failed the fidelity guard: {fidelity['unknown']} {fidelity.get('claims', [])}"
+        )
     return {
         "hypotheses": hypotheses,
         "evidence_catalog": catalog,

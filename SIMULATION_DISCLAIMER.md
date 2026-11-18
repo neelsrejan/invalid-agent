@@ -2,8 +2,9 @@
 
 Invalid Bot is a **portfolio simulation**.
 
-- The customer, the laboratory sites, the instruments, the reagent lots, the operators, the complaint, and every run row are **synthetic**.
-- Public datasets (openFDA MAUDE, the Mendeley HIL index paper, Zenodo CBC record 15674541) influence the *shape* of the generator. Their files are not redistributed and their rows are not in this repository. See `DATA_LICENSES.md`.
+- Synthetic scenarios (`scenarios/`) are fictional: the customer, sites, instruments, lots, operators, complaint, and run rows are **synthetic**. That path is the CI fallback.
+- The public cases (`cases/openfda_ooi.yaml`, `cases/openfda_jje.yaml`) use openFDA MAUDE device-event reports loaded into hosted Postgres. Those rows are real reports and are still not a clinical invalid rate. The denominator is reported events. See `README.md` and `DATA_LICENSES.md`.
+- The Mendeley HIL DOI and Zenodo CBC record 15674541 still only influence the synthetic generator. Their files are not redistributed.
 - The panel ("MDx-24 Respiratory Panel") is fictional. Nothing here is a GenMark, Roche, or other manufacturer's result.
 - Output is **not for clinical use**, not a medical device, not a diagnostic claim, and not a regulatory submission.
 - openFDA's own terms describe that API as unvalidated and not for medical decisions. That applies here too.

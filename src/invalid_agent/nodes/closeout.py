@@ -14,7 +14,7 @@ from invalid_agent.artifacts.deck import write_deck
 from invalid_agent.case.state import CaseState
 from invalid_agent.guards.numeric_fidelity import check_narrative
 from invalid_agent.metrics.effectiveness import projection_summary
-from invalid_agent.sim.generate import generate
+from invalid_agent.data.frame import load_frame
 
 
 def _pct(value: float) -> float:
@@ -23,11 +23,12 @@ def _pct(value: float) -> float:
 
 def build_closeout_facts(state: CaseState) -> dict[str, Any]:
     scenario = state["scenario"]
-    frame = generate(scenario)
+    frame = load_frame(scenario)
     top = (state.get("hypotheses") or [{}])[0]
     spec = float(scenario.get("spec_invalid_rate", 0.02))
     promised = float(scenario.get("promised_validity", 0.98))
-    summary = projection_summary(frame, top, spec, promised)
+    estimable = scenario.get("denominator") != "reported_events"
+    summary = projection_summary(frame, top, spec, promised, spec_estimable=estimable)
     before = summary["before"]
     after = summary["after"]
     unit = int(scenario.get("cost_per_invalid_usd", 85))
@@ -77,6 +78,9 @@ def build_closeout_facts(state: CaseState) -> dict[str, Any]:
         "evidence_ids": list(top.get("evidence_ids") or ["metric:overall:rate"]),
         "confidence_pct": round(float(before.get("confidence", 0.95)) * 100.0, 0),
         "label": summary["label"],
+        "banner": str(scenario.get("banner") or "Simulation. Synthetic data. Not for clinical use. Not a medical device."),
+        "spec_estimable": estimable,
+        "cost_basis": str(scenario.get("cost_basis") or ""),
         "recommendation": recommendation,
         "d7": d7,
         "d8": d8,
@@ -97,7 +101,7 @@ def render_closeout(facts: dict[str, Any]) -> str:
         [
             "# Week-4 close-out",
             "",
-            "**Simulation. Synthetic data. Not for clinical use. Not a medical device.**",
+            f"**{facts.get('banner') or 'Simulation. Synthetic data. Not for clinical use. Not a medical device.'}**",
             "",
             f"Device: {facts['device']}. Scenario: {facts['scenario_id']}.",
             "",
@@ -112,10 +116,17 @@ def render_closeout(facts: dict[str, Any]) -> str:
             "",
             facts["d8"],
             "",
-            f"Observed rate {facts['rate_pct']:.2f}% "
-            f"(Wilson {facts['confidence_pct']:.0f}% CI {facts['ci_low_pct']:.2f}% to {facts['ci_high_pct']:.2f}%). "
-            f"Spec {facts['spec_pct']:.2f}% invalid (promised validity {facts['promised_pct']:.2f}%). "
-            f"Projected rate {facts['after_pct']:.2f}%.",
+            (
+                f"Observed rate {facts['rate_pct']:.2f}% "
+                f"(Wilson {facts['confidence_pct']:.0f}% CI {facts['ci_low_pct']:.2f}% to {facts['ci_high_pct']:.2f}%). "
+                f"Spec {facts['spec_pct']:.2f}% invalid (promised validity {facts['promised_pct']:.2f}%). "
+                + (
+                    "That cap is not estimable from reported events. "
+                    if facts.get("spec_estimable") is False
+                    else ""
+                )
+                + f"Projected rate {facts['after_pct']:.2f}%."
+            ),
             "",
             "## D7 Prevention",
             "",

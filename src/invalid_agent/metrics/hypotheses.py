@@ -30,6 +30,8 @@ CAUSE_CATEGORY = {
     "software_version": "Method",
     "preanalytical_hemolysis": "Material",
     "user_process_error": "Man",
+    "reported_manufacturer": "Material",
+    "reported_brand": "Machine",
     "no_single_cause": "Unresolved",
 }
 
@@ -40,6 +42,8 @@ _COLUMN_CAUSE = (
     ("operator", "user_process_error"),
     ("temp_band", "site_temperature"),
     ("hil_band", "preanalytical_hemolysis"),
+    ("manufacturer", "reported_manufacturer"),
+    ("brand_name", "reported_brand"),
 )
 
 MIN_N = 80
@@ -52,12 +56,14 @@ HIL_CUTOFF = 100.0
 
 
 def with_bands(df: pd.DataFrame) -> pd.DataFrame:
-    """Add temperature and hemolysis bands used as strata. Does not copy first."""
+    """Add temperature and hemolysis bands when those columns exist. Does not copy first."""
     out = df
-    out["temp_band"] = [
-        "excursion" if float(value) >= TEMP_EXCURSION_C else "controlled" for value in out["shipping_temp_c"]
-    ]
-    out["hil_band"] = ["high" if float(value) >= HIL_CUTOFF else "typical" for value in out["hemolysis_index"]]
+    if "shipping_temp_c" in out.columns:
+        out["temp_band"] = [
+            "excursion" if float(value) >= TEMP_EXCURSION_C else "controlled" for value in out["shipping_temp_c"]
+        ]
+    if "hemolysis_index" in out.columns:
+        out["hil_band"] = ["high" if float(value) >= HIL_CUTOFF else "typical" for value in out["hemolysis_index"]]
     return out
 
 
@@ -67,6 +73,8 @@ def _best_level(df: pd.DataFrame, column: str) -> dict[str, Any] | None:
     invalid = df["invalid"].astype(bool)
     best: dict[str, Any] | None = None
     for level, sub in df.groupby(column, dropna=False):
+        if str(level) in {"", "UNREPORTED", "nan", "None"}:
+            continue
         n = int(len(sub))
         if n < MIN_N:
             continue
@@ -167,21 +175,49 @@ def _unresolved(df: pd.DataFrame, spec_invalid_rate: float, summary: str) -> dic
 def evidence_catalog(df: pd.DataFrame, spec_invalid_rate: float = 0.02, promised_validity: float = 0.98) -> dict[str, str]:
     """Id → sentence. A 5 Whys citation has to be one of these keys."""
     framed = with_bands(df.copy())
-    overall = overall_rate(framed, spec_invalid_rate, promised_validity)
-    catalog = {
-        "metric:overall:rate": (
+    estimable = bool(df.attrs.get("spec_estimable", True))
+    overall = overall_rate(framed, spec_invalid_rate, promised_validity, spec_estimable=estimable)
+    if estimable:
+        rate_sentence = (
             f"Overall invalid rate {overall['rate'] * 100:.2f}% "
             f"({overall['k']} of {overall['n']})."
-        ),
+        )
+        spec_sentence = (
+            f"Spec is an invalid rate at or below {spec_invalid_rate * 100:.2f}% "
+            f"(promised validity at least {promised_validity * 100:.2f}%)."
+        )
+    else:
+        rate_sentence = (
+            f"Invalid-type share of reported events {overall['rate'] * 100:.2f}% "
+            f"({overall['k']} of {overall['n']} reports)."
+        )
+        spec_sentence = (
+            f"The stated promise is validity at least {promised_validity * 100:.2f}% "
+            f"(invalid cap {spec_invalid_rate * 100:.2f}%). "
+            "That run-level cap is not estimable from MAUDE, which has no total-runs denominator."
+        )
+    catalog = {
+        "metric:overall:rate": rate_sentence,
         "metric:overall:ci": (
             f"Wilson 95% CI {overall['ci_low'] * 100:.2f}% to {overall['ci_high'] * 100:.2f}%."
         ),
-        "metric:overall:spec": (
-            f"Spec is an invalid rate at or below {spec_invalid_rate * 100:.2f}% "
-            f"(promised validity at least {promised_validity * 100:.2f}%)."
-        ),
+        "metric:overall:spec": spec_sentence,
     }
-    for column in ("reagent_lot", "instrument", "site", "software_version", "operator", "temp_band", "hil_band"):
+    columns = (
+        "reagent_lot",
+        "instrument",
+        "site",
+        "software_version",
+        "operator",
+        "temp_band",
+        "hil_band",
+        "manufacturer",
+        "brand_name",
+        "catalog_number",
+    )
+    for column in columns:
+        if column not in framed.columns:
+            continue
         for row in stratified_rates(framed, column):
             catalog[f"metric:{column}:{row['level']}:rate"] = (
                 f"{column} {row['level']} invalid rate {row['rate'] * 100:.2f}% ({row['k']} of {row['n']})."

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Session 7 · A Streamlit dashboard, rules-only by default</title>
+<title>Session 7 · A Streamlit dashboard and the hosted narrator</title>
 <link rel="stylesheet" href="css/academy.css">
 
 <script>
@@ -35,7 +35,7 @@
 <a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
 <a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three status notes</a>
 <div class="week">Week 3</div>
-<a class="item active" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item active" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard and the hosted narrator</a>
 <a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
 <a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
 <div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
@@ -43,8 +43,8 @@
 <main class="main">
 
 <p class="kicker">Week 3 · Session 7</p>
-<h1>A Streamlit dashboard, rules-only by default</h1>
-<p class="lede">The page calls the same case run. Rules-only is the default, because hosted Streamlit has no Ollama. The projection is labeled as not observed.</p>
+<h1>A Streamlit dashboard and the hosted narrator</h1>
+<p class="lede">The page calls the same case run. The public demo narrates with Groq&#x27;s free tier. CI stays deterministic. The projection is labeled as not observed.</p>
 <p class="note">Ticket INV-301, INV-302 · about 50–70 minutes · artifact: Clickable week stepper: rate, p-chart, Pareto, projection</p>
 
 <div class="lock-screen">
@@ -56,7 +56,7 @@
 </div>
 <div class="lesson">
 <h2>Read first</h2>
-<ul><li>streamlit run streamlit_app.py — the banner, the spec line, and the week control.</li><li>The hosted page is the Streamlit card on the home page. It stays rules-only.</li></ul>
+<ul><li>streamlit run streamlit_app.py — the banner, the spec line, and the week control.</li><li>The hosted page is the Streamlit card on the home page. It calls Groq, not a local model.</li></ul>
 <h2>Watch in this order</h2>
 <p class="note">Read the architecture note, then play the clip. The note says what the file is for. The video opens on that note, then walks a few ranges. Line numbers match <code>academy-v2</code> (<code>d057d3e</code>).</p>
 <article class="clip">
@@ -75,13 +75,13 @@
 <p class="meta">0:55 · Andrew · <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/metrics/effectiveness.py#L1-L43">src/invalid_agent/metrics/effectiveness.py</a> at <code>academy-v2</code> (<code>d057d3e</code>)</p>
 </article>
 <h2>How this session connects</h2>
-<div class="prose"><p>The dashboard is a view of run_case, not a second investigation. Charts read numbers Python already computed. The projection clears the leading stratum on a copy of the file and says the result was not observed. Selecting a local model is a different machine from Streamlit Community Cloud.</p></div>
+<div class="prose"><p>The dashboard is a view of run_case, not a second investigation. Charts read numbers Python already computed. The projection clears the leading stratum on a copy of the file and says the result was not observed. Ollama is the laptop path. Groq is the hosted path. CI does not call either.</p></div>
 <p class="note">The build diary is <a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/docs/sessions/session-7/LOGIC_TRACE.md">LOGIC_TRACE.md</a> at <code>academy-v2</code>. The clips walk that same commit, not whatever main is today.</p>
 <h2>Code on main</h2>
 <p><a href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2">Browse the repository</a></p>
 <ul><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/app/streamlit_app.py#L36-L117"><code>app/streamlit_app.py</code></a></li><li><a href="https://github.com/neelsrejan/invalid-agent/blob/academy-v2/src/invalid_agent/metrics/effectiveness.py#L1-L43"><code>src/invalid_agent/metrics/effectiveness.py</code></a></li></ul>
 <h2>Practice</h2>
-<div class="prose"><p>Open the dashboard on the rules-only default. Say what the projection caption has to include, and why the hosted Streamlit page does not run Llama 3.1 8B.</p></div>
+<div class="prose"><p>Open the dashboard and read the banner&rsquo;s data source. Say what the projection caption has to include, and why the hosted page does not run Llama 3.1 8B locally.</p></div>
 <h2>Quiz</h2>
 <p class="note">Eight questions on architecture and design. 7 of 8 to pass. Explanations show after you submit. The salted hash is a self-study speed bump, not protection.</p>
 <div id="quiz"></div>

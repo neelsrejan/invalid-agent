@@ -1,18 +1,23 @@
 """Language-model backends.
 
 ``deterministic`` fills a template and does not open a socket. That is the
-default, the CI path, and the hosted-demo fallback.
+default and the CI path. A hosted draft that fails the fidelity guard is
+also replaced by the template. The public demo's configured backend is Groq.
 
 ``ollama`` talks to a local Ollama server (``LLM_MODEL``, default ``llama3.1:8b``).
 ``llamacpp`` loads a GGUF through ``llama-cpp-python``. The suggested small
-file, for a local or self-hosted run, is Llama 3.2 1B. Neither package is
-imported unless that backend is selected. If the call fails or the fidelity
+file, for a local or self-hosted run, is Llama 3.2 1B.
+``groq`` calls Groq's free hosted API (``GROQ_MODEL``, default
+``openai/gpt-oss-20b``). That is the public-demo narrator. Streamlit
+Community Cloud has no Ollama. Neither extra package is imported unless
+that backend is selected. If the call fails or the fidelity
 guard rejects the draft,
 ``narrate`` substitutes the template and records the rejection.
 """
 
 from __future__ import annotations
 
+import threading
 from typing import Any, Protocol
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -71,6 +76,88 @@ class OllamaLLM:
         return str(response.json()["message"]["content"])
 
 
+class GroqLLM:
+    """Hosted free-tier narrator. The key stays in the Authorization header.
+
+    Calls are spaced by two seconds across the process, so concurrent
+    Streamlit sessions share one clock. A 429 waits for Retry-After, or two
+    seconds when that header is missing. The waits in one call stop at 15
+    seconds and the caller falls back to the template. An empty gpt-oss reply
+    is retried once with a larger max_tokens. reasoning_effort stays low so
+    the free token budget is not spent on hidden reasoning.
+    """
+
+    name = "groq"
+    _pace_lock = threading.Lock()
+    _next_ok = 0.0
+    _min_interval = 2.0
+    _max_retry_wait = 15.0
+
+    def __init__(self, api_key: str, model: str) -> None:
+        if not api_key:
+            raise RuntimeError(
+                "GROQ_API_KEY is empty. Create a free key at https://console.groq.com/keys "
+                "(no credit card on the free plan) and export GROQ_API_KEY. "
+                "The public demo does not silently switch to the deterministic template "
+                "when the hosted key is missing. CI sets LLM_BACKEND=deterministic and does not need the key."
+            )
+        self._api_key = api_key
+        self.model = model or "openai/gpt-oss-20b"
+
+    def _pace(self) -> None:
+        import time
+
+        with self._pace_lock:
+            wait = GroqLLM._next_ok - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            GroqLLM._next_ok = time.monotonic() + self._min_interval
+
+    def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+        import time
+
+        import httpx
+
+        from invalid_agent.config import GROQ_CHAT_URL
+
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": _chat_payload(system, user),
+            "temperature": temperature,
+            "max_tokens": 2048,
+            "reasoning_effort": "low",
+        }
+        empty_retried = False
+        waited = 0.0
+        response: Any = None
+        for attempt in range(4):
+            self._pace()
+            response = httpx.post(
+                GROQ_CHAT_URL,
+                headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=180.0,
+            )
+            if response.status_code == 429 and attempt < 3:
+                delay = _retry_after_seconds(response.headers)
+                if waited + delay > self._max_retry_wait:
+                    raise RuntimeError(
+                        "Groq retry wait would exceed 15 seconds. Falling back to the template."
+                    )
+                time.sleep(delay)
+                waited += delay
+                continue
+            response.raise_for_status()
+            content = str(response.json()["choices"][0]["message"].get("content") or "")
+            if content.strip():
+                return content
+            if empty_retried:
+                raise RuntimeError("Groq returned an empty reply")
+            empty_retried = True
+            payload["max_tokens"] = 4096
+        raise RuntimeError("Groq returned an empty reply")
+
+
 class LlamaCppLLM:
     name = "llamacpp"
 
@@ -96,12 +183,28 @@ class LlamaCppLLM:
         return str(result["choices"][0]["message"]["content"])
 
 
+def _retry_after_seconds(headers: Any) -> float:
+    raw = ""
+    getter = getattr(headers, "get", None)
+    if getter is not None:
+        raw = str(getter("Retry-After", "") or getter("retry-after", "") or "")
+    try:
+        delay = float(raw)
+    except (TypeError, ValueError):
+        return 2.0
+    if delay < 0:
+        return 2.0
+    return delay
+
+
 def get_llm(settings: Settings | None = None) -> LLM:
     settings = settings or load_settings()
     if settings.llm_backend == "ollama":
         return OllamaLLM(settings.ollama_host, settings.llm_model)
     if settings.llm_backend == "llamacpp":
         return LlamaCppLLM(settings.llamacpp_model_path)
+    if settings.llm_backend == "groq":
+        return GroqLLM(settings.groq_api_key, settings.groq_model)
     return DeterministicLLM()
 
 
@@ -149,3 +252,77 @@ def narrate(task: str, facts: dict[str, Any], llm: LLM | None = None) -> tuple[s
         "rewritten": True,
         "error": error,
     }
+
+
+_STATUS_AUDIENCES = (
+    ("customer", "status_customer"),
+    ("internal", "status_internal"),
+    ("leadership", "status_leadership"),
+)
+
+
+def narrate_status(facts: dict[str, Any], llm: LLM | None = None) -> dict[str, tuple[str, dict[str, Any]]]:
+    """Three audience notes.
+
+    The deterministic backend still renders each template. A hosted model
+    gets one call for all three, so a week-4 replay stays near six calls
+    instead of sixteen.
+    """
+    llm = llm or get_llm()
+    if llm.name == "deterministic":
+        return {audience: narrate(task, facts, llm) for audience, task in _STATUS_AUDIENCES}
+    draft = ""
+    error = ""
+    try:
+        draft = llm.complete(
+            system=(
+                SYSTEM_PROMPT
+                + " Do not say the rate exceeds or stays within the spec unless FACTS shows that comparison."
+            ),
+            user=(
+                "Write three notes from the same FACTS: customer, internal, and leadership.\n"
+                "Start each note with its marker on its own line, exactly:\n"
+                "<<<customer>>>\n<<<internal>>>\n<<<leadership>>>\n"
+                + prompt_for("status", facts)
+            ),
+            temperature=0.1,
+        )
+    except Exception as exc:
+        error = f"{type(exc).__name__}: {exc}"
+    sections = _split_status(draft)
+    rendered: dict[str, tuple[str, dict[str, Any]]] = {}
+    for audience, task in _STATUS_AUDIENCES:
+        section = sections.get(audience, "")
+        check = check_narrative(section, facts) if section else None
+        if check is not None and check.ok:
+            text = section.rstrip() + "\n\n_Narrative source: model draft accepted by the numeric-fidelity check._\n"
+            rendered[audience] = (
+                text,
+                {"ok": True, "backend": llm.name, "unknown": [], "rewritten": False, "error": ""},
+            )
+            continue
+        safe = render(task, facts)
+        text = safe + "\n_Narrative source: deterministic template. The model draft was rejected or unavailable._\n"
+        rendered[audience] = (
+            text,
+            {
+                "ok": False,
+                "backend": llm.name,
+                "unknown": [] if check is None else check.unknown,
+                "rewritten": True,
+                "error": error,
+            },
+        )
+    return rendered
+
+
+def _split_status(draft: str) -> dict[str, str]:
+    import re
+
+    matches = list(re.finditer(r"<<<(customer|internal|leadership)>>>", draft))
+    parts: dict[str, str] = {}
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(draft)
+        parts[match.group(1)] = draft[start:end].strip()
+    return parts

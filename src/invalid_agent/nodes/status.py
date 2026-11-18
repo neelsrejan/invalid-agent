@@ -13,7 +13,7 @@ from typing import Any
 from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
 from invalid_agent.guards.numeric_fidelity import check_narrative
-from invalid_agent.llm import get_llm, narrate
+from invalid_agent.llm import get_llm, narrate_status
 from invalid_agent.nodes.rca import index_injections
 
 
@@ -27,6 +27,17 @@ def rag_color(exceeds_spec: bool, week: int) -> str:
 
 def _pct(value: float) -> float:
     return round(float(value) * 100.0, 2)
+
+
+def _customer_action_reports(week: int) -> str:
+    actions = {
+        0: "We are measuring the invalid-type share of public reports. This is not a run-level invalid rate, and no product-wide stop is requested.",
+        1: "The review is still the public-report mix. We have not confirmed a reagent lot.",
+        2: "The written note is in this week's plan. It will not quote a clinical invalid rate.",
+        3: "Follow-up is limited to a stratum that cleared the evidence bar, if one did. We are asking for a run denominator before any field action.",
+        4: "A recommendation is being prepared. This note still does not state a confirmed cause.",
+    }
+    return actions.get(week, actions[4])
 
 
 def _customer_action(week: int) -> str:
@@ -48,10 +59,14 @@ def _ask(week: int) -> str:
     return "Ask: approve the investigation plan and a holding response. No field action beyond the review yet."
 
 
-def _decision(week: int, top: dict[str, Any], plan: dict[str, Any]) -> dict[str, Any]:
+def _decision(week: int, top: dict[str, Any], plan: dict[str, Any], *, escalate: bool = True) -> dict[str, Any]:
     cause = str(top.get("cause") or "no_single_cause")
     level = str(top.get("level") or "no single stratum")
-    if week == 0:
+    if week == 0 and not escalate:
+        text = (
+            f"Do not treat the run-level promise as measured. Leading read is {cause} on {level}."
+        )
+    elif week == 0:
         text = f"Escalate and open the plan. Leading hypothesis is {cause} on {level}."
     elif week == 1:
         text = "Keep the leading hypothesis. The new QA note is a citation. It does not get its own score."
@@ -78,11 +93,11 @@ def upsert_decision(log: list[dict[str, Any]], entry: dict[str, Any]) -> list[di
     return kept
 
 
-def render_decision_log(log: list[dict[str, Any]]) -> str:
+def render_decision_log(log: list[dict[str, Any]], banner: str | None = None) -> str:
     lines = [
         "# Decision log",
         "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
+        f"**{banner or 'Simulation. Synthetic data. Not for clinical use.'}**",
         "",
     ]
     for entry in log:
@@ -106,9 +121,12 @@ def build_status_facts(state: CaseState) -> dict[str, Any]:
     unit = int(scenario.get("cost_per_invalid_usd", 85))
     invalids = int(overall["k"])
     injections = index_injections(scenario, week)
+    reports = scenario.get("denominator") == "reported_events"
     return {
         "week": week,
-        "rag": rag_color(bool(overall["exceeds_spec"]), week),
+        "banner": str(scenario.get("banner") or "Simulation. Synthetic data. Not for clinical use."),
+        "spec_estimable": not reports,
+        "rag": rag_color(bool(overall.get("watch", overall["exceeds_spec"])), week),
         "overall": {
             "n": int(overall["n"]),
             "k": invalids,
@@ -135,7 +153,8 @@ def build_status_facts(state: CaseState) -> dict[str, Any]:
             "rate_pct": None if top.get("rate") is None else _pct(top["rate"]),
         },
         "plan_version": int(plan.get("version", 1)),
-        "customer_action": _customer_action(week),
+        "customer_action": _customer_action_reports(week) if reports else _customer_action(week),
+        "cost_basis": str(scenario.get("cost_basis") or ""),
         "ask": _ask(week),
         "injection_texts": list(injections.values()),
         "cost": {"k": invalids, "unit_usd": unit, "total_usd": invalids * unit},
@@ -148,20 +167,21 @@ def status_node(state: CaseState) -> dict[str, Any]:
     llm = get_llm()
     updates: dict[str, str] = {}
     fidelity: dict[str, Any] = {}
-    for audience, task in (
-        ("customer", "status_customer"),
-        ("internal", "status_internal"),
-        ("leadership", "status_leadership"),
-    ):
-        prose, record = narrate(task, facts, llm)
+    for audience, (prose, record) in narrate_status(facts, llm).items():
         checked = check_narrative(prose, facts)
         if not checked.ok:
-            raise RuntimeError(f"{audience} status failed the fidelity guard: {checked.unknown}")
+            raise RuntimeError(f"{audience} status failed the fidelity guard: {checked.unknown} {checked.claims}")
         updates[audience] = prose
         fidelity[audience] = record
-    entry = _decision(int(state["week"]), (state.get("hypotheses") or [{}])[0], state.get("plan") or {})
+    watch = bool((state.get("metrics") or {}).get("overall", {}).get("watch", True))
+    entry = _decision(
+        int(state["week"]),
+        (state.get("hypotheses") or [{}])[0],
+        state.get("plan") or {},
+        escalate=watch,
+    )
     log = upsert_decision(list(state.get("decision_log") or []), entry)
-    _write(state, updates, log)
+    _write(state, updates, log, banner=str(state.get("scenario", {}).get("banner") or ""))
     return {
         "status_updates": updates,
         "status_fidelity": fidelity,
@@ -169,12 +189,12 @@ def status_node(state: CaseState) -> dict[str, Any]:
     }
 
 
-def _write(state: CaseState, updates: dict[str, str], log: list[dict[str, Any]]) -> None:
+def _write(state: CaseState, updates: dict[str, str], log: list[dict[str, Any]], banner: str = "") -> None:
     settings = load_settings()
     out = Path(state["out_dir"]) if state.get("out_dir") else settings.out_dir
     week = int(state["week"])
     folders = [out, out / f"week{week}"]
-    log_text = render_decision_log(log)
+    log_text = render_decision_log(log, banner or None)
     for folder in folders:
         folder.mkdir(parents=True, exist_ok=True)
         for audience, prose in updates.items():

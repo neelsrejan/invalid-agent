@@ -1,5 +1,7 @@
 """Settings stay offline-safe and never leak secrets."""
 
+import os
+
 from invalid_agent.config import (
     DEFAULT_LLM_MODEL,
     HOSTED_LLM_MODEL,
@@ -16,6 +18,13 @@ _SECRET_KEYS = (
     "JIRA_API_TOKEN",
     "JIRA_TOKEN",
     "OPENFDA_API_KEY",
+    "DATABASE_URL",
+    "DATABASE_URL_READONLY",
+    "DEMO_READONLY_PASSWORD",
+    "GROQ_API_KEY",
+    "GROQ_MODEL",
+    "DATA_BACKEND",
+    "MANUFACTURER_DISPLAY",
     "OLLAMA_HOST",
     "LLM_MODEL",
     "OLLAMA_MODEL",
@@ -40,6 +49,12 @@ def test_defaults_are_offline(monkeypatch):
     assert settings.jira_enabled is False
     assert settings.jira_api_token == ""
     assert settings.openfda_api_key == ""
+    assert settings.database_url == ""
+    assert settings.database_url_readonly == ""
+    assert settings.groq_api_key == ""
+    assert settings.groq_model == "openai/gpt-oss-20b"
+    assert settings.data_backend == "synthetic"
+    assert settings.manufacturer_display == "real"
 
 
 def test_jira_requires_all_three_values(monkeypatch):
@@ -93,6 +108,76 @@ def test_ollama_model_env_is_not_a_second_setting(monkeypatch):
     _clear(monkeypatch)
     monkeypatch.setenv("OLLAMA_MODEL", "llama3.2:1b")
     assert load_settings().llm_model == DEFAULT_LLM_MODEL
+
+
+def test_database_and_groq_secrets_are_masked(monkeypatch):
+    from urllib.parse import urlunsplit
+
+    _clear(monkeypatch)
+    db_password = "placeholder-db"
+    groq_token = "placeholder-groq"
+    demo_password = "placeholder-demo"
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        urlunsplit(("postgresql", f"owner:{db_password}@localhost", "/maude", "", "")),
+    )
+    monkeypatch.setenv("GROQ_API_KEY", groq_token)
+    monkeypatch.setenv("DEMO_READONLY_PASSWORD", demo_password)
+    settings = load_settings()
+    rendered = repr(settings)
+    assert db_password not in rendered
+    assert groq_token not in rendered
+    assert demo_password not in rendered
+    assert settings.redacted()["database_url"] == "***"
+    assert settings.redacted()["groq_api_key"] == "***"
+
+
+def test_anonymized_display_is_explicit(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("MANUFACTURER_DISPLAY", "anonymized")
+    assert load_settings().manufacturer_display == "anonymized"
+    monkeypatch.setenv("MANUFACTURER_DISPLAY", "typo")
+    assert load_settings().manufacturer_display == "real"
+
+
+def test_load_settings_ignores_a_tmp_dotenv(monkeypatch, tmp_path):
+    names = ("INVALID_AGENT_SKIP_DOTENV", "OPENFDA_API_KEY", "LLM_BACKEND")
+    before = {name: os.environ.get(name) for name in names}
+    for name in names:
+        os.environ.pop(name, None)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'tmp'\n", encoding="utf-8")
+    (tmp_path / "scenarios").mkdir()
+    (tmp_path / ".env").write_text("LLM_BACKEND=ollama\nOPENFDA_API_KEY=from-dotenv\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    from invalid_agent.config import load_dotenv, load_settings
+
+    try:
+        settings = load_settings()
+        assert settings.llm_backend == "deterministic"
+        assert settings.openfda_api_key == ""
+        load_dotenv()
+        loaded = load_settings()
+        assert loaded.llm_backend == "ollama"
+        assert loaded.openfda_api_key == "from-dotenv"
+        (tmp_path / ".env.local").write_text(
+            "LLM_BACKEND=groq\nOPENFDA_API_KEY=from-local\n",
+            encoding="utf-8",
+        )
+        os.environ.pop("LLM_BACKEND", None)
+        os.environ.pop("OPENFDA_API_KEY", None)
+        load_dotenv()
+        local = load_settings()
+        assert local.llm_backend == "groq"
+        assert local.openfda_api_key == "from-local"
+        os.environ["LLM_BACKEND"] = "deterministic"
+        load_dotenv()
+        assert load_settings().llm_backend == "deterministic"
+    finally:
+        for name, value in before.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
 
 
 def test_unknown_backend_falls_back(monkeypatch):

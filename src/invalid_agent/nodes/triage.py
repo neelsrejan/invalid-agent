@@ -11,7 +11,7 @@ from invalid_agent.metrics.hypotheses import evidence_catalog, rank_hypotheses
 from invalid_agent.metrics.pareto import pareto
 from invalid_agent.metrics.rates import chi_square_by, overall_rate, stratified_rates
 from invalid_agent.metrics.spc import p_chart
-from invalid_agent.sim.generate import generate
+from invalid_agent.data.frame import load_frame
 
 
 def _pct(value: float) -> float:
@@ -76,16 +76,45 @@ def _hypothesis_facts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rendered
 
 
+def _spec_estimable(scenario: dict[str, Any], df) -> bool:
+    if scenario.get("denominator") == "reported_events":
+        return False
+    return bool(df.attrs.get("spec_estimable", True))
+
+
+def _strata_plan(scenario: dict[str, Any]) -> list[tuple[str, str]]:
+    labels = scenario.get("strata_labels") or {}
+    columns = scenario.get("strata_columns")
+    if columns:
+        return [(str(column), str(labels.get(column, column))) for column in columns]
+    return [
+        ("reagent_lot", "Lot"),
+        ("instrument", "Instrument"),
+        ("site", "Site"),
+        ("software_version", "Software"),
+    ]
+
+
 def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) -> dict[str, Any]:
     spec = float(scenario.get("spec_invalid_rate", 0.02))
     promised = float(scenario.get("promised_validity", 0.98))
-    overall = overall_rate(df, spec, promised)
+    estimable = _spec_estimable(scenario, df)
+    overall = overall_rate(df, spec, promised, spec_estimable=estimable)
     chart = p_chart(df)
     rule1 = sum(1 for hit in chart["violations"] if hit["rule"] == 1)
-    strata = {
-        column: _top(stratified_rates(df, column))
-        for column in ("reagent_lot", "instrument", "site", "software_version", "operator")
-    }
+    plan = _strata_plan(scenario)
+    min_n = 30 if not estimable else 1
+    strata = {}
+    for column, _label in plan:
+        if column not in df.columns:
+            strata[column] = []
+            continue
+        rows = [
+            row
+            for row in stratified_rates(df, column)
+            if row["level"] not in {"UNREPORTED", ""} and row["n"] >= min_n
+        ]
+        strata[column] = _top(rows or stratified_rates(df, column))
     head = []
     for row in pareto(df)[:3]:
         head.append(
@@ -101,7 +130,12 @@ def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) 
         "title": str(scenario.get("title", "")),
         "device": str(scenario.get("device", "molecular panel")),
         "week": 0,
+        "banner": str(scenario.get("banner") or "Simulation. Synthetic data. Not for clinical use."),
+        "spec_estimable": estimable,
+        "denominator": str(scenario.get("denominator") or df.attrs.get("denominator") or "synthetic_runs"),
+        "date_basis_note": str(df.attrs.get("date_basis_note") or ""),
         "complaint": str(scenario.get("complaint", "Synthetic complaint.")),
+        "strata_order": [{"column": column, "label": label} for column, label in plan],
         "overall": {
             "n": overall["n"],
             "k": overall["k"],
@@ -118,9 +152,10 @@ def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) 
             "promised_pct": _pct(overall["promised_validity"]),
             "exceeds_spec": overall["exceeds_spec"],
             "ci_entirely_above_spec": overall["ci_entirely_above_spec"],
+            "spec_estimable": estimable,
         },
-        "severity": _severity(overall),
-        "escalate": bool(overall["exceeds_spec"]),
+        "severity": _severity(overall) if estimable else ("high" if hypotheses[0]["cause"] != "no_single_cause" else "low"),
+        "escalate": bool(overall["exceeds_spec"]) if estimable else hypotheses[0]["cause"] != "no_single_cause",
         "strata": strata,
         "pareto": head,
         "spc": {
@@ -135,19 +170,26 @@ def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) 
     }
 
 
-def _metrics_blob(df, spec: float, promised: float) -> dict[str, Any]:
+def _metrics_blob(df, spec: float, promised: float, estimable: bool) -> dict[str, Any]:
     """JSON-ready metrics for later nodes. Violations stay, raw rows do not."""
     chart = p_chart(df)
+    columns = [
+        column
+        for column in (
+            "reagent_lot",
+            "instrument",
+            "site",
+            "software_version",
+            "operator",
+            "manufacturer",
+            "brand_name",
+        )
+        if column in df.columns
+    ]
     return {
-        "overall": overall_rate(df, spec, promised),
-        "strata": {
-            column: stratified_rates(df, column)
-            for column in ("reagent_lot", "instrument", "site", "software_version", "operator")
-        },
-        "chi2": {
-            column: chi_square_by(df, column)
-            for column in ("reagent_lot", "instrument", "site", "software_version", "operator")
-        },
+        "overall": overall_rate(df, spec, promised, spec_estimable=estimable),
+        "strata": {column: stratified_rates(df, column) for column in columns},
+        "chi2": {column: chi_square_by(df, column) for column in columns},
         "pareto": pareto(df),
         "p_chart": chart,
     }
@@ -155,7 +197,7 @@ def _metrics_blob(df, spec: float, promised: float) -> dict[str, Any]:
 
 def triage_node(state: CaseState) -> dict[str, Any]:
     scenario = state["scenario"]
-    df = generate(scenario)
+    df = load_frame(scenario)
     spec = float(scenario.get("spec_invalid_rate", 0.02))
     promised = float(scenario.get("promised_validity", 0.98))
     hypotheses = rank_hypotheses(df, spec)
@@ -175,7 +217,7 @@ def triage_node(state: CaseState) -> dict[str, Any]:
         exceeds_spec=facts["overall"]["exceeds_spec"],
         escalate=facts["escalate"],
         severity=facts["severity"],
-        top_lot=facts["strata"]["reagent_lot"][0]["level"],
+        top_lot=_leading_level(facts),
         hypotheses=[
             HypothesisRef(
                 cause=item["cause"],
@@ -192,14 +234,24 @@ def triage_node(state: CaseState) -> dict[str, Any]:
     # even when the model draft was not. fidelity_ok on the schema means "the
     # stored prose passed the guard", which the template does.
     stored = check_stored(prose, facts, memo)
+    metrics = _metrics_blob(df, spec, promised, facts["spec_estimable"])
+    metrics["overall"]["watch"] = bool(facts["escalate"])
     return {
-        "metrics": _metrics_blob(df, spec, promised),
+        "metrics": metrics,
         "hypotheses": hypotheses,
         "evidence_catalog": evidence_catalog(df, spec, promised),
         "triage_memo": stored.model_dump(),
         "triage_markdown": prose,
         "fidelity": fidelity,
     }
+
+
+def _leading_level(facts: dict[str, Any]) -> str:
+    for item in facts.get("strata_order") or []:
+        rows = facts["strata"].get(item["column"]) or []
+        if rows:
+            return str(rows[0]["level"])
+    return "none"
 
 
 def check_stored(prose: str, facts: dict[str, Any], memo: TriageMemo) -> TriageMemo:

@@ -6,8 +6,9 @@ This project does **not** vendor third-party clinical datasets. The generator dr
 
 - Docs: https://open.fda.gov/apis/device/event/
 - Endpoint: `https://api.fda.gov/device/event.json`
-- Access: public US government data. Anonymous calls are limited (about 240 requests/minute and 1,000/day per IP). A free key raises the daily cap. The key is optional and read from `OPENFDA_API_KEY`.
-- What we use: the public product-problem vocabulary (software, mechanical, calibration, incorrect result) as **themes** for synthetic complaint wording. The default generator does not call the API. `invalid_agent.sim.openfda` can fetch a count of recent IVD events when the operator passes `--with-openfda`, and it caches nothing that contains a narrative.
+- Access: public US government data. A free key (`OPENFDA_API_KEY`) is required for this repo's extract. Anonymous calls are refused so a public demo does not share an IP quota. The key raises the daily cap and is not committed.
+- What we store: one row per device-event report for product codes OOI (2022–2024) and JJE (2024), limited to structured fields (report key, dates, event type, manufacturer, brand, model, catalog, lot, operator, product-problem labels, and the mapped invalid type). Narrative text, patient blocks, and street addresses are dropped before the cache is written. The rows live in the owner's Neon database, not in git.
+- What we do not claim: a run-level invalid rate. MAUDE has no total-runs denominator. See the denominator section of `README.md`.
 - Disclaimer: openFDA states that the data are unvalidated and not for medical decision-making.
 
 ## Mendeley: Icteric Interference with Clinical Chemistry Testing

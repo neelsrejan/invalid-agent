@@ -83,7 +83,8 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
     prs.slide_width = SLIDE_W
     prs.slide_height = SLIDE_H
     prs.core_properties.title = f"Invalid Bot — {facts['scenario_id']}"
-    prs.core_properties.subject = "Simulation. Synthetic data. Not for clinical use."
+    banner = str(facts.get("banner") or "Simulation. Synthetic data. Not for clinical use. Not a medical device.")
+    prs.core_properties.subject = banner
 
     title = _blank(prs)
     _box(title, Inches(0.6), Inches(1.4), Inches(12), Inches(1.2), "Invalid Bot", size=40, color=NAVY, bold=True)
@@ -103,7 +104,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
         Inches(5.4),
         Inches(12),
         Inches(1.2),
-        "Simulation. Synthetic data. Not for clinical use. Not a medical device.",
+        banner,
         size=16,
         color=WHITE,
         bold=True,
@@ -211,8 +212,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
         Inches(4.4),
         Inches(12),
         Inches(1.6),
-        "Do not treat the projected rate as observed follow-up.\n"
-        "Simulation. Synthetic data. Not for clinical use. Not a medical device.",
+        "Do not treat the projected rate as observed follow-up.\n" + banner,
         size=18,
         color=RED,
     )
