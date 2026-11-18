@@ -1,5 +1,7 @@
 """The guard rejects a planted rate and the node refuses to keep a lying draft."""
 
+import pytest
+
 from invalid_agent.guards.numeric_fidelity import check_narrative
 from invalid_agent.llm import narrate
 from invalid_agent.sim.generate import generate, load_scenario
@@ -24,6 +26,91 @@ def test_guard_accepts_computed_numbers_and_rejects_an_invented_rate():
     rejected = check_narrative(bad, facts)
     assert rejected.ok is False
     assert 27.4 in rejected.unknown or 27.40 in rejected.unknown
+
+
+def test_years_in_the_fact_window_are_labels():
+    facts = {
+        "date_from": "2022-01-01",
+        "date_to": "2024-12-31",
+        "overall": {"rate_pct": 2.61, "spec_pct": 2.0, "n": 4221, "k": 110},
+    }
+    assert check_narrative("In 2024 the share was 2.61% (110 of 4221).", facts).ok is True
+    assert check_narrative("The window is 2022-2024 and the share is 2.61%.", facts).ok is True
+    rejected = check_narrative("In 2019 the share was 2.61%.", facts)
+    assert rejected.ok is False
+    assert 2019.0 in rejected.unknown
+
+
+def test_hedged_reassurance_fails_when_the_share_is_above_the_cap():
+    facts = {
+        "overall": {
+            "rate": 0.0261,
+            "spec_invalid_rate": 0.02,
+            "rate_pct": 2.61,
+            "spec_pct": 2.0,
+            "n": 4221,
+            "k": 110,
+        }
+    }
+    hedged = "The data do not indicate that the overall rate exceeds the 2% invalid cap."
+    rejected = check_narrative(hedged, facts)
+    assert rejected.ok is False
+    assert rejected.claims
+    assert check_narrative(
+        "The observed share is 2.61% (110 of 4221), above the 2% cap.",
+        facts,
+    ).ok is True
+
+
+def test_short_lot_id_does_not_excuse_a_fabricated_rate():
+    facts = {
+        "overall": {"rate_pct": 3.67, "spec_pct": 2.0, "n": 100, "k": 4},
+        "labels": ["12", "10713760"],
+    }
+    rejected = check_narrative("The invalid rate is 12%.", facts)
+    assert rejected.ok is False
+    assert 12.0 in rejected.unknown
+    named = "Lot 12 is the stratum. Model 12 is the same id. The rate is 3.67%."
+    assert check_narrative(named, facts).ok is True
+    long_id = "Lot 10713760 is the stratum. The rate is 3.67%."
+    assert check_narrative(long_id, facts).ok is True
+
+
+def test_groq_retry_wait_is_capped_and_the_template_takes_over(monkeypatch):
+    import httpx
+
+    from invalid_agent.llm import GroqLLM, narrate
+    from invalid_agent.metrics.hypotheses import rank_hypotheses
+    from invalid_agent.nodes.triage import build_facts
+
+    GroqLLM._next_ok = 0.0
+    sleeps: list[float] = []
+
+    class _Limited:
+        status_code = 429
+        headers = {"Retry-After": "60"}
+
+        def json(self):
+            return {"choices": [{"message": {"content": ""}}]}
+
+        def raise_for_status(self):
+            request = httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions")
+            response = httpx.Response(429, request=request)
+            raise httpx.HTTPStatusError("limited", request=request, response=response)
+
+    monkeypatch.setattr(httpx, "post", lambda *args, **kwargs: _Limited())
+    monkeypatch.setattr("time.sleep", lambda seconds: sleeps.append(seconds))
+    with pytest.raises(RuntimeError, match="15 seconds"):
+        GroqLLM("test-key", "openai/gpt-oss-20b").complete(system="sys", user="user")
+    assert 60 not in sleeps
+    assert all(seconds < 15 for seconds in sleeps)
+
+    scenario = load_scenario(ROOT / "scenarios" / "bad_lot.yaml")
+    facts = build_facts(scenario, generate(scenario), rank_hypotheses(generate(scenario), 0.02))
+    text, meta = narrate("triage", facts, GroqLLM("test-key", "openai/gpt-oss-20b"))
+    assert meta["rewritten"] is True
+    assert "15 seconds" in meta["error"]
+    assert "Not for clinical use" in text
 
 
 def test_lot_identifier_is_not_scored_as_a_rate():

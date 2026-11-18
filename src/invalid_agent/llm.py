@@ -17,6 +17,7 @@ guard rejects the draft,
 
 from __future__ import annotations
 
+import threading
 from typing import Any, Protocol
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -78,15 +79,19 @@ class OllamaLLM:
 class GroqLLM:
     """Hosted free-tier narrator. The key stays in the Authorization header.
 
-    Calls are spaced by two seconds. A 429 waits for Retry-After, or two
-    seconds when that header is missing. An empty gpt-oss reply is retried
-    once with a larger max_tokens. reasoning_effort stays low so the free
-    token budget is not spent on hidden reasoning.
+    Calls are spaced by two seconds across the process, so concurrent
+    Streamlit sessions share one clock. A 429 waits for Retry-After, or two
+    seconds when that header is missing. The waits in one call stop at 15
+    seconds and the caller falls back to the template. An empty gpt-oss reply
+    is retried once with a larger max_tokens. reasoning_effort stays low so
+    the free token budget is not spent on hidden reasoning.
     """
 
     name = "groq"
+    _pace_lock = threading.Lock()
     _next_ok = 0.0
     _min_interval = 2.0
+    _max_retry_wait = 15.0
 
     def __init__(self, api_key: str, model: str) -> None:
         if not api_key:
@@ -102,10 +107,11 @@ class GroqLLM:
     def _pace(self) -> None:
         import time
 
-        wait = self._next_ok - time.monotonic()
-        if wait > 0:
-            time.sleep(wait)
-        self._next_ok = time.monotonic() + self._min_interval
+        with self._pace_lock:
+            wait = GroqLLM._next_ok - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            GroqLLM._next_ok = time.monotonic() + self._min_interval
 
     def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
         import time
@@ -122,6 +128,7 @@ class GroqLLM:
             "reasoning_effort": "low",
         }
         empty_retried = False
+        waited = 0.0
         response: Any = None
         for attempt in range(4):
             self._pace()
@@ -133,7 +140,12 @@ class GroqLLM:
             )
             if response.status_code == 429 and attempt < 3:
                 delay = _retry_after_seconds(response.headers)
+                if waited + delay > self._max_retry_wait:
+                    raise RuntimeError(
+                        "Groq retry wait would exceed 15 seconds. Falling back to the template."
+                    )
                 time.sleep(delay)
+                waited += delay
                 continue
             response.raise_for_status()
             content = str(response.json()["choices"][0]["message"].get("content") or "")

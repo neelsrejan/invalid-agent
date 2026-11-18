@@ -19,9 +19,10 @@ def test_removing_the_bad_lot_drops_the_rate():
     assert "Not observed" in summary["label"]
 
 
-def test_streamlit_app_renders_the_banner():
+def test_streamlit_app_renders_the_banner(monkeypatch):
     from streamlit.testing.v1 import AppTest
 
+    monkeypatch.setenv("DATA_BACKEND", "synthetic")
     app = AppTest.from_file(str(ROOT / "app" / "streamlit_app.py"), default_timeout=120)
     app.run()
     assert not app.exception

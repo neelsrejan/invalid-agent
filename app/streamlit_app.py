@@ -212,7 +212,7 @@ def main() -> None:
     chart = result["metrics"]["p_chart"]
     left, right = st.columns(2)
     with left:
-        st.plotly_chart(p_chart_figure(chart), use_container_width=True)
+        st.plotly_chart(p_chart_figure(chart), width="stretch")
         rule1 = sum(1 for hit in chart["violations"] if hit["rule"] == 1)
         st.caption(f"Red marks are Western Electric rule 1. Count this week’s chart: {rule1}.")
         if not overall.get("spec_estimable", True):
@@ -223,7 +223,7 @@ def main() -> None:
                 "Set MANUFACTURER_DISPLAY=anonymized to show Manufacturer A, B, C instead."
             )
     with right:
-        st.plotly_chart(pareto_figure(result["metrics"]["pareto"]), use_container_width=True)
+        st.plotly_chart(pareto_figure(result["metrics"]["pareto"]), width="stretch")
 
     st.subheader("Strata")
     strata = result["metrics"]["strata"]
@@ -232,7 +232,7 @@ def main() -> None:
     table["rate_pct"] = (table["rate"] * 100).round(2)
     st.dataframe(
         table[["level", "n", "k", "rate_pct"]],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -249,7 +249,7 @@ def main() -> None:
     )
     if summary["applied"]:
         after_chart = p_chart(summary["frame"])
-        st.plotly_chart(before_after_figure(chart, after_chart), use_container_width=True)
+        st.plotly_chart(before_after_figure(chart, after_chart), width="stretch")
         st.caption(
             f"{summary['label']} Observed {_pct(summary['before']['rate'])}. "
             f"Projected {_pct(summary['after']['rate'])}."
@@ -268,8 +268,8 @@ def main() -> None:
     with tabs[3]:
         st.markdown(result["capa"]["markdown"])
     with tabs[4]:
-        st.dataframe(pd.DataFrame(result["plan"]["tasks"]), use_container_width=True, hide_index=True)
-        st.dataframe(pd.DataFrame(result["risks"]), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(result["plan"]["tasks"]), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(result["risks"]), width="stretch", hide_index=True)
         gantt_path = ROOT / "out" / "dashboard" / scenario_path.stem / f"week{int(week)}" / "gantt.html"
         if gantt_path.is_file():
             st.caption("Gantt HTML is in the week folder next to this run. The task table above is the same plan.")
@@ -281,7 +281,7 @@ def main() -> None:
     if jira.get("issues"):
         st.subheader("Jira")
         st.caption(f"Mode: {jira.get('mode', '')}. Project {jira.get('project', '')}.")
-        st.dataframe(pd.DataFrame(jira.get("issues") or []), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(jira.get("issues") or []), width="stretch", hide_index=True)
         if jira.get("note"):
             st.info(str(jira["note"]))
         base = settings.jira_base_url
