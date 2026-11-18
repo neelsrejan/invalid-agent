@@ -1259,28 +1259,28 @@ window.QUIZZES = {
       },
       {
         "id": "s7q2",
-        "prompt": "Why is rules-only the default on the page?",
+        "prompt": "Why does the hosted page call Groq instead of staying rules-only?",
         "choices": [
           {
             "id": "a",
-            "text": "Rules-only switches the ranker to the note-only policy for every scenario in the picker."
+            "text": "Groq switches the ranker to the note-only policy for every scenario in the picker."
           },
           {
             "id": "b",
-            "text": "Rules-only disables the fidelity guard so the template can include numbers the facts omit."
+            "text": "Groq disables the fidelity guard so the template can include numbers the facts omit."
           },
           {
             "id": "c",
-            "text": "Rules-only downloads Llama 3.1 8B into the browser so the hosted page can narrate offline."
+            "text": "Groq downloads Llama 3.1 8B into the browser so the hosted page can narrate offline."
           },
           {
             "id": "d",
-            "text": "Hosted Streamlit has no Ollama so the public rules path must not require a model at all."
+            "text": "The public demo narrates on Groq's free tier, and CI stays deterministic with no key."
           }
         ],
         "salt": "7acc16b44f33dcb2",
         "answerHash": "8e357e23a21fa8683697479d2656da8c8e3c7cbf43ef28a91dc92a730e3a713b",
-        "explain": "VGhlIGhvc3RlZCBkZW1vIGlzIHRoZSBkZXRlcm1pbmlzdGljIHBhdGguIEEgbG9jYWwgbW9kZWwgaXMgYSBkaWZmZXJlbnQgbWFjaGluZS4="
+        "explain": "Q29tbXVuaXR5IENsb3VkIGhhcyBubyBPbGxhbWEuIFRoZSBob3N0ZWQgbmFycmF0b3IgaXMgYSBmcmVlIEdyb3EgbW9kZWwuIENJIGRvZXMgbm90IGNhbGwgaXQu"
       },
       {
         "id": "s7q3",
@@ -1388,7 +1388,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "A reviewer who only opens the dashboard still has to see the first panel is synthetic."
+            "text": "A reviewer who only opens the dashboard still has to see which source the rows came from."
           },
           {
             "id": "b",
@@ -1405,7 +1405,7 @@ window.QUIZZES = {
         ],
         "salt": "5d265b0f400a07e3",
         "answerHash": "dbd77c456940516671d8f9daecc5e24438f85b0eaecb5c9830989db72c222e8b",
-        "explain": "VGhlIHNhbWUgc2VudGVuY2UgaXMgb24gdGhlIG1lbW8gYW5kIHRoZSBkZWNrLiBUaGUgcGFnZSBkb2VzIG5vdCBnZXQgYSBzb2Z0ZXIgb25lLg=="
+        "explain": "VGhlIHBhZ2UgbmFtZXMgc3ludGhldGljIHJvd3Mgb3IgcHVibGljIE1BVURFLCBhbmQgdGhlIG5vdC1mb3ItY2xpbmljYWwtdXNlIGxpbmUgc3RheXMu"
       },
       {
         "id": "s7q8",
@@ -1413,7 +1413,7 @@ window.QUIZZES = {
         "choices": [
           {
             "id": "a",
-            "text": "Turning the toggle off asks Ollama and falls back to the template if that model is not running."
+            "text": "Turning the toggle off asks the configured model and falls back if that call fails."
           },
           {
             "id": "b",
@@ -1430,7 +1430,7 @@ window.QUIZZES = {
         ],
         "salt": "b93a90e8549423f0",
         "answerHash": "2d14f0ff518002cec3365481ae37e5105024fd6865aa68f55803a09db6af6e4b",
-        "explain": "VGhlIHRvZ2dsZSBpcyBhIGxvY2FsIGNob2ljZS4gSXQgaXMgbm90IHRoZSBwdWJsaWMgZGVwbG95bWVudC4="
+        "explain": "VGhlIHRvZ2dsZSBjYWxscyBPbGxhbWEgb24gYSBsYXB0b3Agb3IgR3JvcSBvbiB0aGUgaG9zdGVkIGRlbW8sIHRoZW4ga2VlcHMgdGhlIHRlbXBsYXRlIGlmIG5lZWRlZC4="
       }
     ]
   },

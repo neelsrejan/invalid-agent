@@ -22,7 +22,7 @@
 <a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
 <a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three status notes</a>
 <div class="week">Week 3</div>
-<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard and the hosted narrator</a>
 <a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
 <a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
 <div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
@@ -31,14 +31,14 @@
 
 <p class="kicker">How a case moves</p>
 <h1>Architecture</h1>
-<p class="lede">A simulated field-quality investigation. The language model does not calculate. The dataframe is not stored on the graph state. Each node regenerates it from the scenario seed.</p>
+<p class="lede">A field-quality investigation. The language model does not calculate. The dataframe is not stored on the graph state. Synthetic cases rebuild it from the scenario seed. MAUDE cases read the hosted table.</p>
 <div class="stages">
-<article class="stage"><strong>Scenario YAML</strong><p>The cause, the calendar, and the injections. The printed invalid rate is not stored here.</p></article><article class="stage"><strong>Seeded generator</strong><p>One seed produces one field file. The same YAML always yields the same rows.</p></article><article class="stage"><strong>Metrics in Python</strong><p>Rate, Wilson interval, chi-square, p-chart, Pareto, hypothesis score, cost, and the projection are code.</p></article><article class="stage"><strong>One case graph</strong><p>Triage once, then plan, the quality record, and a status note until the requested week. Week 4 continues into close-out.</p></article><article class="stage"><strong>Numeric-fidelity guard</strong><p>Prose may be rewritten. A number that is not already in the facts is rejected, and the template replaces that draft.</p></article><article class="stage"><strong>Optional narrator</strong><p>The default backend is deterministic. Local Ollama uses Llama 3.1 8B. Hosted Streamlit stays rules-only, because Community Cloud has no Ollama.</p></article><article class="stage"><strong>Artifacts</strong><p>Memo, fishbone, 5 Whys, 8D/CAPA, Gantt, risk register, three audience notes, the Streamlit page, and a seven-slide deck.</p></article><article class="stage"><strong>Optional Jira</strong><p>All three secrets, or a JSON file of SIM keys and no socket. That file is not the build backlog in docs/jira/backlog.json.</p></article>
+<article class="stage"><strong>Scenario YAML</strong><p>The cause, the calendar, and the injections. The printed invalid rate is not stored here.</p></article><article class="stage"><strong>Seeded generator</strong><p>One seed produces one field file. The same YAML always yields the same rows.</p></article><article class="stage"><strong>Metrics in Python</strong><p>Rate, Wilson interval, chi-square, p-chart, Pareto, hypothesis score, cost, and the projection are code.</p></article><article class="stage"><strong>One case graph</strong><p>Triage once, then plan, the quality record, and a status note until the requested week. Week 4 continues into close-out.</p></article><article class="stage"><strong>Numeric-fidelity guard</strong><p>Prose may be rewritten. A number that is not already in the facts is rejected, and the template replaces that draft.</p></article><article class="stage"><strong>Narrator</strong><p>CI is deterministic. Local Ollama uses Llama 3.1 8B. The hosted page calls Groq&#x27;s free tier, because Community Cloud has no Ollama.</p></article><article class="stage"><strong>Artifacts</strong><p>Memo, fishbone, 5 Whys, 8D/CAPA, Gantt, risk register, three audience notes, the Streamlit page, and a seven-slide deck.</p></article><article class="stage"><strong>Jira</strong><p>The hosted demo posts when the site, email, and token are set. CI writes SIM keys and does not open a socket. That file is not the build backlog.</p></article>
 </div>
 <h2>What stays out</h2>
 <div class="panel">
 <ul>
-<li>The panel, the customers, and the field file are synthetic. This is not a medical device and not for clinical use.</li>
+<li>Synthetic scenarios are the CI fallback. The public demo reads openFDA MAUDE reports. This is not a medical device and not for clinical use.</li>
 <li>No agent swarm, no fine-tune, and no vector database. The status color is red, amber, or green. It is not retrieval.</li>
 <li>The projection clears the leading stratum on a copy of the same file. It is not observed follow-up, and the walkthrough file does not turn green.</li>
 <li>The build board is project INV. The investigation dry-run uses SIM keys. Those are different files.</li>
@@ -48,7 +48,7 @@
 <div class="cards">
   <a class="link-card" href="https://github.com/neelsrejan/invalid-agent/tree/academy-v2"><div class="label">Repository</div><strong>GitHub</strong><p>The clips cite <code>academy-v2</code> (d057d3e).</p></a>
   <a class="link-card" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
-  <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+  <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted dashboard narrates with Groq's free tier. Community Cloud does not run Ollama.</p></a>
 </div>
 
 </main>

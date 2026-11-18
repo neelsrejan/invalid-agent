@@ -1,0 +1,72 @@
+id: openfda_jje
+title: JJE chemistry analyzers, invalid-type share of MAUDE reports
+data_backend: openfda
+denominator: reported_events
+product_code: JJE
+date_from: "2024-01-01"
+date_to: "2024-12-31"
+device: Clinical chemistry analyzers (FDA product code JJE)
+investigation_start: "2025-01-06"
+spec_invalid_rate: 0.02
+promised_validity: 0.98
+cost_per_invalid_usd: 85
+cost_basis: This dollar figure is a planning assumption. MAUDE has no cost field.
+banner: >-
+  Public openFDA MAUDE device-event reports. Denominator: reported events, not
+  test runs. The 2% invalid cap is the stated run-level promise and is not
+  estimable from this table. Not for clinical use. Not a medical device.
+strata_columns: [manufacturer, brand_name, reagent_lot, catalog_number]
+strata_labels:
+  manufacturer: Manufacturer
+  brand_name: Brand
+  reagent_lot: Reported lot
+  catalog_number: Catalog
+complaint: >
+  Portfolio question, not a customer complaint. For FDA product code JJE
+  (clinical chemistry analyzers) in 2024, high and low test results are the
+  common MAUDE labels and are not invalids. Which manufacturer, if any, has
+  a disproportionate share of invalid-type reports (no result, software,
+  calibration, mechanical, use)?
+injections:
+  - week: 0
+    source: customer
+    audience: customer
+    text: >
+      The question is the invalid-type share of chemistry-analyzer reports.
+      High and low results are not invalids. Do not brief a clinical rate.
+  - week: 1
+    source: QA
+    audience: internal
+    text: >
+      QA says the raw count of mechanical problems tracks how many reports a
+      firm files. Use the share against the complement, not the raw count.
+  - week: 2
+    source: R&D
+    audience: internal
+    text: >
+      R&D reports the bench panel passed release. That pass is not a MAUDE
+      denominator and it does not clear a manufacturer.
+  - week: 2
+    source: customer
+    audience: customer
+    text: >
+      The reader wants the written note limited to what the report table can
+      support.
+  - week: 3
+    source: manufacturing
+    audience: internal
+    text: >
+      Manufacturing cannot see a reagent lot in the blank lot field. Do not
+      move the cause onto a lot that was not reported.
+  - week: 3
+    source: management
+    audience: leadership
+    text: >
+      Leadership asks what a field action would cost under the planning
+      assumption, and what it would not prove.
+  - week: 4
+    source: management
+    audience: leadership
+    text: >
+      Leadership wants the recommendation. Do not describe the projection as
+      observed follow-up.

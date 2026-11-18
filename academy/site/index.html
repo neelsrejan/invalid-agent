@@ -22,7 +22,7 @@
 <a class="item" data-session="5" href="session-5.html"><i class="dot"></i>S5 · Gantt, risk register, and a Jira dry-run</a>
 <a class="item" data-session="6" href="session-6.html"><i class="dot"></i>S6 · Weekly injections and three status notes</a>
 <div class="week">Week 3</div>
-<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard, rules-only by default</a>
+<a class="item" data-session="7" href="session-7.html"><i class="dot"></i>S7 · A Streamlit dashboard and the hosted narrator</a>
 <a class="item" data-session="8" href="session-8.html"><i class="dot"></i>S8 · An offline scorecard</a>
 <a class="item" data-session="9" href="session-9.html"><i class="dot"></i>S9 · Week-4 close-out, the exec deck, and the résumé</a>
 <div class="nav-foot" id="nav-progress">Progress stays in this browser</div>
@@ -44,7 +44,7 @@
 <div class="cards">
   <a class="link-card" id="link-github" href="https://github.com/neelsrejan/invalid-agent"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Clips cite <code>academy-v2</code> (d057d3e).</p></a>
   <a class="link-card" id="link-jira" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
-  <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+  <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted dashboard narrates with Groq's free tier. Community Cloud does not run Ollama.</p></a>
 </div>
 <h2>How to run it locally</h2>
 <div class="panel">
@@ -53,7 +53,7 @@
 python -m pytest
 python -m invalid_agent.graph --scenario bad_lot --week 4
 streamlit run streamlit_app.py</pre>
-<p>When you want a local model, Ollama serves Meta Llama 3.1 8B. The smaller tag for a laptop demo is Llama 3.2 1B. Hosted Streamlit Community Cloud stays rules-only, because Cloud has no Ollama.</p>
+<p>When you want a local model, Ollama serves Meta Llama 3.1 8B. The smaller tag for a laptop demo is Llama 3.2 1B. The hosted page calls Groq's free tier, because Community Cloud has no Ollama. CI stays deterministic.</p>
 <pre>ollama pull llama3.1:8b
 LLM_BACKEND=ollama LLM_MODEL=llama3.1:8b python -m invalid_agent.graph --scenario bad_lot --week 0
 
@@ -96,7 +96,7 @@ LLM_MODEL=llama3.2:1b</pre>
 <div class="pill">Open</div>
 </a><a class="session-card" data-session="7" href="session-7.html">
 <div class="num">07</div>
-<div><h3>A Streamlit dashboard, rules-only by default</h3>
+<div><h3>A Streamlit dashboard and the hosted narrator</h3>
 <div class="meta">Week 3 · 50–70 min · Clickable week stepper: rate, p-chart, Pareto, projection</div></div>
 <div class="pill">Open</div>
 </a><a class="session-card" data-session="8" href="session-8.html">

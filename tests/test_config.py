@@ -16,6 +16,12 @@ _SECRET_KEYS = (
     "JIRA_API_TOKEN",
     "JIRA_TOKEN",
     "OPENFDA_API_KEY",
+    "DATABASE_URL",
+    "DATABASE_URL_READONLY",
+    "DEMO_READONLY_PASSWORD",
+    "GROQ_API_KEY",
+    "GROQ_MODEL",
+    "DATA_BACKEND",
     "OLLAMA_HOST",
     "LLM_MODEL",
     "OLLAMA_MODEL",
@@ -40,6 +46,11 @@ def test_defaults_are_offline(monkeypatch):
     assert settings.jira_enabled is False
     assert settings.jira_api_token == ""
     assert settings.openfda_api_key == ""
+    assert settings.database_url == ""
+    assert settings.database_url_readonly == ""
+    assert settings.groq_api_key == ""
+    assert settings.groq_model == "openai/gpt-oss-20b"
+    assert settings.data_backend == "synthetic"
 
 
 def test_jira_requires_all_three_values(monkeypatch):
@@ -93,6 +104,28 @@ def test_ollama_model_env_is_not_a_second_setting(monkeypatch):
     _clear(monkeypatch)
     monkeypatch.setenv("OLLAMA_MODEL", "llama3.2:1b")
     assert load_settings().llm_model == DEFAULT_LLM_MODEL
+
+
+def test_database_and_groq_secrets_are_masked(monkeypatch):
+    from urllib.parse import urlunsplit
+
+    _clear(monkeypatch)
+    db_password = "placeholder-db"
+    groq_token = "placeholder-groq"
+    demo_password = "placeholder-demo"
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        urlunsplit(("postgresql", f"owner:{db_password}@localhost", "/maude", "", "")),
+    )
+    monkeypatch.setenv("GROQ_API_KEY", groq_token)
+    monkeypatch.setenv("DEMO_READONLY_PASSWORD", demo_password)
+    settings = load_settings()
+    rendered = repr(settings)
+    assert db_password not in rendered
+    assert groq_token not in rendered
+    assert demo_password not in rendered
+    assert settings.redacted()["database_url"] == "***"
+    assert settings.redacted()["groq_api_key"] == "***"
 
 
 def test_unknown_backend_falls_back(monkeypatch):

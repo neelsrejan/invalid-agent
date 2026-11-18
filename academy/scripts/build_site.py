@@ -276,7 +276,7 @@ def home_body() -> str:
 <div class="cards">
   <a class="link-card" id="link-github" href="{REPO}"><div class="label">Repository</div><strong>GitHub</strong><p>neelsrejan/invalid-agent. Clips cite <code>{PIN_TAG}</code> ({PIN_SHORT}).</p></a>
   <a class="link-card" id="link-jira" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
-  <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+  <a class="link-card" id="link-streamlit" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted dashboard narrates with Groq's free tier. Community Cloud does not run Ollama.</p></a>
 </div>
 <h2>How to run it locally</h2>
 <div class="panel">
@@ -285,7 +285,7 @@ def home_body() -> str:
 python -m pytest
 python -m invalid_agent.graph --scenario bad_lot --week 4
 streamlit run streamlit_app.py</pre>
-<p>When you want a local model, Ollama serves Meta Llama 3.1 8B. The smaller tag for a laptop demo is Llama 3.2 1B. Hosted Streamlit Community Cloud stays rules-only, because Cloud has no Ollama.</p>
+<p>When you want a local model, Ollama serves Meta Llama 3.1 8B. The smaller tag for a laptop demo is Llama 3.2 1B. The hosted page calls Groq's free tier, because Community Cloud has no Ollama. CI stays deterministic.</p>
 <pre>ollama pull llama3.1:8b
 LLM_BACKEND=ollama LLM_MODEL=llama3.1:8b python -m invalid_agent.graph --scenario bad_lot --week 0
 
@@ -409,9 +409,9 @@ def architecture_body() -> str:
         ("Metrics in Python", "Rate, Wilson interval, chi-square, p-chart, Pareto, hypothesis score, cost, and the projection are code."),
         ("One case graph", "Triage once, then plan, the quality record, and a status note until the requested week. Week 4 continues into close-out."),
         ("Numeric-fidelity guard", "Prose may be rewritten. A number that is not already in the facts is rejected, and the template replaces that draft."),
-        ("Optional narrator", "The default backend is deterministic. Local Ollama uses Llama 3.1 8B. Hosted Streamlit stays rules-only, because Community Cloud has no Ollama."),
+        ("Narrator", "CI is deterministic. Local Ollama uses Llama 3.1 8B. The hosted page calls Groq's free tier, because Community Cloud has no Ollama."),
         ("Artifacts", "Memo, fishbone, 5 Whys, 8D/CAPA, Gantt, risk register, three audience notes, the Streamlit page, and a seven-slide deck."),
-        ("Optional Jira", "All three secrets, or a JSON file of SIM keys and no socket. That file is not the build backlog in docs/jira/backlog.json."),
+        ("Jira", "The hosted demo posts when the site, email, and token are set. CI writes SIM keys and does not open a socket. That file is not the build backlog."),
     ]
     cards = "".join(
         f'<article class="stage"><strong>{html.escape(title)}</strong><p>{html.escape(text)}</p></article>'
@@ -420,14 +420,14 @@ def architecture_body() -> str:
     return f"""
 <p class="kicker">How a case moves</p>
 <h1>Architecture</h1>
-<p class="lede">A simulated field-quality investigation. The language model does not calculate. The dataframe is not stored on the graph state. Each node regenerates it from the scenario seed.</p>
+<p class="lede">A field-quality investigation. The language model does not calculate. The dataframe is not stored on the graph state. Synthetic cases rebuild it from the scenario seed. MAUDE cases read the hosted table.</p>
 <div class="stages">
 {cards}
 </div>
 <h2>What stays out</h2>
 <div class="panel">
 <ul>
-<li>The panel, the customers, and the field file are synthetic. This is not a medical device and not for clinical use.</li>
+<li>Synthetic scenarios are the CI fallback. The public demo reads openFDA MAUDE reports. This is not a medical device and not for clinical use.</li>
 <li>No agent swarm, no fine-tune, and no vector database. The status color is red, amber, or green. It is not retrieval.</li>
 <li>The projection clears the leading stratum on a copy of the same file. It is not observed follow-up, and the walkthrough file does not turn green.</li>
 <li>The build board is project INV. The investigation dry-run uses SIM keys. Those are different files.</li>
@@ -437,7 +437,7 @@ def architecture_body() -> str:
 <div class="cards">
   <a class="link-card" href="{REPO}/tree/{PIN_TAG}"><div class="label">Repository</div><strong>GitHub</strong><p>The clips cite <code>{PIN_TAG}</code> ({PIN_SHORT}).</p></a>
   <a class="link-card" href="https://neelsrejan.atlassian.net/jira/projects"><div class="label">Jira Cloud</div><strong>Project INV</strong><p>Import docs/jira/backlog.json. The build board is not the investigation sync.</p></a>
-  <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted rules-only dashboard. Community Cloud does not run Ollama.</p></a>
+  <a class="link-card" href="https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/"><div class="label">Dashboard</div><strong>Streamlit</strong><p>The hosted dashboard narrates with Groq's free tier. Community Cloud does not run Ollama.</p></a>
 </div>
 """
 

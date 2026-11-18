@@ -86,16 +86,18 @@ class LiveJira:
         existing = _read(self.path)
         error = ""
 
-        def creator(kind: str, summary: str, body: str) -> dict[str, Any]:
-            payload = {
-                "fields": {
-                    "project": {"key": self.project},
-                    "summary": summary[:255],
-                    "issuetype": {"name": "Epic" if kind == "epic" else "Task"},
-                    "labels": ["invalid-bot", "simulation"],
-                    "description": _adf(body),
-                }
+        def creator(kind: str, summary: str, body: str, parent_key: str = "") -> dict[str, Any]:
+            fields: dict[str, Any] = {
+                "project": {"key": self.project},
+                "summary": summary[:255],
+                "issuetype": {"name": "Epic" if kind == "epic" else "Task"},
+                "labels": ["invalid-bot", "simulation"],
+                "description": _adf(body),
             }
+            # Team-managed Jira Cloud parents a task to an epic with this field.
+            if parent_key and kind != "epic":
+                fields["parent"] = {"key": parent_key}
+            payload = {"fields": fields}
             created = self._transport.request("POST", "/rest/api/3/issue", payload)
             return {"id": str(created.get("id", "")), "key": str(created.get("key", ""))}
 
@@ -103,12 +105,53 @@ class LiveJira:
             return _upsert(existing, plan, self.project, self.mode, creator=creator, path=self.path)
         except Exception as exc:  # the demo still has the local file
             error = f"{type(exc).__name__}"
+            detail = str(exc).replace(self._email, "***")
             existing["mode"] = self.mode
             existing["error"] = error
+            existing["error_detail"] = detail[:300]
             existing.setdefault("issues", [])
             existing.setdefault("project", self.project)
             _write(self.path, existing)
             return existing
+
+
+def doctor(settings: Settings, transport: Transport | None = None) -> dict[str, Any]:
+    """Check a Jira Cloud Free site. Does nothing when the three secrets are absent."""
+    if not settings.jira_enabled:
+        return {
+            "ok": False,
+            "reason": "Set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN. Two out of three stays a dry run.",
+        }
+    client = transport or HttpxTransport(settings.jira_base_url, settings.jira_email, settings.jira_api_token)
+    myself = client.request("GET", "/rest/api/3/myself")
+    project = client.request("GET", f"/rest/api/3/project/{settings.jira_project_key}")
+    meta = client.request("GET", f"/rest/api/3/issue/createmeta/{settings.jira_project_key}/issuetypes")
+    raw_types = meta.get("issueTypes") if isinstance(meta, dict) else meta
+    if isinstance(meta, dict) and "values" in meta:
+        raw_types = meta["values"]
+    names = sorted({str(item.get("name", "")) for item in (raw_types or []) if isinstance(item, dict)})
+    missing = [name for name in ("Epic", "Task") if name not in names]
+    return {
+        "ok": not missing,
+        "account": str(myself.get("emailAddress") or myself.get("displayName") or ""),
+        "project": str(project.get("key") or settings.jira_project_key),
+        "issue_types": names,
+        "missing_issue_types": missing,
+        "hint": ""
+        if not missing
+        else "Create a team-managed Jira software project so Epic and Task exist by those names.",
+    }
+
+
+def main() -> None:
+    import json
+
+    from invalid_agent.config import load_settings
+
+    report = doctor(load_settings())
+    print(json.dumps(report, indent=2))
+    if not report.get("ok"):
+        raise SystemExit(1)
 
 
 def make_client(settings: Settings, path: Path, transport: Transport | None = None):
@@ -137,8 +180,8 @@ def _local_creator(existing: dict[str, Any]):
             used = max(used, int(issue["key"].split("-")[1]))
     counter = {"n": used}
 
-    def creator(kind: str, summary: str, body: str) -> dict[str, Any]:
-        del kind, summary, body
+    def creator(kind: str, summary: str, body: str, parent_key: str = "") -> dict[str, Any]:
+        del kind, summary, body, parent_key
         counter["n"] += 1
         number = counter["n"]
         return {"id": str(number), "key": f"SIM-{number}"}
@@ -159,7 +202,7 @@ def _upsert(
         minted = creator(
             "epic",
             f"Investigation {plan.get('scenario_id', '')}: {plan.get('top_cause', '')}".strip(),
-            "Synthetic investigation. Not for clinical use.",
+            str(plan.get("disclaimer") or "Not for clinical use."),
         )
         epic = {
             "task_id": "EPIC",
@@ -175,7 +218,12 @@ def _upsert(
             by_task[task["id"]]["summary"] = task["name"]
             by_task[task["id"]]["owner"] = task["owner"]
             continue
-        minted = creator("task", task["name"], f"Owner: {task['owner']}. Depends on: {', '.join(task['depends_on']) or 'nothing'}.")
+        minted = creator(
+            "task",
+            task["name"],
+            f"Owner: {task['owner']}. Depends on: {', '.join(task['depends_on']) or 'nothing'}.",
+            parent_key=str(epic.get("key") or ""),
+        )
         created = {
             "task_id": task["id"],
             "key": minted.get("key", ""),
@@ -193,7 +241,11 @@ def _upsert(
         "project": project,
         "epic": epic,
         "issues": issues,
-        "disclaimer": "Simulation. Not a live customer escalation.",
+        "disclaimer": str(plan.get("disclaimer") or "Simulation. Not a live customer escalation."),
     }
     _write(path, payload)
     return payload
+
+
+if __name__ == "__main__":
+    main()

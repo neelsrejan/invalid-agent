@@ -140,23 +140,23 @@ SESSIONS = [
     {
         "id": 7,
         "week": 3,
-        "title": "A Streamlit dashboard, rules-only by default",
+        "title": "A Streamlit dashboard and the hosted narrator",
         "minutes": "50–70",
         "ticket": "INV-301, INV-302",
         "artifact": "Clickable week stepper: rate, p-chart, Pareto, projection",
-        "blurb": "The page calls the same case run. Rules-only is the default, because hosted Streamlit has no Ollama. The projection is labeled as not observed.",
+        "blurb": "The page calls the same case run. The public demo narrates with Groq's free tier. CI stays deterministic. The projection is labeled as not observed.",
         "read": [
             "streamlit run streamlit_app.py — the banner, the spec line, and the week control.",
-            "The hosted page is the Streamlit card on the home page. It stays rules-only.",
+            "The hosted page is the Streamlit card on the home page. It calls Groq, not a local model.",
         ],
         "trace": (
             "The dashboard is a view of run_case, not a second investigation. "
             "Charts read numbers Python already computed. The projection clears the leading stratum on a copy of the file and says the result was not observed. "
-            "Selecting a local model is a different machine from Streamlit Community Cloud."
+            "Ollama is the laptop path. Groq is the hosted path. CI does not call either."
         ),
         "practice": (
-            "Open the dashboard on the rules-only default. "
-            "Say what the projection caption has to include, and why the hosted Streamlit page does not run Llama 3.1 8B."
+            "Open the dashboard and read the banner's data source. "
+            "Say what the projection caption has to include, and why the hosted page does not run Llama 3.1 8B locally."
         ),
     },
     {

@@ -27,6 +27,8 @@ _OWNER = {
     "preanalytical_hemolysis": "QA",
     "user_process_error": "QA",
     "measurement_system": "R&D",
+    "reported_manufacturer": "QA",
+    "reported_brand": "QA",
     "no_single_cause": "PM",
 }
 
@@ -93,7 +95,11 @@ def build_plan(scenario: dict[str, Any], top: dict[str, Any], week: int) -> dict
         tasks.append(
             _task(
                 "T12",
-                "Lane-temperature review against the field rates",
+                (
+                    "Ask the leading manufacturer for a run denominator"
+                    if scenario.get("denominator") == "reported_events"
+                    else "Lane-temperature review against the field rates"
+                ),
                 "Manufacturing",
                 start + timedelta(days=21),
                 3,
@@ -116,6 +122,7 @@ def build_plan(scenario: dict[str, Any], top: dict[str, Any], week: int) -> dict
         "horizon_days": 28,
         "top_cause": cause,
         "top_level": level,
+        "disclaimer": str(scenario.get("banner") or "Synthetic investigation. Not for clinical use."),
         "tasks": tasks,
     }
 

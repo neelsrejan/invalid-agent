@@ -117,7 +117,7 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 1. **B.** A second investigation would let the page drift from the memo and the chart and the notes.
 
-2. **D.** Hosted Streamlit has no Ollama so the public rules path must not require a model at all.
+2. **D.** The public demo narrates on Groq's free tier, and CI stays deterministic with no key.
 
 3. **A.** The caption says the projected result is not observed follow-up after clearing that stratum.
 
@@ -127,9 +127,9 @@ The prose quizzes in `docs/sessions/` are a separate set and are not these lette
 
 6. **B.** It installs the deterministic path and it does not install a local GGUF model file.
 
-7. **A.** A reviewer who only opens the dashboard still has to see the first panel is synthetic.
+7. **A.** A reviewer who only opens the dashboard still has to see which source the rows came from.
 
-8. **A.** Turning the toggle off asks Ollama and falls back to the template if that model is not running.
+8. **A.** Turning the toggle off asks the configured model and falls back if that call fails.
 
 ## Session 8
 

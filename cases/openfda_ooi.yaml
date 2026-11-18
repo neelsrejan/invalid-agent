@@ -1,0 +1,72 @@
+id: openfda_ooi
+title: OOI nucleic-acid systems, invalid-type share of MAUDE reports
+data_backend: openfda
+denominator: reported_events
+product_code: OOI
+date_from: "2022-01-01"
+date_to: "2024-12-31"
+device: Multiplex / nucleic acid amplification systems (FDA product code OOI)
+investigation_start: "2025-01-06"
+spec_invalid_rate: 0.02
+promised_validity: 0.98
+cost_per_invalid_usd: 85
+cost_basis: This dollar figure is a planning assumption. MAUDE has no cost field.
+banner: >-
+  Public openFDA MAUDE device-event reports. Denominator: reported events, not
+  test runs. The 2% invalid cap is the stated run-level promise and is not
+  estimable from this table. Not for clinical use. Not a medical device.
+strata_columns: [manufacturer, brand_name, reagent_lot, catalog_number]
+strata_labels:
+  manufacturer: Manufacturer
+  brand_name: Brand
+  reagent_lot: Reported lot
+  catalog_number: Catalog
+complaint: >
+  Portfolio question, not a customer complaint. For FDA product code OOI
+  (multiplex and nucleic-acid amplification systems), what share of MAUDE
+  reports is an invalid type rather than a wrong result, and which
+  manufacturer, if any, is disproportionate? The 98% validity promise cannot
+  be confirmed from this file.
+injections:
+  - week: 0
+    source: customer
+    audience: customer
+    text: >
+      The question on the table is the invalid-type share of public reports.
+      Do not quote it as a clinical invalid rate against the 98% promise.
+  - week: 1
+    source: QA
+    audience: internal
+    text: >
+      QA confirms MAUDE has no total-runs field. False positive and false
+      negative labels stay out of the invalid numerator.
+  - week: 2
+    source: R&D
+    audience: internal
+    text: >
+      R&D notes a release-test pass on a bench panel would not change the
+      report share. The release sample is not this MAUDE extract.
+  - week: 2
+    source: customer
+    audience: customer
+    text: >
+      The reader wants a written note that separates the stated 2% cap from
+      the measured share of reports.
+  - week: 3
+    source: manufacturing
+    audience: internal
+    text: >
+      Manufacturing has no lot denominator in this extract. Blank lot numbers
+      stay UNREPORTED and are not a cause.
+  - week: 3
+    source: management
+    audience: leadership
+    text: >
+      Leadership asks for the planning-assumption cost and whether any
+      manufacturer cleared the evidence bar.
+  - week: 4
+    source: management
+    audience: leadership
+    text: >
+      Leadership wants the recommendation and the effectiveness check. The
+      check cannot be observed follow-up, because this file is not rewritten.

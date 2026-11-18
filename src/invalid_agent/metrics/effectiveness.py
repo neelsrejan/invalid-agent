@@ -30,10 +30,16 @@ def project_without_leading_stratum(df: pd.DataFrame, hypothesis: dict[str, Any]
     return framed, True
 
 
-def projection_summary(df: pd.DataFrame, hypothesis: dict[str, Any], spec: float, promised: float = 0.98) -> dict[str, Any]:
+def projection_summary(
+    df: pd.DataFrame,
+    hypothesis: dict[str, Any],
+    spec: float,
+    promised: float = 0.98,
+    spec_estimable: bool = True,
+) -> dict[str, Any]:
     projected, applied = project_without_leading_stratum(df, hypothesis)
-    before = overall_rate(df, spec, promised)
-    after = overall_rate(projected, spec, promised)
+    before = overall_rate(df, spec, promised, spec_estimable=spec_estimable)
+    after = overall_rate(projected, spec, promised, spec_estimable=spec_estimable)
     return {
         "applied": applied,
         "before": before,

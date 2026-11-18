@@ -36,25 +36,43 @@ def _pct(facts_overall: dict[str, Any], key: str) -> str:
     return f"{facts_overall[key]:.2f}%"
 
 
+def _banner(facts: dict[str, Any]) -> str:
+    return str(facts.get("banner") or "Simulation. Synthetic data. Not for clinical use.")
+
+
+def _rate_sentence(facts: dict[str, Any]) -> str:
+    overall = facts["overall"]
+    if facts.get("spec_estimable", True) is False:
+        return (
+            f"Invalid-type share of reported events **{_pct(overall, 'rate_pct')}** "
+            f"({overall['k']} of {overall['n']} reports), "
+            f"Wilson 95% CI **{_pct(overall, 'ci_low_pct')}–{_pct(overall, 'ci_high_pct')}**. "
+            f"Promised validity **{_pct(overall, 'promised_pct')}** would cap a run-level invalid rate at "
+            f"**{_pct(overall, 'spec_pct')}**. That cap is not estimable here: the denominator is "
+            "device-event reports, not test runs."
+        )
+    return (
+        f"Invalid rate **{_pct(overall, 'rate_pct')}** "
+        f"({overall['k']} of {overall['n']}), "
+        f"Wilson 95% CI **{_pct(overall, 'ci_low_pct')}–{_pct(overall, 'ci_high_pct')}**. "
+        f"Promised validity **{_pct(overall, 'promised_pct')}**, "
+        f"so the invalid rate must stay at or below **{_pct(overall, 'spec_pct')}**."
+    )
+
+
 def triage_memo(facts: dict[str, Any]) -> str:
     overall = facts["overall"]
     decision = "Escalate" if facts["escalate"] else "Do not escalate"
     lines = [
         "# Week-0 triage memo",
         "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
+        f"**{_banner(facts)}**",
         "",
         f"Scenario `{facts['scenario_id']}` · {facts['device']} · investigation week {facts['week']}.",
         "",
         "## Decision",
         "",
-        (
-            f"Invalid rate **{_pct(overall, 'rate_pct')}** "
-            f"({overall['k']} of {overall['n']}), "
-            f"Wilson 95% CI **{_pct(overall, 'ci_low_pct')}–{_pct(overall, 'ci_high_pct')}**. "
-            f"Promised validity **{_pct(overall, 'promised_pct')}**, "
-            f"so the invalid rate must stay at or below **{_pct(overall, 'spec_pct')}**."
-        ),
+        _rate_sentence(facts),
         "",
         f"**{decision}.** Severity: {facts['severity']}.",
         "",
@@ -65,13 +83,18 @@ def triage_memo(facts: dict[str, Any]) -> str:
         "## Where the invalids concentrate",
         "",
     ]
-    for label, key in (
-        ("Lot", "reagent_lot"),
-        ("Instrument", "instrument"),
-        ("Site", "site"),
-        ("Software", "software_version"),
-    ):
-        rows = facts["strata"][key]
+    order = facts.get("strata_order") or [
+        {"column": "reagent_lot", "label": "Lot"},
+        {"column": "instrument", "label": "Instrument"},
+        {"column": "site", "label": "Site"},
+        {"column": "software_version", "label": "Software"},
+    ]
+    for item in order:
+        label = item["label"]
+        key = item["column"]
+        rows = facts["strata"].get(key) or []
+        if not rows:
+            continue
         rendered = ", ".join(
             f"{row['level']} {_pct(row, 'rate_pct')} (n={row['n']}, k={row['k']})" for row in rows
         )
@@ -113,18 +136,28 @@ def triage_memo(facts: dict[str, Any]) -> str:
 
 def _status_header(facts: dict[str, Any], title: str) -> list[str]:
     overall = facts["overall"]
-    return [
-        f"# {title}",
-        "",
-        "**Simulation. Synthetic data. Not for clinical use.**",
-        "",
-        f"Investigation week {facts['week']}. RAG: {facts['rag']}.",
-        "",
-        (
+    if facts.get("spec_estimable", True) is False:
+        rate_line = (
+            f"Invalid-type share of reported events {overall['rate_pct']:.2f}% "
+            f"({overall['k']} of {overall['n']} reports), "
+            f"Wilson 95% CI {overall['ci_low_pct']:.2f}–{overall['ci_high_pct']:.2f}%. "
+            f"Promised validity {overall['promised_pct']:.2f}% would cap a run-level invalid rate at {overall['spec_pct']:.2f}%. "
+            "That cap is not estimable from reported events."
+        )
+    else:
+        rate_line = (
             f"Invalid rate {overall['rate_pct']:.2f}% ({overall['k']} of {overall['n']}), "
             f"Wilson 95% CI {overall['ci_low_pct']:.2f}–{overall['ci_high_pct']:.2f}%. "
             f"Promised validity {overall['promised_pct']:.2f}%, so the invalid rate must stay at or below {overall['spec_pct']:.2f}%."
-        ),
+        )
+    return [
+        f"# {title}",
+        "",
+        f"**{_banner(facts)}**",
+        "",
+        f"Investigation week {facts['week']}. RAG: {facts['rag']}.",
+        "",
+        rate_line,
         "",
     ]
 
@@ -182,6 +215,56 @@ def status_leadership(facts: dict[str, Any]) -> str:
             "",
         ]
     )
+    if facts.get("cost_basis"):
+        lines.extend([str(facts["cost_basis"]), ""])
+    return "\n".join(lines)
+
+
+def data_answer(facts: dict[str, Any]) -> str:
+    head = facts["head"]
+    lines = [
+        "# Data answer",
+        "",
+        f"**{_banner(facts) if facts.get('banner') else 'Public openFDA MAUDE device-event reports. Not for clinical use.'}**",
+        "",
+        facts["denominator_note"],
+        "",
+        (
+            f"Product code {facts['product_code']} from {facts['date_from']} to {facts['date_to']}. "
+            f"Template {facts['template_id']}."
+        ),
+        "",
+        (
+            f"Leading figure: {head['k']} of {head['n']} "
+            f"({head['rate'] * 100:.2f}%), "
+            f"Wilson 95% CI {head['ci_low'] * 100:.2f}%–{head['ci_high'] * 100:.2f}%."
+        ),
+        (
+            f"Stated run-level promise: invalid cap {facts['spec_invalid_rate'] * 100:.2f}% "
+            f"(validity at least {facts['promised_validity'] * 100:.2f}%). "
+            "Not estimable from reported events."
+        ),
+        "",
+    ]
+    shown = 0
+    for row in facts.get("rows") or []:
+        if "level" not in row:
+            continue
+        lines.append(
+            f"- {row['level']}: {row['k']} of {row['n']} ({row['rate'] * 100:.2f}%)."
+        )
+        shown += 1
+        if shown == 5:
+            break
+    spc = facts.get("spc") or {}
+    if spc:
+        lines.append(
+            f"Weekly points: {spc['points']}. Western Electric rule 1 count: {spc['rule1_count']} "
+            f"(any rule: {spc['violation_count']}). Pooled share {spc['p_bar'] * 100:.2f}%."
+        )
+    lines.append("")
+    lines.append("Python computed every figure above. The model only chose a vetted template and may phrase this note.")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -190,4 +273,5 @@ TEMPLATES = {
     "status_customer": status_customer,
     "status_internal": status_internal,
     "status_leadership": status_leadership,
+    "data_answer": data_answer,
 }

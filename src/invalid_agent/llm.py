@@ -1,12 +1,16 @@
 """Language-model backends.
 
 ``deterministic`` fills a template and does not open a socket. That is the
-default, the CI path, and the hosted-demo fallback.
+default and the CI path. A hosted draft that fails the fidelity guard is
+also replaced by the template. The public demo's configured backend is Groq.
 
 ``ollama`` talks to a local Ollama server (``LLM_MODEL``, default ``llama3.1:8b``).
 ``llamacpp`` loads a GGUF through ``llama-cpp-python``. The suggested small
-file, for a local or self-hosted run, is Llama 3.2 1B. Neither package is
-imported unless that backend is selected. If the call fails or the fidelity
+file, for a local or self-hosted run, is Llama 3.2 1B.
+``groq`` calls Groq's free hosted API (``GROQ_MODEL``, default
+``openai/gpt-oss-20b``). That is the public-demo narrator. Streamlit
+Community Cloud has no Ollama. Neither extra package is imported unless
+that backend is selected. If the call fails or the fidelity
 guard rejects the draft,
 ``narrate`` substitutes the template and records the rejection.
 """
@@ -71,6 +75,41 @@ class OllamaLLM:
         return str(response.json()["message"]["content"])
 
 
+class GroqLLM:
+    """Hosted free-tier narrator. The key stays in the Authorization header."""
+
+    name = "groq"
+
+    def __init__(self, api_key: str, model: str) -> None:
+        if not api_key:
+            raise RuntimeError(
+                "GROQ_API_KEY is empty. Create a free key at https://console.groq.com/keys "
+                "(no credit card on the free plan) and export GROQ_API_KEY. "
+                "The public demo does not silently switch to the deterministic template "
+                "when the hosted key is missing. CI sets LLM_BACKEND=deterministic and does not need the key."
+            )
+        self._api_key = api_key
+        self.model = model or "openai/gpt-oss-20b"
+
+    def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+        import httpx
+
+        from invalid_agent.config import GROQ_CHAT_URL
+
+        response = httpx.post(
+            GROQ_CHAT_URL,
+            headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
+            json={
+                "model": self.model,
+                "messages": _chat_payload(system, user),
+                "temperature": temperature,
+            },
+            timeout=180.0,
+        )
+        response.raise_for_status()
+        return str(response.json()["choices"][0]["message"]["content"])
+
+
 class LlamaCppLLM:
     name = "llamacpp"
 
@@ -102,6 +141,8 @@ def get_llm(settings: Settings | None = None) -> LLM:
         return OllamaLLM(settings.ollama_host, settings.llm_model)
     if settings.llm_backend == "llamacpp":
         return LlamaCppLLM(settings.llamacpp_model_path)
+    if settings.llm_backend == "groq":
+        return GroqLLM(settings.groq_api_key, settings.groq_model)
     return DeterministicLLM()
 
 

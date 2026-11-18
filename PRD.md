@@ -128,7 +128,7 @@ The résumé may quote only numbers that appear in `evals/reports/`.
 
 Synthetic run-level rows. Distributions are **seeded from** public sources and are not copies of those files:
 
-- openFDA Device Adverse Events (MAUDE): failure-mode themes and product-problem categories. Optional API key. Default path uses a bundled theme list and does not call the network.
+- openFDA Device Adverse Events (MAUDE): the public demo's report table for product codes OOI and JJE. The extract requires `OPENFDA_API_KEY` and caches pages on disk. The denominator is reported events, not test runs. Synthetic scenarios remain the CI fallback and do not call the network.
 - Mendeley HIL indices (Merrill, Mainali, Krasowski 2021, DOI 10.17632/vxkkdmw55f.1): the shape of a hemolysis-index distribution for pre-analytical scenarios.
 - Zenodo pseudonymized CBC (record 15674541, CC BY 4.0): cited as the public CBC source we did **not** redistribute. v1 does not download the 45.9 MB workbook; pre-analytical signal is carried by the HIL-style index.
 
@@ -152,7 +152,7 @@ The generator can inject one of:
 ## 11. Non-functional requirements
 
 - Runs on a 32 GB laptop with no GPU. The local model, when used, is Ollama `llama3.1:8b` (Meta Llama 3.1 8B). `LLM_MODEL` is the only model setting. Gemma 3 (`gemma3`) and Phi-4 (`phi4`) are drop-in alternatives.
-- Hosted demo target is Streamlit Community Cloud. Hosted Streamlit runs rules-only (deterministic). Cloud has no Ollama, so it does not load a model. `llama3.2:1b` is the suggested small tag for local or self-hosted runs (`LLM_MODEL=llama3.2:1b`, or a Llama 3.2 1B GGUF on a machine that has the file).
+- Hosted demo target is Streamlit Community Cloud plus Neon (free Postgres) and Groq's free tier (`openai/gpt-oss-20b`). Cloud has no Ollama. CI stays deterministic. `llama3.2:1b` is the suggested small Ollama tag for a laptop (`LLM_MODEL=llama3.2:1b`).
 - No secret in the repo. `.env.example` has empty values.
 - CI is GitHub Actions, offline, Python 3.11 and 3.12.
 
@@ -173,6 +173,6 @@ None. This is a local simulation. The eval report is the only scorecard.
 ## 14. Open items that need Neel
 
 1. Create the Jira Cloud Free site and, when he wants live sync, an API token in the environment. The repo runs without it.
-2. Sign in to Streamlit Community Cloud with GitHub and pick `app/streamlit_app.py`.
-3. Install Ollama and pull `llama3.1:8b` only if he wants the local model. For a smaller local or self-hosted tag, set `LLM_MODEL=llama3.2:1b`. Gemma 3 and Phi-4 are the other documented tags. The hosted Streamlit page stays rules-only.
+2. Sign in to Streamlit Community Cloud with GitHub and pick `streamlit_app.py`. Secrets are listed in the README owner checklist (Neon read-only URL, Groq, Jira). The page does not call openFDA.
+3. Install Ollama and pull `llama3.1:8b` for the laptop path. For a smaller local tag, set `LLM_MODEL=llama3.2:1b`. The hosted narrator is Groq `openai/gpt-oss-20b`, not Ollama.
 4. Sanity-check the root-cause list and the weekly injections against his QC experience before he quotes the eval numbers.

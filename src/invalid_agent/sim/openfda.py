@@ -1,9 +1,9 @@
-"""Optional openFDA device-event probe.
+"""openFDA entry point.
 
-The generator does not call this. A reviewer who wants a live count can
-run ``python -m invalid_agent.sim.openfda``. Anonymous access works;
-``OPENFDA_API_KEY`` is sent only when it is set. Failures return None
-so a missing network cannot break the simulation.
+``python -m invalid_agent.sim.openfda`` runs the cached extract and refuses
+to start without ``OPENFDA_API_KEY``. ``fetch_event_count`` remains a
+one-row probe that returns None when the network fails, so a unit test can
+prove the synthetic generator does not need it.
 """
 
 from __future__ import annotations
@@ -34,16 +34,10 @@ def fetch_event_count(api_key: str = "", timeout: float = 10.0) -> int | None:
         return None
 
 
-def main() -> None:
-    from invalid_agent.config import load_settings
+def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.data.extract import main as extract_main
 
-    settings = load_settings()
-    total = fetch_event_count(settings.openfda_api_key)
-    if total is None:
-        print("openFDA unreachable or unexpected payload. The simulation does not need this call.")
-        return
-    print(f"openFDA device/event reports currently indexed (meta.results.total): {total}")
-    print("Unvalidated public data. Not for medical decisions. Not used as rows in this simulation.")
+    extract_main(argv)
 
 
 if __name__ == "__main__":

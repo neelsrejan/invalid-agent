@@ -14,13 +14,16 @@ from pathlib import Path
 PROMISED_VALIDITY = 0.98
 SPEC_INVALID_RATE = round(1.0 - PROMISED_VALIDITY, 2)
 
-_LLM_BACKENDS = {"deterministic", "ollama", "llamacpp"}
+_LLM_BACKENDS = {"deterministic", "ollama", "llamacpp", "groq"}
 
-# The only model name. Local Ollama default is Meta Llama 3.1 8B.
-# llama3.2:1b is the suggested small tag for local or self-hosted runs.
-# Hosted Streamlit stays deterministic. Streamlit Cloud has no Ollama.
+# Local Ollama default is Meta Llama 3.1 8B.
+# llama3.2:1b is the suggested small tag for a laptop that cannot run 8B.
+# The public demo narrates with Groq's free tier. Llama 3.1 8B Instant left
+# that free tier on 2026-08-16, so the hosted model is gpt-oss-20b.
 DEFAULT_LLM_MODEL = "llama3.1:8b"
 HOSTED_LLM_MODEL = "llama3.2:1b"
+DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
+GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 def find_repo_root() -> Path:
@@ -39,6 +42,22 @@ def _env(name: str, default: str = "") -> str:
     return os.environ.get(name, default).strip()
 
 
+def load_dotenv() -> None:
+    """Read a gitignored .env without overriding variables already in the environment."""
+    path = find_repo_root() / ".env"
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        text = line.strip()
+        if not text or text.startswith("#") or "=" not in text:
+            continue
+        key, value = text.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 @dataclass(frozen=True)
 class Settings:
     llm_backend: str
@@ -50,6 +69,12 @@ class Settings:
     jira_api_token: str
     jira_project_key: str
     openfda_api_key: str
+    database_url: str
+    database_url_readonly: str
+    demo_readonly_password: str
+    groq_api_key: str
+    groq_model: str
+    data_backend: str
     spec_invalid_rate: float
     promised_validity: float
     repo_root: Path
@@ -77,6 +102,12 @@ class Settings:
             "jira_project_key": self.jira_project_key,
             "jira_enabled": self.jira_enabled,
             "openfda_api_key": "***" if self.openfda_api_key else "",
+            "database_url": "***" if self.database_url else "",
+            "database_url_readonly": "***" if self.database_url_readonly else "",
+            "demo_readonly_password": "***" if self.demo_readonly_password else "",
+            "groq_api_key": "***" if self.groq_api_key else "",
+            "groq_model": self.groq_model,
+            "data_backend": self.data_backend,
             "spec_invalid_rate": self.spec_invalid_rate,
             "promised_validity": self.promised_validity,
             "repo_root": str(self.repo_root),
@@ -100,6 +131,7 @@ def load_settings() -> Settings:
     accepted. The names ``JIRA_BASE_URL`` and ``JIRA_API_TOKEN`` win when
     both are set.
     """
+    load_dotenv()
     backend = _env("LLM_BACKEND", "deterministic").lower()
     if backend in {"rules", "rules-only", "mock"}:
         backend = "deterministic"
@@ -118,6 +150,12 @@ def load_settings() -> Settings:
         jira_api_token=_env("JIRA_API_TOKEN") or _env("JIRA_TOKEN"),
         jira_project_key=_env("JIRA_PROJECT_KEY", "INV"),
         openfda_api_key=_env("OPENFDA_API_KEY"),
+        database_url=_env("DATABASE_URL"),
+        database_url_readonly=_env("DATABASE_URL_READONLY"),
+        demo_readonly_password=_env("DEMO_READONLY_PASSWORD"),
+        groq_api_key=_env("GROQ_API_KEY"),
+        groq_model=_env("GROQ_MODEL", DEFAULT_GROQ_MODEL),
+        data_backend=_env("DATA_BACKEND", "synthetic").lower() or "synthetic",
         spec_invalid_rate=SPEC_INVALID_RATE,
         promised_validity=PROMISED_VALIDITY,
         repo_root=root,
