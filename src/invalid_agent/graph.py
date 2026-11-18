@@ -122,7 +122,10 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
 
 
 def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.config import load_dotenv
     from invalid_agent.data.frame import DataUnavailable
+
+    load_dotenv()
 
     parser = argparse.ArgumentParser(description="Run the Invalid Bot case graph.")
     parser.add_argument("--scenario", required=True, help="Scenario id or YAML path, e.g. bad_lot")

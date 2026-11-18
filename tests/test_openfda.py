@@ -7,6 +7,7 @@ frame is not the extract.
 from __future__ import annotations
 
 from datetime import date, timedelta
+from pathlib import Path
 
 import httpx
 import pytest
@@ -47,15 +48,13 @@ def test_invalid_labels_keep_wrong_results_out_of_the_numerator():
 
 
 def test_manufacturer_names_collapse_punctuation_and_keep_distinct_firms():
-    assert normalize_manufacturer("ROCHE DIAGNOSTICS") == "ROCHE DIAGNOSTICS"
-    assert normalize_manufacturer("SIEMENS  HEALTHCARE DIAGNOSTICS INC.") == "SIEMENS HEALTHCARE DIAGNOSTICS"
-    assert normalize_manufacturer("BECKMAN COULTER, INC.") == "BECKMAN COULTER"
-    assert normalize_manufacturer("BECTON, DICKINSON & CO. (SPARKS)") == "BECTON DICKINSON"
-    assert normalize_manufacturer("ABBOTT MOLECULAR, INC.") == "ABBOTT MOLECULAR"
-    assert normalize_manufacturer("ABBOTT LABORATORIES") == "ABBOTT LABORATORIES"
-    assert normalize_manufacturer("GENEOHM SCIENCES CANADA, INC. (BD DIAGNOSTICS)") != normalize_manufacturer(
-        "BECTON, DICKINSON & CO. (SPARKS)"
-    )
+    assert normalize_manufacturer("NORTH LAB") == "NORTH LAB"
+    assert normalize_manufacturer("SOUTH  HEALTH INC.") == "SOUTH HEALTH"
+    assert normalize_manufacturer("WEST ANALYZERS, INC.") == "WEST ANALYZERS"
+    assert normalize_manufacturer("EAST, WEST & CO. (CITY)") == "EAST WEST"
+    assert normalize_manufacturer("FIRM ONE, INC.") == "FIRM ONE"
+    assert normalize_manufacturer("FIRM TWO") == "FIRM TWO"
+    assert normalize_manufacturer("FIRM ONE, INC.") != normalize_manufacturer("FIRM TWO (GROUP)")
 
 
 def test_extract_caches_and_refresh_is_the_only_second_pass(tmp_path, monkeypatch):
@@ -82,8 +81,8 @@ def test_extract_caches_and_refresh_is_the_only_second_pass(tmp_path, monkeypatc
                     "device": [
                         {
                             "device_report_product_code": code,
-                            "manufacturer_d_name": "Roche Diagnostics",
-                            "brand_name": "cobas",
+                            "manufacturer_d_name": "Firm North",
+                            "brand_name": "brand-one",
                             "lot_number": "",
                         }
                     ],
@@ -152,7 +151,7 @@ class _Conn:
     def execute(self, sql, params):
         self.sql = sql
         self.params = params
-        return _Cursor([("ROCHE DIAGNOSTICS", 100, 20)])
+        return _Cursor([("Firm North", 100, 20)])
 
 
 def test_execute_template_binds_params_and_python_computes_the_rate():
@@ -170,6 +169,7 @@ def test_execute_template_binds_params_and_python_computes_the_rate():
     )
     assert answered["fidelity"]["ok"] is True
     assert "20.00%" in answered["prose"] or "20%" in answered["prose"]
+    assert "Firm North" in answered["prose"]
     assert "not estimable" in answered["prose"].lower()
     assert choose_template("weekly western electric for JJE")["template_id"] == "weekly_counts"
 
@@ -211,7 +211,7 @@ def _spike(scenario):
     product = scenario["product_code"]
     start = date.fromisoformat(scenario["date_from"])
     rows = []
-    plan = (("ROCHE DIAGNOSTICS", 200, 80), ("ABBOTT LABORATORIES", 200, 10))
+    plan = (("Firm North", 200, 80), ("Firm South", 200, 10))
     for name, n, k in plan:
         for index in range(n):
             rows.append(
@@ -245,8 +245,109 @@ def test_weekly_loop_runs_on_two_openfda_cases_with_a_constructed_frame(tmp_path
         assert "Not for clinical use" in closeout
         assert "not estimable" in closeout.lower()
         assert "reported_manufacturer" in closeout
-        assert "ROCHE DIAGNOSTICS" in closeout
+        assert "Firm North" in closeout
         fishbone = (out / "fishbone.md").read_text(encoding="utf-8")
         assert "reported_manufacturer" in fishbone
         assert (out / "exec_deck.pptx").is_file()
         assert (out / "capa8d.md").is_file()
+
+
+def test_overlapping_report_keys_collapse_per_product_code():
+    from invalid_agent.data.load import PROBLEM_INSERT_SQL, REPORT_INSERT_SQL, prepare_report_rows
+
+    rows = prepare_report_rows(
+        [
+            {"mdr_report_key": "SAME", "product_code": "OOI", "invalid_code": "INV-NOR"},
+            {"mdr_report_key": "SAME", "product_code": "JJE", "invalid_code": "INV-MECH"},
+            {"mdr_report_key": "SAME", "product_code": "OOI", "invalid_code": ""},
+        ]
+    )
+    assert len(rows) == 2
+    by_code = {row["product_code"]: row["invalid_code"] for row in rows}
+    assert by_code["OOI"] == ""
+    assert by_code["JJE"] == "INV-MECH"
+    assert "ON CONFLICT (mdr_report_key, product_code)" in REPORT_INSERT_SQL
+    assert "ON CONFLICT (mdr_report_key, product_code, product_problem)" in PROBLEM_INSERT_SQL
+
+
+def test_chart_date_prefers_the_event_date():
+    from invalid_agent.sim.generate import load_scenario
+
+    scenario = load_scenario(Path(__file__).resolve().parents[1] / "cases" / "openfda_ooi.yaml")
+    frame = frame_from_reports(
+        [
+            {
+                "mdr_report_key": "1",
+                "product_code": "OOI",
+                "date_received": "2024-06-01",
+                "date_of_event": "2024-05-01",
+                "manufacturer_name": "Firm North",
+                "brand_name": "brand-one",
+                "is_invalid_type": False,
+                "invalid_code": "",
+            }
+        ],
+        scenario,
+    )
+    assert str(frame.loc[0, "date"].date()) == "2024-05-01"
+    assert frame.loc[0, "date_basis"] == "date_of_event"
+    assert frame.loc[0, "manufacturer"] == "Firm North"
+
+
+def test_429_waits_for_retry_after_or_two_seconds():
+    from invalid_agent.data.extract import CallLog, fetch_page, retry_delay
+
+    assert retry_delay({"Retry-After": "5"}) == 5.0
+    assert retry_delay({}) == 2.0
+
+    class _Response:
+        def __init__(self, code, headers, payload):
+            self.status_code = code
+            self.headers = headers
+            self._payload = payload
+
+        def json(self):
+            return self._payload
+
+    calls = {"n": 0}
+
+    class _Client:
+        def get(self, url, params=None):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return _Response(429, {"Retry-After": "5"}, {})
+            return _Response(200, {}, {"meta": {"results": {"total": 0}}, "results": []})
+
+    delays: list[float] = []
+    fetch_page(_Client(), "search", "not-a-key", CallLog(), sleeper=delays.append)
+    assert delays == [5.0]
+
+
+def test_anonymized_display_is_still_available(monkeypatch):
+    monkeypatch.setenv("MANUFACTURER_DISPLAY", "anonymized")
+    from invalid_agent.sim.generate import load_scenario
+
+    scenario = load_scenario(Path(__file__).resolve().parents[1] / "cases" / "openfda_jje.yaml")
+    frame = frame_from_reports(
+        [
+            {
+                "mdr_report_key": "1",
+                "product_code": "JJE",
+                "date_received": "2024-02-01",
+                "manufacturer_name": "Firm South",
+                "is_invalid_type": False,
+                "invalid_code": "",
+            },
+            {
+                "mdr_report_key": "2",
+                "product_code": "JJE",
+                "date_received": "2024-02-02",
+                "manufacturer_name": "Firm North",
+                "is_invalid_type": True,
+                "invalid_code": "INV-NOR",
+            },
+        ],
+        scenario,
+    )
+    assert set(frame["manufacturer"]) == {"Manufacturer A", "Manufacturer B"}
+    assert "Firm North" not in set(frame["manufacturer"])

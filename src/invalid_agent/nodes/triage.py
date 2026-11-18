@@ -133,6 +133,7 @@ def build_facts(scenario: dict[str, Any], df, hypotheses: list[dict[str, Any]]) 
         "banner": str(scenario.get("banner") or "Simulation. Synthetic data. Not for clinical use."),
         "spec_estimable": estimable,
         "denominator": str(scenario.get("denominator") or df.attrs.get("denominator") or "synthetic_runs"),
+        "date_basis_note": str(df.attrs.get("date_basis_note") or ""),
         "complaint": str(scenario.get("complaint", "Synthetic complaint.")),
         "strata_order": [{"column": column, "label": label} for column, label in plan],
         "overall": {

@@ -45,8 +45,28 @@ def _parse_date(value: Any) -> date | None:
 
 
 def apply_schema(conn) -> None:
+    # Full reload. Dropping picks up primary-key changes from schema.sql.
+    conn.execute("DROP TABLE IF EXISTS maude_problem")
+    conn.execute("DROP TABLE IF EXISTS maude_report")
     for statement in sql_statements(schema_sql()):
         conn.execute(statement)
+
+
+def prepare_report_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One row per (report key, product code). The last copy wins.
+
+    The same MAUDE report key can appear in two product-code windows when a
+    report lists more than one device. Those stay as two rows. Two copies of
+    the same pair collapse.
+    """
+    by_key: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in rows:
+        key = str(row.get("mdr_report_key") or "").strip()
+        code = str(row.get("product_code") or "").strip()
+        if not key or not code:
+            continue
+        by_key[(key, code)] = row
+    return list(by_key.values())
 
 
 def sql_statements(script: str) -> list[str]:
@@ -60,65 +80,87 @@ def sql_statements(script: str) -> list[str]:
     return parts
 
 
+REPORT_INSERT_SQL = """
+    INSERT INTO maude_report (
+        mdr_report_key, product_code, date_received, date_of_event, event_type,
+        manufacturer_name, manufacturer_raw, brand_name, generic_name, model_number,
+        catalog_number, lot_number, device_operator, is_invalid_type, invalid_code
+    ) VALUES (
+        %(mdr_report_key)s, %(product_code)s, %(date_received)s, %(date_of_event)s, %(event_type)s,
+        %(manufacturer_name)s, %(manufacturer_raw)s, %(brand_name)s, %(generic_name)s, %(model_number)s,
+        %(catalog_number)s, %(lot_number)s, %(device_operator)s, %(is_invalid_type)s, %(invalid_code)s
+    )
+    ON CONFLICT (mdr_report_key, product_code) DO UPDATE SET
+        date_received = EXCLUDED.date_received,
+        date_of_event = EXCLUDED.date_of_event,
+        event_type = EXCLUDED.event_type,
+        manufacturer_name = EXCLUDED.manufacturer_name,
+        manufacturer_raw = EXCLUDED.manufacturer_raw,
+        brand_name = EXCLUDED.brand_name,
+        generic_name = EXCLUDED.generic_name,
+        model_number = EXCLUDED.model_number,
+        catalog_number = EXCLUDED.catalog_number,
+        lot_number = EXCLUDED.lot_number,
+        device_operator = EXCLUDED.device_operator,
+        is_invalid_type = EXCLUDED.is_invalid_type,
+        invalid_code = EXCLUDED.invalid_code
+"""
+
+PROBLEM_INSERT_SQL = """
+    INSERT INTO maude_problem (mdr_report_key, product_code, product_problem, invalid_code)
+    VALUES (%(mdr_report_key)s, %(product_code)s, %(product_problem)s, %(invalid_code)s)
+    ON CONFLICT (mdr_report_key, product_code, product_problem) DO UPDATE SET
+        invalid_code = EXCLUDED.invalid_code
+"""
+
+
 def replace_rows(conn, rows: list[dict[str, Any]]) -> int:
     from invalid_agent.data.mapping import INVALID_LABELS, normalize_label
 
     conn.execute("TRUNCATE maude_problem, maude_report")
-    report_sql = """
-        INSERT INTO maude_report (
-            mdr_report_key, product_code, date_received, date_of_event, event_type,
-            manufacturer_name, manufacturer_raw, brand_name, generic_name, model_number,
-            catalog_number, lot_number, device_operator, is_invalid_type, invalid_code
-        ) VALUES (
-            %(mdr_report_key)s, %(product_code)s, %(date_received)s, %(date_of_event)s, %(event_type)s,
-            %(manufacturer_name)s, %(manufacturer_raw)s, %(brand_name)s, %(generic_name)s, %(model_number)s,
-            %(catalog_number)s, %(lot_number)s, %(device_operator)s, %(is_invalid_type)s, %(invalid_code)s
+    report_params: list[dict[str, Any]] = []
+    problem_params: list[dict[str, Any]] = []
+    for row in prepare_report_rows(rows):
+        received = _parse_date(row.get("date_received"))
+        if received is None:
+            continue
+        key = str(row.get("mdr_report_key") or "").strip()
+        code = str(row.get("product_code") or "").strip()
+        invalid_code = str(row.get("invalid_code") or "")
+        report_params.append(
+            {
+                "mdr_report_key": key,
+                "product_code": code,
+                "date_received": received,
+                "date_of_event": _parse_date(row.get("date_of_event")),
+                "event_type": str(row.get("event_type") or ""),
+                "manufacturer_name": str(row.get("manufacturer_name") or "UNREPORTED"),
+                "manufacturer_raw": str(row.get("manufacturer_raw") or ""),
+                "brand_name": str(row.get("brand_name") or ""),
+                "generic_name": str(row.get("generic_name") or ""),
+                "model_number": str(row.get("model_number") or ""),
+                "catalog_number": str(row.get("catalog_number") or ""),
+                "lot_number": str(row.get("lot_number") or ""),
+                "device_operator": str(row.get("device_operator") or ""),
+                "is_invalid_type": bool(invalid_code),
+                "invalid_code": invalid_code,
+            }
         )
-    """
-    problem_sql = """
-        INSERT INTO maude_problem (mdr_report_key, product_problem, invalid_code)
-        VALUES (%(mdr_report_key)s, %(product_problem)s, %(invalid_code)s)
-        ON CONFLICT DO NOTHING
-    """
-    loaded = 0
-    with conn.cursor() as cur:
-        for row in rows:
-            key = str(row.get("mdr_report_key") or "").strip()
-            received = _parse_date(row.get("date_received"))
-            if not key or received is None:
-                continue
-            invalid_code = str(row.get("invalid_code") or "")
-            cur.execute(
-                report_sql,
+        for label in row.get("product_problems") or []:
+            problem_params.append(
                 {
                     "mdr_report_key": key,
-                    "product_code": str(row.get("product_code") or ""),
-                    "date_received": received,
-                    "date_of_event": _parse_date(row.get("date_of_event")),
-                    "event_type": str(row.get("event_type") or ""),
-                    "manufacturer_name": str(row.get("manufacturer_name") or "UNREPORTED"),
-                    "manufacturer_raw": str(row.get("manufacturer_raw") or ""),
-                    "brand_name": str(row.get("brand_name") or ""),
-                    "generic_name": str(row.get("generic_name") or ""),
-                    "model_number": str(row.get("model_number") or ""),
-                    "catalog_number": str(row.get("catalog_number") or ""),
-                    "lot_number": str(row.get("lot_number") or ""),
-                    "device_operator": str(row.get("device_operator") or ""),
-                    "is_invalid_type": bool(invalid_code),
-                    "invalid_code": invalid_code,
-                },
+                    "product_code": code,
+                    "product_problem": str(label),
+                    "invalid_code": INVALID_LABELS.get(normalize_label(str(label)), ""),
+                }
             )
-            for label in row.get("product_problems") or []:
-                cur.execute(
-                    problem_sql,
-                    {
-                        "mdr_report_key": key,
-                        "product_problem": str(label),
-                        "invalid_code": INVALID_LABELS.get(normalize_label(str(label)), ""),
-                    },
-                )
-            loaded += 1
-    return loaded
+    with conn.cursor() as cur:
+        if report_params:
+            cur.executemany(REPORT_INSERT_SQL, report_params)
+        if problem_params:
+            cur.executemany(PROBLEM_INSERT_SQL, problem_params)
+    return len(report_params)
 
 
 def write_manifest(conn, *, api_calls: int, report_count: int, cache: str) -> None:
@@ -153,9 +195,17 @@ def ensure_readonly_role(conn, password: str) -> None:
 
     if not password:
         raise SystemExit(
-            "DEMO_READONLY_PASSWORD is empty. Choose a password, export it, and rerun the loader. "
+            "DEMO_READONLY_PASSWORD is empty. Generate a long random password and export it:\n"
+            '  python -c "import secrets; print(secrets.token_urlsafe(32))"\n'
+            "Use at least 32 characters. Do not invent a short word.\n"
             f"The loader creates the login role {READONLY_ROLE} with default_transaction_read_only=on "
             "and SELECT on the MAUDE tables. The public demo uses that role, not the admin URL."
+        )
+    if len(password) < 24:
+        print(
+            "DEMO_READONLY_PASSWORD is shorter than 24 characters. "
+            "Generate one with secrets.token_urlsafe(32) before pointing Streamlit at this role.",
+            flush=True,
         )
     exists = conn.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (READONLY_ROLE,)).fetchone()
     password_sql = sql.SQL("PASSWORD {}").format(sql.Literal(password))
@@ -214,6 +264,9 @@ def load_cache(conn, root: Path | None = None) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Load the MAUDE cache into Postgres and create the read-only role.")
     parser.parse_args(argv)
     settings = load_settings()

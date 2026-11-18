@@ -71,10 +71,19 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
     ``UNREPORTED`` and the ranker ignores that level. Manufacturer and brand
     are the strata that can actually move.
     """
+    from invalid_agent.data.manufacturers import anonymized, display_labels, relabel
+
     start = pd.Timestamp(str(scenario.get("date_from") or scenario.get("start_date") or "2022-01-01"))
     rows: list[dict[str, Any]] = []
     for record in records:
         received = pd.Timestamp(record["date_received"])
+        event_raw = record.get("date_of_event")
+        if event_raw:
+            chart_date = pd.Timestamp(event_raw)
+            basis = "date_of_event"
+        else:
+            chart_date = received
+            basis = "date_received"
         lot = str(record.get("lot_number") or "").strip() or "UNREPORTED"
         brand = str(record.get("brand_name") or "").strip() or "UNREPORTED"
         operator = str(record.get("device_operator") or "").strip() or "UNREPORTED"
@@ -83,8 +92,9 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
         rows.append(
             {
                 "run_id": str(record["mdr_report_key"]),
-                "date": received,
-                "day_index": int((received.normalize() - start.normalize()).days),
+                "date": chart_date,
+                "date_basis": basis,
+                "day_index": int((chart_date.normalize() - start.normalize()).days),
                 "customer": str(record.get("manufacturer_name") or "UNREPORTED"),
                 "site": "PUBLIC-MAUDE",
                 "instrument": brand,
@@ -101,8 +111,19 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
             }
         )
     frame = pd.DataFrame(rows)
+    enabled = anonymized()
+    labels = display_labels(frame["manufacturer"].astype(str).tolist())
+    if enabled and labels:
+        frame["manufacturer"] = [relabel(str(value), labels, enabled=True) for value in frame["manufacturer"]]
+        frame["customer"] = [relabel(str(value), labels, enabled=True) for value in frame["customer"]]
     frame.attrs["scenario_id"] = str(scenario.get("id", "openfda"))
     frame.attrs["data_backend"] = "openfda"
     frame.attrs["denominator"] = "reported_events"
     frame.attrs["spec_estimable"] = False
+    frame.attrs["manufacturer_display"] = "anonymized" if enabled else "real"
+    frame.attrs["date_basis_note"] = (
+        "Weekly bins use date_of_event when the report has one. "
+        "Otherwise they use the FDA received date, which is when the report was logged, "
+        "not when the run happened."
+    )
     return frame

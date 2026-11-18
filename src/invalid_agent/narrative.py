@@ -109,6 +109,8 @@ def triage_memo(facts: dict[str, Any]) -> str:
         f"Western Electric rule 1 points: {spc['rule1_count']} "
         f"(any rule: {spc['violation_count']})."
     )
+    if facts.get("date_basis_note"):
+        lines.append(str(facts["date_basis_note"]))
     lines.extend(["", "## Initial hypotheses", ""])
     lines.append(
         "These are ranked from the strata (lift, excess invalids, chi-square). "
@@ -262,6 +264,8 @@ def data_answer(facts: dict[str, Any]) -> str:
             f"Weekly points: {spc['points']}. Western Electric rule 1 count: {spc['rule1_count']} "
             f"(any rule: {spc['violation_count']}). Pooled share {spc['p_bar'] * 100:.2f}%."
         )
+    if facts.get("date_basis_note"):
+        lines.append(str(facts["date_basis_note"]))
     lines.append("")
     lines.append("Python computed every figure above. The model only chose a vetted template and may phrase this note.")
     lines.append("")

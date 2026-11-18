@@ -8,6 +8,9 @@ from invalid_agent.data.mapping import CASES, READONLY_ROLE
 
 
 def main() -> None:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     settings = load_settings()
     rows = [
         ("OPENFDA_API_KEY", bool(settings.openfda_api_key), "free key at https://open.fda.gov/apis/authentication/"),

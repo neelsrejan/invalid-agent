@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -137,6 +138,21 @@ def _next_from_link(link: str) -> dict[str, str] | None:
     return None
 
 
+def retry_delay(headers: Any) -> float:
+    """Honor Retry-After when it is a number of seconds. Otherwise wait 2 seconds."""
+    raw = ""
+    if headers is not None:
+        getter = getattr(headers, "get", None)
+        raw = str(getter("Retry-After", "") if getter else "")
+    try:
+        delay = float(raw)
+    except (TypeError, ValueError):
+        return 2.0
+    if delay < 0:
+        return 2.0
+    return delay
+
+
 def fetch_page(
     client: httpx.Client,
     search: str,
@@ -145,6 +161,7 @@ def fetch_page(
     *,
     skip: int = 0,
     search_after: str = "",
+    sleeper=None,
 ) -> tuple[dict[str, Any], dict[str, str] | None]:
     params: dict[str, str] = {"search": search, "limit": str(PAGE_LIMIT)}
     if search_after:
@@ -164,6 +181,7 @@ def fetch_page(
         empty = {"meta": {"results": {"skip": skip, "limit": PAGE_LIMIT, "total": 0}}, "results": []}
         return empty, None
     if response.status_code == 429 and log.count < log.cap:
+        (sleeper or time.sleep)(retry_delay(response.headers))
         log.mark("retry after 429")
         try:
             response = client.get(OPENFDA_EVENT_URL, params=params)
@@ -273,6 +291,9 @@ def run_extract(*, refresh: bool = False, client: httpx.Client | None = None, ap
 
 
 def main(argv: list[str] | None = None) -> None:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Extract the planned openFDA MAUDE windows into the on-disk cache.")
     parser.add_argument(
         "--refresh",

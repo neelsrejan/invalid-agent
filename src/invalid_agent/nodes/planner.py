@@ -123,6 +123,8 @@ def build_plan(scenario: dict[str, Any], top: dict[str, Any], week: int) -> dict
         "top_cause": cause,
         "top_level": level,
         "disclaimer": str(scenario.get("banner") or "Synthetic investigation. Not for clinical use."),
+        "data_backend": str(scenario.get("data_backend") or "synthetic"),
+        "denominator": str(scenario.get("denominator") or "synthetic_runs"),
         "tasks": tasks,
     }
 

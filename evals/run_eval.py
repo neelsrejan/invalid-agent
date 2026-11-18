@@ -256,6 +256,9 @@ def render_report(rows: list[dict[str, Any]], graph_rows: list[dict[str, Any]], 
 
 
 def main(argv: list[str] | None = None) -> int:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Score Invalid Bot scenarios offline.")
     parser.add_argument("--backend", default="deterministic", choices=["deterministic", "ollama", "llamacpp"])
     parser.add_argument("--limit", type=int, default=0, help="Score only the first N scenarios. 0 means all.")

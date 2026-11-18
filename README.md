@@ -38,7 +38,7 @@ Invalid types, in priority order when one report has several:
 | INV-MECH | Mechanical | Mechanical Problem |
 | INV-USR | Use | Improper or Incorrect Procedure or Method, Human-Device Interface Problem |
 
-Manufacturer names are uppercased, parenthetical cities are dropped, and legal suffixes (`INC`, `LLC`, `CO`) are removed so punctuation does not split one firm. GeneOhm stays separate from Becton Dickinson because the reports use a different firm name. Blank lot, brand, and operator values are `UNREPORTED` and the ranker ignores that level.
+Manufacturer names come straight from the public openFDA records. They are uppercased, parenthetical cities are dropped, and legal suffixes (`INC`, `LLC`, `CO`) are removed so punctuation does not split one firm. The public page shows those names. Set `MANUFACTURER_DISPLAY=anonymized` to print Manufacturer A/B/C instead. Blank lot, brand, and operator values are `UNREPORTED` and the ranker ignores that level.
 
 ## Call budget
 
@@ -110,7 +110,11 @@ Do these in order. The agent cannot create the accounts. Nothing below is a paid
 
 1. **openFDA key (blocks the extract).** Create a free key at https://open.fda.gov/apis/authentication/. Export `OPENFDA_API_KEY`. Do not put this key in Streamlit secrets. The public app does not call openFDA.
 2. **Neon.** Sign up at https://neon.tech on the free plan (no credit card for the free plan). Create a project. Copy the connection string, including `sslmode=require`, into `DATABASE_URL`.
-3. **Read-only password.** Choose a password and export `DEMO_READONLY_PASSWORD`.
+3. **Read-only password.** Generate a long random value and export `DEMO_READONLY_PASSWORD`. At least 32 characters:
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+   ```
 4. **Load, one command.** From the repo, with those three variables set:
 
    ```bash
@@ -120,8 +124,14 @@ Do these in order. The agent cannot create the accounts. Nothing below is a paid
 
    The first run calls openFDA (about 7 calls, cap 40), writes `data/cache/openfda/`, loads Postgres, creates `invalid_demo_ro`, and prints `DATABASE_URL_READONLY=...`. A second run uses the cache and makes zero API calls. `python -m invalid_agent.data.doctor` prints which variables are still empty and does not call openFDA.
 5. **Groq.** Create a free key at https://console.groq.com/keys (free plan, no credit card). That value is `GROQ_API_KEY`. Leave `GROQ_MODEL=openai/gpt-oss-20b` unless Groq renames the free production model.
-6. **Jira Cloud Free.** Create a site at https://www.atlassian.com/software/jira/free. Make a **team-managed** software project with key `INV`. Create an API token at https://id.atlassian.com/manage-profile/security/api-tokens. Set `JIRA_BASE_URL` (https://&lt;site&gt;.atlassian.net), `JIRA_EMAIL`, and `JIRA_API_TOKEN`. Check with `python -m invalid_agent.integrations.jira`. It must report Epic and Task. Invite the reader to the free site (the free plan is not a public anonymous board). The dashboard lists the issue keys and links.
-7. **Streamlit Community Cloud.** Sign in at https://share.streamlit.io with GitHub. Deploy this repo. Main file: `streamlit_app.py`. Paste `.streamlit/secrets.toml.example` into the secrets editor with the real values: `DATA_BACKEND=openfda`, `LLM_BACKEND=groq`, `GROQ_API_KEY`, `GROQ_MODEL`, `DATABASE_URL_READONLY`, and the three Jira secrets. Do not paste `OPENFDA_API_KEY` or the admin `DATABASE_URL`.
+6. **Jira Cloud Free.** Create a site at https://www.atlassian.com/software/jira/free. Make a **team-managed** software project with key `INV`. Create an API token at https://id.atlassian.com/manage-profile/security/api-tokens. Set `JIRA_BASE_URL` (https://&lt;site&gt;.atlassian.net), `JIRA_EMAIL`, and `JIRA_API_TOKEN`. Check with `python -m invalid_agent.integrations.jira`. It must report Epic and Task. Seed once, from your machine, after the credentials are set:
+
+   ```bash
+   python -m invalid_agent.integrations.jira seed
+   ```
+
+   That command searches first and creates issues only when the case label is absent. A second run does not post. Issues are labeled `openfda` or `simulation`. The public page only reads and links those issues. A visitor cannot create one. Invite the reader to the free site (the free plan is not a public anonymous board).
+7. **Streamlit Community Cloud.** Sign in at https://share.streamlit.io with GitHub. Deploy this repo. Main file: `streamlit_app.py`. Paste `.streamlit/secrets.toml.example` into the secrets editor with the real values: `DATA_BACKEND=openfda`, `LLM_BACKEND=groq`, `GROQ_API_KEY`, `GROQ_MODEL`, `DATABASE_URL_READONLY`, and the three Jira secrets. Do not paste `OPENFDA_API_KEY` or the admin `DATABASE_URL`. Leave `MANUFACTURER_DISPLAY=real` so the page shows the firm names from the public reports. Set it to `anonymized` only to print Manufacturer A/B/C.
 8. **Confirm.** Open the public URL. The banner must say the rows are MAUDE reports and that the 2% cap is not estimable. Run `openfda_ooi` and `openfda_jje` to week 4. Ask the four suggested questions. The Jira section should show live keys.
 
 Local Ollama, after `ollama pull llama3.1:8b`:

@@ -103,7 +103,7 @@ TEMPLATES: dict[str, dict[str, Any]] = {
         "question": "Do the weekly invalid-type shares show a Western Electric rule 1 point?",
         "sql": """
             SELECT
-                to_char(date_trunc('week', date_received::timestamp), 'YYYY-MM-DD') AS period,
+                to_char(date_trunc('week', COALESCE(date_of_event, date_received)::timestamp), 'YYYY-MM-DD') AS period,
                 COUNT(*)::int AS n,
                 COUNT(*) FILTER (WHERE is_invalid_type)::int AS k
             FROM maude_report
@@ -242,7 +242,7 @@ def match_question(question: str) -> dict[str, Any]:
         template_id = "weekly_counts"
     elif "brand" in text:
         template_id = "invalid_share_by_brand"
-    elif "manufacturer" in text or "roche" in text or "abbott" in text:
+    elif "manufacturer" in text:
         template_id = "invalid_share_by_manufacturer"
     elif "slice" in text or "pareto" in text or "which invalid type" in text:
         template_id = "invalid_type_counts"
@@ -290,6 +290,16 @@ def compute_answer(template_id: str, rows: list[dict[str, Any]], params: dict[st
         head = ranked[0]
     else:
         head = {"n": 0, "k": 0, "rate": 0.0, "ci_low": 0.0, "ci_high": 0.0}
+    if template_id == "invalid_share_by_manufacturer":
+        from invalid_agent.data.manufacturers import anonymized, display_labels, relabel
+
+        enabled = anonymized()
+        labels = display_labels(str(row.get("level") or "") for row in enriched)
+        for row in enriched:
+            if "level" in row:
+                row["level"] = relabel(str(row["level"]), labels, enabled=enabled)
+        if enriched:
+            head = sorted(enriched, key=lambda item: (-item["rate"], -item["k"], str(item.get("level", ""))))[0]
     return {
         "template_id": template_id,
         "product_code": params["product_code"],
@@ -308,6 +318,11 @@ def compute_answer(template_id: str, rows: list[dict[str, Any]], params: dict[st
         "head": head,
         "spc": spc,
         "known_cases": [case["product_code"] for case in CASES],
+        "date_basis_note": (
+            "Weekly bins use date_of_event when the report has one. "
+            "Otherwise they use the FDA received date, which is when the report was logged, "
+            "not when the run happened."
+        ),
     }
 
 

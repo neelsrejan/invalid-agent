@@ -1,5 +1,7 @@
 """Settings stay offline-safe and never leak secrets."""
 
+import os
+
 from invalid_agent.config import (
     DEFAULT_LLM_MODEL,
     HOSTED_LLM_MODEL,
@@ -22,6 +24,7 @@ _SECRET_KEYS = (
     "GROQ_API_KEY",
     "GROQ_MODEL",
     "DATA_BACKEND",
+    "MANUFACTURER_DISPLAY",
     "OLLAMA_HOST",
     "LLM_MODEL",
     "OLLAMA_MODEL",
@@ -51,6 +54,7 @@ def test_defaults_are_offline(monkeypatch):
     assert settings.groq_api_key == ""
     assert settings.groq_model == "openai/gpt-oss-20b"
     assert settings.data_backend == "synthetic"
+    assert settings.manufacturer_display == "real"
 
 
 def test_jira_requires_all_three_values(monkeypatch):
@@ -126,6 +130,41 @@ def test_database_and_groq_secrets_are_masked(monkeypatch):
     assert demo_password not in rendered
     assert settings.redacted()["database_url"] == "***"
     assert settings.redacted()["groq_api_key"] == "***"
+
+
+def test_anonymized_display_is_explicit(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("MANUFACTURER_DISPLAY", "anonymized")
+    assert load_settings().manufacturer_display == "anonymized"
+    monkeypatch.setenv("MANUFACTURER_DISPLAY", "typo")
+    assert load_settings().manufacturer_display == "real"
+
+
+def test_load_settings_ignores_a_tmp_dotenv(monkeypatch, tmp_path):
+    names = ("INVALID_AGENT_SKIP_DOTENV", "OPENFDA_API_KEY", "LLM_BACKEND")
+    before = {name: os.environ.get(name) for name in names}
+    for name in names:
+        os.environ.pop(name, None)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'tmp'\n", encoding="utf-8")
+    (tmp_path / "scenarios").mkdir()
+    (tmp_path / ".env").write_text("LLM_BACKEND=ollama\nOPENFDA_API_KEY=from-dotenv\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    from invalid_agent.config import load_dotenv, load_settings
+
+    try:
+        settings = load_settings()
+        assert settings.llm_backend == "deterministic"
+        assert settings.openfda_api_key == ""
+        load_dotenv()
+        loaded = load_settings()
+        assert loaded.llm_backend == "ollama"
+        assert loaded.openfda_api_key == "from-dotenv"
+    finally:
+        for name, value in before.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
 
 
 def test_unknown_backend_falls_back(monkeypatch):

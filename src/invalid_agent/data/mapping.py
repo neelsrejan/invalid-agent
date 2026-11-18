@@ -32,9 +32,10 @@ Product codes
 * ``JJE`` — clinical chemistry analyzer (photometric, discrete). 4,221
   reports in calendar 2024. Dominant labels were high and low test results,
   also not invalids. Mechanical problems and "Unable to Obtain Readings"
-  are the invalid-type slice, concentrated in raw counts at Roche, which
-  also files the most reports. Python has to compute the share, not the
-  raw count, before anyone calls that a signal.
+  are the invalid-type slice. Raw counts follow how many reports a firm
+  files. Python computes the share before anyone calls a count a signal.
+  The public page shows the reported firm name. Set
+  MANUFACTURER_DISPLAY=anonymized to print Manufacturer A, B, C instead.
 
 Call budget
 -----------
@@ -169,9 +170,9 @@ def primary_invalid_code(labels: list[str]) -> str:
 def normalize_manufacturer(name: str) -> str:
     """Collapse punctuation and legal suffixes so one firm is one stratum.
 
-    Parenthetical cities are dropped. GeneOhm stays separate from
-    Becton Dickinson even though the count query shows a BD relationship,
-    because the report text uses a different firm name.
+    Parenthetical cities are dropped. Two different firm strings stay
+    different after that cleanup. The public page shows these names.
+    MANUFACTURER_DISPLAY=anonymized replaces them with Manufacturer A, B, C.
     """
     import re
 

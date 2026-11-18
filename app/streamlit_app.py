@@ -53,6 +53,7 @@ def _apply_streamlit_secrets() -> None:
         "JIRA_API_TOKEN",
         "JIRA_PROJECT_KEY",
         "OLLAMA_HOST",
+        "MANUFACTURER_DISPLAY",
     )
     for name in names:
         try:
@@ -112,6 +113,9 @@ def _pct(value: float) -> str:
 
 
 def main() -> None:
+    from invalid_agent.config import load_dotenv
+
+    load_dotenv()
     _apply_streamlit_secrets()
     settings = load_settings()
     public = settings.data_backend == "openfda"
@@ -211,6 +215,13 @@ def main() -> None:
         st.plotly_chart(p_chart_figure(chart), use_container_width=True)
         rule1 = sum(1 for hit in chart["violations"] if hit["rule"] == 1)
         st.caption(f"Red marks are Western Electric rule 1. Count this week’s chart: {rule1}.")
+        if not overall.get("spec_estimable", True):
+            st.caption(
+                "Bins use date_of_event when the report has one, otherwise the FDA received date. "
+                "Received date is when FDA logged the report, not when the run happened. "
+                "Manufacturer names are the reported names from public MAUDE. "
+                "Set MANUFACTURER_DISPLAY=anonymized to show Manufacturer A, B, C instead."
+            )
     with right:
         st.plotly_chart(pareto_figure(result["metrics"]["pareto"]), use_container_width=True)
 
@@ -271,8 +282,10 @@ def main() -> None:
         st.subheader("Jira")
         st.caption(f"Mode: {jira.get('mode', '')}. Project {jira.get('project', '')}.")
         st.dataframe(pd.DataFrame(jira.get("issues") or []), use_container_width=True, hide_index=True)
+        if jira.get("note"):
+            st.info(str(jira["note"]))
         base = settings.jira_base_url
-        if base and jira.get("mode") == "live":
+        if base and str(jira.get("mode", "")).startswith("live"):
             for issue in jira.get("issues") or []:
                 key = issue.get("key")
                 if key:

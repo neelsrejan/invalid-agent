@@ -38,12 +38,25 @@ def find_repo_root() -> Path:
     return here.parents[2]
 
 
+def _display_mode(value: str) -> str:
+    mode = value.strip().lower()
+    if mode in {"real", "anonymized"}:
+        return mode
+    return "real"
+
+
 def _env(name: str, default: str = "") -> str:
     return os.environ.get(name, default).strip()
 
 
 def load_dotenv() -> None:
-    """Read a gitignored .env without overriding variables already in the environment."""
+    """Read a gitignored .env without overriding variables already in the environment.
+
+    CLI and Streamlit entry points call this. ``load_settings`` does not.
+    Pytest sets ``INVALID_AGENT_SKIP_DOTENV`` so a local file cannot leak in.
+    """
+    if os.environ.get("INVALID_AGENT_SKIP_DOTENV") == "1":
+        return
     path = find_repo_root() / ".env"
     if not path.is_file():
         return
@@ -75,6 +88,7 @@ class Settings:
     groq_api_key: str
     groq_model: str
     data_backend: str
+    manufacturer_display: str
     spec_invalid_rate: float
     promised_validity: float
     repo_root: Path
@@ -108,6 +122,7 @@ class Settings:
             "groq_api_key": "***" if self.groq_api_key else "",
             "groq_model": self.groq_model,
             "data_backend": self.data_backend,
+            "manufacturer_display": self.manufacturer_display,
             "spec_invalid_rate": self.spec_invalid_rate,
             "promised_validity": self.promised_validity,
             "repo_root": str(self.repo_root),
@@ -131,7 +146,6 @@ def load_settings() -> Settings:
     accepted. The names ``JIRA_BASE_URL`` and ``JIRA_API_TOKEN`` win when
     both are set.
     """
-    load_dotenv()
     backend = _env("LLM_BACKEND", "deterministic").lower()
     if backend in {"rules", "rules-only", "mock"}:
         backend = "deterministic"
@@ -156,6 +170,7 @@ def load_settings() -> Settings:
         groq_api_key=_env("GROQ_API_KEY"),
         groq_model=_env("GROQ_MODEL", DEFAULT_GROQ_MODEL),
         data_backend=_env("DATA_BACKEND", "synthetic").lower() or "synthetic",
+        manufacturer_display=_display_mode(_env("MANUFACTURER_DISPLAY", "real")),
         spec_invalid_rate=SPEC_INVALID_RATE,
         promised_validity=PROMISED_VALIDITY,
         repo_root=root,

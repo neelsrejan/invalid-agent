@@ -4,7 +4,7 @@
 -- The 2% run-level promise is not a column and is not estimable from this table.
 
 CREATE TABLE IF NOT EXISTS maude_report (
-    mdr_report_key TEXT PRIMARY KEY,
+    mdr_report_key TEXT NOT NULL,
     product_code TEXT NOT NULL,
     date_received DATE NOT NULL,
     date_of_event DATE,
@@ -19,14 +19,19 @@ CREATE TABLE IF NOT EXISTS maude_report (
     device_operator TEXT NOT NULL DEFAULT '',
     is_invalid_type BOOLEAN NOT NULL,
     invalid_code TEXT NOT NULL DEFAULT '',
-    loaded_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    loaded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (mdr_report_key, product_code)
 );
 
 CREATE TABLE IF NOT EXISTS maude_problem (
-    mdr_report_key TEXT NOT NULL REFERENCES maude_report (mdr_report_key) ON DELETE CASCADE,
+    mdr_report_key TEXT NOT NULL,
+    product_code TEXT NOT NULL,
     product_problem TEXT NOT NULL,
     invalid_code TEXT NOT NULL DEFAULT '',
-    PRIMARY KEY (mdr_report_key, product_problem)
+    PRIMARY KEY (mdr_report_key, product_code, product_problem),
+    FOREIGN KEY (mdr_report_key, product_code)
+        REFERENCES maude_report (mdr_report_key, product_code)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS load_manifest (
