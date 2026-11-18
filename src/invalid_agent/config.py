@@ -49,17 +49,10 @@ def _env(name: str, default: str = "") -> str:
     return os.environ.get(name, default).strip()
 
 
-def load_dotenv() -> None:
-    """Read a gitignored .env without overriding variables already in the environment.
-
-    CLI and Streamlit entry points call this. ``load_settings`` does not.
-    Pytest sets ``INVALID_AGENT_SKIP_DOTENV`` so a local file cannot leak in.
-    """
-    if os.environ.get("INVALID_AGENT_SKIP_DOTENV") == "1":
-        return
-    path = find_repo_root() / ".env"
+def _parse_env_file(path: Path) -> dict[str, str]:
     if not path.is_file():
-        return
+        return {}
+    found: dict[str, str] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         text = line.strip()
         if not text or text.startswith("#") or "=" not in text:
@@ -67,7 +60,26 @@ def load_dotenv() -> None:
         key, value = text.split("=", 1)
         key = key.strip()
         value = value.strip().strip('"').strip("'")
-        if key and key not in os.environ:
+        if key:
+            found[key] = value
+    return found
+
+
+def load_dotenv() -> None:
+    """Read gitignored ``.env`` and ``.env.local`` without overriding the process environment.
+
+    ``.env.local`` wins over ``.env``. That is the file ``neon deploy`` writes.
+    CLI and Streamlit entry points call this. ``load_settings`` does not.
+    Pytest sets ``INVALID_AGENT_SKIP_DOTENV`` so a local file cannot leak in.
+    """
+    if os.environ.get("INVALID_AGENT_SKIP_DOTENV") == "1":
+        return
+    root = find_repo_root()
+    merged: dict[str, str] = {}
+    merged.update(_parse_env_file(root / ".env"))
+    merged.update(_parse_env_file(root / ".env.local"))
+    for key, value in merged.items():
+        if key not in os.environ:
             os.environ[key] = value
 
 

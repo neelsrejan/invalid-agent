@@ -13,7 +13,7 @@ from typing import Any
 from invalid_agent.case.state import CaseState
 from invalid_agent.config import load_settings
 from invalid_agent.guards.numeric_fidelity import check_narrative
-from invalid_agent.llm import get_llm, narrate
+from invalid_agent.llm import get_llm, narrate_status
 from invalid_agent.nodes.rca import index_injections
 
 
@@ -167,15 +167,10 @@ def status_node(state: CaseState) -> dict[str, Any]:
     llm = get_llm()
     updates: dict[str, str] = {}
     fidelity: dict[str, Any] = {}
-    for audience, task in (
-        ("customer", "status_customer"),
-        ("internal", "status_internal"),
-        ("leadership", "status_leadership"),
-    ):
-        prose, record = narrate(task, facts, llm)
+    for audience, (prose, record) in narrate_status(facts, llm).items():
         checked = check_narrative(prose, facts)
         if not checked.ok:
-            raise RuntimeError(f"{audience} status failed the fidelity guard: {checked.unknown}")
+            raise RuntimeError(f"{audience} status failed the fidelity guard: {checked.unknown} {checked.claims}")
         updates[audience] = prose
         fidelity[audience] = record
     watch = bool((state.get("metrics") or {}).get("overall", {}).get("watch", True))

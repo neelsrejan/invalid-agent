@@ -18,12 +18,27 @@ SYSTEM_PROMPT = (
 )
 
 
+def _round_for_prompt(value: Any) -> Any:
+    """Shorten raw floats before they reach a model. 0.026060175 becomes 0.0261."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return round(value, 4)
+    if isinstance(value, dict):
+        return {key: _round_for_prompt(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_round_for_prompt(item) for item in value]
+    return value
+
+
 def prompt_for(task: str, facts: dict[str, Any]) -> str:
+    rounded = _round_for_prompt(facts)
     return (
         f"TASK: {task}\n"
         "Write the artifact described by TASK. Quote numbers exactly as they appear in FACTS.\n"
+        "Do not say the rate exceeds or stays within the spec unless the comparison in FACTS says so.\n"
         "FACTS:\n"
-        + json.dumps(facts, indent=2, default=str)
+        + json.dumps(rounded, indent=2, default=str)
     )
 
 

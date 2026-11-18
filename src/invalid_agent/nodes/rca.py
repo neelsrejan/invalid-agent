@@ -7,6 +7,7 @@ after their week has arrived; they never create a score.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from invalid_agent.case.schemas import CAPA8D, Fishbone, FishboneBranch, FiveWhys, WhyStep
@@ -65,6 +66,12 @@ _CONTAINMENT = {
         "No measurement-system action. This branch did not clear the evidence bar."
     ),
 }
+
+# A 1-of-1 lot is 100% by arithmetic. It is not a next-best cause.
+MIN_CONTRAST_N = 5
+
+_N_RUNS = re.compile(r"has (\d+) runs\.?\s*$")
+
 
 _CORRECTIVE = {
     "bad_reagent_lot": "Disposition the lot, and add a field sentinel to release testing for the failure code that dominated.",
@@ -249,12 +256,28 @@ def _whys_for_hit(hit: dict[str, Any], catalog: dict[str, str], injections: dict
     return steps
 
 
+def _catalog_n(catalog: dict[str, str], rate_key: str) -> int:
+    """Run count stored beside a rate sentence. Unknown counts are left eligible."""
+    text = catalog.get(rate_key[: -len("rate")] + "n", "")
+    match = _N_RUNS.search(text.strip())
+    if match is None:
+        return MIN_CONTRAST_N
+    return int(match.group(1))
+
+
+def _contrast_eligible(key: str, catalog: dict[str, str]) -> bool:
+    if not key.endswith(":rate") or key.startswith("metric:overall"):
+        return False
+    return _catalog_n(catalog, key) >= MIN_CONTRAST_N
+
+
 def _contrast_id(hit: dict[str, Any], catalog: dict[str, str]) -> str:
     """Prefer a different column's rate sentence so the third Why is a real contrast."""
     prefix = f"metric:{hit['column']}:"
     for key in catalog:
-        if key.endswith(":rate") and not key.startswith(prefix) and not key.startswith("metric:overall"):
-            return key
+        if key.startswith(prefix) or not _contrast_eligible(key, catalog):
+            continue
+        return key
     return "metric:overall:rate"
 
 
@@ -307,9 +330,36 @@ def _whys_unresolved(catalog: dict[str, str]) -> list[dict[str, Any]]:
 def _first_rate(catalog: dict[str, str], column: str) -> str:
     prefix = f"metric:{column}:"
     for key in catalog:
-        if key.startswith(prefix) and key.endswith(":rate"):
+        if key.startswith(prefix) and _contrast_eligible(key, catalog):
             return key
     return "metric:overall:rate"
+
+
+def stratum_levels(catalog: dict[str, str]) -> list[str]:
+    """Lot and model ids that appear in metric:<dim>:<value>:rate keys.
+
+    A numeric lot such as 10713760 is a label. The fidelity scan strips it
+    only when the exact string is in the facts.
+    """
+    levels: list[str] = []
+    for key in catalog:
+        if not (key.startswith("metric:") and key.endswith(":rate")):
+            continue
+        body = key[len("metric:") : -len(":rate")]
+        _column, separator, level = body.partition(":")
+        if separator and level and level not in levels:
+            levels.append(level)
+    return levels
+
+
+def structure_numbers(hypothesis_count: int, branch_count: int) -> list[int]:
+    """Integers a heading may print. Rank 9 has to be inside the list.
+
+    ``range(0, max(9, len(hypotheses) + 1))`` is the floor. Branch count is
+    included so nine fishbone ranks are allowed when the openFDA branches fire.
+    """
+    end = max(9, hypothesis_count + 1, branch_count + 1)
+    return list(range(0, end))
 
 
 def build_capa(top: dict[str, Any], catalog: dict[str, str]) -> dict[str, Any]:
@@ -448,13 +498,21 @@ def rca_node(state: CaseState) -> dict[str, Any]:
     # Level ids such as 2.4.0 are labels. They have to be in the facts as
     # strings so the fidelity scan does not read the version as a rate.
     labels = [str(item["level"]) for item in hypotheses if item.get("level")]
+    labels.extend(stratum_levels(catalog))
     for version in scenario.get("software_versions") or []:
         if isinstance(version, dict) and version.get("id"):
             labels.append(str(version["id"]))
-    facts = {"catalog": catalog, "labels": labels, "structure": [0, 1, 2, 3, 4, 5, 6, 7, 8], "week": week}
+    facts = {
+        "catalog": catalog,
+        "labels": labels,
+        "structure": structure_numbers(len(hypotheses), len(fishbone["branches"])),
+        "week": week,
+    }
     fidelity = check_narrative(combined, facts).to_dict()
     if not fidelity["ok"]:
-        raise RuntimeError(f"RCA prose failed the fidelity guard: {fidelity['unknown']}")
+        raise RuntimeError(
+            f"RCA prose failed the fidelity guard: {fidelity['unknown']} {fidelity.get('claims', [])}"
+        )
     return {
         "hypotheses": hypotheses,
         "evidence_catalog": catalog,

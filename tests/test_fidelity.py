@@ -40,6 +40,71 @@ class _Liar:
         return "The invalid rate is 27.40% and the spec is 2.00%."
 
 
+def test_groq_paces_retries_and_replaces_an_empty_reply(monkeypatch):
+    import httpx
+
+    from invalid_agent.llm import GroqLLM
+
+    GroqLLM._next_ok = 0.0
+    sleeps: list[float] = []
+    bodies: list[dict] = []
+
+    class _Response:
+        def __init__(self, code: int, content: str, retry_after: str = ""):
+            self.status_code = code
+            self._content = content
+            self.headers = {"Retry-After": retry_after} if retry_after else {}
+
+        def json(self):
+            return {"choices": [{"message": {"content": self._content}}]}
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                request = httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions")
+                response = httpx.Response(self.status_code, request=request)
+                raise httpx.HTTPStatusError("limited", request=request, response=response)
+
+    queue = [
+        _Response(429, "", "3"),
+        _Response(200, ""),
+        _Response(200, "The note is ready."),
+    ]
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        del url, headers, timeout
+        bodies.append(dict(json or {}))
+        return queue[len(bodies) - 1]
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr("time.sleep", lambda seconds: sleeps.append(seconds))
+    text = GroqLLM("test-key", "openai/gpt-oss-20b").complete(system="sys", user="user")
+    assert text == "The note is ready."
+    assert bodies[0]["reasoning_effort"] == "low"
+    assert bodies[0]["max_tokens"] == 2048
+    assert bodies[-1]["max_tokens"] == 4096
+    assert 3.0 in sleeps
+    assert "test-key" not in str(bodies)
+
+
+def test_status_batch_uses_one_hosted_call():
+    from invalid_agent.llm import narrate_status
+
+    class _Once:
+        name = "hosted"
+        calls = 0
+
+        def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+            del system, user, temperature
+            self.calls += 1
+            return "<<<customer>>>\nNoted.\n<<<internal>>>\nNoted.\n<<<leadership>>>\nNoted.\n"
+
+    model = _Once()
+    result = narrate_status({"week": 0, "overall": {"n": 10, "k": 1, "rate": 0.1, "spec_invalid_rate": 0.02}}, model)
+    assert model.calls == 1
+    assert set(result) == {"customer", "internal", "leadership"}
+    assert all(record["ok"] for _text, record in result.values())
+
+
 def test_rejected_draft_is_replaced_by_the_template():
     scenario = load_scenario(ROOT / "scenarios" / "bad_lot.yaml")
     df = generate(scenario)

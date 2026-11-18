@@ -38,6 +38,8 @@ Invalid types, in priority order when one report has several:
 | INV-MECH | Mechanical | Mechanical Problem |
 | INV-USR | Use | Improper or Incorrect Procedure or Method, Human-Device Interface Problem |
 
+A gitignored `.env.local` overrides `.env` for CLI and Streamlit commands. `neon deploy` writes that file. The process environment still wins. Pytest does not read either file.
+
 Manufacturer names come straight from the public openFDA records. They are uppercased, parenthetical cities are dropped, and legal suffixes (`INC`, `LLC`, `CO`) are removed so punctuation does not split one firm. The public page shows those names. Set `MANUFACTURER_DISPLAY=anonymized` to print Manufacturer A/B/C instead. Blank lot, brand, and operator values are `UNREPORTED` and the ranker ignores that level.
 
 ## Call budget

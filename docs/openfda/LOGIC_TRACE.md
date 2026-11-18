@@ -8,7 +8,7 @@ Replace the synthetic-only frame with a hosted table of public openFDA device-ev
 
 ## 2. What stays true
 
-`src/invalid_agent/config.py` lines 14–15 still own the promise: validity 0.98, invalid cap 0.02. `load_settings` (line 142) reads the environment and does not open `.env`. `load_dotenv` (line 52) is what the CLI and Streamlit call. Pytest sets `INVALID_AGENT_SKIP_DOTENV`. A test writes a temporary `.env` and checks that `load_settings` ignores it.
+`src/invalid_agent/config.py` lines 14–15 still own the promise: validity 0.98, invalid cap 0.02. `load_settings` reads the environment and does not open dotenv files. `load_dotenv` reads `.env` and then `.env.local` (the file `neon deploy` writes). `.env.local` wins over `.env`. The process environment wins over both. Pytest sets `INVALID_AGENT_SKIP_DOTENV`. A test writes a temporary `.env` and a `.env.local` and checks that `load_settings` ignores them until `load_dotenv` is called.
 
 `MANUFACTURER_DISPLAY` is applied at line 173. The default is `real`. `_display_mode` (line 41) accepts `real` or `anonymized` and treats anything else as `real`.
 
@@ -38,6 +38,16 @@ Replace the synthetic-only frame with a hosted table of public openFDA device-ev
 
 `seed_cases` (jira.py line 220) is the owner command `python -m invalid_agent.integrations.jira seed`. It searches for the case label first. It creates issues only when that label is absent, and it writes each case to its own local JSON file so one case cannot hide the next.
 
-## 8. What this trace does not claim
+## 8. Fidelity on a real extract
+
+A numeric lot id such as `10713760` sits inside `metric:reagent_lot:10713760:rate`. The guard used to read that as a rate. `stratum_levels` copies the value between the dimension and `:rate` into the facts labels, so the id is stripped before the number scan. `structure_numbers` (`src/invalid_agent/nodes/rca.py` line 355) includes every rank heading, including rank 9 when the openFDA branches are present.
+
+`MIN_CONTRAST_N` is 5 (`rca.py` line 71). `_contrast_id` and `_first_rate` skip a stratum under that count. A 1-of-1 lot is not the next-best cause.
+
+`spec_claim_errors` (`src/invalid_agent/guards/numeric_fidelity.py` line 104) rejects "does not exceed the specification" when the rate is above the spec number, and the reverse claim when it is not. `prompt_for` rounds floats to four decimal places before a model sees them.
+
+`GroqLLM.complete` spaces calls by two seconds, honors `Retry-After` on 429, sends `reasoning_effort=low` (`src/invalid_agent/llm.py` line 122), and retries an empty reply once with a larger `max_tokens`. `narrate_status` (line 252) asks a hosted model for the three audience notes in one call. The deterministic backend still renders each template on its own. `load_dotenv` (config.py line 68) reads `.env` and `.env.local`.
+
+## 9. What this trace does not claim
 
 No live openFDA page has been stored. No Neon project, Groq key, or Jira site was created in this run. The tests use constructed rows and a fake Jira transport.

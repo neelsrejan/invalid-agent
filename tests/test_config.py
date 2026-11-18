@@ -159,6 +159,19 @@ def test_load_settings_ignores_a_tmp_dotenv(monkeypatch, tmp_path):
         loaded = load_settings()
         assert loaded.llm_backend == "ollama"
         assert loaded.openfda_api_key == "from-dotenv"
+        (tmp_path / ".env.local").write_text(
+            "LLM_BACKEND=groq\nOPENFDA_API_KEY=from-local\n",
+            encoding="utf-8",
+        )
+        os.environ.pop("LLM_BACKEND", None)
+        os.environ.pop("OPENFDA_API_KEY", None)
+        load_dotenv()
+        local = load_settings()
+        assert local.llm_backend == "groq"
+        assert local.openfda_api_key == "from-local"
+        os.environ["LLM_BACKEND"] = "deterministic"
+        load_dotenv()
+        assert load_settings().llm_backend == "deterministic"
     finally:
         for name, value in before.items():
             if value is None:

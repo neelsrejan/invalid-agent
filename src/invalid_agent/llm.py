@@ -76,9 +76,17 @@ class OllamaLLM:
 
 
 class GroqLLM:
-    """Hosted free-tier narrator. The key stays in the Authorization header."""
+    """Hosted free-tier narrator. The key stays in the Authorization header.
+
+    Calls are spaced by two seconds. A 429 waits for Retry-After, or two
+    seconds when that header is missing. An empty gpt-oss reply is retried
+    once with a larger max_tokens. reasoning_effort stays low so the free
+    token budget is not spent on hidden reasoning.
+    """
 
     name = "groq"
+    _next_ok = 0.0
+    _min_interval = 2.0
 
     def __init__(self, api_key: str, model: str) -> None:
         if not api_key:
@@ -91,23 +99,51 @@ class GroqLLM:
         self._api_key = api_key
         self.model = model or "openai/gpt-oss-20b"
 
+    def _pace(self) -> None:
+        import time
+
+        wait = self._next_ok - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        self._next_ok = time.monotonic() + self._min_interval
+
     def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+        import time
+
         import httpx
 
         from invalid_agent.config import GROQ_CHAT_URL
 
-        response = httpx.post(
-            GROQ_CHAT_URL,
-            headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
-            json={
-                "model": self.model,
-                "messages": _chat_payload(system, user),
-                "temperature": temperature,
-            },
-            timeout=180.0,
-        )
-        response.raise_for_status()
-        return str(response.json()["choices"][0]["message"]["content"])
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": _chat_payload(system, user),
+            "temperature": temperature,
+            "max_tokens": 2048,
+            "reasoning_effort": "low",
+        }
+        empty_retried = False
+        response: Any = None
+        for attempt in range(4):
+            self._pace()
+            response = httpx.post(
+                GROQ_CHAT_URL,
+                headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=180.0,
+            )
+            if response.status_code == 429 and attempt < 3:
+                delay = _retry_after_seconds(response.headers)
+                time.sleep(delay)
+                continue
+            response.raise_for_status()
+            content = str(response.json()["choices"][0]["message"].get("content") or "")
+            if content.strip():
+                return content
+            if empty_retried:
+                raise RuntimeError("Groq returned an empty reply")
+            empty_retried = True
+            payload["max_tokens"] = 4096
+        raise RuntimeError("Groq returned an empty reply")
 
 
 class LlamaCppLLM:
@@ -133,6 +169,20 @@ class LlamaCppLLM:
             temperature=temperature,
         )
         return str(result["choices"][0]["message"]["content"])
+
+
+def _retry_after_seconds(headers: Any) -> float:
+    raw = ""
+    getter = getattr(headers, "get", None)
+    if getter is not None:
+        raw = str(getter("Retry-After", "") or getter("retry-after", "") or "")
+    try:
+        delay = float(raw)
+    except (TypeError, ValueError):
+        return 2.0
+    if delay < 0:
+        return 2.0
+    return delay
 
 
 def get_llm(settings: Settings | None = None) -> LLM:
@@ -190,3 +240,77 @@ def narrate(task: str, facts: dict[str, Any], llm: LLM | None = None) -> tuple[s
         "rewritten": True,
         "error": error,
     }
+
+
+_STATUS_AUDIENCES = (
+    ("customer", "status_customer"),
+    ("internal", "status_internal"),
+    ("leadership", "status_leadership"),
+)
+
+
+def narrate_status(facts: dict[str, Any], llm: LLM | None = None) -> dict[str, tuple[str, dict[str, Any]]]:
+    """Three audience notes.
+
+    The deterministic backend still renders each template. A hosted model
+    gets one call for all three, so a week-4 replay stays near six calls
+    instead of sixteen.
+    """
+    llm = llm or get_llm()
+    if llm.name == "deterministic":
+        return {audience: narrate(task, facts, llm) for audience, task in _STATUS_AUDIENCES}
+    draft = ""
+    error = ""
+    try:
+        draft = llm.complete(
+            system=(
+                SYSTEM_PROMPT
+                + " Do not say the rate exceeds or stays within the spec unless FACTS shows that comparison."
+            ),
+            user=(
+                "Write three notes from the same FACTS: customer, internal, and leadership.\n"
+                "Start each note with its marker on its own line, exactly:\n"
+                "<<<customer>>>\n<<<internal>>>\n<<<leadership>>>\n"
+                + prompt_for("status", facts)
+            ),
+            temperature=0.1,
+        )
+    except Exception as exc:
+        error = f"{type(exc).__name__}: {exc}"
+    sections = _split_status(draft)
+    rendered: dict[str, tuple[str, dict[str, Any]]] = {}
+    for audience, task in _STATUS_AUDIENCES:
+        section = sections.get(audience, "")
+        check = check_narrative(section, facts) if section else None
+        if check is not None and check.ok:
+            text = section.rstrip() + "\n\n_Narrative source: model draft accepted by the numeric-fidelity check._\n"
+            rendered[audience] = (
+                text,
+                {"ok": True, "backend": llm.name, "unknown": [], "rewritten": False, "error": ""},
+            )
+            continue
+        safe = render(task, facts)
+        text = safe + "\n_Narrative source: deterministic template. The model draft was rejected or unavailable._\n"
+        rendered[audience] = (
+            text,
+            {
+                "ok": False,
+                "backend": llm.name,
+                "unknown": [] if check is None else check.unknown,
+                "rewritten": True,
+                "error": error,
+            },
+        )
+    return rendered
+
+
+def _split_status(draft: str) -> dict[str, str]:
+    import re
+
+    matches = list(re.finditer(r"<<<(customer|internal|leadership)>>>", draft))
+    parts: dict[str, str] = {}
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(draft)
+        parts[match.group(1)] = draft[start:end].strip()
+    return parts
