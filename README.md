@@ -200,7 +200,7 @@ Failure notes that have to travel with the 22/22 cell:
 
 ## Layout
 
-Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé lines copied from the eval report: `RESUME_BULLETS.md`. Product framing: `PRD.md`. Disclaimer: `SIMULATION_DISCLAIMER.md`. Guided page notes: `docs/UI_AUDIT.md`.
+Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé lines copied from the eval report: `RESUME_BULLETS.md`. Product framing: `PRD.md`. Disclaimer: `SIMULATION_DISCLAIMER.md`. Guided page notes: `docs/UI_AUDIT.md`. Call chain: `docs/ui/LOGIC_TRACE.md`.
 
 ## Academy
 

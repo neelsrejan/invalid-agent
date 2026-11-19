@@ -61,8 +61,9 @@ GUIDE_STEPS: tuple[GuideStep, ...] = (
         ),
         look=(
             "Read the complaint for the case you selected. "
-            "OOI, JJE, and the reagent-lot file are one click when those files are on disk. "
-            "Any other file is in the full list."
+            "The buttons are the cases this page is offering. "
+            "The hosted demo offers the two MAUDE product codes, OOI and JJE. "
+            "A full list appears only when this run also has other case files."
         ),
         next_label="Investigate this case",
     ),

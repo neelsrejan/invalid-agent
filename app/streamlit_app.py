@@ -163,7 +163,18 @@ def _choice_row(
     return clicked
 
 
+# These are widget keys. Streamlit deletes a widget key at the end of a run
+# that did not render that widget. Re-assigning the key before any widget is
+# created writes it into this run's session state, which is the documented way
+# to keep the value. scenario_label and week are the case picker and the week
+# slider. stratum and audience are the free-explore select box and radio.
+_KEPT_WIDGET_KEYS = ("scenario_label", "week", "stratum", "audience")
+
+
 def _init_state(settings, labels: list[str]) -> None:
+    for key in _KEPT_WIDGET_KEYS:
+        if key in st.session_state:
+            st.session_state[key] = st.session_state[key]
     if st.session_state.get("_enter_explore"):
         st.session_state.explore = True
         del st.session_state["_enter_explore"]
@@ -533,6 +544,7 @@ def _render_guided_body(
         return
     if result is None:
         return
+    st.caption(f"Case {scenario.get('id')} · week {int(week)}")
     teach = step.id == "chart"
     if step.needs_case:
         _week_row(teach)
@@ -601,15 +613,32 @@ def _render_pitch(result: dict, scenario_path: Path, week: int) -> None:
             st.session_state.week = 4
             st.rerun()
         return
-    record = result.get("closeout") or {}
-    if record.get("recommendation"):
-        st.markdown(f"**Outcome.** {record['recommendation']}")
     closeout_path = ROOT / "out" / "dashboard" / scenario_path.stem / f"week{int(week)}" / "closeout.md"
     if closeout_path.is_file():
         st.markdown(closeout_path.read_text(encoding="utf-8"))
+    else:
+        record = result.get("closeout") or {}
+        if record.get("recommendation"):
+            st.markdown(str(record["recommendation"]))
+    _offer_deck(result)
+
+
+def _offer_deck(result: dict) -> None:
+    """Name the deck file. Do not print the server path."""
     deck = result.get("deck_path")
-    if deck:
-        st.caption(f"The seven-slide deck is written at {deck}. It uses the same numbers as this pitch.")
+    if not deck:
+        return
+    path = Path(str(deck))
+    st.caption(f"The seven-slide deck is {path.name}. It uses the same numbers as this pitch.")
+    if not path.is_file():
+        return
+    st.download_button(
+        "Download the deck",
+        data=path.read_bytes(),
+        file_name=path.name,
+        mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        key="download-deck",
+    )
 
 
 def _render_guided(
