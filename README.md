@@ -79,6 +79,8 @@ python -m invalid_agent.graph --scenario bad_lot --week 4
 
 Week 4 writes `out/exec_deck.pptx` and `out/closeout.md`. With no secrets, `streamlit run streamlit_app.py` is the CI fallback and says so on the banner. The public demo is the hosted app after the owner checklist below.
 
+The page opens on a guided walk, Step 1 of 10. Next and Back move through the complaint, the case, the control chart, the Pareto, the strata, the before/after projection, one weekly artifact at a time, the audience note, the Jira tickets, and the week-4 management pitch. Each screen says what the agent is doing, why, and what to look at, and it shows only that step's chart or record. Week buttons walk week 0 through week 4. The measurements stay on the file. The week changes the notes, the decision, and the close-out. **Free explore** in the header puts the previous control panel back: scenario, week slider, both charts, Break by, the artifact tabs, Jira, and Ask the MAUDE table. **Rules-only wording** stays available in both modes. Python still computes every rate. The model only writes prose, and a failed numeric check is replaced by the template. The layout notes are in `docs/UI_AUDIT.md`.
+
 ```bash
 python evals/run_eval.py --backend deterministic
 ```
@@ -134,7 +136,7 @@ Do these in order. The agent cannot create the accounts. Nothing below is a paid
 
    That command searches first and creates issues only when the case label is absent. A second run does not post. Issues are labeled `openfda` or `simulation`. The public page only reads and links those issues. A visitor cannot create one. Invite the reader to the free site (the free plan is not a public anonymous board).
 7. **Streamlit Community Cloud.** Sign in at https://share.streamlit.io with GitHub. Deploy this repo. Main file: `streamlit_app.py`. Paste `.streamlit/secrets.toml.example` into the secrets editor with the real values: `DATA_BACKEND=openfda`, `LLM_BACKEND=groq`, `GROQ_API_KEY`, `GROQ_MODEL`, `DATABASE_URL_READONLY`, and the three Jira secrets. Do not paste `OPENFDA_API_KEY` or the admin `DATABASE_URL`. Leave `MANUFACTURER_DISPLAY=real` so the page shows the firm names from the public reports. Set it to `anonymized` only to print Manufacturer A/B/C.
-8. **Confirm.** Open the public URL. The banner must say the rows are MAUDE reports and that the 2% cap is not estimable. Run `openfda_ooi` and `openfda_jje` to week 4. Ask the four suggested questions. The Jira section should show live keys.
+8. **Confirm.** Open the public URL. The banner must say the rows are MAUDE reports and that the 2% cap is not estimable. Walk Next from the complaint through the week-4 pitch for `openfda_ooi` and `openfda_jje`, or turn on Free explore and use the scenario menu and the week slider. Ask the four suggested questions. The Jira step should show live keys.
 
 Local Ollama, after `ollama pull llama3.1:8b`:
 
@@ -198,7 +200,7 @@ Failure notes that have to travel with the 22/22 cell:
 
 ## Layout
 
-Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé lines copied from the eval report: `RESUME_BULLETS.md`. Product framing: `PRD.md`. Disclaimer: `SIMULATION_DISCLAIMER.md`.
+Session notes: `docs/sessions/session-N/LOGIC_TRACE.md` and `QUIZ.md`. Résumé lines copied from the eval report: `RESUME_BULLETS.md`. Product framing: `PRD.md`. Disclaimer: `SIMULATION_DISCLAIMER.md`. Guided page notes: `docs/UI_AUDIT.md`.
 
 ## Academy
 
