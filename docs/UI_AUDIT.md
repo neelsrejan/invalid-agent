@@ -45,7 +45,7 @@ The default experience is a guided walk, **Step 1 of 10**, with Back and a named
 | Step | Screen | What is on it | One-click actions |
 |---|---|---|---|
 | 1 | The complaint | The promise, the limit of the file, the ten-screen path | Next: Choose a case |
-| 2 | Choose the case | Complaint text for the selected file. OOI, JJE, and the reagent-lot synthetic case when those files exist. The full list when CI has more files | Case buttons, then Next: Investigate this case |
+| 2 | Choose the case | Complaint text for the selected file. The hosted page offers OOI and JJE. A local run that also loads the synthetic files shows those too, and a full list when there are more files than the buttons | Case buttons, then Next: Investigate this case |
 | 3 | The control chart | Rate tiles, Wilson interval, escalate/hold, RAG, p-chart | Week 0–4, the MAUDE question that matches this case, Next |
 | 4 | Where invalids concentrate | Pareto only | Week, the invalid-type question when it matches, Next |
 | 5 | Strata and root cause | One break at a time, then the ranker's sentence | Break buttons, the manufacturer question when it matches, Next |
