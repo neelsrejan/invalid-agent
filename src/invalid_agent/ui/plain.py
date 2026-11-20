@@ -180,6 +180,13 @@ def unexplained_jargon(text: str) -> list[str]:
     return list(dict.fromkeys(found))
 
 
+def gloss_seen_for_banner(public: bool) -> set[str]:
+    """Tokens the banner already explained, so the page does not explain them again."""
+    if public:
+        return {"MAUDE"}
+    return set()
+
+
 def gloss_once(text: str, seen: set[str]) -> str:
     """Explain each code and each short name the first time, then leave the short form.
 
@@ -198,11 +205,11 @@ def _gloss_once_piece(sentence: str, seen: set[str]) -> str:
         if code not in updated and plain not in updated:
             continue
         if code not in seen:
-            if plain not in updated:
+            if plain.casefold() not in updated.casefold():
                 updated = re.sub(rf"\b{re.escape(code)}\b", plain, updated, count=1)
             seen.add(code)
         else:
-            updated = updated.replace(plain, code)
+            updated = re.sub(re.escape(plain), code, updated, flags=re.I)
     shorts = (
         ("MAUDE", "the FDA's public database of device problem reports"),
         ("OOI", "machines that run many nucleic-acid tests at once"),

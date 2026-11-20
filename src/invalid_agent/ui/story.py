@@ -213,7 +213,6 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
             view["promise_sentence"],
             view["measure_sentence"],
             view["device_line"],
-            view["glossary"] if week == 1 and view.get("glossary") else "",
             view["window_sentence"] if week == 1 else "",
             "### The complaint",
             view["complaint"],
@@ -663,18 +662,8 @@ def _arrivals(scenario: dict[str, Any], story_week: int) -> str:
 
 
 def _device_line(scenario: dict[str, Any]) -> str:
+    """The case line above already glosses OOI, JJE and MAUDE once."""
     device = str(scenario.get("device") or "the device")
-    code = str(scenario.get("product_code") or "").upper()
-    if code == "OOI":
-        return (
-            f"Device: {device}. "
-            "OOI means machines that run many nucleic-acid tests at once."
-        )
-    if code == "JJE":
-        return (
-            f"Device: {device}. "
-            "JJE means clinical chemistry analyzers, the machines that measure chemicals in blood."
-        )
     return f"Device: {device}."
 
 

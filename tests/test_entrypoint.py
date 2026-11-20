@@ -134,3 +134,81 @@ def test_a_stale_charts_module_outside_src_is_replaced_by_the_checkout():
         fresh._STAMPS.clear()
         fresh._STAMPS.update(saved_stamps)
         _restore_imports(*saved)
+
+
+def test_pr10_era_modules_boot_without_an_import_error(monkeypatch, tmp_path):
+    """A process still holding the PR #10 modules has no stamps and no new names."""
+    import os
+    import types
+
+    import invalid_agent.fresh as fresh
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh._STAMPS.clear()
+        for module_name, relative in (
+            ("invalid_agent.ui.plain", "src/invalid_agent/ui/plain.py"),
+            ("invalid_agent.ui.talkback", "src/invalid_agent/ui/talkback.py"),
+        ):
+            source = ROOT / relative
+            stub = types.ModuleType(module_name)
+            stub.__file__ = str(source)
+            old_pyc = tmp_path / f"{module_name}.pyc"
+            old_pyc.write_bytes(b"")
+            older = source.stat().st_mtime - 60
+            os.utime(old_pyc, (older, older))
+            stub.__cached__ = str(old_pyc)
+            sys.modules[module_name] = stub
+        assert not hasattr(sys.modules["invalid_agent.ui.plain"], "gloss_once")
+        assert not hasattr(sys.modules["invalid_agent.ui.talkback"], "part_fact")
+        app = _boot(monkeypatch)
+        assert not app.exception, app.exception
+        assert "ImportError" not in _visible(app)
+        assert "Week 1 of 4" in _visible(app)
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
+def test_a_module_replaced_before_the_first_stamp_is_dropped(tmp_path):
+    """A deploy into a process whose page predates fresh.py: nothing is stamped yet."""
+    import os
+    import invalid_agent.fresh as fresh
+    import invalid_agent.ui.plain as plain
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    saved_cached = plain.__cached__
+    try:
+        fresh._STAMPS.clear()
+        old_pyc = tmp_path / "plain.pyc"
+        old_pyc.write_bytes(b"")
+        source_mtime = Path(plain.__file__).stat().st_mtime
+        os.utime(old_pyc, (source_mtime - 60, source_mtime - 60))
+        plain.__cached__ = str(old_pyc)
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        assert "invalid_agent.ui.plain" not in sys.modules
+    finally:
+        plain.__cached__ = saved_cached
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
+def test_a_file_changed_in_place_drops_the_package():
+    import invalid_agent.fresh as fresh
+    import invalid_agent.ui.plain  # noqa: F401
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh.note_imports()
+        fresh._STAMPS["invalid_agent.ui.plain"] -= 60.0
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        assert "invalid_agent.ui.plain" not in sys.modules
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)

@@ -42,6 +42,21 @@ def _outside_src(path: Path, src: Path) -> bool:
     return False
 
 
+def _newer_than_bytecode(module: object, path: Path) -> bool:
+    """No stamp yet: the module came from a page that predates this file.
+
+    Its .pyc was written when it was imported, so a source file newer than the
+    .pyc was replaced after that import.
+    """
+    cached = getattr(module, "__cached__", None)
+    if not cached:
+        return False
+    try:
+        return path.stat().st_mtime > Path(str(cached)).stat().st_mtime + 1e-6
+    except OSError:
+        return False
+
+
 def _stale(name: str, module: object, src: Path) -> bool:
     path = _source_path(module)
     if path is None:
@@ -50,7 +65,7 @@ def _stale(name: str, module: object, src: Path) -> bool:
         return True
     stamp = _STAMPS.get(name)
     if stamp is None:
-        return False
+        return _newer_than_bytecode(module, path)
     try:
         return path.stat().st_mtime > float(stamp) + 1e-6
     except OSError:

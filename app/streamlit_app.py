@@ -35,12 +35,13 @@ from invalid_agent.ui.plain import (
     PRACTICE_BANNER,
     PUBLIC_BANNER,
     gloss_once,
+    gloss_seen_for_banner,
     plain_case_label,
     unexplained_jargon,
 )
 from invalid_agent.ui.records import logged_sections, note_sections, sections_from_run
 from invalid_agent.ui.story import beat_lines, build_week_view
-from invalid_agent.ui.talkback import example_prompts, part_fact, part_signature, respond, reword_reply
+from invalid_agent.ui.talkback import accepted_signatures, example_prompts, part_fact, respond, reword_reply
 
 note_imports()
 
@@ -61,7 +62,6 @@ _KEPT_KEYS = (
     "stratum_for_week",
     "audience",
     "rules_only",
-    "week_insights",
     "open_items",
     "insight_serial",
     "flag_serial",
@@ -128,10 +128,6 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.unlocked_week = 1
     if "finished" not in st.session_state:
         st.session_state.finished = False
-    if not isinstance(st.session_state.get("week_insights"), dict):
-        st.session_state.week_insights = {1: [], 2: [], 3: [], 4: []}
-    for week in (1, 2, 3, 4):
-        st.session_state.week_insights.setdefault(week, [])
     if not isinstance(st.session_state.get("open_items"), list):
         st.session_state.open_items = []
     if "insight_serial" not in st.session_state:
@@ -156,8 +152,8 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.unlocked_week = 1
         st.session_state.finished = False
         st.session_state.done_parts = []
-        st.session_state.week_insights = {1: [], 2: [], 3: [], 4: []}
         st.session_state.open_items = []
+        st.session_state.ask_cache = {}
         st.session_state.insight_serial = 0
         st.session_state.flag_serial = 0
         st.session_state.last_reply = None
@@ -259,7 +255,6 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         text = text.replace(str(reply.get("log_key") or ""), str(existing["key"]))
     elif reply["log_kind"] == "ticket" and reply.get("bullet"):
         st.session_state.insight_serial = int(st.session_state.insight_serial) + 1
-        st.session_state.week_insights.setdefault(week, []).append(reply["bullet"])
         st.session_state.open_items.append(
             {
                 "week": week,
@@ -280,7 +275,7 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
                 "signature": signature,
             }
         )
-    if reply.get("confirmed") and signature and signature == part_signature(view, beat_id):
+    if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
         _mark_done(week, beat_id)
     shown = reword_reply(text, _talk_llm(rules_only))
     if unexplained_jargon(shown):
@@ -306,7 +301,8 @@ def _part_done(week: int, beat_id: str) -> bool:
 
 
 def _fresh_gloss() -> None:
-    st.session_state._gloss_seen = set()
+    public = load_settings().data_backend == "openfda"
+    st.session_state._gloss_seen = gloss_seen_for_banner(public)
 
 
 def _say(text: str) -> str:
@@ -318,9 +314,11 @@ def _say(text: str) -> str:
 
 
 def _item_line(item: dict) -> str:
+    text = str(item.get("text") or "").strip()
+    if item.get("kind") == "insight":
+        return f"- **Insight:** {text}"
     key = str(item.get("key") or "")
     kind = "Ticket" if item.get("kind") == "ticket" else "Flag"
-    text = str(item.get("text") or "")
     prefix = f"{key}:"
     if text.startswith(prefix):
         text = text[len(prefix) :].strip()
@@ -338,7 +336,11 @@ def _render_lines(lines: list[str]) -> None:
 def _render_carried(week: int) -> None:
     if week <= 1:
         return
-    carried = [item for item in st.session_state.open_items if int(item["week"]) < week]
+    carried = [
+        item
+        for item in st.session_state.open_items
+        if int(item["week"]) < week and item.get("kind") in {"ticket", "flag"} and str(item.get("text") or "").strip()
+    ]
     if not carried:
         return
     st.subheader("Still open from earlier weeks")
@@ -348,7 +350,11 @@ def _render_carried(week: int) -> None:
 
 def _render_insights(week: int) -> None:
     st.subheader(f"Week {week} insights")
-    items = [item for item in st.session_state.open_items if int(item["week"]) == week]
+    items = [
+        item
+        for item in st.session_state.open_items
+        if int(item["week"]) == week and str(item.get("text") or "").strip()
+    ]
     if not items:
         st.markdown("No confirmed insight yet. Tell the agent what you see. A confirmed insight will land here.")
         return
@@ -367,7 +373,7 @@ def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     prompts = example_prompts(view, beat_id if beat_id != "done" else "wrap")
     st.caption("Or try one of these.")
     for index, prompt in enumerate(prompts):
-        if st.button(prompt, key=f"ex-{beat_id}-{index}"):
+        if st.button(_say(prompt), key=f"ex-{beat_id}-{index}"):
             _apply_talk(prompt, view, beat_id, week, rules_only)
             st.rerun()
     last = st.session_state.get("last_reply") or {}
@@ -600,6 +606,11 @@ def _show_answer(picked: dict, rules_only: bool) -> None:
     from invalid_agent.data.query import answer_question
     from invalid_agent.llm import get_llm
 
+    cache = st.session_state.setdefault("ask_cache", {})
+    cache_key = str(picked.get("id") or picked.get("text") or "")
+    if cache_key and cache_key in cache:
+        st.markdown(cache[cache_key])
+        return
     try:
         public = load_settings().data_backend == "openfda"
         url = query_url(load_settings(), public=public)
@@ -639,12 +650,18 @@ def _show_answer(picked: dict, rules_only: bool) -> None:
     prose = safe_prose(str(answered.get("prose") or ""))
     if not prose:
         prose = "The table answered. The counts on this page stay the ones Python computed for this week."
+    if cache_key:
+        cache[cache_key] = prose
     st.markdown(prose)
 
 
 def _reveal(view: dict, beat_id: str, week: int) -> None:
     """Log this part's key insight. The reader asked to be shown the point."""
     finding, body = part_fact(view, beat_id)
+    body = str(body or "").strip()
+    if not body:
+        _mark_done(week, beat_id)
+        return
     existing = next(
         (
             item
@@ -654,24 +671,13 @@ def _reveal(view: dict, beat_id: str, week: int) -> None:
         None,
     )
     if existing is None:
-        st.session_state.insight_serial = int(st.session_state.insight_serial) + 1
-        key = f"Your ticket {int(st.session_state.insight_serial)}"
-        bullet = (
-            f"We found {finding} -> logged as {key} to resolve going forward. "
-            "On a real team this would go in Jira."
-        )
-        text = (
-            f"Here is the point of this part. {body} "
-            f"We'll log that as {key} to track it and keep it in mind for the root cause. "
-            "On a real team this would go in Jira."
-        )
-        st.session_state.week_insights.setdefault(week, []).append(bullet)
+        text = f"Here is the point of this part. {body}"
         st.session_state.open_items.append(
             {
                 "week": week,
-                "key": key,
-                "text": bullet,
-                "kind": "ticket",
+                "key": "Insight",
+                "text": body,
+                "kind": "insight",
                 "signature": finding,
             }
         )

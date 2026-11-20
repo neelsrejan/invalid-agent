@@ -48,23 +48,31 @@ _NUMBER = re.compile(r"\d+(?:\.\d+)?")
 _TICKET_ID = re.compile(r"Your ticket \d+|Flag \d+")
 _NEGATION = re.compile(
     r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+\w+){0,12}\s+"
+    r"(?:\s+[\w'-]+){0,12}\s+"
     r"(?:make up|makes up|majority|most|biggest|main)\b"
     r"|"
     r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+\w+){0,8}\s+"
-    r"(?:going up|rising|climbing)\b"
+    r"(?:\s+[\w'-]+){0,8}\s+"
+    r"(?:going up|rising|climbing|going down|falling|dropping|decreasing)\b"
     r"|"
     r"(?:\bbiggest\b|\bmost\b|\bmajority\b|\bmain\b)"
-    r"(?:\s+\w+){0,6}\s+"
+    r"(?:\s+[\w'-]+){0,6}\s+"
     r"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
     re.I,
 )
 # Code names that contain a negation word. Mask them before the negation check.
-_NEGATED_NAMES = ("not enough sample", "no usable result", "unable to obtain")
+_NEGATED_NAMES = (
+    "not enough sample",
+    "no usable result",
+    "unable to obtain",
+    "used it the wrong way",
+    "used the wrong way",
+)
 _DOUBT = re.compile(
-    r"\b(?:neither|(?<!inv-)nor|doubt|doubtful|false|wrong|disagree|untrue|hardly)\b"
-    r"|isn'?t even close"
+    r"\b(?:neither|(?<!inv-)nor|i doubt|doubtful|i disagree|untrue)\b"
+    r"|\b(?:it'?s|it is|that'?s|that is|is)\s+(?:false|wrong)\b"
+    r"|\b(?:false|wrong) that\b|\bhardly\s+(?:the|any|most|main|biggest|majority)\b"
+    r"|isn'?t even close|\bno way\b|\bfar from\b|\bunlikely\b|\bskeptical\b|\bquestion whether\b|\bnope\b|\bnah\b"
     r"|\bor not\b|\bi think not\b|\bnot!",
     re.I,
 )
@@ -161,7 +169,8 @@ def respond(
     flag_key: str,
 ) -> dict[str, Any]:
     """Classify ``message`` and answer from facts already on screen. No model."""
-    text = " ".join(str(message or "").split())
+    raw = str(message or "")
+    text = " ".join(raw.split())
     if not text:
         return _pack(
             kind="question",
@@ -178,7 +187,7 @@ def respond(
         finding=finding,
         ticket_key=ticket_key,
         flag_key=flag_key,
-        user_text=text,
+        user_text=raw.strip(),
     )
 
 
@@ -227,6 +236,10 @@ def _draft_ok(draft: str, base: str) -> bool:
         if re.search(rf"(?<!\d){re.escape(token)}(?!\d)", cleaned, re.I) is None:
             return False
     if unexplained_jargon(cleaned):
+        return False
+    if opening in {"NOT QUITE.", "CLOSE!"} and any(
+        phrase in lowered for phrase in ("great job", "nailed it", "you got it", "perfect", "excellent", "well done", "awesome", "nice work")
+    ):
         return False
     numbers = []
     for raw in _NUMBER.findall(base):
@@ -323,7 +336,7 @@ def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, 
     if claims_codes and question:
         return "question", _answer_question(lowered, view, step_id), "a question about the invalid types"
     if claims_codes and _doubts(lowered):
-        return _doubt_reply(view)
+        return _doubt_reply(lowered, codes, view)
     if claims_codes and _hard_negation(lowered):
         return _negated_code_claim(lowered, codes, view)
     if claims_codes:
@@ -337,8 +350,13 @@ def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, 
     body = _answer_question(lowered, view, step_id)
     if question:
         return "question", body, _question_finding(lowered, view, step_id)
-    if _doubts(lowered):
-        return _doubt_reply(view)
+    if _doubts(lowered) and (_asserts_up(lowered) or _asserts_down(lowered)) and _seen(step_id, "data"):
+        return "hint", str(view.get("direction_sentence") or body), ""
+    if _doubts(lowered) and _seen(step_id, "charts"):
+        return _doubt_reply(lowered, codes, view)
+    stated = _key_statement(lowered, view, step_id)
+    if stated:
+        return stated
     return "hint", body, ""
 
 
@@ -384,12 +402,18 @@ def _majority_line(view: dict[str, Any]) -> tuple[str, str]:
     return finding, body
 
 
-def _doubt_reply(view: dict[str, Any]) -> tuple[str, str, str]:
+def _doubt_reply(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[str, str, str]:
+    """Doubt never logs. Agree when the doubted set is not the majority; correct it when it is."""
     phrase = _sentence_case(str(view.get("majority_phrase") or view.get("top_plain") or "the top invalid types"))
     count = len(view.get("majority_codes") or [])
     verb = "makes up" if count == 1 else "make up"
-    body = f"The counts do not support that. {phrase} {verb} most of the invalids this week."
-    return "correction", body, "a doubted claim"
+    fact = f"{phrase} {verb} most of the invalids this week."
+    if codes:
+        kind, _body, _finding = _code_claim(lowered, codes, view)
+        shares = {str(key): float(value) for key, value in (view.get("code_shares") or {}).items()}
+        if kind != "correct" and sum(shares.get(code, 0.0) for code in codes) < 0.5:
+            return "hint", f"The counts agree with your doubt. {fact}", ""
+    return "correction", f"The counts do not support that. {fact}", "a doubted claim"
 
 
 def _negated_code_claim(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[str, str, str]:
@@ -405,9 +429,9 @@ def _negated_code_claim(lowered: str, codes: list[str], view: dict[str, Any]) ->
     if "biggest" in lowered or "main invalid" in lowered:
         top = str(view.get("top_plain") or "")
         fact = f"The biggest invalid type this week is {top}."
-        return "correct", fact, f"the biggest invalid type is {top}"
+        return "hint", f"The counts agree. {fact}", ""
     finding, fact = _majority_line(view)
-    return "correct", fact, finding
+    return "hint", f"The counts agree. {fact}", ""
 
 
 def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
@@ -436,6 +460,45 @@ def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
 
 def part_signature(view: dict[str, Any], beat_id: str) -> str:
     return part_fact(view, beat_id)[0]
+
+
+def accepted_signatures(view: dict[str, Any], beat_id: str) -> set[str]:
+    """Findings that count as this part's point, so a typed YEP can unlock Next."""
+    found = {part_signature(view, beat_id)}
+    if beat_id == "charts":
+        top = str(view.get("top_plain") or "")
+        if top:
+            found.add(f"the biggest invalid type is {top}")
+    if beat_id == "data":
+        found.update(
+            {
+                "the invalid rate is higher in the later weeks of this slice",
+                "the invalid rate is lower in the later weeks of this slice",
+            }
+        )
+    return found
+
+
+def _key_statement(lowered: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str] | None:
+    """A typed statement of this part's point, not a question and not a denial."""
+    if _is_question(lowered) or _negated(lowered):
+        return None
+    finding, body = part_fact(view, step_id)
+    if not body:
+        return None
+    if step_id == "complaint" and ("98" in lowered or "2%" in lowered) and ("promise" in lowered or "valid" in lowered):
+        return "correct", body, finding
+    if step_id == "data":
+        label = str(view.get("rate_label") or "").casefold()
+        if label and label in lowered and "rate" in lowered:
+            return "correct", body, finding
+    if step_id == "logged" and _seen(step_id, "logged") and "ticket" in lowered and "open" in lowered:
+        return "correct", body, finding
+    if step_id == "notes" and _seen(step_id, "notes") and "customer" in lowered and ("told" in lowered or "tell" in lowered):
+        return "correct", body, finding
+    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and "recommend" in lowered:
+        return "correct", body, finding
+    return None
 
 
 def _direction_claim(view: dict[str, Any], *, claimed: str = "up") -> tuple[str, str, str]:
@@ -623,6 +686,10 @@ def _mentioned_codes(lowered: str) -> list[str]:
             continue
         if any(fragment in lowered for fragment in fragments):
             found.append(code)
+    # "the top two, not INV-SW" names INV-SW only to leave it out.
+    denied = {code.upper() for code in re.findall(r"\bnot\s+(inv-[a-z]+)\b", lowered, re.I)}
+    if denied and any(code not in denied for code in found):
+        found = [code for code in found if code not in denied]
     return found
 
 

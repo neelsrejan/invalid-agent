@@ -253,6 +253,28 @@ def test_a_greeting_with_a_question_mark_is_still_not_a_question():
     assert reply["log_kind"] == ""
 
 
+def test_a_true_denial_does_not_log_the_biggest_type():
+    view = _view()
+    view.update(
+        majority_codes=["INV-IC"],
+        majority_phrase="an internal-control failure (INV-IC)",
+        code_shares={"INV-IC": 0.6, "INV-NOR": 0.1},
+        top_code="INV-IC",
+        top_plain="an internal-control failure (INV-IC)",
+    )
+    reply = respond(
+        "INV-NOR is not the biggest",
+        view,
+        "charts",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert reply["confirmed"] is False
+    assert reply["log_kind"] == ""
+    assert not reply["text"].startswith("YEP")
+    assert "internal-control failure (INV-IC)" in reply["text"]
+
+
 def test_a_negated_statement_is_a_direct_correction():
     reply = _reply("INV-NOR is not the biggest")
     assert reply["confirmed"] is False
@@ -386,3 +408,102 @@ def test_every_step_has_example_prompts():
         prompts = example_prompts(view, step)
         assert len(prompts) >= 2
         assert any("going up" in prompt for prompt in prompts)
+
+
+def test_doubt_with_a_code_in_between_is_not_a_ticket():
+    for message in (
+        "It's not true that INV-NOR is the biggest",
+        "I don't believe INV-NOR and INV-MECH make up most of the invalids",
+        "I wouldn't say INV-NOR is the biggest",
+        "No way INV-NOR is the biggest",
+        "INV-NOR is far from the biggest",
+        "INV-NOR is unlikely to be the biggest",
+        "I question whether INV-NOR is the biggest",
+    ):
+        reply = _reply(message)
+        assert not reply["confirmed"], message
+        assert reply["log_kind"] != "ticket", message
+        assert not reply["text"].startswith("YEP"), message
+
+
+def test_a_code_name_with_wrong_in_it_can_be_confirmed():
+    view = _view()
+    view.update(
+        majority_codes=["INV-USR"],
+        majority_phrase="someone used it the wrong way (INV-USR)",
+        code_shares={"INV-USR": 0.6, "INV-NOR": 0.2},
+        top_code="INV-USR",
+        top_plain="someone used it the wrong way (INV-USR)",
+    )
+    reply = respond(
+        "Someone used it the wrong way makes up most of the invalids",
+        view,
+        "charts",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert reply["confirmed"]
+    assert reply["text"].startswith("YEP")
+
+
+def test_doubt_waits_for_its_part_and_a_right_doubt_is_not_told_not_quite():
+    early = _reply("I doubt that", "complaint")
+    assert "INV-NOR" not in early["text"] and not early["text"].startswith("NOT QUITE")
+    right = _reply("I doubt INV-SW makes up most")
+    assert not right["text"].startswith(("NOT QUITE", "YEP")) and right["log_kind"] != "ticket"
+    rate = _reply("I doubt the rate is going up", "data")
+    assert "4.00%" in rate["text"]
+
+
+def test_a_true_denial_of_a_falling_rate_is_not_flagged():
+    for message in ("the rate is not going down", "the rate isn't dropping"):
+        assert _reply(message, "data")["log_kind"] != "flag", message
+
+
+def test_a_denied_extra_code_does_not_turn_a_majority_into_a_flag():
+    reply = _reply("INV-NOR and INV-MECH make up most of the invalids, not INV-SW")
+    assert reply["confirmed"] is True
+    assert reply["log_kind"] == "ticket"
+
+
+def test_the_echo_keeps_the_readers_spacing():
+    reply = _reply("what   is maude ??")
+    assert reply["user_text"] == "what   is maude ??"
+
+
+def test_praise_after_not_quite_is_rejected():
+    base = _reply("INV-SW makes up most of the invalids")["text"]
+
+    class _Draft:
+        name = "groq"
+
+        def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+            del system, user, temperature
+            return "NOT QUITE. Great job, you nailed it. " + base.split(".", 1)[-1]
+
+    assert reword_reply(base, _Draft()) == base
+
+
+def test_each_part_accepts_a_typed_statement_of_its_point():
+    view = _view()
+    view["rate_label"] = "3.00%"
+    view["plan_ticket_count"] = 1
+    cases = (
+        ("complaint", "The promise is at least 98% valid tests"),
+        ("data", "The invalid rate this week is 3.00%"),
+        ("logged", "The open tickets are the ones in the plan"),
+        ("notes", "Tell the customer we have not confirmed a cause"),
+        ("wrap", "We recommend opening the case"),
+    )
+    for step, message in cases:
+        reply = respond(message, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert reply["confirmed"] is True, message
+        assert reply["signature"]
+
+
+def test_bare_false_or_hardly_in_a_correct_claim_still_confirms():
+    for message in (
+        "No false alarms: INV-NOR and INV-MECH make up most of the invalids",
+        "INV-NOR and INV-MECH make up most, hardly a surprise",
+    ):
+        assert _reply(message)["confirmed"], message

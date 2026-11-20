@@ -106,8 +106,9 @@ def test_next_stays_locked_until_the_part_is_done(monkeypatch):
     app = _click_key(app, "show-me")
     visible = _visible(app)
     assert "No confirmed insight yet" not in visible
-    assert "Your ticket 1" in visible
-    assert "(Ticket)" in visible
+    assert "Insight:" in visible
+    assert "98%" in visible
+    assert "We found what was promised" not in visible
     nxt = next(button for button in app.button if button.key == "next")
     assert not nxt.disabled
     app = _click_key(app, "next")
@@ -137,7 +138,7 @@ def test_show_me_on_week_two_logs_that_weeks_insight(monkeypatch):
         {
             "week": 1,
             "key": "Your ticket 1",
-            "text": "We found what was promised -> logged as Your ticket 1.",
+            "text": "The promise is that at least 98% of tests are valid.",
             "kind": "ticket",
             "signature": "what was promised",
         }
@@ -152,8 +153,9 @@ def test_show_me_on_week_two_logs_that_weeks_insight(monkeypatch):
     visible = _visible(app)
     assert "Week 2 insights" in visible
     assert "No confirmed insight yet" not in visible
-    assert "Your ticket 2" in visible
-    assert "(Ticket)" in visible
+    assert "Insight:" in visible
+    assert "Your ticket 2" not in visible
+    assert "We found what was promised" not in visible
     nxt = next(button for button in app.button if button.key == "next")
     assert not nxt.disabled
 
@@ -238,12 +240,12 @@ def test_talkback_answers_and_a_confirmed_insight_carries(monkeypatch):
     confirmed = _visible(app)
     assert "YEP, YOU GOT IT!" in confirmed
     assert "Week 1 insights" in confirmed
-    assert "Your ticket 3" in confirmed
+    assert "Your ticket 1" in confirmed
     assert "INV-13" not in confirmed
     assert confirmed.count("keep it in mind for the root cause") == 1
-    bullet = next(line for line in confirmed.splitlines() if "logged as Your ticket 3" in line)
+    bullet = next(line for line in confirmed.splitlines() if "logged as Your ticket 1" in line)
     app = _click_key(app, "next")
-    assert bullet.strip("- ").strip() in _visible(app) or "logged as Your ticket 3" in _visible(app)
+    assert bullet.strip("- ").strip() in _visible(app) or "logged as Your ticket 1" in _visible(app)
     assert "Week 1 insights" in _visible(app)
 
     for _step in range(2):
@@ -286,9 +288,97 @@ def test_the_same_insight_is_not_logged_twice(monkeypatch):
     app.run()
     app = _click_label(app, "Tell the agent")
     visible = _visible(app)
-    assert "Your ticket 3" in visible
-    assert "Your ticket 4" not in visible
+    assert "Your ticket 1" in visible
+    assert "Your ticket 2" not in visible
     assert visible.count("We found") == first.count("We found")
+
+
+def test_show_me_through_week_one_leaves_week_two_with_no_carried_items(monkeypatch):
+    app = _run_app(monkeypatch)
+    for _part in range(6):
+        app = _advance(app)
+    assert app.session_state["story_week"] == 2
+    carried = [
+        item
+        for item in app.session_state["open_items"]
+        if int(item["week"]) < 2 and item.get("kind") in {"ticket", "flag"}
+    ]
+    assert carried == []
+    week_one = [item for item in app.session_state["open_items"] if int(item["week"]) == 1]
+    assert len(week_one) == 6
+    assert all(item["kind"] == "insight" and str(item["text"]).strip() for item in week_one)
+    assert all("what was promised" not in str(item["text"]).casefold() for item in week_one)
+    visible = _visible(app)
+    assert "Still open from earlier weeks" not in visible
+    assert "We found what was promised" not in visible
+
+
+def test_a_typed_insight_unlocks_next_on_the_numbers_and_the_charts(monkeypatch):
+    app = _run_app(monkeypatch)
+    app = _advance(app)
+    assert "This week's numbers" in _visible(app)
+    nxt = next(button for button in app.button if button.key == "next")
+    assert nxt.disabled
+    visible = _visible(app)
+    rate = re.search(r"The invalid rate this week is [\d.]+%", visible)
+    assert rate, visible
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value(rate.group(0)).run()
+    app = _click_label(app, "Tell the agent")
+    assert "YEP, YOU GOT IT!" in _visible(app)
+    nxt = next(button for button in app.button if button.key == "next")
+    assert not nxt.disabled
+    app = _click_key(app, "next")
+    assert "The charts" in _visible(app)
+    nxt = next(button for button in app.button if button.key == "next")
+    assert nxt.disabled
+    claim = next(
+        button.label
+        for button in app.button
+        if button.label.startswith("It looks like") or button.label.startswith("The biggest invalid type")
+    )
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value(claim).run()
+    app = _click_label(app, "Tell the agent")
+    visible = _visible(app)
+    assert "YEP, YOU GOT IT!" in visible
+    nxt = next(button for button in app.button if button.key == "next")
+    assert not nxt.disabled
+
+
+def test_a_typed_insight_unlocks_next_on_every_part(monkeypatch):
+    app = _run_app(monkeypatch)
+    steps = (
+        ("The complaint", "The promise is at least 98% valid tests"),
+        ("This week's numbers", None),
+        ("The charts", None),
+        ("What gets logged", "The open tickets are the ones in the plan"),
+        ("Root-cause notes", "Tell the customer what this note says"),
+        ("Week wrap-up", "We recommend what this wrap-up says"),
+    )
+    for title, typed in steps:
+        visible = _visible(app)
+        assert title in visible
+        nxt = next(button for button in app.button if button.key == "next")
+        assert nxt.disabled
+        if title == "This week's numbers":
+            rate = re.search(r"The invalid rate this week is [\d.]+%", visible)
+            assert rate, visible
+            typed = rate.group(0)
+        if title == "The charts":
+            typed = next(
+                button.label
+                for button in app.button
+                if button.label.startswith("It looks like") or button.label.startswith("The biggest invalid type")
+            )
+        box = next(item for item in app.text_input if item.label == "Your question or insight")
+        box.set_value(typed).run()
+        app = _click_label(app, "Tell the agent")
+        assert "YEP, YOU GOT IT!" in _visible(app), title
+        nxt = next(button for button in app.button if button.key == "next")
+        assert not nxt.disabled, title
+        if title != "Week wrap-up":
+            app = _click_key(app, "next")
 
 
 def test_sending_a_question_clears_the_box(monkeypatch):

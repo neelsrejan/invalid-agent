@@ -53,3 +53,11 @@ def test_run_case_with_an_explicit_model_does_not_change_the_backend(tmp_path, m
     before = os.environ["LLM_BACKEND"]
     run_case(str(ROOT / "scenarios" / "bad_lot.yaml"), 1, tmp_path, llm=DeterministicLLM())
     assert os.environ["LLM_BACKEND"] == before == "groq"
+
+
+def test_a_sentence_case_code_name_is_not_glossed_twice():
+    from invalid_agent.ui.plain import gloss_once
+
+    out = gloss_once("We found No usable result (INV-NOR) make up most of the invalids.", set())
+    assert out.count("INV-NOR") == 1
+    assert "(no usable result" not in out
