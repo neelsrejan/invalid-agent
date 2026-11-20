@@ -549,25 +549,75 @@ def _norm_words(text: str) -> str:
     return re.sub(r"[^a-z0-9%]+", " ", text.casefold()).strip()
 
 
+_TELL = re.compile(
+    r"^(?:tell|told)\s+(?:the\s+)?customer\s+(?:that\s+)?"
+    r"|^(?:the customer (?:was |should be )?told)\s+",
+    re.I,
+)
+
+
 def _quotes_fact(lowered: str, body: str) -> bool:
-    """The reader pasted a sentence that is already on the screen."""
-    flat = _norm_words(lowered)
-    for sentence in re.split(r"(?<=[.!?])\s+", body):
-        piece = _norm_words(sentence)
-        if len(piece.split()) >= 4 and piece in flat:
-            return True
-    return False
+    """The reader pasted one or more sentences that are already on the screen.
+
+    Every substantial sentence in the message must equal a sentence of the
+    facts. A correct sentence next to a changed one is not a quote.
+    """
+    body_pieces = [
+        piece
+        for sentence in re.split(r"(?<=[.!?])\s+", body)
+        if len((piece := _norm_words(sentence)).split()) >= 4
+    ]
+    if not body_pieces:
+        return False
+    matched = False
+    for raw in re.split(r"(?<=[.!?])\s+", lowered) or [lowered]:
+        piece = _norm_words(_TELL.sub("", raw, count=1) if raw.strip() else raw)
+        if len(piece.split()) < 4:
+            continue
+        if piece in body_pieces:
+            matched = True
+        else:
+            return False
+    return matched
+
+
+_TOKEN = re.compile(r"[a-z0-9][a-z0-9%'-]*(?:\.\d+%?)?")
+
+
+def _tokens(text: str) -> list[str]:
+    return _TOKEN.findall(text)
+
+
+def _negated_stems(tokens: list[str]) -> set[str]:
+    """The first content word after each no/not, so "not hold" differs from "hold ... not L-4419"."""
+    found: set[str] = set()
+    for i, tok in enumerate(tokens):
+        if _NO_WORD.fullmatch(tok) or tok.endswith("n't"):
+            for nxt in tokens[i + 1:]:
+                if nxt not in _STOP and not _NO_WORD.fullmatch(nxt):
+                    found.add(nxt[:4])
+                    break
+    return found
 
 
 def _same_sentence(lowered: str, body: str) -> bool:
-    """The message restates one sentence of the facts: most of its words, and the same yes or no."""
-    words = [w[:4] for w in re.findall(r"[a-z0-9.%']+", lowered) if w not in _STOP and len(w) > 2]
+    """The message restates one sentence of the facts.
+
+    Most of its words must be in that sentence, every number or code it gives
+    must be in that sentence as written, and each "not" must deny the same word.
+    """
+    typed = _tokens(lowered)
+    words = [w[:4] for w in typed if w not in _STOP and len(w) > 2]
+    exact = {w for w in typed if any(ch.isdigit() for ch in w)}
     if len(words) < 2:
         return False
     for sentence in re.split(r"(?<=[.!?])\s+", body.casefold()):
-        known = {w[:4] for w in re.findall(r"[a-z0-9.%']+", sentence)}
+        said = _tokens(sentence)
+        known = {w[:4] for w in said}
         share = sum(1 for w in words if w in known) / len(words)
-        if share >= 0.7 and bool(_NO_WORD.search(lowered)) == bool(_NO_WORD.search(sentence)):
+        if share < 0.7 or not exact <= set(said):
+            continue
+        if _negated_stems(typed) == _negated_stems(said):
             return True
     return False
 

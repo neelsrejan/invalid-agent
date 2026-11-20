@@ -640,3 +640,59 @@ def test_a_week_with_no_invalids_does_not_invent_a_majority():
     assert finding == "no invalids in this slice"
     assert "no invalids" in body
     assert "make up most" not in body
+
+
+def test_a_restated_note_with_a_wrong_number_or_a_moved_not_is_not_a_yep():
+    view = _view()
+    view.update(rate_label="0.97%")
+    notes = (
+        "Hello. The invalid rate this week is 0.97% (35 of 3600). We have not confirmed a cause. "
+        "We recommend holding L-4419. We do not hold every group on this file."
+    )
+    view["notes"] = {**(view.get("notes") or {}), "customer": notes}
+    for message in (
+        "tell the customer the invalid rate this week is 50%",
+        "tell the customer the invalid rate this week is 9.97%",
+        "tell the customer we hold every group on this file, not L-4419",
+        "the customer was told the invalid rate this week is 0.97% (35 of 9999)",
+    ):
+        reply = respond(message, view, "notes", ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert not reply["confirmed"], message
+    reply = respond("tell the customer the invalid rate this week is 0.97%", view, "notes", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert reply["confirmed"]
+
+
+def test_pasting_one_on_screen_sentence_next_to_a_changed_one_does_not_confirm():
+    view = _view()
+    view["decision"] = "We opened the case. The leading read is no single group."
+    for message in (
+        "We closed the case. The leading read is no single group.",
+        "We opened every case. The leading read is no single group.",
+    ):
+        reply = respond(message, view, "wrap", ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert not reply["confirmed"], message
+        assert not reply["text"].startswith("YEP"), message
+    reply = respond(
+        "We opened the case. The leading read is no single group.",
+        view,
+        "wrap",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert reply["confirmed"]
+
+
+def test_not_in_front_of_a_quoted_fact_does_not_confirm():
+    view = _view()
+    decision = "We opened the case. The leading read is no single group."
+    view["decision"] = decision
+    reply = respond(
+        f"not {decision}",
+        view,
+        "wrap",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert not reply["confirmed"]
+    assert reply["log_kind"] != "ticket"
+    assert not reply["text"].startswith("YEP")
