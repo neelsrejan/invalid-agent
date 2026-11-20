@@ -8,6 +8,7 @@ model, when one is on, may only rephrase the talk-back reply.
 
 from __future__ import annotations
 
+import importlib.util
 import logging
 import os
 import sys
@@ -15,8 +16,75 @@ import tempfile
 from pathlib import Path
 
 _SRC = Path(__file__).resolve().parents[1] / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
+_SRC_TEXT = str(_SRC.resolve())
+sys.path[:] = [entry for entry in sys.path if entry != _SRC_TEXT]
+sys.path.insert(0, _SRC_TEXT)
+
+
+class _CheckoutFinder:
+    """Resolve invalid_agent from this checkout even if another copy is installed."""
+
+    def __init__(self, src: Path) -> None:
+        self.src = src.resolve()
+        self._invalid_agent_src = self.src
+
+    def find_spec(self, fullname, path, target=None):
+        if fullname != "invalid_agent" and not fullname.startswith("invalid_agent."):
+            return None
+        base = self.src.joinpath(*fullname.split("."))
+        init = base / "__init__.py"
+        if init.is_file():
+            return importlib.util.spec_from_file_location(
+                fullname,
+                init,
+                submodule_search_locations=[str(base)],
+            )
+        module_path = base.with_suffix(".py")
+        if module_path.is_file():
+            return importlib.util.spec_from_file_location(fullname, module_path)
+        return None
+
+
+def _guide_is_current(src: Path) -> bool:
+    """Streamlit re-executes this file but keeps imported packages.
+
+    A deploy can replace guide.py on disk while the process still holds the
+    previous module: the ten-step crumb and progress_label(index). This file
+    calls progress_label(week, beat). Drop that module so the import below
+    reads the guide next to this checkout.
+    """
+    guide = sys.modules.get("invalid_agent.ui.guide")
+    if guide is None:
+        return True
+    label = getattr(guide, "progress_label", None)
+    code = getattr(label, "__code__", None)
+    shorts = [getattr(step, "short", "") for step in getattr(guide, "GUIDE_STEPS", ())]
+    expected = (src / "invalid_agent" / "ui" / "guide.py").resolve()
+    loaded_name = getattr(guide, "__file__", None)
+    loaded = Path(str(loaded_name)).resolve() if loaded_name else None
+    if code is None or code.co_argcount != 2 or shorts[:3] != ["Complaint", "Data", "Charts"] or loaded != expected:
+        return False
+    stamped = getattr(guide, "_source_mtime", None)
+    if stamped is None:
+        return True
+    try:
+        return expected.stat().st_mtime <= float(stamped) + 1e-6
+    except OSError:
+        return False
+
+
+def _use_checkout(src: Path) -> None:
+    resolved = src.resolve()
+    sys.meta_path[:] = [finder for finder in sys.meta_path if getattr(finder, "_invalid_agent_src", None) != resolved]
+    sys.meta_path.insert(0, _CheckoutFinder(resolved))
+    if _guide_is_current(resolved):
+        return
+    for name in list(sys.modules):
+        if name == "invalid_agent" or name.startswith("invalid_agent."):
+            del sys.modules[name]
+
+
+_use_checkout(_SRC)
 
 import pandas as pd
 import streamlit as st
@@ -30,6 +98,13 @@ from invalid_agent.ui.plain import PRACTICE_BANNER, PUBLIC_BANNER, plain_case_la
 from invalid_agent.ui.records import logged_sections, note_sections, sections_from_run
 from invalid_agent.ui.story import beat_lines, build_week_view
 from invalid_agent.ui.talkback import example_prompts, respond, reword_reply
+
+_loaded_guide = sys.modules.get("invalid_agent.ui.guide")
+if _loaded_guide is not None:
+    try:
+        _loaded_guide._source_mtime = (_SRC / "invalid_agent" / "ui" / "guide.py").stat().st_mtime
+    except OSError:
+        pass
 
 _LOG = logging.getLogger("invalid_agent.ui")
 
