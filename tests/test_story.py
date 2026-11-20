@@ -76,7 +76,16 @@ def test_week_slices_grow_and_week_four_is_the_whole_file():
     full = build_week_view(scenario, frame, 4)
     assert early["n"] < full["n"]
     assert "first quarter" in early["window_sentence"]
+    assert "would have arrived first" in early["window_sentence"]
+    one_day = _toy_frame()
+    one_view = build_week_view(_toy_scenario(), one_day, 1)
+    assert "whole file" in one_view["window_sentence"]
+    assert "first quarter" not in one_view["window_sentence"]
     assert "whole date range" in full["window_sentence"]
+    assert early["call_label"] in {"Watch", "Look harder"}
+    assert "kept the leading read" not in early["decision"]
+    assert "kept the leading read" not in full["decision"]
+    assert early["glossary"] == ""
 
 
 def test_break_follows_the_ranker_and_skips_unreported():
@@ -104,6 +113,8 @@ def test_week_two_names_the_recheck_and_keeps_inv_1():
     assert keys[0] == "INV-1"
     assert keys == sorted(keys, key=lambda key: int(key.split("-")[1]))
     assert any(row["name"] == "Check the next-best group again" for row in view["tickets"])
+    assert "kept the leading read" not in view["decision"]
+    assert view["call_label"] != "Hold"
     assert all("Retest" not in row["name"] for row in view["tickets"])
 
 
@@ -122,3 +133,36 @@ def test_every_week_has_a_wrap_up_body_and_no_bare_jargon():
         assert "Open the week-4" not in wrap
         assert "0.00%" not in wrap
     assert unexplained_jargon(PUBLIC_BANNER) == []
+
+
+def test_chart_text_uses_plain_labels():
+    from invalid_agent.artifacts.charts import p_chart_figure, pareto_figure
+
+    view = build_week_view(_toy_scenario(), _toy_frame(), 1)
+    weekly = p_chart_figure(
+        view["chart"],
+        title="Weekly share of reports",
+        y_title="Share of reports (%)",
+        series_name="Share of reports",
+    )
+    ranking = pareto_figure(view["pareto"], count_title="Reports")
+    for figure in (weekly, ranking):
+        blob = _figure_text(figure)
+        assert unexplained_jargon(blob) == [], unexplained_jargon(blob)
+        assert "UCL" not in blob
+        assert "Cumulative" not in blob
+    assert "no usable result (INV-NOR)" in _figure_text(ranking)
+
+
+def _figure_text(figure) -> str:
+    layout = figure.layout
+    parts = [str(layout.title.text or ""), str(layout.yaxis.title.text or "")]
+    y2 = getattr(layout, "yaxis2", None)
+    if y2 is not None and y2.title is not None:
+        parts.append(str(y2.title.text or ""))
+    for trace in figure.data:
+        parts.append(str(trace.name or ""))
+        parts.append(str(getattr(trace, "hovertemplate", "") or ""))
+        values = getattr(trace, "x", None) or []
+        parts.extend(str(value) for value in values)
+    return "\n".join(parts)

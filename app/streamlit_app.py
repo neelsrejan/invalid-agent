@@ -8,6 +8,7 @@ model, when one is on, may only rephrase the talk-back reply.
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import tempfile
@@ -22,12 +23,15 @@ import streamlit as st
 
 from invalid_agent.artifacts.charts import before_after_figure, p_chart_figure, pareto_figure
 from invalid_agent.config import find_repo_root, load_settings
-from invalid_agent.data.frame import DataUnavailable, load_frame
+from invalid_agent.data.frame import load_frame
 from invalid_agent.sim.generate import load_scenario
 from invalid_agent.ui.guide import AUDIENCES, GUIDE_STEPS, progress_label
-from invalid_agent.ui.plain import PRACTICE_BANNER, PUBLIC_BANNER, plain_case_label, with_gloss
+from invalid_agent.ui.plain import PRACTICE_BANNER, PUBLIC_BANNER, plain_case_label, unexplained_jargon, with_gloss
+from invalid_agent.ui.records import logged_sections, note_sections, sections_from_run
 from invalid_agent.ui.story import beat_lines, build_week_view
 from invalid_agent.ui.talkback import example_prompts, respond, reword_reply
+
+_LOG = logging.getLogger("invalid_agent.ui")
 
 ROOT = find_repo_root()
 
@@ -49,8 +53,8 @@ _KEPT_KEYS = (
     "insight_serial",
     "flag_serial",
     "last_reply",
-    "talk_text",
     "deck_bytes",
+    "deck_error",
 )
 
 
@@ -96,6 +100,8 @@ def _scenarios(public: bool) -> list[Path]:
 
 
 def _init_state(ids: list[str]) -> None:
+    if "talk_nonce" not in st.session_state:
+        st.session_state.talk_nonce = 0
     for key in _KEPT_KEYS:
         if key in st.session_state:
             st.session_state[key] = st.session_state[key]
@@ -141,6 +147,7 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.last_reply = None
         st.session_state.stratum_for_week = None
         st.session_state.deck_bytes = None
+        st.session_state.deck_error = False
     st.session_state.locked_case = current
 
 
@@ -209,28 +216,50 @@ def _talk_llm(rules_only: bool):
 
 
 def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: bool) -> None:
-    plan_count = int(view.get("plan_ticket_count") or 0)
-    ticket_key = f"INV-{plan_count + int(st.session_state.insight_serial) + 1}"
+    ticket_key = f"Your ticket {int(st.session_state.insight_serial) + 1}"
     flag_key = f"Flag {int(st.session_state.flag_serial) + 1}"
     reply = respond(message, view, beat_id, ticket_key=ticket_key, flag_key=flag_key)
-    if reply["log_kind"] == "ticket" and reply.get("bullet"):
+    signature = str(reply.get("signature") or "")
+    existing = next(
+        (item for item in st.session_state.open_items if signature and item.get("signature") == signature),
+        None,
+    )
+    text = str(reply.get("text") or "")
+    if existing and reply["log_kind"] in {"ticket", "flag"}:
+        text = text.replace(str(reply.get("log_key") or ""), str(existing["key"]))
+    elif reply["log_kind"] == "ticket" and reply.get("bullet"):
         st.session_state.insight_serial = int(st.session_state.insight_serial) + 1
         st.session_state.week_insights.setdefault(week, []).append(reply["bullet"])
         st.session_state.open_items.append(
-            {"week": week, "key": reply["log_key"], "text": reply["bullet"], "kind": "ticket"}
+            {
+                "week": week,
+                "key": reply["log_key"],
+                "text": reply["bullet"],
+                "kind": "ticket",
+                "signature": signature,
+            }
         )
     elif reply["log_kind"] == "flag":
         st.session_state.flag_serial = int(st.session_state.flag_serial) + 1
         st.session_state.open_items.append(
-            {"week": week, "key": reply["log_key"], "text": reply["log_text"], "kind": "flag"}
+            {
+                "week": week,
+                "key": reply["log_key"],
+                "text": reply["log_text"],
+                "kind": "flag",
+                "signature": signature,
+            }
         )
-    shown = reword_reply(reply["text"], _talk_llm(rules_only))
+    shown = reword_reply(text, _talk_llm(rules_only))
+    if unexplained_jargon(shown):
+        shown = text
     st.session_state.last_reply = {
         "week": week,
         "beat": beat_id,
         "user_text": reply.get("user_text") or "",
         "text": shown,
     }
+    st.session_state.talk_nonce = int(st.session_state.get("talk_nonce") or 0) + 1
 
 
 def _render_lines(lines: list[str]) -> None:
@@ -265,9 +294,10 @@ def _render_insights(week: int) -> None:
 def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     st.subheader("Talk to the agent")
     st.caption("Type a question, or type what you think is going on. The reply uses this week's counts.")
-    st.text_input("Your question or insight", key="talk_text")
+    talk_key = f"talk_text_{int(st.session_state.get('talk_nonce') or 0)}"
+    st.text_input("Your question or insight", key=talk_key)
     if st.button("Tell the agent", key="talk-send"):
-        _apply_talk(str(st.session_state.get("talk_text") or ""), view, beat_id, week, rules_only)
+        _apply_talk(str(st.session_state.get(talk_key) or ""), view, beat_id, week, rules_only)
         st.rerun()
     prompts = example_prompts(view, beat_id if beat_id != "done" else "wrap")
     st.caption("Or try one of these.")
@@ -291,10 +321,21 @@ def _render_metrics(view: dict) -> None:
     c4.metric("This week's call", view["call_label"])
 
 
+def _chart_words(view: dict) -> tuple[str, str, str]:
+    if view.get("estimable"):
+        return "Weekly invalid rate", "Invalid rate (%)", "Invalid %"
+    return "Weekly share of reports", "Share of reports (%)", "Share of reports"
+
+
 def _render_charts(view: dict, week: int) -> None:
-    st.plotly_chart(p_chart_figure(view["chart"], title="Weekly invalid rate"), width="stretch")
+    title, y_title, series = _chart_words(view)
+    st.plotly_chart(
+        p_chart_figure(view["chart"], title=title, y_title=y_title, series_name=series),
+        width="stretch",
+    )
     if view["pareto"]:
-        st.plotly_chart(pareto_figure(view["pareto"]), width="stretch")
+        count_title = "Invalids" if view.get("estimable") else "Reports"
+        st.plotly_chart(pareto_figure(view["pareto"], count_title=count_title), width="stretch")
     else:
         st.info("This week's slice has no invalids, so there is no ranking to draw.")
     breaks = view["breaks"]
@@ -313,7 +354,11 @@ def _render_charts(view: dict, week: int) -> None:
     chosen = breaks[st.session_state.stratum]
     rows = chosen["rows"]
     if rows:
-        st.dataframe(pd.DataFrame(rows)[["level", "n", "k", "rate_label"]], width="stretch", hide_index=True)
+        share = "Share" if view.get("estimable") else "Share of reports"
+        shown = pd.DataFrame(rows)[["level", "n", "k", "rate_label"]].rename(
+            columns={"level": "Group", "n": "Rows", "k": "Invalids", "rate_label": share}
+        )
+        st.dataframe(shown, width="stretch", hide_index=True)
     else:
         st.info("Every row in this break is blank, so there is nothing to rank. A blank is not a cause.")
 
@@ -323,7 +368,10 @@ def _render_tickets(view: dict) -> None:
     if not rows:
         st.info("This week has no plan ticket yet.")
         return
-    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+    shown = pd.DataFrame(rows).rename(
+        columns={"key": "Ticket", "name": "Work", "owner": "Owner", "status": "Status"}
+    )
+    st.dataframe(shown, width="stretch", hide_index=True)
 
 
 def _render_notes(view: dict) -> None:
@@ -339,7 +387,11 @@ def _render_notes(view: dict) -> None:
 
 def _render_wrap_chart(view: dict) -> None:
     if view.get("projection_applied") and view.get("after_chart"):
-        st.plotly_chart(before_after_figure(view["chart"], view["after_chart"]), width="stretch")
+        _title, y_title, _series = _chart_words(view)
+        st.plotly_chart(
+            before_after_figure(view["chart"], view["after_chart"], y_title=y_title),
+            width="stretch",
+        )
 
 
 def _offer_deck(view: dict, scenario: dict) -> None:
@@ -347,8 +399,12 @@ def _offer_deck(view: dict, scenario: dict) -> None:
         return
     st.caption("The seven-slide deck is exec_deck.pptx. It uses the same numbers as this wrap-up.")
     if st.button("Prepare the slide file", key="prepare-deck"):
-        st.session_state.deck_bytes = _deck_bytes(view, scenario)
+        payload = _deck_bytes(view, scenario)
+        st.session_state.deck_bytes = payload
+        st.session_state.deck_error = payload is None
         st.rerun()
+    if st.session_state.get("deck_error"):
+        st.error("The slide file did not build. Try again. This page does not show the error detail.")
     payload = st.session_state.get("deck_bytes")
     if payload:
         st.download_button(
@@ -366,7 +422,8 @@ def _deck_bytes(view: dict, scenario: dict) -> bytes | None:
     facts = {
         "scenario_id": str(scenario.get("id") or "case"),
         "device": str(scenario.get("device") or "device"),
-        "banner": "Practice data. Not for clinical use. Not a medical device.",
+        "banner": PUBLIC_BANNER if not view.get("estimable") else PRACTICE_BANNER,
+        "estimable": bool(view.get("estimable")),
         "rate_pct": float(view["rate"]) * 100.0,
         "k": int(view["k"]),
         "n": int(view["n"]),
@@ -391,8 +448,132 @@ def _deck_bytes(view: dict, scenario: dict) -> bytes | None:
             path = Path(tmp) / "exec_deck.pptx"
             write_deck(path, facts)
             return path.read_bytes()
-    except Exception:
+    except Exception as exc:
+        _LOG.error("deck build failed: %s", type(exc).__name__)
         return None
+
+
+@st.cache_data(show_spinner=False)
+def _case_sections(scenario_path: str, story_week: int) -> list[dict[str, str]]:
+    """Cached graph records for one story week. The model stays off for this call."""
+    saved = os.environ.get("LLM_BACKEND")
+    os.environ["LLM_BACKEND"] = "deterministic"
+    try:
+        from invalid_agent.graph import run_case
+
+        out = ROOT / "out" / "dashboard" / Path(scenario_path).stem / f"week{int(story_week)}"
+        result = run_case(str(scenario_path), int(story_week), out)
+        base = ""
+        try:
+            base = str(load_settings().jira_base_url or "")
+        except Exception:
+            base = ""
+        return sections_from_run(result, base_url=base)
+    except Exception as exc:
+        _LOG.error("case run failed: %s", type(exc).__name__)
+        return [
+            {
+                "title": "This week's write-ups",
+                "what": "What this is: the agent's records for this week.",
+                "body": (
+                    "The write-ups did not load. The counts on this page are still the ones to use. "
+                    "This page does not show a connection string."
+                ),
+            }
+        ]
+    finally:
+        if saved is None:
+            os.environ.pop("LLM_BACKEND", None)
+        else:
+            os.environ["LLM_BACKEND"] = saved
+
+
+def _render_sections(sections: list[dict[str, str]]) -> None:
+    if not sections:
+        return
+    st.caption("The agent's write-ups are closed. Open one if you want the detail.")
+    for section in sections:
+        with st.expander(section["title"]):
+            st.markdown(section["what"])
+            st.markdown(section["body"])
+
+
+def _render_ask(scenario: dict, rules_only: bool) -> None:
+    from invalid_agent.data.query import SUGGESTED_QUESTIONS
+
+    fda = str(scenario.get("denominator") or "") == "reported_events"
+    title = "Ask the public report table"
+    if fda:
+        title = (
+            "Ask the public report table "
+            "(MAUDE, the FDA's public database of device problem reports)"
+        )
+    with st.expander(title):
+        st.markdown(
+            "Python counts the rows. A language model, if one is on, only picks a prepared question."
+        )
+        code = str(scenario.get("product_code") or "").upper()
+        items = []
+        for item in SUGGESTED_QUESTIONS:
+            params_code = str((item.get("params") or {}).get("product_code") or "").upper()
+            if code and params_code and params_code != code:
+                continue
+            items.append(item)
+        if not items:
+            items = list(SUGGESTED_QUESTIONS)
+        picked = None
+        for item in items:
+            if st.button(with_gloss(str(item["label"])), key=f"ask-{item['id']}"):
+                picked = item
+        if picked:
+            _show_answer(picked, rules_only)
+
+
+def _show_answer(picked: dict, rules_only: bool) -> None:
+    from invalid_agent.data.db import connect, query_url
+    from invalid_agent.data.query import answer_question
+    from invalid_agent.llm import get_llm
+
+    try:
+        public = load_settings().data_backend == "openfda"
+        url = query_url(load_settings(), public=public)
+        conn = connect(url, readonly=True)
+    except Exception as exc:
+        _LOG.error("report table unavailable: %s", type(exc).__name__)
+        st.error(
+            "The public report table is not connected, so this question cannot run. "
+            "This page does not show a connection string."
+        )
+        return
+    try:
+        choice = None
+        if picked.get("template_id"):
+            choice = {
+                "template_id": picked["template_id"],
+                "params": dict(picked.get("params") or {}),
+                "source": "suggested",
+            }
+        llm = None
+        if not rules_only:
+            try:
+                llm = get_llm()
+            except Exception:
+                llm = None
+        answered = answer_question(str(picked["text"]), conn, llm=llm, choice=choice)
+    except Exception as exc:
+        _LOG.error("report question failed: %s", type(exc).__name__)
+        st.error(
+            "The question did not run. This page does not show the error detail."
+        )
+        return
+    finally:
+        conn.close()
+    from invalid_agent.ui.plain import safe_prose
+
+    prose = safe_prose(str(answered.get("prose") or ""))
+    if not prose:
+        prose = "The table answered. The counts on this page stay the ones Python computed for this week."
+    st.markdown(prose)
 
 
 def _nav(week: int, beat: int, finished: bool) -> None:
@@ -448,7 +629,8 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
     finished = bool(st.session_state.finished)
     try:
         view = _week_view(str(scenario_path), week)
-    except DataUnavailable:
+    except Exception as exc:
+        _LOG.error("week view failed: %s", type(exc).__name__)
         st.error(
             "The public report table is not connected, so this case cannot load. "
             "Pick a practice case. This page does not show a connection string."
@@ -481,8 +663,16 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
     st.markdown(f"**What to look at.** {step.look}")
     if week == 1 and beat == 0:
         _render_case_picker(rows)
-        view = _week_view(str(by_id[st.session_state.scenario_id][0]), week)
-        scenario = by_id[st.session_state.scenario_id][1]
+        scenario_path, scenario = by_id[st.session_state.scenario_id]
+        try:
+            view = _week_view(str(scenario_path), week)
+        except Exception as exc:
+            _LOG.error("week view failed: %s", type(exc).__name__)
+            st.error(
+                "The public report table is not connected, so this case cannot load. "
+                "Pick a practice case. This page does not show a connection string."
+            )
+            st.stop()
     _render_carried(week)
     _render_lines(beat_lines(view, step.id))
     if step.id == "data":
@@ -491,8 +681,11 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         _render_charts(view, week)
     elif step.id == "logged":
         _render_tickets(view)
+        _render_sections(logged_sections(_case_sections(scenario_path, week)))
+        _render_ask(scenario, rules_only)
     elif step.id == "notes":
         _render_notes(view)
+        _render_sections(note_sections(_case_sections(scenario_path, week)))
     elif step.id == "wrap":
         _render_wrap_chart(view)
         _offer_deck(view, scenario)

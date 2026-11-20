@@ -103,8 +103,11 @@ def _best_level(df: pd.DataFrame, column: str) -> dict[str, Any] | None:
             lift: float | None = rate / complement_rate
             score_lift = lift
         else:
+            # Haldane-Anscombe keeps a finite ratio when the other rows have
+            # zero invalids. The displayed lift stays unset so the page does
+            # not quote a made-up multiple.
             lift = None
-            score_lift = max(MIN_LIFT, float(cn))
+            score_lift = ((k + 0.5) / (n + 1.0)) / ((ck + 0.5) / (cn + 1.0))
         if p_value >= ALPHA or excess < MIN_EXCESS or (lift is not None and lift < MIN_LIFT):
             score = 0.0
         else:

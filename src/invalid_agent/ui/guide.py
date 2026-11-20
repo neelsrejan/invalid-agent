@@ -63,7 +63,7 @@ GUIDE_STEPS: tuple[GuideStep, ...] = (
         title="What gets logged",
         doing="The agent lists the tickets for this week. A confirmed insight becomes the next ticket.",
         why="A finding that is not written down gets lost before the next week.",
-        look="Ticket numbers start at INV-1. Open tickets carry into the next week.",
+        look="Plan tickets start at INV-1. Your own findings are Your ticket 1, then Your ticket 2.",
         next_label="Read the notes",
     ),
     GuideStep(
@@ -90,90 +90,14 @@ GUIDE_STEPS: tuple[GuideStep, ...] = (
 
 BEATS = GUIDE_STEPS
 
-ARTIFACTS: tuple[tuple[str, str], ...] = (
-    ("triage", "Triage memo"),
-    ("fishbone", "Fishbone"),
-    ("five_whys", "5 Whys"),
-    ("capa", "8D / CAPA"),
-    ("plan", "Plan and risks"),
-)
-
 AUDIENCES: tuple[tuple[str, str], ...] = (
     ("customer", "Customer"),
     ("internal", "Internal team"),
     ("leadership", "Leadership"),
 )
 
-SUGGESTED_CASE_IDS: tuple[str, ...] = ("openfda_ooi", "openfda_jje", "bad_lot")
-
-
 def progress_label(week: int, beat: int) -> str:
     return f"Week {int(week)} of 4 — Part {int(beat) + 1} of {len(GUIDE_STEPS)}"
-
-
-def rag_label(updates: dict[str, Any] | None) -> str:
-    """RAG is read off the leadership note, the same strings status.py writes."""
-    leadership = str((updates or {}).get("leadership") or "")
-    if "RAG: Amber" in leadership:
-        return "Amber"
-    if "RAG: Green" in leadership:
-        return "Green"
-    return "Red"
-
-
-def cause_sentence(top: dict[str, Any] | None) -> str:
-    """One plain sentence from the ranker. The model does not choose the cause."""
-    top = top or {}
-    cause = str(top.get("cause") or "no_single_cause")
-    if cause == "no_single_cause":
-        return "No single group stands out yet. We will not pretend we know the cause."
-    level = top.get("level") or "the leading group"
-    lift = top.get("lift")
-    try:
-        ratio = None if lift is None else float(lift)
-    except (TypeError, ValueError):
-        ratio = None
-    if ratio is None or ratio != ratio or ratio in {float("inf"), float("-inf")}:
-        ratio_line = "The other rows had no invalids, so we do not quote how many times higher this group is."
-    else:
-        ratio_line = f"Its invalid share is about {ratio:.1f} times the share in the other rows."
-    return f"The strongest group is {level}. {ratio_line}"
-
-
-def decision_for_week(log: list[dict[str, Any]] | None, week: int) -> str:
-    for entry in log or []:
-        try:
-            entry_week = int(entry.get("week", -1))
-        except (TypeError, ValueError):
-            continue
-        if entry_week == int(week):
-            return str(entry.get("decision") or "")
-    return ""
-
-
-def arrivals(scenario: dict[str, Any], week: int) -> str:
-    """Who spoke this week. Injections are citations, not scores."""
-    found: list[str] = []
-    for item in scenario.get("injections") or []:
-        try:
-            item_week = int(item.get("week", -1))
-        except (TypeError, ValueError):
-            continue
-        if item_week != int(week):
-            continue
-        source = str(item.get("source") or "update")
-        audience = str(item.get("audience") or "").strip()
-        found.append(f"{source} ({audience})" if audience else source)
-    if not found:
-        return ""
-    return "What arrived this week: " + "; ".join(found) + "."
-
-
-def stratum_label(column: str, scenario: dict[str, Any]) -> str:
-    labels = scenario.get("strata_labels") or {}
-    if column in labels:
-        return str(labels[column])
-    return column.replace("_", " ")
 
 
 def questions_for(

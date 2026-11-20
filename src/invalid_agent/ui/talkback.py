@@ -1,8 +1,7 @@
 """Talk-back agent for one week and one part of the story.
 
-Python classifies the message and writes the reply from the week view.
-A language model may only rephrase that reply. If the model is missing,
-fails, or adds a number, the plain reply is what the page shows.
+Python classifies the message and writes the reply from facts the reader
+has already seen. A language model may only rephrase that reply.
 """
 
 from __future__ import annotations
@@ -11,6 +10,16 @@ import re
 from typing import Any
 
 from invalid_agent.guards.numeric_fidelity import check_narrative
+from invalid_agent.ui.plain import code_plain, unexplained_jargon
+
+# A claim is graded only against facts on or before the current part.
+_STEP_ORDER = ("complaint", "data", "charts", "logged", "notes", "wrap", "done")
+_PART_NAME = {
+    "data": "numbers",
+    "charts": "charts",
+    "logged": "logged",
+    "notes": "notes",
+}
 
 _QUESTION_START = (
     "why ",
@@ -27,12 +36,30 @@ _QUESTION_START = (
     "are ",
     "can ",
     "could ",
+    "would ",
     "should ",
 )
 _MOST = ("majority", "most of", "make up most", "makes up most", "almost all")
 _UP = ("going up", "is rising", "is climbing", "rate is up", "keeps climbing")
-_CODE = re.compile(r"\bINV-[A-Z0-9]+\b", re.I)
+# Ticket keys are digits (INV-13, Your ticket 1). Invalid types are letters.
+_CODE = re.compile(r"\bINV-[A-Z]+\b", re.I)
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
+_TICKET_ID = re.compile(r"Your ticket \d+|Flag \d+")
+_NEGATION = re.compile(
+    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    r"(?:\s+\w+){0,2}\s+"
+    r"(?:make up|makes up|majority|most|biggest|main)\b"
+    r"|"
+    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    r"(?:\s+\w+){0,8}\s+"
+    r"(?:going up|rising|climbing)\b"
+    r"|"
+    r"(?:\bbiggest\b|\bmost\b|\bmajority\b)"
+    r"(?:\s+\w+){0,6}\s+"
+    r"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
+    re.I,
+)
+_OPENING = ("YEP, YOU GOT IT!", "NOT YET", "NOT QUITE.", "CLOSE!", "GOOD QUESTION.")
 _BANNED = (
     "fidelity",
     "traceback",
@@ -44,6 +71,7 @@ _BANNED = (
     "model draft",
     "deterministic",
 )
+_LEADS = ("YEP, YOU GOT IT", "NOT YET", "NOT QUITE", "CLOSE!", "GOOD QUESTION")
 
 _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("INV-NOR", ("inv-nor", "no usable result", "unable to obtain")),
@@ -61,24 +89,27 @@ _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 
 def example_prompts(view: dict[str, Any], step_id: str) -> list[str]:
-    """Three short prompts a reader can click. Each one is scored from the view."""
+    """Three short prompts. A code-share claim is not offered before the charts part."""
     prompts: list[str] = []
-    if view.get("majority") and view.get("majority_phrase"):
-        verb = "makes up most of the invalids" if len(view.get("majority_codes") or []) == 1 else "make up most of the invalids"
-        prompts.append(f"It looks like {view['majority_phrase']} {verb}")
-    elif view.get("top_plain"):
-        prompts.append(f"The biggest invalid type is {view['top_plain']}")
+    if _seen(step_id, "charts"):
+        if view.get("majority") and view.get("majority_phrase"):
+            verb = "makes up most of the invalids" if len(view.get("majority_codes") or []) == 1 else "make up most of the invalids"
+            prompts.append(f"It looks like {view['majority_phrase']} {verb}")
+        elif view.get("top_plain"):
+            prompts.append(f"The biggest invalid type is {view['top_plain']}")
     prompts.append("Why is the invalid rate going up?")
     extra = {
-        "complaint": "What was promised, and can this file measure it?",
+        "complaint": "What was promised, and can this file measure it?" if not view.get("fda") else "What is MAUDE?",
         "data": "What is the invalid rate this week?",
         "charts": "Is there one group we should hold?",
         "logged": "Which tickets are open this week?",
         "notes": "What should the customer be told?",
         "wrap": "What do we recommend this week?",
+        "done": "What should we remember from this story?",
     }.get(step_id, "What should we remember from this screen?")
+    if step_id == "complaint":
+        prompts.append("Who made the device?")
     prompts.append(extra)
-    # Keep three, and keep them unique so the buttons do not collide.
     unique: list[str] = []
     for prompt in prompts:
         if prompt not in unique:
@@ -94,46 +125,26 @@ def respond(
     ticket_key: str,
     flag_key: str,
 ) -> dict[str, Any]:
-    """Classify ``message`` and answer from ``view``. No model. No new numbers."""
+    """Classify ``message`` and answer from facts already on screen. No model."""
     text = " ".join(str(message or "").split())
     if not text:
-        return {
-            "kind": "question",
-            "confirmed": False,
-            "text": "Type a question, or type what you think the screen is saying. Then I can check it against this week's counts.",
-            "bullet": None,
-            "log_kind": "",
-            "log_key": "",
-            "log_text": "",
-            "user_text": "",
-        }
+        return _pack(
+            kind="question",
+            body="Type a question, or type what you think the screen is saying. Then I can check it against this week's counts.",
+            finding="",
+            ticket_key=ticket_key,
+            flag_key=flag_key,
+            user_text="",
+        )
     kind, body, finding = _classify(text, view, step_id)
-    confirmed = kind == "correct"
-    key = ticket_key if confirmed else flag_key
-    remember = _remember(kind, view)
-    lead = {
-        "correct": "YEP, YOU GOT IT!",
-        "partial": "CLOSE! YOU ARE ON THE RIGHT TRACK.",
-        "unsupported": "NOT QUITE. THE FILE DOES NOT SAY THAT.",
-        "question": "GOOD QUESTION.",
-    }[kind]
-    if confirmed:
-        log_line = f"We'll log that as Jira ticket {key} to track it and keep it in mind for the root cause."
-        bullet = f"We found {finding} -> logged as Jira ticket {key} to resolve going forward"
-    else:
-        log_line = f"We'll log that as {key} so we do not lose it. It is not a confirmed finding."
-        bullet = None
-    reply = f"{lead} {body} {log_line} Remember: {remember}"
-    return {
-        "kind": kind,
-        "confirmed": confirmed,
-        "text": reply,
-        "bullet": bullet,
-        "log_kind": "ticket" if confirmed else "flag",
-        "log_key": key,
-        "log_text": bullet or f"{key}: {finding}",
-        "user_text": text,
-    }
+    return _pack(
+        kind=kind,
+        body=body,
+        finding=finding,
+        ticket_key=ticket_key,
+        flag_key=flag_key,
+        user_text=text,
+    )
 
 
 def reword_reply(base_text: str, llm: Any | None) -> str:
@@ -144,8 +155,9 @@ def reword_reply(base_text: str, llm: Any | None) -> str:
         draft = llm.complete(
             system=(
                 "You rewrite one reply for a high school reader. "
-                "Keep every number. Keep the ticket or flag id. "
-                "Do not add numbers, file paths, or the word fidelity. "
+                "Keep the opening verdict (YEP, NOT YET, NOT QUITE, CLOSE, or GOOD QUESTION). "
+                "Keep every number. Keep the ticket or flag id if there is one. "
+                "Do not add numbers, file paths, or unexplained jargon. "
                 "Short sentences. Encouraging. Return only the reply."
             ),
             user=base_text,
@@ -163,27 +175,119 @@ def _draft_ok(draft: str, base: str) -> bool:
     if len(cleaned) < 20 or len(cleaned) > 1500:
         return False
     lowered = cleaned.casefold()
+    base_lower = base.casefold()
     if any(token in lowered for token in _BANNED):
         return False
-    if _NUMBER.findall(base) and set(_NUMBER.findall(base)) - set(_NUMBER.findall(cleaned)):
+    opening = _opening(base)
+    if opening and not cleaned.startswith(opening):
         return False
-    if "inv-" not in lowered and "flag" not in lowered:
+    for lead in _LEADS:
+        if lead.casefold() in base_lower and lead.casefold() not in lowered:
+            return False
+    base_numbers = _NUMBER.findall(base)
+    draft_numbers = _NUMBER.findall(cleaned)
+    if set(base_numbers) - set(draft_numbers) or set(draft_numbers) - set(base_numbers):
         return False
-    checked = check_narrative(cleaned, {"base": base})
+    for token in _TICKET_ID.findall(base):
+        if re.search(rf"(?<!\d){re.escape(token)}(?!\d)", cleaned, re.I) is None:
+            return False
+    if unexplained_jargon(cleaned):
+        return False
+    numbers = []
+    for raw in _NUMBER.findall(base):
+        try:
+            numbers.append(float(raw))
+        except ValueError:
+            continue
+    facts = {"numbers": numbers, "ids": _TICKET_ID.findall(base)}
+    checked = check_narrative(cleaned, facts)
     return bool(checked.ok)
+
+
+def _pack(
+    *,
+    kind: str,
+    body: str,
+    finding: str,
+    ticket_key: str,
+    flag_key: str,
+    user_text: str,
+) -> dict[str, Any]:
+    confirmed = kind == "correct"
+    logs_flag = kind in {"partial", "unsupported"}
+    key = ticket_key if confirmed else (flag_key if logs_flag else "")
+    remember = _remember(kind)
+    if kind == "early":
+        lead = ""
+        log_line = ""
+    else:
+        lead = {
+            "correct": "YEP, YOU GOT IT!",
+            "partial": "CLOSE! YOU ARE ON THE RIGHT TRACK.",
+            "unsupported": "NOT QUITE. THE FILE DOES NOT SAY THAT.",
+            "question": "GOOD QUESTION.",
+        }[kind]
+        if confirmed:
+            log_line = (
+                f"We'll log that as {key} to track it and keep it in mind for the root cause. "
+                "On a real team this would go in Jira."
+            )
+        elif logs_flag:
+            log_line = f"We'll log that as {key} so we do not lose it. It is not a confirmed finding."
+        else:
+            log_line = ""
+    bullet = None
+    if confirmed:
+        bullet = f"We found {finding} -> logged as {key} to resolve going forward. On a real team this would go in Jira."
+    parts = [lead, body, log_line, f"Remember: {remember}"]
+    reply = " ".join(part for part in parts if part)
+    if confirmed:
+        log_kind = "ticket"
+    elif logs_flag:
+        log_kind = "flag"
+    else:
+        log_kind = ""
+    return {
+        "kind": kind,
+        "confirmed": confirmed,
+        "text": reply,
+        "bullet": bullet,
+        "signature": finding,
+        "log_kind": log_kind,
+        "log_key": key,
+        "log_text": bullet or (f"{key}: {finding}" if logs_flag else ""),
+        "user_text": user_text,
+    }
+
+
+def _seen(step_id: str, first_step: str) -> bool:
+    order = _STEP_ORDER
+    here = order.index(step_id) if step_id in order else len(order) - 1
+    return here >= order.index(first_step)
+
+
+def _early(first_step: str) -> tuple[str, str, str]:
+    part = _PART_NAME.get(first_step, first_step)
+    body = f"NOT YET — you'll see that on the {part} part."
+    return "early", body, f"an idea to check on the {part} part"
 
 
 def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str]:
     lowered = text.casefold()
     codes = _mentioned_codes(lowered)
-    if codes and (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered):
+    claims_codes = bool(codes) and (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered)
+    asks = _is_question(lowered) or bool(_NEGATION.search(lowered))
+    if claims_codes and not _seen(step_id, "charts"):
+        return _early("charts")
+    if claims_codes and asks:
+        return "question", _answer_question(lowered, view, step_id), "a question about the invalid types"
+    if claims_codes:
         return _code_claim(lowered, codes, view)
-    if _asserts_up(lowered) and not _is_question(lowered):
+    direction_claim = _asserts_up(lowered) and not asks
+    if direction_claim and not _seen(step_id, "data"):
+        return _early("data")
+    if direction_claim:
         return _direction_claim(view)
-    if _is_question(lowered) or lowered.startswith("it looks like"):
-        return "question", _answer_question(lowered, view, step_id), _question_finding(lowered, view, step_id)
-    if codes:
-        return _code_claim(lowered, codes, view)
     return "question", _answer_question(lowered, view, step_id), _question_finding(lowered, view, step_id)
 
 
@@ -213,10 +317,7 @@ def _code_claim(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[s
             f"The slices that make up most of the invalids are {phrase}."
         )
         return "partial", body, f"part of the top slices, not the full set ({phrase})"
-    body = (
-        f"Those types are not most of the invalids. "
-        f"The slices that make up most of them are {phrase}."
-    )
+    body = f"Those types are not most of the invalids. The slices that make up most of them are {phrase}."
     return "unsupported", body, "a claim the counts do not support"
 
 
@@ -231,31 +332,126 @@ def _direction_claim(view: dict[str, Any]) -> tuple[str, str, str]:
 
 
 def _answer_question(lowered: str, view: dict[str, Any], step_id: str) -> str:
-    if _asserts_up(lowered) or "invalid rate" in lowered or "going up" in lowered:
+    glossary = _glossary_answer(lowered)
+    if glossary:
+        return glossary
+    if _is_greeting(lowered):
+        return _hello(step_id, view)
+    codes = _mentioned_codes(lowered)
+    if codes and (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered):
+        if not _seen(step_id, "charts"):
+            return "NOT YET — you'll see that on the charts part."
+        return _code_question_body(lowered, codes, view)
+    if codes and any(token in lowered for token in ("what is", "what does", "what's")):
+        return "That means " + _join([code_plain(code) for code in codes]) + "."
+    if _asserts_up(lowered) or "going up" in lowered or ("invalid rate" in lowered) or ("rate" in lowered and "week" in lowered):
+        if not _seen(step_id, "data"):
+            return "NOT YET — you'll see that on the numbers part."
         return str(view.get("direction_sentence") or view.get("rate_sentence") or "")
+    if "who made" in lowered or "who makes" in lowered or "manufacturer" in lowered or "made the device" in lowered:
+        return _maker_answer(view, step_id)
     if "promise" in lowered or "measure" in lowered or "98" in lowered:
         return f"{view.get('promise_sentence', '')} {view.get('measure_sentence', '')}".strip()
-    if "ticket" in lowered or "jira" in lowered or "logged" in lowered or "open" in lowered:
-        tickets = view.get("tickets") or []
-        if not tickets:
-            return "No ticket is open in this week's plan yet."
-        listed = ", ".join(f"{row['key']} ({row['name']})" for row in tickets[:6])
-        return f"This week's open plan tickets are {listed}."
+    if any(word in lowered for word in ("ticket", "jira", "logged")):
+        if not _seen(step_id, "logged"):
+            return "NOT YET — you'll see that on the logged part."
+        return _ticket_answer(view)
     if "customer" in lowered or "told" in lowered:
+        if not _seen(step_id, "notes"):
+            return "NOT YET — you'll see that on the notes part."
         return str((view.get("notes") or {}).get("customer") or view.get("decision") or "")
     if "recommend" in lowered or "wrap" in lowered:
+        if not _seen(step_id, "notes"):
+            return "NOT YET — you'll see that on the notes part."
         return str(view.get("decision") or "")
-    if "group" in lowered or "hold" in lowered or "cause" in lowered:
+    if "group" in lowered or "hold" in lowered or "cause" in lowered or "biggest" in lowered:
+        if not _seen(step_id, "charts"):
+            return "NOT YET — you'll see that on the charts part."
+        if "biggest" in lowered and view.get("top_plain"):
+            return f"The biggest invalid type this week is {view['top_plain']}."
         return str(view.get("cause_sentence") or "")
-    if "biggest" in lowered or "invalid type" in lowered:
-        top = view.get("top_plain")
-        if top:
-            return f"The biggest invalid type this week is {top}."
-        return "This week's slice has no invalids."
-    return _step_fact(view, step_id)
+    return _hello(step_id, view)
+
+
+def _code_question_body(lowered: str, codes: list[str], view: dict[str, Any]) -> str:
+    kind, body, _finding = _code_claim(lowered, codes, view)
+    phrase = str(view.get("majority_phrase") or "the top invalid types")
+    negated = bool(_NEGATION.search(lowered))
+    if negated and kind == "correct":
+        return f"The counts do not agree with the 'not'. {phrase} do make up most of the invalids."
+    if negated and kind != "correct":
+        return f"Right to doubt that claim. {body}"
+    if kind == "correct":
+        return f"Yes. {body}"
+    return body
+
+
+def _glossary_answer(lowered: str) -> str:
+    if "maude" in lowered:
+        return (
+            "MAUDE is the FDA's public database of device problem reports. "
+            "It counts reports of problems, not every test that ran."
+        )
+    if re.search(r"\booi\b", lowered):
+        return "OOI means machines that run many nucleic-acid tests at once."
+    if re.search(r"\bjje\b", lowered):
+        return "JJE means clinical chemistry analyzers, the machines that measure chemicals in blood."
+    if "openfda" in lowered:
+        return "openFDA means the FDA's public download of device reports."
+    if re.search(r"\bivd\b", lowered):
+        return "IVD means a lab test run on a sample, not a treatment."
+    if "fishbone" in lowered:
+        return "A fishbone diagram sorts possible causes into groups."
+    if "containment" in lowered:
+        return "Containment means stopping the bad units from going out while the team looks."
+    if "wilson" in lowered:
+        return "A Wilson range is the likely range around the rate. This page calls it the likely range."
+    return ""
+
+
+def _hello(step_id: str, view: dict[str, Any]) -> str:
+    screens = {
+        "complaint": "You are on the complaint. Ask what was promised, or who the device is.",
+        "data": "You are on the numbers. Ask whether the rate is going up. The sentence under the count is the answer.",
+        "charts": "You are on the charts. Ask which invalid types are the biggest, or whether one group stands out.",
+        "logged": "You are on the logged part. Ask which plan tickets are open. A confirmed insight becomes Your ticket, not an INV number.",
+        "notes": "You are on the notes. Ask what the customer should be told.",
+        "wrap": "You are on the wrap-up. Ask what we recommend this week.",
+        "done": "You finished the four weeks. Ask what we recommended, or what is still open.",
+    }
+    line = screens.get(step_id, "Ask about what is on this screen.")
+    if step_id == "data" and view.get("rate_sentence"):
+        return f"{line} {view['rate_sentence']}"
+    if step_id in {"charts", "wrap"} and view.get("cause_sentence") and _seen(step_id, "charts"):
+        return f"{line} {view.get('cause_sentence')}"
+    return line
+
+
+def _maker_answer(view: dict[str, Any], step_id: str) -> str:
+    device = str(view.get("device_line") or "The device name is on the complaint.")
+    maker = str(view.get("maker_sentence") or "")
+    if maker and _seen(step_id, "charts"):
+        return f"{device} {maker}"
+    return device
+
+
+def _ticket_answer(view: dict[str, Any]) -> str:
+    tickets = view.get("tickets") or []
+    if not tickets:
+        return "No plan ticket is open in this week's list yet. A confirmed insight is Your ticket 1, not an INV number. On a real team this would go in Jira."
+    listed = ", ".join(f"{row['key']} ({row['name']})" for row in tickets[:6])
+    return (
+        f"This week's plan tickets are {listed}. "
+        "A confirmed insight is Your ticket 1, Your ticket 2, and so on. "
+        "On a real team this would go in Jira."
+    )
 
 
 def _question_finding(lowered: str, view: dict[str, Any], step_id: str) -> str:
+    if "maude" in lowered:
+        return "the question of what MAUDE is"
+    if "who made" in lowered or "device" in lowered:
+        return "the question of who made the device"
     if _asserts_up(lowered) or "going up" in lowered:
         return "the question of whether the invalid rate is going up"
     if "promise" in lowered:
@@ -264,37 +460,19 @@ def _question_finding(lowered: str, view: dict[str, Any], step_id: str) -> str:
         return "the question of which tickets are open"
     if "recommend" in lowered:
         return "the question of what we recommend"
-    return f"a question on the {step_id} screen about {view.get('rate_sentence', 'this week')}"
+    return f"a question on the {step_id} screen"
 
 
-def _step_fact(view: dict[str, Any], step_id: str) -> str:
-    if step_id == "complaint":
-        return f"{view.get('promise_sentence', '')} {view.get('measure_sentence', '')}".strip()
-    if step_id == "logged":
-        tickets = view.get("tickets") or []
-        if not tickets:
-            return "Nothing new is logged this week."
-        return "Logged this week: " + ", ".join(row["key"] for row in tickets) + "."
-    if step_id == "notes":
-        return str(view.get("decision") or "")
-    if step_id == "wrap":
-        return str(view.get("decision") or "")
-    if step_id == "charts":
-        return f"{view.get('rule1_sentence', '')} {view.get('cause_sentence', '')}".strip()
-    return str(view.get("rate_sentence") or view.get("direction_sentence") or "")
-
-
-def _remember(kind: str, view: dict[str, Any]) -> str:
+def _remember(kind: str) -> str:
     if kind == "correct":
-        return "keep this in mind for the root cause."
+        return "these are the first place to look in the next part."
     if kind == "partial":
-        return f"the counts still say this: {view.get('cause_sentence', '')}"
+        return "keep the part that matches the counts, and check the rest on the next part."
     if kind == "unsupported":
         return "we only keep a claim the counts support."
-    rule = str(view.get("rule1_sentence") or "")
-    if rule:
-        return rule[0].lower() + rule[1:] if rule else "check the counts before you lock a cause."
-    return "check the counts before you lock a cause."
+    if kind == "early":
+        return "we'll check it when that part is on screen."
+    return "use the sentence on this screen before you lock a cause."
 
 
 def _mentioned_codes(lowered: str) -> list[str]:
@@ -303,6 +481,10 @@ def _mentioned_codes(lowered: str) -> list[str]:
         code = match.upper()
         if code not in found:
             found.append(code)
+    # Fragments name a type only when the reader is talking about invalid types.
+    # "not enough sample" is a code name, so the negation check ignores it.
+    if not (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered or "what is" in lowered or "what does" in lowered):
+        return found
     for code, fragments in _FRAGMENTS:
         if code in found:
             continue
@@ -311,8 +493,16 @@ def _mentioned_codes(lowered: str) -> list[str]:
     return found
 
 
+def _opening(text: str) -> str:
+    stripped = text.strip()
+    for lead in _OPENING:
+        if stripped.startswith(lead):
+            return lead
+    return ""
+
+
 def _says_most(lowered: str) -> bool:
-    return any(token in lowered for token in _MOST)
+    return bool(re.search(r"\bmost\b", lowered)) or any(token in lowered for token in _MOST)
 
 
 def _asserts_up(lowered: str) -> bool:
@@ -321,6 +511,22 @@ def _asserts_up(lowered: str) -> bool:
 
 def _is_question(lowered: str) -> bool:
     stripped = lowered.strip()
-    if stripped.endswith("?"):
+    if "?" in stripped:
         return True
-    return stripped.startswith(_QUESTION_START)
+    core = stripped.lstrip("([\"' ")
+    return core.startswith(_QUESTION_START)
+
+
+def _is_greeting(lowered: str) -> bool:
+    stripped = lowered.strip(" !.?,")
+    return stripped in {"hi", "hello", "hey", "hi there", "hello there"} or stripped.startswith("hello ")
+
+
+def _join(parts: list[str]) -> str:
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    if len(parts) == 2:
+        return f"{parts[0]} and {parts[1]}"
+    return ", ".join(parts[:-1]) + f", and {parts[-1]}"

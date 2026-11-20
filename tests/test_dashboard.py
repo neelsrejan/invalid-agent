@@ -8,17 +8,35 @@ from invalid_agent.ui.plain import unexplained_jargon
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _visible(app) -> str:
+def _chunks(app) -> list[str]:
     chunks = []
     for name in ("markdown", "caption", "header", "subheader", "title", "text", "info", "warning", "error", "html"):
         for item in getattr(app, name, []):
             chunks.append(str(getattr(item, "value", "")))
-    for button in getattr(app, "button", []):
+    for button in list(getattr(app, "button", [])) + list(getattr(app, "download_button", [])):
         chunks.append(str(button.label))
     for metric in getattr(app, "metric", []):
         chunks.append(str(getattr(metric, "label", "")))
         chunks.append(str(getattr(metric, "value", "")))
-    return "\n".join(chunks)
+    for frame in getattr(app, "dataframe", []):
+        chunks.append(str(getattr(frame, "value", "")))
+    for box in list(getattr(app, "selectbox", [])) + list(getattr(app, "radio", [])):
+        chunks.append(str(box.label))
+        chunks.extend(str(option) for option in (box.options or []))
+    for box in list(getattr(app, "text_input", [])) + list(getattr(app, "toggle", [])):
+        chunks.append(str(box.label))
+    for item in getattr(app, "expander", []):
+        chunks.append(str(item.label))
+    return [chunk for chunk in chunks if chunk]
+
+
+def _visible(app) -> str:
+    return "\n".join(_chunks(app))
+
+
+def _lint_each(app) -> None:
+    for chunk in _chunks(app):
+        assert unexplained_jargon(chunk) == [], chunk
 
 
 def _run_app(monkeypatch):
@@ -64,7 +82,7 @@ def test_cannot_skip_weeks_and_every_part_has_a_wrap_up(monkeypatch):
     # One Back, one Next. The talk-back box is on the first screen.
     assert sum(1 for button in app.button if button.key == "back") == 1
     assert sum(1 for button in app.button if button.key == "next") == 1
-    assert any(box.key == "talk_text" for box in app.text_input)
+    assert any(box.label == "Your question or insight" for box in app.text_input)
 
     app.session_state["story_week"] = 4
     app.run()
@@ -76,7 +94,7 @@ def test_cannot_skip_weeks_and_every_part_has_a_wrap_up(monkeypatch):
         app = _click_key(app, "next")
         assert expected in _visible(app)
         assert "Week 1 of 4" in _visible(app)
-        assert any(box.key == "talk_text" for box in app.text_input)
+        assert any(box.label == "Your question or insight" for box in app.text_input)
     visible = _visible(app)
     assert "What we recommend" in visible
     assert "Open the week-4" not in visible
@@ -115,10 +133,12 @@ def test_talkback_answers_and_a_confirmed_insight_carries(monkeypatch):
     confirmed = _visible(app)
     assert "YEP, YOU GOT IT!" in confirmed
     assert "Week 1 insights" in confirmed
-    assert "logged as Jira ticket INV-" in confirmed
-    bullet = next(line for line in confirmed.splitlines() if "logged as Jira ticket INV-" in line)
+    assert "Your ticket 1" in confirmed
+    assert "INV-13" not in confirmed
+    assert confirmed.count("keep it in mind for the root cause") == 1
+    bullet = next(line for line in confirmed.splitlines() if "logged as Your ticket 1" in line)
     app = _click_key(app, "next")
-    assert bullet.strip("- ").strip() in _visible(app) or "logged as Jira ticket INV-" in _visible(app)
+    assert bullet.strip("- ").strip() in _visible(app) or "logged as Your ticket 1" in _visible(app)
     assert "Week 1 insights" in _visible(app)
 
     for _step in range(2):
@@ -128,15 +148,15 @@ def test_talkback_answers_and_a_confirmed_insight_carries(monkeypatch):
     week2 = _visible(app)
     assert "Week 2 of 4" in week2
     assert "Still open from earlier weeks" in week2
-    assert "INV-" in week2
-    assert unexplained_jargon(week2) == [], unexplained_jargon(week2)
+    assert "Your ticket 1" in week2
+    _lint_each(app)
 
 
 def test_rendered_week_has_no_unexplained_jargon_or_secrets(monkeypatch):
     app = _run_app(monkeypatch)
     for _step in range(6):
+        _lint_each(app)
         visible = _visible(app)
-        assert unexplained_jargon(visible) == [], unexplained_jargon(visible)
         assert "GROQ_API_KEY" not in visible
         assert "api_key" not in visible.casefold()
         assert "/home/" not in visible
@@ -145,6 +165,73 @@ def test_rendered_week_has_no_unexplained_jargon_or_secrets(monkeypatch):
         if _step < 5:
             app = _click_key(app, "next")
     assert "What we recommend" in _visible(app)
+
+
+def test_the_same_insight_is_not_logged_twice(monkeypatch):
+    app = _run_app(monkeypatch)
+    app = _click_key(app, "next")
+    app = _click_key(app, "next")
+    insight = next(button for button in app.button if button.label.startswith("It looks like") or button.label.startswith("The biggest invalid type"))
+    insight.click()
+    app.run()
+    app = _click_label(app, "Tell the agent")
+    first = _visible(app)
+    insight = next(button for button in app.button if button.label.startswith("It looks like") or button.label.startswith("The biggest invalid type"))
+    insight.click()
+    app.run()
+    app = _click_label(app, "Tell the agent")
+    visible = _visible(app)
+    assert "Your ticket 1" in visible
+    assert "Your ticket 2" not in visible
+    assert visible.count("We found") == first.count("We found")
+
+
+def test_sending_a_question_clears_the_box(monkeypatch):
+    app = _run_app(monkeypatch)
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value("What is MAUDE?").run()
+    assert not app.exception, app.exception
+    app = _click_label(app, "Tell the agent")
+    visible = _visible(app)
+    assert "public database of device problem reports" in visible
+    shown = next(item for item in app.text_input if item.label == "Your question or insight")
+    assert (shown.value or "") == ""
+    assert "Flag 1" not in visible
+
+
+def test_a_failed_load_does_not_print_the_exception(monkeypatch):
+    import streamlit as st
+
+    def boom(_scenario):
+        raise RuntimeError("postgres://secret-host/db password=hunter2")
+
+    st.cache_data.clear()
+    monkeypatch.setattr("invalid_agent.data.frame.load_frame", boom)
+    app = _run_app(monkeypatch)
+    visible = _visible(app)
+    assert "does not show a connection string" in visible
+    assert "hunter2" not in visible
+    assert "postgres://" not in visible
+    assert "RuntimeError" not in visible
+
+
+def test_a_failed_deck_does_not_print_the_exception(monkeypatch):
+    def boom(_path, _facts):
+        raise RuntimeError("postgres://secret-host/db password=hunter2")
+
+    monkeypatch.setattr("invalid_agent.artifacts.deck.write_deck", boom)
+    app = _run_app(monkeypatch)
+    app.session_state["unlocked_week"] = 4
+    app.session_state["story_week"] = 4
+    app.session_state["beat"] = 5
+    app.run()
+    assert not app.exception, app.exception
+    app = _click_key(app, "prepare-deck")
+    visible = _visible(app)
+    assert "The slide file did not build" in visible
+    assert "hunter2" not in visible
+    assert "postgres://" not in visible
+    assert "RuntimeError" not in visible
 
 
 def test_case_choice_survives_the_next_part(monkeypatch):

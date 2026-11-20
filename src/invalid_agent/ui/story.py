@@ -74,6 +74,14 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
     top = hypotheses[0] if hypotheses else {}
     single = str(top.get("cause") or "no_single_cause") != "no_single_cause"
     level = _clean_level(top.get("level"), single)
+    previous = None
+    if week > 1:
+        prev_frame = with_bands(slice_through_story_week(frame, week - 1).copy())
+        prev_frame.attrs["spec_estimable"] = _estimable(scenario, prev_frame)
+        prev_ranked = rank_hypotheses(prev_frame, spec)
+        prev_top = prev_ranked[0] if prev_ranked else {}
+        prev_single = str(prev_top.get("cause") or "no_single_cause") != "no_single_cause"
+        previous = (prev_single, _clean_level(prev_top.get("level"), prev_single))
     ratio = top.get("lift")
     if ratio is not None:
         try:
@@ -100,7 +108,7 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
     count_label = f"{int(overall['k'])} of {int(overall['n'])}"
     noun = "share of reports" if not estimable else "invalid rate"
     rate_sentence = f"The {noun} this week is {rate_label} ({count_label})."
-    rule1_sentence = f"This chart counts {rule1_count} weeks far above the usual rate."
+    rule1_sentence = _rule1_sentence(rule1_count)
     direction_sentence = _direction_sentence(direction, early, late, rule1_sentence)
     promise_sentence = (
         "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
@@ -114,14 +122,14 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
             "The number on screen is the share of reports that are an invalid type."
         )
     )
-    decision = _decision(week, level, single)
+    decision = _decision(week, level, single, previous)
     unit = int(scenario.get("cost_per_invalid_usd", 85))
     cost = int(overall["k"]) * unit
     arrivals_text = _arrivals(scenario, week)
     complaint = with_gloss(str(scenario.get("complaint") or "").strip())
     device_line = _device_line(scenario)
     case_line = f"Case: {plain_case_label(str(scenario.get('title') or scenario.get('id') or 'case'))}. Week {week}."
-    call_label = "Look harder" if (bool(overall["exceeds_spec"]) if estimable else single) else "Hold"
+    call_label = "Look harder" if (bool(overall["exceeds_spec"]) if estimable else single) else "Watch"
     notes = _notes(
         rate_sentence=rate_sentence,
         cause_sentence=cause_sentence,
@@ -179,15 +187,17 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         "arrivals": arrivals_text,
         "device_line": device_line,
         "case_line": case_line,
-        "glossary": (
-            "MAUDE is the FDA's public database of device problem reports. "
-            "OOI means machines that run many nucleic-acid tests at once. "
-            "JJE means clinical chemistry analyzers, the machines that measure chemicals in blood."
+        "glossary": _glossary(scenario),
+        "fda": _is_fda(scenario),
+        "maker_sentence": (
+            f"The company that stands out in these counts is {level}."
+            if single and str(top.get("cause") or "") == "reported_manufacturer"
+            else ""
         ),
         "notes": notes,
         "cost": cost,
         "unit": unit,
-        "window_sentence": _window_sentence(week),
+        "window_sentence": _window_sentence(week, whole_file=len(sliced) >= _dated_rows(frame) and week < 4),
     }
     return _jsonify(view)
 
@@ -201,7 +211,8 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
             view["promise_sentence"],
             view["measure_sentence"],
             view["device_line"],
-            view["glossary"] if week == 1 else "",
+            view["glossary"] if week == 1 and view.get("glossary") else "",
+            view["window_sentence"] if week == 1 else "",
             "### The complaint",
             view["complaint"],
             view["arrivals"] or "Nothing new came in this week. The original complaint still stands.",
@@ -222,9 +233,8 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
             view["case_line"],
             view["window_sentence"],
             "The bars rank the biggest invalid types first. The line adds them up.",
-            view["rule1_sentence"],
-            "The red marks on the chart are those weeks.",
             view["direction_sentence"],
+            "The red marks on the chart are those weeks.",
             view["cause_sentence"],
             _unreported_line(view),
         ]
@@ -233,7 +243,7 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
             view["case_line"],
             "Jira is the ticket list the team already uses. This page reads the plan. It does not create a live ticket.",
             _ticket_lines(view),
-            "A confirmed insight from the box below is added as the next ticket and carried into the next week.",
+            "A confirmed insight is Your ticket 1, then Your ticket 2. On a real team this would go in Jira.",
         ]
     elif beat_id == "notes":
         lines = [
@@ -518,8 +528,36 @@ def _tickets(
     return shown, len(full["tasks"])
 
 
+def _rule1_sentence(count: int) -> str:
+    noun = "week" if int(count) == 1 else "weeks"
+    return f"This chart counts {int(count)} {noun} far above the usual rate."
+
+
+def _is_fda(scenario: dict[str, Any]) -> bool:
+    code = str(scenario.get("product_code") or "").upper()
+    return str(scenario.get("denominator") or "") == "reported_events" or code in {"OOI", "JJE"}
+
+
+def _glossary(scenario: dict[str, Any]) -> str:
+    if not _is_fda(scenario):
+        return ""
+    code = str(scenario.get("product_code") or "").upper()
+    lines = ["MAUDE is the FDA's public database of device problem reports."]
+    if code == "OOI":
+        lines.append("OOI means machines that run many nucleic-acid tests at once.")
+    elif code == "JJE":
+        lines.append("JJE means clinical chemistry analyzers, the machines that measure chemicals in blood.")
+    return " ".join(lines)
+
+
 def _plain_task_name(name: str) -> str:
-    text = name.replace("Retest the next-best stratum", "Check the next-best group again")
+    text = name.replace(
+        "Fishbone review across QA, R&D, and Manufacturing",
+        "Sort possible causes into groups (a fishbone diagram sorts possible causes) with quality checks, research, and manufacturing",
+    )
+    text = text.replace("Containment decision", "Decide on stopping the bad units")
+    text = text.replace("Execute containment", "Carry out stopping the bad units")
+    text = text.replace("Retest the next-best stratum", "Check the next-best group again")
     text = text.replace("Retest", "Check again")
     text = text.replace("strata", "groups")
     text = text.replace("stratum", "group")
@@ -540,17 +578,24 @@ def _plain_task_name(name: str) -> str:
     return text
 
 
-def _decision(week: int, level: str, single: bool) -> str:
+def _decision(week: int, level: str, single: bool, previous: tuple[bool, str] | None) -> str:
     who = level if single else "no single group"
-    if week <= 1:
+    if week >= 4:
+        if single:
+            return f"We recommend holding {level}. We do not hold every group on this file."
+        return "We do not hold one group. No group stood out enough. We keep the case open and ask for a wider look."
+    if previous is None:
         return f"We opened the case. The leading read is {who}."
-    if week == 2:
-        return "We kept the leading read. New notes are clues. They do not outvote the counts."
-    if week == 3:
-        return "We did not switch the cause onto a side note. Any hold stays on the leading group, not the whole product."
-    if single:
-        return f"We recommend holding {level}. We do not hold every group on this file."
-    return "We do not hold one group. No group stood out enough. We keep the case open and ask for a wider look."
+    prev_single, prev_level = previous
+    if single and prev_single and prev_level == level:
+        return f"The leading group is still {level}. The new notes do not change the counts."
+    if single and prev_single:
+        return f"The leading group changed from {prev_level} to {level}. We follow the counts, not a side note."
+    if single and not prev_single:
+        return f"A leading group showed up: {level}. Last week no single group stood out."
+    if prev_single:
+        return f"Last week's leading group was {prev_level}. This week's slice does not keep a single group."
+    return "No single group stands out this week, same as last week. We will not pretend we know the cause."
 
 
 def _notes(
@@ -629,11 +674,33 @@ def _device_line(scenario: dict[str, Any]) -> str:
     return f"Device: {device}."
 
 
-def _window_sentence(week: int) -> str:
+def _dated_rows(frame: pd.DataFrame) -> int:
+    if frame.empty or "date" not in frame.columns:
+        return len(frame)
+    dates = pd.to_datetime(frame["date"], errors="coerce")
+    counted = int(dates.notna().sum())
+    return counted or len(frame)
+
+
+def _window_sentence(week: int, *, whole_file: bool = False) -> str:
+    if week < 4 and whole_file:
+        return (
+            f"Week {week} uses the whole file. Every date in the file is already in this slice, "
+            "so there is no later date to leave out."
+        )
     if week >= 4:
-        return "Week 4 uses the whole date range in the file."
+        return (
+            "Week 4 uses the whole date range in the file. "
+            "Earlier weeks left the later dates out so the story could not peek ahead."
+        )
     part = {1: "the first quarter", 2: "the first half", 3: "the first three quarters"}[week]
-    return f"Week {week} uses {part} of the date range. Later dates are not in this week's numbers."
+    sentence = f"Week {week} uses {part} of the date range. Later dates are not in this week's numbers."
+    if week == 1:
+        sentence += (
+            " Week 1 shows only that first quarter because those are the dates that would have arrived first. "
+            "The rest of the file stays out until a later week."
+        )
+    return sentence
 
 
 def _clean_level(level: Any, single: bool) -> str:
