@@ -74,7 +74,7 @@ def build_plan(scenario: dict[str, Any], top: dict[str, Any], week: int) -> dict
         _task("T4", "Fishbone review across QA, R&D, and Manufacturing", "PM", start + timedelta(days=7), 3, ["T1"], 1),
         _task("T5", f"Trace {cause} for {level}", owner, start + timedelta(days=10), 5, ["T4"], 1),
         _task("T6", "5 Whys on the top branch", "QA", start + timedelta(days=15), 3, ["T5"], 2),
-        _task("T7", "Retest the next-best stratum", "R&D", start + timedelta(days=14), 4, ["T4"], 2),
+        _task("T7", "Check the next-best group again", "R&D", start + timedelta(days=14), 4, ["T4"], 2),
         _task("T8", "Execute containment", owner, start + timedelta(days=18), 6, ["T3", "T6"], 3),
         _task("T9", "Size the cost of the invalids and of the field action", "PM", start + timedelta(days=18), 3, ["T1"], 3),
         _task("T10", "Effectiveness check and recommendation", "PM", start + timedelta(days=26), 2, ["T8"], 4),

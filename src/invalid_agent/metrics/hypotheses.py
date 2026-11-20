@@ -89,13 +89,29 @@ def _best_level(df: pd.DataFrame, column: str) -> dict[str, Any] | None:
         if rate <= complement_rate:
             continue
         table = [[k, n - k], [ck, cn - ck]]
-        _chi2, p_value, _dof, _expected = stats.chi2_contingency(table)
-        lift = rate / complement_rate if complement_rate > 0 else math.inf
+        try:
+            _chi2, p_value, _dof, _expected = stats.chi2_contingency(table)
+        except ValueError:
+            continue
+        if not math.isfinite(float(p_value)):
+            continue
         excess = k - complement_rate * n
-        if p_value >= ALPHA or lift < MIN_LIFT or excess < MIN_EXCESS:
+        # A zero rate in the other rows makes the ratio undefined. Do not
+        # store infinity. The score uses a finite stand-in so the group can
+        # still rank, and the sentence says there is no ratio to quote.
+        if complement_rate > 0:
+            lift: float | None = rate / complement_rate
+            score_lift = lift
+        else:
+            # Haldane-Anscombe keeps a finite ratio when the other rows have
+            # zero invalids. The displayed lift stays unset so the page does
+            # not quote a made-up multiple.
+            lift = None
+            score_lift = ((k + 0.5) / (n + 1.0)) / ((ck + 0.5) / (cn + 1.0))
+        if p_value >= ALPHA or excess < MIN_EXCESS or (lift is not None and lift < MIN_LIFT):
             score = 0.0
         else:
-            score = (lift - 1.0) * math.log1p(excess) * (-math.log10(max(float(p_value), 1e-300)))
+            score = (score_lift - 1.0) * math.log1p(excess) * (-math.log10(max(float(p_value), 1e-300)))
         if score <= 0.0:
             continue
         row = {
@@ -132,10 +148,17 @@ def rank_hypotheses(df: pd.DataFrame, spec_invalid_rate: float = 0.02) -> list[d
             continue
         best["cause"] = cause
         best["category"] = CAUSE_CATEGORY[cause]
-        best["summary"] = (
-            f"{best['level']} {cause.replace('_', ' ')} rate is above the complement "
-            f"with lift {best['lift']:.2f}"
-        )
+        if best.get("lift") is None or not math.isfinite(float(best["lift"])):
+            best["lift"] = None
+            best["summary"] = (
+                f"{best['level']} {cause.replace('_', ' ')} is above the other rows. "
+                "The other rows had no invalids, so there is no ratio to quote."
+            )
+        else:
+            best["summary"] = (
+                f"{best['level']} {cause.replace('_', ' ')} rate is above the complement "
+                f"with lift {best['lift']:.2f}"
+            )
         found.append(best)
     found.sort(key=lambda row: (-row["score"], row["cause"]))
     if not found:

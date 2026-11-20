@@ -1,47 +1,73 @@
 # Guided page logic trace
 
-The page is one script. `main` keeps the case and the week, then draws one step. The step copy and the ranker sentences live in `ui/guide.py`. Python still computes every rate. This trace is the call chain, with the lines as they are on this commit.
+The page is one script. It walks Week 1, then Week 2, then Week 3, then Week 4. Each week has six parts: complaint, numbers, charts, what gets logged, root-cause notes, and a wrap-up. The next week unlocks only when the wrap-up's Next button is pressed. Python computes every count. A language model may only rephrase the talk-back reply.
+
+There is no week switcher and no free-explore panel. Those were the old way to skip ahead.
 
 ## main
 
-`app/streamlit_app.py:779` `main` loads dotenv and Streamlit secrets, then `load_settings`. `app/streamlit_app.py:785` sets `public` from `DATA_BACKEND=openfda`. `app/streamlit_app.py:789` calls `_scenarios` (`app/streamlit_app.py:92`). On the hosted app that returns only `cases/openfda_ooi.yaml` and `cases/openfda_jje.yaml`. A local run appends those two after every `scenarios/*.yaml` file.
+`app/streamlit_app.py:697` `main` loads dotenv and Streamlit secrets, then `load_settings`. `app/streamlit_app.py:703` sets `public` from `DATA_BACKEND=openfda`. The banner is `PUBLIC_BANNER` or `PRACTICE_BANNER` from `src/invalid_agent/ui/plain.py`. `app/streamlit_app.py:706` calls `_scenarios` (`app/streamlit_app.py:93`). On the hosted app that returns only `cases/openfda_ooi.yaml` and `cases/openfda_jje.yaml`. A local run appends those two after every `scenarios/*.yaml` file.
 
-`app/streamlit_app.py:798` calls `_init_state`. `app/streamlit_app.py:820` then branches: Free explore calls `_render_explore` (`app/streamlit_app.py:681`). The guided walk calls `_render_guided` (`app/streamlit_app.py:644`). `app/streamlit_app.py:826` calls `main()` at import so `streamlit run` and AppTest both enter here.
+`app/streamlit_app.py:714` calls `_init_state`. `app/streamlit_app.py:724` calls `_render_guided`. `main()` runs at import so `streamlit run` and AppTest both enter here.
 
 ## _init_state
 
-`app/streamlit_app.py:174`. The first loop, `app/streamlit_app.py:175`, re-assigns each key in `_KEPT_WIDGET_KEYS` (`app/streamlit_app.py:171`) to itself when the key is already present.
+`app/streamlit_app.py:102`. The first loop re-assigns each key in `_KEPT_KEYS` (`app/streamlit_app.py:40`) to itself when the key is already present.
 
-Those four keys are widget keys: `scenario_label` (the case select box), `week` (the week slider), `stratum` (Break by), and `audience` (the status radio). Streamlit deletes a widget key at the end of a run that did not render that widget. The guided steps do not render the sidebar select box or the slider, so without the re-assignment the next run finds the key missing and the defaults below put the case back on the first file and the week back on 0. Writing the key into this run's session state, before any widget is created, is the documented way to keep it.
+Streamlit deletes a widget key at the end of a run that did not render that widget. `scenario_id` is the case select box, and it is drawn only on week 1, part 1. `stratum` is the break select box, drawn only on the charts part. `audience` is the note radio, drawn only on the notes part. `story_week`, `beat`, `unlocked_week`, `week_insights`, and `open_items` are not widgets. Re-assigning them is harmless and keeps the same habit as the widget keys.
 
-`app/streamlit_app.py:191` fills week 0 when the key is absent, then clamps it to 0–4. `app/streamlit_app.py:194` fills the first case label when the saved label is missing or not in this run's list. `artifact` is not a widget key. `audience` is, and `app/streamlit_app.py:199` fills `customer` only when the saved value is not one of the three audiences.
+`talk_text` is drawn on every part, so it is not in `_KEPT_KEYS`. After a reply, `_apply_talk` sets `_clear_talk`. The next run pops `talk_text` before the box is created, which empties the box. Setting the widget's value after it exists would be ignored.
+
+After the re-assign, the function clamps `story_week` so it cannot be higher than `unlocked_week`, and `unlocked_week` cannot be higher than 4. A session value of week 4 on a fresh visit is put back to week 1. Changing `scenario_id` clears the story, the insights, the open tickets, and the deck, and locks the walk back to week 1.
 
 ## _render_guided
 
-`app/streamlit_app.py:644`. `app/streamlit_app.py:650` reads `guide_step`. `app/streamlit_app.py:651` indexes `GUIDE_STEPS`. `app/streamlit_app.py:659` prints `progress_label` and the step title. `app/streamlit_app.py:660` calls `_render_brief` (`app/streamlit_app.py:511`), which prints the step's `doing`, `why`, and `look` strings. `app/streamlit_app.py:661` calls `_nav` (`app/streamlit_app.py:496`) for Back and the step's `next_label`.
+`app/streamlit_app.py:624`. It loads one week view through `_week_view` (`app/streamlit_app.py:198`), which calls `build_week_view`. A load failure, including a connection error, logs only the exception type and shows one fixed sentence. The sentence does not include the exception text or a connection string. On week 1, part 1, `_render_case_picker` (`app/streamlit_app.py:613`) draws the case select box, then the view is loaded again so the complaint matches the case. That second load uses the same fixed sentence.
 
-`app/streamlit_app.py:664` resolves the case from `scenario_label`. On the case step, `app/streamlit_app.py:668` calls `_render_case_picker` and `app/streamlit_app.py:669` calls `_render_selected_complaint`. The picker buttons are the ids in `SUGGESTED_CASE_IDS` that this run actually loaded. The hosted list is OOI and JJE, so those are the two buttons. The reagent-lot file is a button only when that synthetic file is in the list.
+The part title comes from `progress_label` (`src/invalid_agent/ui/guide.py:99`) and `GUIDE_STEPS` (`src/invalid_agent/ui/guide.py:30`). The six ids are `complaint`, `data`, `charts`, `logged`, `notes`, `wrap`.
 
-`app/streamlit_app.py:673` calls `_load_result` (`app/streamlit_app.py:217`) when `step.needs_case` is true. That calls `run_case`. `app/streamlit_app.py:676` calls `_render_guided_body`. `app/streamlit_app.py:678` repeats Back and Next at the bottom.
+`beat_lines` (`src/invalid_agent/ui/story.py:205`) is the text. The charts part also draws the weekly rate chart and the invalid-type bars from `view["chart"]` and `view["pareto"]`. Bar labels are the plain invalid-type names from `code_plain`. A public-report case titles the chart "Weekly share of reports". A practice case titles it "Weekly invalid rate". The red-mark sentence is `view["rule1_sentence"]`, and `direction_sentence` already includes it, so the charts part does not print it a second time. The talk-back reply for "why is the rate going up" includes that same sentence. It does not run a second count.
 
-## _render_guided_body
+The logged part and the notes part also open cached write-ups from `_case_sections` (`app/streamlit_app.py:457`). That call runs `run_case` with `LLM_BACKEND=deterministic`, so Groq is not used to build the memo, the cause diagram, the five whys, the eight-step form, the schedule, the risk list, the status notes, or the read-only ticket links. Those write-ups describe the whole practice file, not the date slice on screen. Each block says that, and it says the rate in the sentences above the block is the one for this week. `sections_from_run` (`src/invalid_agent/ui/records.py`) turns the records into plain sentences and drops a sentence that still has unexplained jargon or a server path. Markdown marks are stripped before that check, so a word wrapped in underscores is still checked. Each block is an expander, closed by default. The logged part also has Ask, which runs a prepared question against the report table. A missing table shows the same fixed sentence and does not print the exception.
 
-`app/streamlit_app.py:527`. The complaint step returns at `app/streamlit_app.py:537`. The case step returns at `app/streamlit_app.py:543` because the picker was already drawn. Every later step prints the case id and week at `app/streamlit_app.py:547`, then the week chips via `_week_row` (`app/streamlit_app.py:438`).
+The talk box uses a new key after every reply (`talk_nonce` in `_apply_talk`). That empties the box. Deleting the old key did not, because the browser sent the typed value back on the same run.
 
-The chart step (`app/streamlit_app.py:556`) draws the five tiles and the p-chart, and `_week_story` (`app/streamlit_app.py:456`) adds who arrived and the decision log line. Pareto is `app/streamlit_app.py:559`. Strata is `app/streamlit_app.py:561`: one break, then `cause_sentence`. The projection is `app/streamlit_app.py:581`. Artifacts are `app/streamlit_app.py:583`. Notes are `app/streamlit_app.py:589` and call `_render_note`. Jira is `app/streamlit_app.py:595`. The pitch is `app/streamlit_app.py:597`, which calls `_render_pitch` (`app/streamlit_app.py:603`).
+`_render_carried` (`app/streamlit_app.py:273`) lists open tickets and flags from earlier weeks at the top of week 2, 3, and 4. `_render_talk` (`app/streamlit_app.py:294`) is on every part, including the finished screen. `_render_insights` (`app/streamlit_app.py:284`) prints `Week N insights` under the reply. `_nav` (`app/streamlit_app.py:579`) draws one Back button and one Next button, after the insights.
 
-`_render_pitch` shows the week-4 close-out markdown once. It does not also print the recommendation as a separate outcome line. `_offer_deck` (`app/streamlit_app.py:626`) names `exec_deck.pptx` and offers a download. It does not print the server path.
+Next on the wrap-up of week N sets `story_week` to N+1 and raises `unlocked_week`. Next on the week-4 wrap-up sets `finished`. Back from week 2, part 1, returns to the week-1 wrap-up. Back does not lock the week again.
 
-`app/streamlit_app.py:600` calls `_guided_questions` (`app/streamlit_app.py:517`) on the hosted backend. That filters `SUGGESTED_QUESTIONS` through `questions_for`.
+Week 4's wrap-up can build `exec_deck.pptx` in a temporary directory. The path is never shown. A public-report case (`estimable` false) uses the public banner, says "share of reports", and omits the 2% spec line. A practice case keeps the practice banner and the spec line. A build failure logs only the exception type and shows "The slide file did not build. Try again. This page does not show the error detail."
 
-## ui/guide.py
+## The week view
 
-`src/invalid_agent/ui/guide.py` holds the words. It does not compute a rate.
+`build_week_view` (`src/invalid_agent/ui/story.py:59`) slices the frame with `slice_through_story_week` (`src/invalid_agent/ui/story.py:33`). Week 1 keeps the first quarter of the dates. Week 2 keeps the first half. Week 3 keeps the first three quarters. Week 4 keeps the whole file. Rates, the weekly chart, the invalid-type bars, the ranker, and the what-if all use that slice. The week-1 sentence says those are the dates that would have arrived first, so the story does not peek ahead. When every date in the file is already inside the slice, the sentence says this week uses the whole file.
 
-- `GUIDE_STEPS` at `src/invalid_agent/ui/guide.py:27` is the ten steps, in order. The case step's `look` (`src/invalid_agent/ui/guide.py:62`) says the hosted page offers OOI and JJE.
-- `progress_label` at `src/invalid_agent/ui/guide.py:256` formats `Step N of 10`.
-- `rag_label` at `src/invalid_agent/ui/guide.py:260` reads `RAG: Amber`, `RAG: Green`, or `RAG: Red` from the leadership note. `_render_metrics` (`app/streamlit_app.py:249`) uses it.
-- `cause_sentence` at `src/invalid_agent/ui/guide.py:270` turns the ranker's top hypothesis into one sentence. The strata step prints it.
-- `decision_for_week` at `src/invalid_agent/ui/guide.py:285` and `arrivals` at `src/invalid_agent/ui/guide.py:296` supply `_week_story`.
-- `stratum_label` at `src/invalid_agent/ui/guide.py:314` is the button text for a break column.
-- `questions_for` at `src/invalid_agent/ui/guide.py:321` keeps a suggested MAUDE question when it matches the open product code. The pitch step lists all four because `match_case` is false.
+Week 1 also shows the opening note that the old loop stored as week 0, plus the week-1 note. There is no week 0 on the page.
+
+The break menu defaults to the ranker's column (`_default_break`, `src/invalid_agent/ui/story.py:467`). Blank levels (`UNREPORTED`) are left out of the table. The caption says a blank is not a cause.
+
+A what-if that clears every invalid says `0%` and explains that this is a pretend cleanup, not a new test (`_projection_sentence`, `src/invalid_agent/ui/story.py:397`). It does not print `0.00%`.
+
+Plan tickets come from `build_plan`. Display keys are `INV-1`, `INV-2`, and so on, in plan order, including the tasks from the old week 0 inside week 1. The old "Retest" task name is "Check the next-best group again". A confirmed insight is not given the next INV number. It is "Your ticket 1", then "Your ticket 2". The reply says a real team would put that in Jira. This page does not create that ticket.
+
+The week's call is "Look harder" or "Watch". It is not "Hold". Week 4 may still recommend holding one group, because that sentence is the recommendation, not the call label.
+
+The decision for week 2 or 3 compares this week's leading group with the previous week's slice. It does not reuse a fixed sentence.
+
+The MAUDE, OOI, and JJE glossary is on the complaint only when the case is a public-report file (`denominator` `reported_events`, or product code OOI or JJE). A practice case does not print it. The talk-back glossary still answers "What is MAUDE?" if the reader asks.
+
+The wrap-up text is built for the week on screen. Week 4 does not hide the recommendation behind a button.
+
+## Talk-back
+
+`respond` (`src/invalid_agent/ui/talkback.py:120`) classifies the message against facts already on screen. The part order is complaint, numbers, charts, logged, notes, wrap-up. A claim that names invalid types as "most" or "biggest" before the charts part is `early`: the reply is `NOT YET — you'll see that on the charts part.` There is no ticket and no flag. A "going up" statement before the numbers part is the same kind of early reply, naming the numbers part. A negated claim, including "cannot" and "the biggest is not", and a question, including one that starts with "would" or hides the question mark in parentheses, are not graded as correct. They go to the question answerer. A question about tickets, Jira, or what was logged waits until the logged part.
+
+A correct insight returns a bullet and logs "Your ticket N". `_apply_talk` (`app/streamlit_app.py:218`) appends that bullet to `week_insights[week]` and appends an open item. The same finding sent again does not take a new number. A partly right or unsupported insight logs a flag (`Flag 1`, `Flag 2`, ...) and does not add a bullet. A question, including "What is MAUDE?", "Who made the device?", and "hello", gets a plain answer and logs nothing. Open items are shown at the top of the next week.
+
+`example_prompts` (`src/invalid_agent/ui/talkback.py:91`) builds three clickable prompts from the same view. The "make up most of the invalids" prompt is not offered before the charts part. "Why is the invalid rate going up?" is on every part.
+
+`reword_reply` (`src/invalid_agent/ui/talkback.py:150`) calls the model only when fixed wording is off and a model exists. `_draft_ok` (`src/invalid_agent/ui/talkback.py:173`) keeps the draft only when it still starts with the same opening verdict, the number tokens are the same set as the plain reply, a ticket or flag id is still there as its own id, `unexplained_jargon` is empty, and `check_narrative` accepts the draft. The facts passed to `check_narrative` are the numbers parsed from the plain reply plus the ticket and flag ids. The plain reply itself is not passed as a string, because a long fact string would hide extra numbers. A draft that adds a number, lengthens the verdict, or uses an unexplained term is rejected. Any failure returns the plain reply. The page never prints "Fidelity ok" or "model draft was rejected".
+
+## Words
+
+`src/invalid_agent/ui/plain.py` holds the banners, the percent formatter, and `unexplained_jargon`. The check is per sentence. A gloss in one sentence does not excuse the same word in the next sentence. The page lint runs that check on each rendered element, not on the page glued together. A term such as MAUDE, OOI, JJE, openFDA, fishbone, containment, or Wilson may appear only when the same sentence explains it. The page does not use the bare words estimable, Pareto, strata, fidelity, pooled, control chart, Western Electric, lift, UCL, LCL, p-chart, denominator, deterministic, or narrative. Case-file sentences that already contain one of those words go through `with_gloss` before they are shown. Agent write-ups go through `soften` and then `safe_prose`, which drops a sentence that still fails.

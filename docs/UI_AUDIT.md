@@ -1,5 +1,9 @@
 # UI audit: hosted Invalid Bot demo
 
+The guided walk described below was replaced by the four-week story in `docs/ui/LOGIC_TRACE.md`. This file is the audit that led to the earlier ten-step page. It is not the current flow.
+
+
+
 The page under review is `app/streamlit_app.py`, served from `main` by Streamlit Community Cloud at https://invalid-agent-lwycv4pt4vd4emwhuiqde3.streamlit.app/. The root `streamlit_app.py` only forwards to that file. This audit describes the control panel a first visitor met, where that panel made them invent the investigation order, and the guided flow that replaces it.
 
 The navy banner, cream theme (`.streamlit/config.toml`), metric tiles, and Plotly charts stay. Free explore is the previous panel, one toggle away. Hosting stays Streamlit Community Cloud from `main`. Free tiers only. No API keys, tokens, or secrets belong in the repo, the git history, or the page source.

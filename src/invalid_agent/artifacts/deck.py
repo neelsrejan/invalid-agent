@@ -10,6 +10,8 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
+from invalid_agent.ui.plain import format_percent
+
 NAVY = RGBColor(0x0B, 0x3A, 0x5B)
 TEAL = RGBColor(0x1F, 0x7A, 0x8C)
 INK = RGBColor(0x1C, 0x28, 0x30)
@@ -49,6 +51,16 @@ def _blank(prs: Presentation):
     return slide
 
 
+def _reports_only(facts: dict[str, Any]) -> bool:
+    if "estimable" in facts:
+        return not bool(facts["estimable"])
+    return facts.get("spec_estimable") is False
+
+
+def _shown_percent(facts: dict[str, Any], pct_key: str) -> str:
+    return format_percent(float(facts[pct_key]) / 100.0)
+
+
 def _chart_png(facts: dict[str, Any], path: Path) -> Path | None:
     chart = facts.get("chart") or {}
     points = chart.get("points") or []
@@ -64,11 +76,13 @@ def _chart_png(facts: dict[str, Any], path: Path) -> Path | None:
     ucl = [point["ucl"] * 100 for point in points]
     center = [chart["p_bar"] * 100 for _ in points]
     figure, axis = plt.subplots(figsize=(8.4, 3.2), dpi=120)
-    axis.plot(xs, ucl, color="#B23A48", linestyle=":", label="UCL")
-    axis.plot(xs, center, color="#8AA0B2", linestyle="--", label="p-bar")
-    axis.plot(xs, rate, color="#0B3A5B", marker="o", label="Invalid %")
-    axis.set_ylabel("Invalid rate (%)")
-    axis.set_title("Observed weekly invalid rate")
+    reports = _reports_only(facts)
+    axis.plot(xs, ucl, color="#B23A48", linestyle=":", label="High line")
+    axis.plot(xs, center, color="#8AA0B2", linestyle="--", label="Average")
+    series = "Share of reports" if reports else "Invalid %"
+    axis.plot(xs, rate, color="#0B3A5B", marker="o", label=series)
+    axis.set_ylabel("Share of reports (%)" if reports else "Invalid rate (%)")
+    axis.set_title("Weekly share of reports" if reports else "Observed weekly invalid rate")
     axis.legend(frameon=False, fontsize=8)
     figure.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -84,7 +98,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
     prs.slide_height = SLIDE_H
     prs.core_properties.title = f"Invalid Bot — {facts['scenario_id']}"
     banner = str(facts.get("banner") or "Simulation. Synthetic data. Not for clinical use. Not a medical device.")
-    prs.core_properties.subject = banner
+    prs.core_properties.subject = banner[:255]
 
     title = _blank(prs)
     _box(title, Inches(0.6), Inches(1.4), Inches(12), Inches(1.2), "Invalid Bot", size=40, color=NAVY, bold=True)
@@ -113,23 +127,27 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
 
     summary = _blank(prs)
     _box(summary, Inches(0.5), Inches(0.4), Inches(12), Inches(0.6), "Executive summary", size=28, color=NAVY, bold=True)
-    _box(
-        summary,
-        Inches(0.5),
-        Inches(1.4),
-        Inches(12),
-        Inches(4.5),
-        (
+    reports = _reports_only(facts)
+    if reports:
+        summary_text = (
+            f"Share of reports {_shown_percent(facts, 'rate_pct')} "
+            f"on {facts['k']} of {facts['n']} reports.\n"
+            f"Likely range {_shown_percent(facts, 'ci_low_pct')} to {_shown_percent(facts, 'ci_high_pct')}.\n"
+            "This file cannot measure the 2% promise. There is no spec line.\n"
+            f"Call: {facts['cause']} / {facts['level']} ({facts['category']}).\n"
+            f"{facts['recommendation']}"
+        )
+    else:
+        summary_text = (
             f"Observed invalid rate {facts['rate_pct']:.2f}% "
             f"on {facts['k']} of {facts['n']} runs.\n"
-            f"Wilson 95% CI {facts['ci_low_pct']:.2f}% to {facts['ci_high_pct']:.2f}%.\n"
+            f"Likely range {facts['ci_low_pct']:.2f}% to {facts['ci_high_pct']:.2f}%.\n"
             f"Spec is {facts['spec_pct']:.2f}% invalid "
             f"(promised validity {facts['promised_pct']:.2f}%).\n"
             f"Call: {facts['cause']} / {facts['level']} ({facts['category']}).\n"
             f"{facts['recommendation']}"
-        ),
-        size=22,
-    )
+        )
+    _box(summary, Inches(0.5), Inches(1.4), Inches(12), Inches(4.5), summary_text, size=22)
 
     impact = _blank(prs)
     _box(impact, Inches(0.5), Inches(0.4), Inches(12), Inches(0.6), "Impact", size=28, color=NAVY, bold=True)
@@ -140,7 +158,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
         Inches(12),
         Inches(3.5),
         (
-            f"{facts['k']} invalids of {facts['n']} runs.\n"
+            f"{facts['k']} invalids of {facts['n']} {'reports' if _reports_only(facts) else 'runs'}.\n"
             f"${facts['unit']} per invalid, from the scenario file.\n"
             f"Cost of invalids on this file: ${facts['cost']}.\n"
             "That product is computed. It is not a quote from a customer invoice."
@@ -158,8 +176,12 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
         Inches(1.3),
         (
             f"{facts['cause']} / {facts['level']}.\n"
-            f"Observed {facts['rate_pct']:.2f}%. Projected {facts['after_pct']:.2f}%.\n"
-            f"{facts['label']}"
+            + (
+                f"Observed {_shown_percent(facts, 'rate_pct')}. Projected {_shown_percent(facts, 'after_pct')}.\n"
+                if _reports_only(facts)
+                else f"Observed {facts['rate_pct']:.2f}%. Projected {facts['after_pct']:.2f}%.\n"
+            )
+            + f"{facts['label']}"
         ),
         size=18,
     )
@@ -169,12 +191,20 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
 
     options = _blank(prs)
     _box(options, Inches(0.5), Inches(0.4), Inches(12), Inches(0.6), "Options", size=28, color=NAVY, bold=True)
-    contain = (
-        f"Contain {facts['level']}. Cost of invalids so far: ${facts['cost']}. "
-        "Risk: a second stratum that also cleared the bar would remain in the field."
-        if facts["single"]
-        else "Do not contain a stratum. No leading stratum cleared the evidence bar."
-    )
+    if _reports_only(facts):
+        contain = (
+            f"Watch {facts['level']}. Cost of invalids so far: ${facts['cost']}. "
+            "Risk: a second group that also stood out would remain in the file."
+            if facts["single"]
+            else "Do not single out one group. No leading group stood out."
+        )
+    else:
+        contain = (
+            f"Contain {facts['level']}. Cost of invalids so far: ${facts['cost']}. "
+            "Risk: a second stratum that also cleared the bar would remain in the field."
+            if facts["single"]
+            else "Do not contain a stratum. No leading stratum cleared the evidence bar."
+        )
     _box(options, Inches(0.5), Inches(1.4), Inches(6), Inches(4.5), "Option A\n\n" + contain, size=18, fill=WHITE)
     _box(
         options,

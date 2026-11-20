@@ -47,6 +47,12 @@ def _hypothesis_facts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         lift = None if item.get("lift") is None else round(float(item["lift"]), 2)
         if item["cause"] == "no_single_cause":
             prose = item["summary"]
+        elif lift is None:
+            prose = (
+                f"{item['category']} / {item['cause']}: {item['level']} at "
+                f"{_pct(item['rate']):.2f}%. The other rows had no invalids, so there is no ratio to quote "
+                f"(n={item['n']}, k={item['k']})."
+            )
         else:
             prose = (
                 f"{item['category']} / {item['cause']}: {item['level']} at "
