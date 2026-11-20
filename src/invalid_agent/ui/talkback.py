@@ -46,18 +46,20 @@ _DOWN = ("going down", "falling", "dropping", "decreasing")
 _CODE = re.compile(r"\bINV-[A-Z]+\b", re.I)
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
 _TICKET_ID = re.compile(r"Your ticket \d+|Flag \d+")
+# A parenthetical code, "(INV-NOR)", is one step. A plain word gap stops at the parenthesis.
+_GAP = r"(?:[\w'-]+|\([^)]{0,60}\))"
 _NEGATION = re.compile(
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+[\w'-]+){0,12}\s+"
-    r"(?:make up|makes up|majority|most|biggest|main)\b"
-    r"|"
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+[\w'-]+){0,8}\s+"
-    r"(?:going up|rising|climbing|going down|falling|dropping|decreasing)\b"
-    r"|"
-    r"(?:\bbiggest\b|\bmost\b|\bmajority\b|\bmain\b)"
-    r"(?:\s+[\w'-]+){0,6}\s+"
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    rf"(?:\s+{_GAP}){{0,16}}\s+"
+    rf"(?:make up|makes up|majority|most|biggest|main)\b"
+    rf"|"
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    rf"(?:\s+{_GAP}){{0,8}}\s+"
+    rf"(?:going up|rising|climbing|increasing|rate is up|going down|falling|dropping|decreasing)\b"
+    rf"|"
+    rf"(?:\bbiggest\b|\bmost\b|\bmajority\b|\bmain\b)"
+    rf"(?:\s+{_GAP}){{0,6}}\s+"
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
     re.I,
 )
 # Code names that contain a negation word. Mask them before the negation check.
@@ -69,7 +71,9 @@ _NEGATED_NAMES = (
     "used the wrong way",
 )
 _DOUBT = re.compile(
-    r"\b(?:neither|(?<!inv-)nor|i doubt|doubtful|i disagree|untrue)\b"
+    r"\b(?:neither|(?<!inv-)nor|i doubt|we doubt|doubtful|i disagree|untrue)\b"
+    r"|\b(?:i|we)\s+(?:do not|don't|dont)\s+(?:believe|think|agree)\b"
+    r"|\bnot true\b"
     r"|\b(?:it'?s|it is|that'?s|that is|is)\s+(?:false|wrong)\b"
     r"|\b(?:false|wrong) that\b|\bhardly\s+(?:the|any|most|main|biggest|majority)\b"
     r"|isn'?t even close|\bno way\b|\bfar from\b|\bunlikely\b|\bskeptical\b|\bquestion whether\b|\bnope\b|\bnah\b"
@@ -446,6 +450,11 @@ def _negated_code_claim(lowered: str, codes: list[str], view: dict[str, Any]) ->
 def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
     """The key insight for one part: a signature and the sentence that states it."""
     if beat_id == "charts":
+        if not (view.get("code_shares") or view.get("majority_codes")):
+            return (
+                "no invalids in this slice",
+                "This week's slice has no invalids, so there is no ranking to draw.",
+            )
         return _majority_line(view)
     if beat_id == "data":
         return "the invalid rate this week", str(view.get("rate_sentence") or "")
@@ -518,10 +527,15 @@ def _promise_statement(lowered: str) -> bool:
         r"|\b2(?:\.0+)?\s*%[^.;]{0,40}?\binvalid\b",
         lowered,
     )
-    wrong_side = re.search(r"\b98(?:\.0+)?\s*%?[^.;]{0,30}?\binvalid\b", lowered) or re.search(
-        r"\b2(?:\.0+)?\s*%[^.;]{0,30}?(?<!in)\bvalid\b", lowered
+    # "98% of tests are valid, so invalid results..." names both sides of one promise.
+    # "98% ... invalid" is the wrong side only when "valid" is not the claim in between.
+    wrong_side = re.search(
+        r"\b98(?:\.0+)?\s*%?(?:(?!\bvalid\b)[^.;]){0,40}?\binvalid\b", lowered
+    ) or re.search(
+        r"\b2(?:\.0+)?\s*%(?:(?!\binvalid\b)[^.;]){0,40}?(?<!in)\bvalid\b", lowered
     )
-    return bool((valid_side or invalid_side) and not wrong_side)
+    denied = re.search(r"\b(?:not|never|cannot)\b|n't", lowered)
+    return bool((valid_side or invalid_side) and not wrong_side and not denied)
 
 
 def _count_statement(lowered: str, count: int) -> bool:
@@ -529,6 +543,20 @@ def _count_statement(lowered: str, count: int) -> bool:
     numbers = {int(n) for n in re.findall(r"(?<![\d.])\d+(?![\d.%])", lowered)}
     numbers |= {value for word, value in _WORD_NUMBERS.items() if re.search(rf"\b{word}\b", lowered)}
     return numbers == {count}
+
+
+def _norm_words(text: str) -> str:
+    return re.sub(r"[^a-z0-9%]+", " ", text.casefold()).strip()
+
+
+def _quotes_fact(lowered: str, body: str) -> bool:
+    """The reader pasted a sentence that is already on the screen."""
+    flat = _norm_words(lowered)
+    for sentence in re.split(r"(?<=[.!?])\s+", body):
+        piece = _norm_words(sentence)
+        if len(piece.split()) >= 4 and piece in flat:
+            return True
+    return False
 
 
 def _same_sentence(lowered: str, body: str) -> bool:
@@ -559,14 +587,27 @@ def _key_statement(lowered: str, view: dict[str, Any], step_id: str) -> tuple[st
         return "correct", body, finding
     if step_id == "data":
         label = str(view.get("rate_label") or "").casefold()
-        if label and "rate" in lowered and re.search(rf"(?<![\d.]){re.escape(label)}", lowered):
+        if (
+            label
+            and not re.search(r"\b(?:not|never|cannot|no)\b|n't", lowered)
+            and ("rate" in lowered or "share" in lowered)
+            and re.search(rf"(?<![\d.]){re.escape(label)}", lowered)
+        ):
             return "correct", body, finding
     if step_id == "logged" and _seen(step_id, "logged") and re.search(r"\b(?:tickets?|items?)\b", lowered):
-        if _count_statement(lowered, _shown_ticket_count(view)):
+        count = _shown_ticket_count(view)
+        denies = re.search(r"\b(?:not|never|cannot)\b|n't", lowered) or (
+            count != 0 and re.search(r"\b(?:no|none|nothing)\b", lowered)
+        )
+        if not denies and _count_statement(lowered, count):
             return "correct", body, finding
-    if step_id == "notes" and _seen(step_id, "notes") and "customer" in lowered and _same_sentence(lowered, body):
+    if step_id == "notes" and _seen(step_id, "notes") and (
+        _quotes_fact(lowered, body) or ("customer" in lowered and _same_sentence(lowered, body))
+    ):
         return "correct", body, finding
-    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and _same_sentence(lowered, body):
+    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and (
+        _quotes_fact(lowered, body) or _same_sentence(lowered, body)
+    ):
         return "correct", body, finding
     return None
 

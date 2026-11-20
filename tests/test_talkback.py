@@ -586,3 +586,57 @@ def test_notes_and_wrap_need_the_note_not_just_a_keyword():
 def test_a_longer_number_does_not_match_the_rate():
     assert not _typed("the invalid rate is 13.00%", "data")["confirmed"]
     assert _typed("the invalid rate is 3.00%", "data")["confirmed"]
+
+
+def test_pasting_the_on_screen_sentence_confirms_and_a_denial_does_not():
+    promise = "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
+    assert _typed(promise, "complaint")["confirmed"]
+    denied = _typed("The promise is not that at least 98% of tests are valid", "complaint")
+    assert not denied["confirmed"] and not denied["text"].startswith("YEP")
+    view = _view()
+    view["rate_label"] = "0.97%"
+    view["rate_sentence"] = "The invalid rate this week is 0.97% (35 of 3600)."
+    rate = respond("The invalid rate this week is not 0.97%", view, "data", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert not rate["confirmed"] and not rate["text"].startswith("YEP")
+    logged = _typed("there are not 5 follow-up items", "logged", tickets=[{"key": f"INV-{i}"} for i in range(5)])
+    assert not logged["confirmed"] and not logged["text"].startswith("YEP")
+    notes = (
+        "Hello. The invalid rate this week is 0.97% (35 of 3600). "
+        "We have not confirmed a cause. We opened the case."
+    )
+    view = _view()
+    view["notes"] = {"customer": notes}
+    reply = respond(notes, view, "notes", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert reply["confirmed"], reply["text"]
+    wrap = "We opened the case. The leading read is no single group."
+    reply = respond(wrap, _view(), "wrap", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert reply["confirmed"], reply["text"]
+    share = _view()
+    share["rate_label"] = "40.00%"
+    share["rate_sentence"] = "The share of reports this week is 40.00% (40 of 100)."
+    reply = respond(share["rate_sentence"], share, "data", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert reply["confirmed"], reply["text"]
+
+
+def test_doubt_phrasings_do_not_confirm_the_claim_they_deny():
+    view = _view()
+    for message in (
+        "I don't believe no usable result (INV-NOR) and a mechanical problem (INV-MECH) make up most of the invalids",
+        "It's not true that no usable result (INV-NOR) is the biggest",
+        "We doubt INV-NOR and INV-MECH make up most of the invalids",
+        "I don't believe. INV-NOR and INV-MECH make up most of the invalids",
+        "The invalid rate is not increasing",
+        "I don't think the rate is up",
+    ):
+        step = "data" if "rate" in message else "charts"
+        reply = respond(message, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert not reply["confirmed"], message
+        assert reply["log_kind"] != "ticket", message
+        assert not reply["text"].startswith("YEP"), message
+
+
+def test_a_week_with_no_invalids_does_not_invent_a_majority():
+    finding, body = part_fact({"code_shares": {}, "majority_codes": []}, "charts")
+    assert finding == "no invalids in this slice"
+    assert "no invalids" in body
+    assert "make up most" not in body

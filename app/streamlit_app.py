@@ -246,7 +246,12 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         (
             item
             for item in st.session_state.open_items
-            if signature and item.get("signature") == signature and int(item.get("week") or 0) == int(week)
+            if (
+                signature
+                and item.get("signature") == signature
+                and item.get("kind") == reply["log_kind"]
+                and int(item.get("week") or 0) == int(week)
+            )
         ),
         None,
     )

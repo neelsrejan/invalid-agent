@@ -313,6 +313,19 @@ def test_show_me_through_week_one_leaves_week_two_with_no_carried_items(monkeypa
     assert "We found what was promised" not in visible
 
 
+def test_show_me_does_not_rename_a_later_ticket(monkeypatch):
+    app = _run_app(monkeypatch)
+    app = _click_key(app, "show-me")
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value("The promise is at least 98% valid tests").run()
+    app = _click_label(app, "Tell the agent")
+    visible = _visible(app)
+    assert "Your ticket 1" in visible
+    assert "We'll log that as Insight" not in visible
+    tickets = [item for item in app.session_state["open_items"] if item.get("kind") == "ticket"]
+    assert [item["key"] for item in tickets] == ["Your ticket 1"]
+
+
 def test_a_typed_insight_unlocks_next_on_the_numbers_and_the_charts(monkeypatch):
     app = _run_app(monkeypatch)
     app = _advance(app)
