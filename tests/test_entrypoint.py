@@ -136,6 +136,95 @@ def test_a_stale_charts_module_outside_src_is_replaced_by_the_checkout():
         _restore_imports(*saved)
 
 
+def test_a_current_module_without_a_stamp_is_kept():
+    """The suite's already-imported modules match the files. A boot must not replace them."""
+    import invalid_agent.fresh as fresh
+    import invalid_agent.ui.plain as plain
+
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh._STAMPS.clear()
+        assert hasattr(plain, "gloss_once")
+        assert fresh.ensure_checkout(ROOT / "src") is False
+        assert sys.modules["invalid_agent.ui.plain"] is plain
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+
+
+def test_an_unstamped_module_without_bytecode_is_still_dropped():
+    import types
+
+    import invalid_agent.fresh as fresh
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh._STAMPS.clear()
+        stub = types.ModuleType("invalid_agent.ui.plain")
+        stub.__file__ = str(ROOT / "src" / "invalid_agent" / "ui" / "plain.py")
+        sys.modules["invalid_agent.ui.plain"] = stub
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        assert "invalid_agent.ui.plain" not in sys.modules
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
+def test_an_unstamped_module_with_a_newer_pyc_is_still_dropped(tmp_path):
+    import os
+    import types
+
+    import invalid_agent.fresh as fresh
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh._STAMPS.clear()
+        source = ROOT / "src" / "invalid_agent" / "ui" / "plain.py"
+        newer = tmp_path / "plain.pyc"
+        newer.write_bytes(b"")
+        os.utime(newer, (source.stat().st_mtime + 60, source.stat().st_mtime + 60))
+        stub = types.ModuleType("invalid_agent.ui.plain")
+        stub.__file__ = str(source)
+        stub.__cached__ = str(newer)
+        sys.modules["invalid_agent.ui.plain"] = stub
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        assert "invalid_agent.ui.plain" not in sys.modules
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
+def test_pr10_modules_without_bytecode_boot_without_an_import_error(monkeypatch):
+    """Python -B never writes a .pyc, so the old module has no bytecode to compare."""
+    import types
+
+    import invalid_agent.fresh as fresh
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh._STAMPS.clear()
+        for module_name, relative in (
+            ("invalid_agent.ui.plain", "src/invalid_agent/ui/plain.py"),
+            ("invalid_agent.ui.talkback", "src/invalid_agent/ui/talkback.py"),
+        ):
+            stub = types.ModuleType(module_name)
+            stub.__file__ = str(ROOT / relative)
+            sys.modules[module_name] = stub
+        app = _boot(monkeypatch)
+        assert not app.exception, app.exception
+        assert "ImportError" not in _visible(app)
+        assert "Week 1 of 4" in _visible(app)
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
 def test_pr10_era_modules_boot_without_an_import_error(monkeypatch, tmp_path):
     """A process still holding the PR #10 modules has no stamps and no new names."""
     import os

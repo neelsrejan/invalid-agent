@@ -91,10 +91,19 @@ _BANNED = (
 _LEADS = ("YEP, YOU GOT IT", "NOT YET", "NOT QUITE", "CLOSE!", "GOOD QUESTION")
 
 
+_EXCLUSION = re.compile(r"\b(?:not|nor)\s+(inv-[a-z]+)\b", re.I)
+
+
 def _masked(lowered: str) -> str:
     masked = lowered
     for name in _NEGATED_NAMES:
         masked = masked.replace(name, "codename")
+    # "not INV-SW" leaves a code out only when the sentence still names another code.
+    # "is not INV-NOR" by itself is a denial, so the "not" has to stay.
+    named = {code.upper() for code in _CODE.findall(lowered)}
+    excluded = {code.upper() for code in _EXCLUSION.findall(lowered)}
+    if excluded and named - excluded:
+        masked = _EXCLUSION.sub("exclusion", masked)
     return masked
 
 
@@ -687,7 +696,7 @@ def _mentioned_codes(lowered: str) -> list[str]:
         if any(fragment in lowered for fragment in fragments):
             found.append(code)
     # "the top two, not INV-SW" names INV-SW only to leave it out.
-    denied = {code.upper() for code in re.findall(r"\bnot\s+(inv-[a-z]+)\b", lowered, re.I)}
+    denied = {code.upper() for code in re.findall(r"\b(?:not|nor)\s+(inv-[a-z]+)\b", lowered, re.I)}
     if denied and any(code not in denied for code in found):
         found = [code for code in found if code not in denied]
     return found

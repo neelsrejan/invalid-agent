@@ -143,18 +143,38 @@ def test_every_week_has_a_wrap_up_body_and_no_bare_jargon():
 
 
 def test_the_public_banner_is_the_only_maude_explanation():
-    from invalid_agent.ui.plain import PUBLIC_BANNER, gloss_once, gloss_seen_for_banner, plain_case_label
+    import yaml
 
-    seen = gloss_seen_for_banner(True)
-    case = gloss_once(
-        f"Case: {plain_case_label('OOI nucleic-acid systems, invalid-type share of MAUDE reports')}. Week 1.",
-        seen,
+    from invalid_agent.ui.plain import (
+        JARGON_RULES,
+        PUBLIC_BANNER,
+        _readable,
+        gloss_once,
+        gloss_seen_for_banner,
+        plain_case_label,
+        unexplained_jargon,
+        with_gloss,
     )
-    device = gloss_once("Device: Multiplex / nucleic acid amplification systems (FDA product code OOI).", seen)
-    blob = "\n".join((PUBLIC_BANNER, case, device))
+
+    data = yaml.safe_load((ROOT_SCENARIO.parents[1] / "cases" / "openfda_ooi.yaml").read_text())
+    seen = gloss_seen_for_banner(True)
+    shown = [
+        gloss_once(f"Case: {plain_case_label(data['title'])}. Week 1.", seen),
+        gloss_once(f"Device: {data['device']}.", seen),
+        gloss_once(with_gloss(str(data["complaint"]).strip()), seen),
+    ]
+    blob = "\n".join((PUBLIC_BANNER, *shown))
     assert blob.casefold().count("public database of device problem reports") == 1
     assert blob.casefold().count("machines that run many nucleic-acid tests") == 1
     assert "OOI means" not in blob
+    known: set[str] = set()
+    for chunk in (PUBLIC_BANNER, *shown):
+        bare = [hit for hit in unexplained_jargon(chunk) if hit not in known]
+        assert bare == [], chunk
+        readable = _readable(chunk).casefold()
+        for pattern, glosses in JARGON_RULES:
+            if pattern.search(_readable(chunk)) and glosses and any(gloss in readable for gloss in glosses):
+                known.add(pattern.pattern)
 
 
 def test_hosted_case_files_explain_maude_ooi_and_jje():

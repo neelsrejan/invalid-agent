@@ -843,7 +843,12 @@ def main() -> None:
     )
     rules_only = bool(st.session_state.rules_only)
     _backend_caption(rules_only)
-    _render_guided(rows, rules_only)
+    try:
+        _render_guided(rows, rules_only)
+    finally:
+        # Lazy imports during the page run have to be stamped too, or the next
+        # rerun treats them as leftovers from the previous release and reloads.
+        note_imports()
 
 
 main()

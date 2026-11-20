@@ -460,6 +460,16 @@ def test_a_true_denial_of_a_falling_rate_is_not_flagged():
         assert _reply(message, "data")["log_kind"] != "flag", message
 
 
+def test_leaving_a_code_out_with_not_or_nor_still_confirms_the_majority():
+    for message in (
+        "not INV-SW but INV-NOR and INV-MECH make up most",
+        "INV-NOR and INV-MECH make up most of the invalids, nor INV-SW",
+    ):
+        reply = _reply(message)
+        assert reply["confirmed"] is True, message
+        assert reply["text"].startswith("YEP"), message
+
+
 def test_a_denied_extra_code_does_not_turn_a_majority_into_a_flag():
     reply = _reply("INV-NOR and INV-MECH make up most of the invalids, not INV-SW")
     assert reply["confirmed"] is True

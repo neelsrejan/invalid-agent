@@ -8,6 +8,8 @@ The page calls ``ensure_checkout`` before it imports the package, then
 
 from __future__ import annotations
 
+import ast
+import struct
 import sys
 import threading
 from pathlib import Path
@@ -42,19 +44,56 @@ def _outside_src(path: Path, src: Path) -> bool:
     return False
 
 
-def _newer_than_bytecode(module: object, path: Path) -> bool:
-    """No stamp yet: the module came from a page that predates this file.
+def _public_names(path: Path) -> set[str] | None:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return None
+    names: set[str] = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            found = [node.name]
+        elif isinstance(node, ast.Assign):
+            found = [target.id for target in node.targets if isinstance(target, ast.Name)]
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            found = [node.target.id]
+        else:
+            found = []
+        names.update(name for name in found if not name.startswith("_"))
+    return names
 
-    Its .pyc was written when it was imported, so a source file newer than the
-    .pyc was replaced after that import.
+
+def _missing_exported_name(module: object, path: Path) -> bool:
+    """The file on disk defines a public name this loaded module does not have."""
+    names = _public_names(path)
+    if names is None:
+        return True
+    return any(not hasattr(module, name) for name in names)
+
+
+def _pyc_predates_source(module: object, path: Path) -> bool:
+    """The bytecode this module was loaded from records an older source time.
+
+    A bytecode file that another process rewrote is not enough on its own: its
+    file time can be newer while this process still holds the previous module.
+    The timestamp stored inside the bytecode is the source time it was built
+    from. A missing bytecode file does not, by itself, mean the module is old.
     """
     cached = getattr(module, "__cached__", None)
     if not cached:
         return False
     try:
-        return path.stat().st_mtime > Path(str(cached)).stat().st_mtime + 1e-6
+        header = Path(str(cached)).read_bytes()[:16]
+        source_mtime = int(path.stat().st_mtime)
     except OSError:
+        return True
+    if len(header) < 16:
+        return True
+    flags = struct.unpack("<I", header[4:8])[0]
+    if flags & 0x1:
         return False
+    built_for = struct.unpack("<I", header[8:12])[0]
+    return source_mtime > built_for
 
 
 def _stale(name: str, module: object, src: Path) -> bool:
@@ -65,7 +104,7 @@ def _stale(name: str, module: object, src: Path) -> bool:
         return True
     stamp = _STAMPS.get(name)
     if stamp is None:
-        return _newer_than_bytecode(module, path)
+        return _missing_exported_name(module, path) or _pyc_predates_source(module, path)
     try:
         return path.stat().st_mtime > float(stamp) + 1e-6
     except OSError:
@@ -75,8 +114,10 @@ def _stale(name: str, module: object, src: Path) -> bool:
 def ensure_checkout(src: Path) -> bool:
     """Evict ``invalid_agent`` modules whose files moved on or off this source tree.
 
-    A module is evicted when its file is outside ``src``, or when that file is
-    newer than the mtime recorded by ``note_imports``. One stale module drops
+    A module is evicted when its file is outside ``src``, when that file is
+    newer than the mtime recorded by ``note_imports``, or when this process has
+    no stamp for it and the loaded module is missing a name the file defines
+    or was loaded from older bytecode. One stale module drops
     the rest of the package so the next import is one consistent tree.
     Returns True when anything was evicted.
     """
