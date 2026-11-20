@@ -95,7 +95,12 @@ def initial_state(
     return state
 
 
-def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict[str, Any]:
+def run_case(
+    scenario_name: str,
+    week: int,
+    out_dir: Path | None = None,
+    llm: Any | None = None,
+) -> dict[str, Any]:
     if week < 0 or week > 4:
         raise SystemExit("week must be 0 through 4")
     settings = load_settings()
@@ -104,10 +109,20 @@ def run_case(scenario_name: str, week: int, out_dir: Path | None = None) -> dict
     destination = out_dir or settings.out_dir
     destination.mkdir(parents=True, exist_ok=True)
     app = build_graph()
-    result = app.invoke(
-        initial_state(scenario, 0, destination, target_week=week),
-        config={"recursion_limit": 80},
-    )
+
+    def _invoke() -> dict[str, Any]:
+        return app.invoke(
+            initial_state(scenario, 0, destination, target_week=week),
+            config={"recursion_limit": 80},
+        )
+
+    if llm is None:
+        result = _invoke()
+    else:
+        from invalid_agent.llm import using_llm
+
+        with using_llm(llm):
+            result = _invoke()
     memo_path = destination / "week0_triage.md"
     memo_path.write_text(result["triage_markdown"], encoding="utf-8")
     (destination / "week0_fidelity.json").write_text(

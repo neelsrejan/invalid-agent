@@ -18,6 +18,8 @@ guard rejects the draft,
 from __future__ import annotations
 
 import threading
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Any, Protocol
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -197,7 +199,23 @@ def _retry_after_seconds(headers: Any) -> float:
     return delay
 
 
+_llm_override: ContextVar[LLM | None] = ContextVar("invalid_agent_llm_override", default=None)
+
+
+@contextmanager
+def using_llm(llm: LLM):
+    """Use ``llm`` for ``get_llm()`` on this thread until the block ends."""
+    token = _llm_override.set(llm)
+    try:
+        yield
+    finally:
+        _llm_override.reset(token)
+
+
 def get_llm(settings: Settings | None = None) -> LLM:
+    override = _llm_override.get()
+    if override is not None:
+        return override
     settings = settings or load_settings()
     if settings.llm_backend == "ollama":
         return OllamaLLM(settings.ollama_host, settings.llm_model)

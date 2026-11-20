@@ -40,23 +40,44 @@ _QUESTION_START = (
     "should ",
 )
 _MOST = ("majority", "most of", "make up most", "makes up most", "almost all")
-_UP = ("going up", "is rising", "is climbing", "rate is up", "keeps climbing")
+_UP = ("going up", "is rising", "is climbing", "rate is up", "keeps climbing", "increasing")
+_DOWN = ("going down", "falling", "dropping", "decreasing")
 # Ticket keys are digits (INV-13, Your ticket 1). Invalid types are letters.
 _CODE = re.compile(r"\bINV-[A-Z]+\b", re.I)
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
 _TICKET_ID = re.compile(r"Your ticket \d+|Flag \d+")
+# A parenthetical code, "(INV-NOR)", is one step. A plain word gap stops at the parenthesis.
+_GAP = r"(?:[\w'-]+|\([^)]{0,60}\))"
 _NEGATION = re.compile(
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+\w+){0,2}\s+"
-    r"(?:make up|makes up|majority|most|biggest|main)\b"
-    r"|"
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
-    r"(?:\s+\w+){0,8}\s+"
-    r"(?:going up|rising|climbing)\b"
-    r"|"
-    r"(?:\bbiggest\b|\bmost\b|\bmajority\b)"
-    r"(?:\s+\w+){0,6}\s+"
-    r"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    rf"(?:\s+{_GAP}){{0,16}}\s+"
+    rf"(?:make up|makes up|majority|most|biggest|main)\b"
+    rf"|"
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|\bcan not\b|n't)"
+    rf"(?:\s+{_GAP}){{0,8}}\s+"
+    rf"(?:going up|rising|climbing|increasing|rate is up|going down|falling|dropping|decreasing)\b"
+    rf"|"
+    rf"(?:\bbiggest\b|\bmost\b|\bmajority\b|\bmain\b)"
+    rf"(?:\s+{_GAP}){{0,6}}\s+"
+    rf"(?:\bnot\b|\bnever\b|\bcannot\b|n't)\b",
+    re.I,
+)
+# Code names that contain a negation word. Mask them before the negation check.
+_NEGATED_NAMES = (
+    "not enough sample",
+    "no usable result",
+    "unable to obtain",
+    "used it the wrong way",
+    "used the wrong way",
+)
+_DOUBT = re.compile(
+    r"\b(?:neither|(?<!inv-)nor|i doubt|we doubt|doubtful|i disagree|untrue)\b"
+    r"|\b(?:i|we)\s+(?:do not|don't|dont)\s+(?:believe|think|agree)\b"
+    r"|\bnot true\b"
+    r"|\b(?:it'?s|it is|that'?s|that is|is)\s+(?:false|wrong)\b"
+    r"|\b(?:false|wrong) that\b|\bhardly\s+(?:the|any|most|main|biggest|majority)\b"
+    r"|isn'?t even close|\bno way\b|\bfar from\b|\bunlikely\b|\bskeptical\b|\bquestion whether\b|\bnope\b|\bnah\b"
+    r"|\bor not\b|\bi think not\b|\bnot!",
     re.I,
 )
 _OPENING = ("YEP, YOU GOT IT!", "NOT YET", "NOT QUITE.", "CLOSE!", "GOOD QUESTION.")
@@ -72,6 +93,41 @@ _BANNED = (
     "deterministic",
 )
 _LEADS = ("YEP, YOU GOT IT", "NOT YET", "NOT QUITE", "CLOSE!", "GOOD QUESTION")
+
+
+_EXCLUSION = re.compile(r"\b(?:not|nor)\s+(inv-[a-z]+)\b", re.I)
+
+
+def _masked(lowered: str) -> str:
+    masked = lowered
+    for name in _NEGATED_NAMES:
+        masked = masked.replace(name, "codename")
+    # "not INV-SW" leaves a code out only when the sentence still names another code.
+    # "is not INV-NOR" by itself is a denial, so the "not" has to stay.
+    named = {code.upper() for code in _CODE.findall(lowered)}
+    excluded = {code.upper() for code in _EXCLUSION.findall(lowered)}
+    if excluded and named - excluded:
+        masked = _EXCLUSION.sub("exclusion", masked)
+    return masked
+
+
+def _doubts(lowered: str) -> bool:
+    return bool(_DOUBT.search(_masked(lowered)))
+
+
+def _hard_negation(lowered: str) -> bool:
+    return bool(_NEGATION.search(_masked(lowered)))
+
+
+def _negated(lowered: str) -> bool:
+    return _hard_negation(lowered) or _doubts(lowered)
+
+
+def _sentence_case(text: str) -> str:
+    if not text:
+        return text
+    return text[0].upper() + text[1:]
+
 
 _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("INV-NOR", ("inv-nor", "no usable result", "unable to obtain")),
@@ -126,7 +182,8 @@ def respond(
     flag_key: str,
 ) -> dict[str, Any]:
     """Classify ``message`` and answer from facts already on screen. No model."""
-    text = " ".join(str(message or "").split())
+    raw = str(message or "")
+    text = " ".join(raw.split())
     if not text:
         return _pack(
             kind="question",
@@ -143,7 +200,7 @@ def respond(
         finding=finding,
         ticket_key=ticket_key,
         flag_key=flag_key,
-        user_text=text,
+        user_text=raw.strip(),
     )
 
 
@@ -184,14 +241,18 @@ def _draft_ok(draft: str, base: str) -> bool:
     for lead in _LEADS:
         if lead.casefold() in base_lower and lead.casefold() not in lowered:
             return False
-    base_numbers = _NUMBER.findall(base)
-    draft_numbers = _NUMBER.findall(cleaned)
-    if set(base_numbers) - set(draft_numbers) or set(draft_numbers) - set(base_numbers):
+    if _NUMBER.findall(base) != _NUMBER.findall(cleaned):
+        return False
+    if _negated(base_lower) != _negated(lowered):
         return False
     for token in _TICKET_ID.findall(base):
         if re.search(rf"(?<!\d){re.escape(token)}(?!\d)", cleaned, re.I) is None:
             return False
     if unexplained_jargon(cleaned):
+        return False
+    if opening in {"NOT QUITE.", "CLOSE!"} and any(
+        phrase in lowered for phrase in ("great job", "nailed it", "you got it", "perfect", "excellent", "well done", "awesome", "nice work")
+    ):
         return False
     numbers = []
     for raw in _NUMBER.findall(base):
@@ -217,8 +278,11 @@ def _pack(
     logs_flag = kind in {"partial", "unsupported"}
     key = ticket_key if confirmed else (flag_key if logs_flag else "")
     remember = _remember(kind)
-    if kind == "early":
+    if kind in {"early", "hint"}:
         lead = ""
+        log_line = ""
+    elif kind == "correction":
+        lead = "NOT QUITE."
         log_line = ""
     else:
         lead = {
@@ -274,21 +338,39 @@ def _early(first_step: str) -> tuple[str, str, str]:
 
 def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str]:
     lowered = text.casefold()
+    if _is_greeting(lowered):
+        return "hint", _hello(step_id, view), ""
     codes = _mentioned_codes(lowered)
     claims_codes = bool(codes) and (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered)
-    asks = _is_question(lowered) or bool(_NEGATION.search(lowered))
+    question = _is_question(lowered)
+    blocked = question or _negated(lowered)
     if claims_codes and not _seen(step_id, "charts"):
         return _early("charts")
-    if claims_codes and asks:
+    if claims_codes and question:
         return "question", _answer_question(lowered, view, step_id), "a question about the invalid types"
+    if claims_codes and _doubts(lowered):
+        return _doubt_reply(lowered, codes, view)
+    if claims_codes and _hard_negation(lowered):
+        return _negated_code_claim(lowered, codes, view)
     if claims_codes:
         return _code_claim(lowered, codes, view)
-    direction_claim = _asserts_up(lowered) and not asks
-    if direction_claim and not _seen(step_id, "data"):
+    claims_up = _asserts_up(lowered) and not blocked
+    claims_down = _asserts_down(lowered) and not claims_up and not blocked
+    if (claims_up or claims_down) and not _seen(step_id, "data"):
         return _early("data")
-    if direction_claim:
-        return _direction_claim(view)
-    return "question", _answer_question(lowered, view, step_id), _question_finding(lowered, view, step_id)
+    if claims_up or claims_down:
+        return _direction_claim(view, claimed="down" if claims_down else "up")
+    body = _answer_question(lowered, view, step_id)
+    if question:
+        return "question", body, _question_finding(lowered, view, step_id)
+    if _doubts(lowered) and (_asserts_up(lowered) or _asserts_down(lowered)) and _seen(step_id, "data"):
+        return "hint", str(view.get("direction_sentence") or body), ""
+    if _doubts(lowered) and _seen(step_id, "charts"):
+        return _doubt_reply(lowered, codes, view)
+    stated = _key_statement(lowered, view, step_id)
+    if stated:
+        return stated
+    return "hint", body, ""
 
 
 def _code_claim(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[str, str, str]:
@@ -303,27 +385,292 @@ def _code_claim(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[s
     found = set(codes)
     covers = bool(majority) and set(majority) <= found
     extra = found - set(majority)
+    shown = _sentence_case(phrase)
     if says_most and covers and not extra and named_share >= 0.5:
         verb = "makes up" if len(majority) == 1 else "make up"
-        body = f"{phrase} really {verb} most of the invalids this week."
-        return "correct", body, f"{phrase} {verb} most of the invalids"
-    if "biggest" in lowered and codes[0] == str(view.get("top_code") or "") and len(codes) == 1:
+        body = f"{shown} really {verb} most of the invalids this week."
+        return "correct", body, f"{shown} {verb} most of the invalids"
+    top_code = str(view.get("top_code") or "")
+    if ("biggest" in lowered or "main invalid" in lowered) and codes == [top_code]:
         top = str(view.get("top_plain") or codes[0])
         body = f"The biggest invalid type this week is {top}."
         return "correct", body, f"the biggest invalid type is {top}"
-    if (says_most and found & set(majority)) or (str(view.get("top_code") or "") in found):
+    if (says_most and found & set(majority)) or (top_code in found):
         body = (
             f"You named a real slice. It is not the whole story. "
             f"The slices that make up most of the invalids are {phrase}."
         )
         return "partial", body, f"part of the top slices, not the full set ({phrase})"
+    named = _join([code_plain(code) for code in codes]) or "those types"
     body = f"Those types are not most of the invalids. The slices that make up most of them are {phrase}."
-    return "unsupported", body, "a claim the counts do not support"
+    return "unsupported", body, f"a claim the counts do not support about {named}"
 
 
-def _direction_claim(view: dict[str, Any]) -> tuple[str, str, str]:
+def _majority_line(view: dict[str, Any]) -> tuple[str, str]:
+    phrase = _sentence_case(str(view.get("majority_phrase") or view.get("top_plain") or "the top invalid types"))
+    count = len(view.get("majority_codes") or [])
+    verb = "makes up" if count == 1 else "make up"
+    finding = f"{phrase} {verb} most of the invalids"
+    body = f"{phrase} really {verb} most of the invalids this week."
+    return finding, body
+
+
+def _doubt_reply(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[str, str, str]:
+    """Doubt never logs. Agree when the doubted set is not the majority; correct it when it is."""
+    phrase = _sentence_case(str(view.get("majority_phrase") or view.get("top_plain") or "the top invalid types"))
+    count = len(view.get("majority_codes") or [])
+    verb = "makes up" if count == 1 else "make up"
+    fact = f"{phrase} {verb} most of the invalids this week."
+    if codes:
+        kind, _body, _finding = _code_claim(lowered, codes, view)
+        shares = {str(key): float(value) for key, value in (view.get("code_shares") or {}).items()}
+        if kind != "correct" and sum(shares.get(code, 0.0) for code in codes) < 0.5:
+            return "hint", f"The counts agree with your doubt. {fact}", ""
+    return "correction", f"The counts do not support that. {fact}", "a doubted claim"
+
+
+def _negated_code_claim(lowered: str, codes: list[str], view: dict[str, Any]) -> tuple[str, str, str]:
+    """A statement that denies a claim. Grade it against the counts. Do not call it a question."""
+    kind, body, finding = _code_claim(lowered, codes, view)
+    shares = {str(key): float(value) for key, value in (view.get("code_shares") or {}).items()}
+    named_share = sum(shares.get(code, 0.0) for code in codes)
+    # Denying a set the counts already support is a correction, not a new ticket.
+    if kind == "correct" or named_share >= 0.5:
+        if kind != "correct":
+            finding, body = _majority_line(view)
+        return "correction", body, finding
+    if "biggest" in lowered or "main invalid" in lowered:
+        top = str(view.get("top_plain") or "")
+        fact = f"The biggest invalid type this week is {top}."
+        return "hint", f"The counts agree. {fact}", ""
+    finding, fact = _majority_line(view)
+    return "hint", f"The counts agree. {fact}", ""
+
+
+def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
+    """The key insight for one part: a signature and the sentence that states it."""
+    if beat_id == "charts":
+        if not (view.get("code_shares") or view.get("majority_codes")):
+            return (
+                "no invalids in this slice",
+                "This week's slice has no invalids, so there is no ranking to draw.",
+            )
+        return _majority_line(view)
+    if beat_id == "data":
+        return "the invalid rate this week", str(view.get("rate_sentence") or "")
+    if beat_id == "complaint":
+        return "what was promised", str(view.get("promise_sentence") or "The promise is that at least 98% of tests are valid.")
+    if beat_id == "logged":
+        count = _shown_ticket_count(view)
+        sentence = (
+            f"This week the plan has {count} follow-up item{'s' if count != 1 else ''}."
+            if count
+            else "This week the plan has no follow-up items yet."
+        )
+        return "which tickets are open", sentence
+    if beat_id == "notes":
+        notes = view.get("notes") or {}
+        sentence = str(notes.get("customer") or view.get("decision") or "Tell the customer only what the file supports.")
+        return "what the customer should be told", sentence
+    sentence = str(view.get("decision") or "Read the recommendation on this wrap-up.")
+    return "what we recommend this week", sentence
+
+
+def _shown_ticket_count(view: dict[str, Any]) -> int:
+    """The tickets on this week's table, not the whole four-week plan."""
+    tickets = view.get("tickets")
+    if isinstance(tickets, list):
+        return len(tickets)
+    return int(view.get("plan_ticket_count") or 0)
+
+
+def part_signature(view: dict[str, Any], beat_id: str) -> str:
+    return part_fact(view, beat_id)[0]
+
+
+def accepted_signatures(view: dict[str, Any], beat_id: str) -> set[str]:
+    """Findings that count as this part's point, so a typed YEP can unlock Next."""
+    found = {part_signature(view, beat_id)}
+    if beat_id == "charts":
+        top = str(view.get("top_plain") or "")
+        if top:
+            found.add(f"the biggest invalid type is {top}")
+    if beat_id == "data":
+        found.update(
+            {
+                "the invalid rate is higher in the later weeks of this slice",
+                "the invalid rate is lower in the later weeks of this slice",
+            }
+        )
+    return found
+
+
+_WORD_NUMBERS = {
+    "no": 0, "none": 0, "zero": 0, "nothing": 0, "one": 1, "two": 2, "three": 3, "four": 4,
+    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+}
+_STOP = frozenset(
+    "a an the is are was were be been of to in on at for and or we you i it this that these those with "
+    "as by from have has had will would should can could do does did our your my so if then than "
+    "tell told tells recommend recommends say says note notes customer".split()
+)
+_NO_WORD = re.compile(r"\b(?:no|not|none|never|nothing|cannot)\b|n't", re.I)
+
+
+def _promise_statement(lowered: str) -> bool:
+    """True for the promise as the file states it: 98% valid, or at most 2% invalid."""
+    if not re.search(r"\b(?:tests?|results?|runs?)\b", lowered):
+        return False
+    valid_side = re.search(r"\b98(?:\.0+)?\s*%?[^.;]{0,40}?\bvalid\b", lowered)
+    invalid_side = re.search(
+        r"\b(?:at most|at or below|below|under|up to|no more than|cap|stay|stays|may|can)\b[^.;]{0,40}?\b2(?:\.0+)?\s*%"
+        r"|\b2(?:\.0+)?\s*%[^.;]{0,40}?\binvalid\b",
+        lowered,
+    )
+    # "98% of tests are valid, so invalid results..." names both sides of one promise.
+    # "98% ... invalid" is the wrong side only when "valid" is not the claim in between.
+    wrong_side = re.search(
+        r"\b98(?:\.0+)?\s*%?(?:(?!\bvalid\b)[^.;]){0,40}?\binvalid\b", lowered
+    ) or re.search(
+        r"\b2(?:\.0+)?\s*%(?:(?!\binvalid\b)[^.;]){0,40}?(?<!in)\bvalid\b", lowered
+    )
+    denied = re.search(r"\b(?:not|never|cannot)\b|n't", lowered)
+    return bool((valid_side or invalid_side) and not wrong_side and not denied)
+
+
+def _count_statement(lowered: str, count: int) -> bool:
+    """True when the message gives this week's follow-up count, and nothing else."""
+    numbers = {int(n) for n in re.findall(r"(?<![\d.])\d+(?![\d.%])", lowered)}
+    numbers |= {value for word, value in _WORD_NUMBERS.items() if re.search(rf"\b{word}\b", lowered)}
+    return numbers == {count}
+
+
+def _norm_words(text: str) -> str:
+    return re.sub(r"[^a-z0-9%]+", " ", text.casefold()).strip()
+
+
+_TELL = re.compile(
+    r"^(?:tell|told)\s+(?:the\s+)?customer\s+(?:that\s+)?"
+    r"|^(?:the customer (?:was |should be )?told)\s+",
+    re.I,
+)
+
+
+def _quotes_fact(lowered: str, body: str) -> bool:
+    """The reader pasted one or more sentences that are already on the screen.
+
+    Every substantial sentence in the message must equal a sentence of the
+    facts. A correct sentence next to a changed one is not a quote.
+    """
+    body_pieces = [
+        piece
+        for sentence in re.split(r"(?<=[.!?])\s+", body)
+        if len((piece := _norm_words(sentence)).split()) >= 4
+    ]
+    if not body_pieces:
+        return False
+    matched = False
+    for raw in re.split(r"(?<=[.!?])\s+", lowered) or [lowered]:
+        piece = _norm_words(_TELL.sub("", raw, count=1) if raw.strip() else raw)
+        if len(piece.split()) < 4:
+            continue
+        if piece in body_pieces:
+            matched = True
+        else:
+            return False
+    return matched
+
+
+_TOKEN = re.compile(r"[a-z0-9][a-z0-9%'-]*(?:\.\d+%?)?")
+
+
+def _tokens(text: str) -> list[str]:
+    return _TOKEN.findall(text)
+
+
+def _negated_stems(tokens: list[str]) -> set[str]:
+    """The first content word after each no/not, so "not hold" differs from "hold ... not L-4419"."""
+    found: set[str] = set()
+    for i, tok in enumerate(tokens):
+        if _NO_WORD.fullmatch(tok) or tok.endswith("n't"):
+            for nxt in tokens[i + 1:]:
+                if nxt not in _STOP and not _NO_WORD.fullmatch(nxt):
+                    found.add(nxt[:4])
+                    break
+    return found
+
+
+def _same_sentence(lowered: str, body: str) -> bool:
+    """The message restates one sentence of the facts.
+
+    Most of its words must be in that sentence, every number or code it gives
+    must be in that sentence as written, and each "not" must deny the same word.
+    """
+    typed = _tokens(lowered)
+    words = [w[:4] for w in typed if w not in _STOP and len(w) > 2]
+    exact = {w for w in typed if any(ch.isdigit() for ch in w)}
+    if len(words) < 2:
+        return False
+    for sentence in re.split(r"(?<=[.!?])\s+", body.casefold()):
+        said = _tokens(sentence)
+        known = {w[:4] for w in said}
+        share = sum(1 for w in words if w in known) / len(words)
+        if share < 0.7 or not exact <= set(said):
+            continue
+        if _negated_stems(typed) == _negated_stems(said):
+            return True
+    return False
+
+
+def _key_statement(lowered: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str] | None:
+    """A typed statement of this part's point, not a question and not a denial.
+
+    Each branch checks the fact itself, not a keyword, so a wrong statement
+    falls through to the hint and never logs a ticket.
+    """
+    if _is_question(lowered) or _negated(lowered):
+        return None
+    finding, body = part_fact(view, step_id)
+    if not body:
+        return None
+    if step_id == "complaint" and _promise_statement(lowered):
+        return "correct", body, finding
+    if step_id == "data":
+        label = str(view.get("rate_label") or "").casefold()
+        if (
+            label
+            and not re.search(r"\b(?:not|never|cannot|no)\b|n't", lowered)
+            and ("rate" in lowered or "share" in lowered)
+            and re.search(rf"(?<![\d.]){re.escape(label)}", lowered)
+        ):
+            return "correct", body, finding
+    if step_id == "logged" and _seen(step_id, "logged") and re.search(r"\b(?:tickets?|items?)\b", lowered):
+        count = _shown_ticket_count(view)
+        denies = re.search(r"\b(?:not|never|cannot)\b|n't", lowered) or (
+            count != 0 and re.search(r"\b(?:no|none|nothing)\b", lowered)
+        )
+        if not denies and _count_statement(lowered, count):
+            return "correct", body, finding
+    if step_id == "notes" and _seen(step_id, "notes") and (
+        _quotes_fact(lowered, body) or ("customer" in lowered and _same_sentence(lowered, body))
+    ):
+        return "correct", body, finding
+    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and (
+        _quotes_fact(lowered, body) or _same_sentence(lowered, body)
+    ):
+        return "correct", body, finding
+    return None
+
+
+def _direction_claim(view: dict[str, Any], *, claimed: str = "up") -> tuple[str, str, str]:
     direction = str(view.get("direction") or "flat")
     sentence = str(view.get("direction_sentence") or "")
+    if claimed == "down":
+        if direction == "down":
+            return "correct", sentence, "the invalid rate is lower in the later weeks of this slice"
+        if direction == "up":
+            return "unsupported", sentence, "a claim that the rate is going down"
+        return "partial", sentence, "the rate is not a steady drop"
     if direction == "up":
         return "correct", sentence, "the invalid rate is higher in the later weeks of this slice"
     if direction == "down":
@@ -344,10 +691,18 @@ def _answer_question(lowered: str, view: dict[str, Any], step_id: str) -> str:
         return _code_question_body(lowered, codes, view)
     if codes and any(token in lowered for token in ("what is", "what does", "what's")):
         return "That means " + _join([code_plain(code) for code in codes]) + "."
-    if _asserts_up(lowered) or "going up" in lowered or ("invalid rate" in lowered) or ("rate" in lowered and "week" in lowered):
+    if _asserts_up(lowered) or "going up" in lowered:
         if not _seen(step_id, "data"):
             return "NOT YET — you'll see that on the numbers part."
         return str(view.get("direction_sentence") or view.get("rate_sentence") or "")
+    if (
+        "what is the invalid rate" in lowered
+        or ("invalid rate" in lowered and "this week" in lowered)
+        or ("rate" in lowered and "this week" in lowered)
+    ):
+        if not _seen(step_id, "data"):
+            return "NOT YET — you'll see that on the numbers part."
+        return str(view.get("rate_sentence") or "")
     if "who made" in lowered or "who makes" in lowered or "manufacturer" in lowered or "made the device" in lowered:
         return _maker_answer(view, step_id)
     if "promise" in lowered or "measure" in lowered or "98" in lowered:
@@ -375,8 +730,8 @@ def _answer_question(lowered: str, view: dict[str, Any], step_id: str) -> str:
 
 def _code_question_body(lowered: str, codes: list[str], view: dict[str, Any]) -> str:
     kind, body, _finding = _code_claim(lowered, codes, view)
-    phrase = str(view.get("majority_phrase") or "the top invalid types")
-    negated = bool(_NEGATION.search(lowered))
+    phrase = _sentence_case(str(view.get("majority_phrase") or "the top invalid types"))
+    negated = _negated(lowered)
     if negated and kind == "correct":
         return f"The counts do not agree with the 'not'. {phrase} do make up most of the invalids."
     if negated and kind != "correct":
@@ -472,6 +827,8 @@ def _remember(kind: str) -> str:
         return "we only keep a claim the counts support."
     if kind == "early":
         return "we'll check it when that part is on screen."
+    if kind == "correction":
+        return "the counts on this screen are the ones to keep."
     return "use the sentence on this screen before you lock a cause."
 
 
@@ -490,6 +847,10 @@ def _mentioned_codes(lowered: str) -> list[str]:
             continue
         if any(fragment in lowered for fragment in fragments):
             found.append(code)
+    # "the top two, not INV-SW" names INV-SW only to leave it out.
+    denied = {code.upper() for code in re.findall(r"\b(?:not|nor)\s+(inv-[a-z]+)\b", lowered, re.I)}
+    if denied and any(code not in denied for code in found):
+        found = [code for code in found if code not in denied]
     return found
 
 
@@ -507,6 +868,10 @@ def _says_most(lowered: str) -> bool:
 
 def _asserts_up(lowered: str) -> bool:
     return any(token in lowered for token in _UP)
+
+
+def _asserts_down(lowered: str) -> bool:
+    return any(token in lowered for token in _DOWN)
 
 
 def _is_question(lowered: str) -> bool:

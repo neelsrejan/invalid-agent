@@ -128,11 +128,71 @@ def test_every_week_has_a_wrap_up_body_and_no_bare_jargon():
         for beat in ("complaint", "data", "charts", "logged", "notes", "wrap"):
             text = "\n".join(beat_lines(view, beat))
             assert unexplained_jargon(text) == [], unexplained_jargon(text)
+        data = "\n".join(beat_lines(view, "data"))
+        charts = "\n".join(beat_lines(view, "charts"))
+        assert "This chart" not in data
+        assert "This chart" in charts
         wrap = "\n".join(beat_lines(view, "wrap"))
         assert "What we recommend" in wrap
         assert "Open the week-4" not in wrap
         assert "0.00%" not in wrap
     assert unexplained_jargon(PUBLIC_BANNER) == []
+    assert unexplained_jargon("What is MAUDE?") == []
+    assert unexplained_jargon("(FDA product code OOI)") == []
+    assert unexplained_jargon("OOI showed up again.") != []
+
+
+def test_the_public_banner_is_the_only_maude_explanation():
+    import yaml
+
+    from invalid_agent.ui.plain import (
+        JARGON_RULES,
+        PUBLIC_BANNER,
+        _readable,
+        gloss_once,
+        gloss_seen_for_banner,
+        plain_case_label,
+        unexplained_jargon,
+        with_gloss,
+    )
+
+    data = yaml.safe_load((ROOT_SCENARIO.parents[1] / "cases" / "openfda_ooi.yaml").read_text())
+    seen = gloss_seen_for_banner(True)
+    shown = [
+        gloss_once(f"Case: {plain_case_label(data['title'])}. Week 1.", seen),
+        gloss_once(f"Device: {data['device']}.", seen),
+        gloss_once(with_gloss(str(data["complaint"]).strip()), seen),
+    ]
+    blob = "\n".join((PUBLIC_BANNER, *shown))
+    assert blob.casefold().count("public database of device problem reports") == 1
+    assert blob.casefold().count("machines that run many nucleic-acid tests") == 1
+    assert "OOI means" not in blob
+    known: set[str] = set()
+    for chunk in (PUBLIC_BANNER, *shown):
+        bare = [hit for hit in unexplained_jargon(chunk) if hit not in known]
+        assert bare == [], chunk
+        readable = _readable(chunk).casefold()
+        for pattern, glosses in JARGON_RULES:
+            if pattern.search(_readable(chunk)) and glosses and any(gloss in readable for gloss in glosses):
+                known.add(pattern.pattern)
+
+
+def test_hosted_case_files_explain_maude_ooi_and_jje():
+    import yaml
+
+    from invalid_agent.ui.plain import with_gloss
+
+    root = __import__("pathlib").Path(__file__).resolve().parents[1] / "cases"
+    for name in ("openfda_ooi.yaml", "openfda_jje.yaml"):
+        data = yaml.safe_load((root / name).read_text())
+        assert unexplained_jargon(str(data["device"])) == [], data["device"]
+        shown = with_gloss(str(data["complaint"]))
+        assert unexplained_jargon(shown) == [], shown
+    from invalid_agent.ui.talkback import example_prompts
+
+    fda_view = {"fda": True, "majority": False}
+    for prompt in example_prompts(fda_view, "complaint"):
+        assert unexplained_jargon(prompt) == [], prompt
 
 
 def test_chart_text_uses_plain_labels():

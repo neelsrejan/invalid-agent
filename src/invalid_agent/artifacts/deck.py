@@ -10,7 +10,7 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
-from invalid_agent.ui.plain import format_percent
+from invalid_agent.ui.plain import cause_plain, format_percent
 
 NAVY = RGBColor(0x0B, 0x3A, 0x5B)
 TEAL = RGBColor(0x1F, 0x7A, 0x8C)
@@ -134,7 +134,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
             f"on {facts['k']} of {facts['n']} reports.\n"
             f"Likely range {_shown_percent(facts, 'ci_low_pct')} to {_shown_percent(facts, 'ci_high_pct')}.\n"
             "This file cannot measure the 2% promise. There is no spec line.\n"
-            f"Call: {facts['cause']} / {facts['level']} ({facts['category']}).\n"
+            f"Call: {cause_plain(str(facts['cause']))} / {facts['level']} ({facts['category']}).\n"
             f"{facts['recommendation']}"
         )
     else:
@@ -151,18 +151,25 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
 
     impact = _blank(prs)
     _box(impact, Inches(0.5), Inches(0.4), Inches(12), Inches(0.6), "Impact", size=28, color=NAVY, bold=True)
+    if _reports_only(facts):
+        impact_text = (
+            f"{facts['k']} invalids of {facts['n']} reports.\n"
+            "This file counts problem reports. It does not price each invalid."
+        )
+    else:
+        impact_text = (
+            f"{facts['k']} invalids of {facts['n']} runs.\n"
+            f"${facts['unit']} per invalid, from the scenario file.\n"
+            f"Cost of invalids on this file: ${facts['cost']}.\n"
+            "That product is computed. It is not a quote from a customer invoice."
+        )
     _box(
         impact,
         Inches(0.5),
         Inches(1.6),
         Inches(12),
         Inches(3.5),
-        (
-            f"{facts['k']} invalids of {facts['n']} {'reports' if _reports_only(facts) else 'runs'}.\n"
-            f"${facts['unit']} per invalid, from the scenario file.\n"
-            f"Cost of invalids on this file: ${facts['cost']}.\n"
-            "That product is computed. It is not a quote from a customer invoice."
-        ),
+        impact_text,
         size=24,
     )
 
@@ -175,7 +182,7 @@ def write_deck(path: Path, facts: dict[str, Any]) -> Path:
         Inches(12),
         Inches(1.3),
         (
-            f"{facts['cause']} / {facts['level']}.\n"
+            f"{cause_plain(str(facts['cause'])) if _reports_only(facts) else facts['cause']} / {facts['level']}.\n"
             + (
                 f"Observed {_shown_percent(facts, 'rate_pct')}. Projected {_shown_percent(facts, 'after_pct')}.\n"
                 if _reports_only(facts)

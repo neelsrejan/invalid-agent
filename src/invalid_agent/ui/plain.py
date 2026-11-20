@@ -29,7 +29,7 @@ JARGON_RULES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (re.compile(r"\bdeterministic\b", re.I), ()),
     (re.compile(r"\bnarrative\b", re.I), ("written note",)),
     (re.compile(r"\bMAUDE\b", re.I), ("fda's public database of device problem reports",)),
-    (re.compile(r"\bOOI\b", re.I), ("nucleic-acid",)),
+    (re.compile(r"\bOOI\b", re.I), ("nucleic-acid", "nucleic acid")),
     (re.compile(r"\bJJE\b", re.I), ("chemistry analyzer",)),
     (re.compile(r"\bIVD\b", re.I), ("lab test",)),
     (re.compile(r"\bfishbones?\b", re.I), ("possible causes",)),
@@ -168,12 +168,71 @@ def unexplained_jargon(text: str) -> list[str]:
     for sentence in chunks:
         readable = _readable(sentence)
         lowered = readable.casefold()
+        if re.fullmatch(r"what is [a-z0-9-]+\??", lowered.strip()):
+            continue
+        if re.fullmatch(r"\(fda product code [a-z]{3}\)", lowered.strip()):
+            continue
         for pattern, glosses in JARGON_RULES:
             if pattern.search(readable) is None:
                 continue
             if not glosses or not any(gloss in lowered for gloss in glosses):
                 found.append(pattern.pattern)
     return list(dict.fromkeys(found))
+
+
+def gloss_seen_for_banner(public: bool) -> set[str]:
+    """Tokens the banner already explained, so the page does not explain them again."""
+    if public:
+        return {"MAUDE"}
+    return set()
+
+
+def gloss_once(text: str, seen: set[str]) -> str:
+    """Explain each code and each short name the first time, then leave the short form.
+
+    ``seen`` is the set of tokens already explained earlier on this page.
+    The call adds tokens it explains.
+    """
+    pieces = _sentences(text)
+    if not pieces:
+        return str(text or "")
+    return " ".join(_gloss_once_piece(piece, seen) for piece in pieces)
+
+
+def _gloss_once_piece(sentence: str, seen: set[str]) -> str:
+    updated = sentence
+    for code, plain in CODE_PLAIN.items():
+        if code not in updated and plain not in updated:
+            continue
+        if code not in seen:
+            if plain.casefold() not in updated.casefold():
+                updated = re.sub(rf"\b{re.escape(code)}\b", plain, updated, count=1)
+            seen.add(code)
+        else:
+            updated = re.sub(re.escape(plain), code, updated, flags=re.I)
+    shorts = (
+        ("MAUDE", "the FDA's public database of device problem reports"),
+        ("OOI", "machines that run many nucleic-acid tests at once"),
+        ("JJE", "clinical chemistry analyzers"),
+        ("INV-MECH", "a mechanical problem"),
+    )
+    for token, gloss in shorts:
+        if re.search(rf"\b{re.escape(token)}\b", updated) is None:
+            continue
+        if token not in seen:
+            if gloss.casefold() not in updated.casefold():
+                updated = re.sub(
+                    rf"\b{re.escape(token)}\b",
+                    f"{token} ({gloss})",
+                    updated,
+                    count=1,
+                )
+            seen.add(token)
+        else:
+            updated = updated.replace(f"{token} ({gloss})", token)
+            lowered_gloss = gloss[0].lower() + gloss[1:]
+            updated = updated.replace(f"{token} ({lowered_gloss})", token)
+    return updated
 
 
 def with_gloss(text: str) -> str:

@@ -8,7 +8,6 @@ model, when one is on, may only rephrase the talk-back reply.
 
 from __future__ import annotations
 
-import importlib.util
 import logging
 import os
 import sys
@@ -20,71 +19,9 @@ _SRC_TEXT = str(_SRC.resolve())
 sys.path[:] = [entry for entry in sys.path if entry != _SRC_TEXT]
 sys.path.insert(0, _SRC_TEXT)
 
+from invalid_agent.fresh import ensure_checkout, note_imports
 
-class _CheckoutFinder:
-    """Resolve invalid_agent from this checkout even if another copy is installed."""
-
-    def __init__(self, src: Path) -> None:
-        self.src = src.resolve()
-        self._invalid_agent_src = self.src
-
-    def find_spec(self, fullname, path, target=None):
-        if fullname != "invalid_agent" and not fullname.startswith("invalid_agent."):
-            return None
-        base = self.src.joinpath(*fullname.split("."))
-        init = base / "__init__.py"
-        if init.is_file():
-            return importlib.util.spec_from_file_location(
-                fullname,
-                init,
-                submodule_search_locations=[str(base)],
-            )
-        module_path = base.with_suffix(".py")
-        if module_path.is_file():
-            return importlib.util.spec_from_file_location(fullname, module_path)
-        return None
-
-
-def _guide_is_current(src: Path) -> bool:
-    """Streamlit re-executes this file but keeps imported packages.
-
-    A deploy can replace guide.py on disk while the process still holds the
-    previous module: the ten-step crumb and progress_label(index). This file
-    calls progress_label(week, beat). Drop that module so the import below
-    reads the guide next to this checkout.
-    """
-    guide = sys.modules.get("invalid_agent.ui.guide")
-    if guide is None:
-        return True
-    label = getattr(guide, "progress_label", None)
-    code = getattr(label, "__code__", None)
-    shorts = [getattr(step, "short", "") for step in getattr(guide, "GUIDE_STEPS", ())]
-    expected = (src / "invalid_agent" / "ui" / "guide.py").resolve()
-    loaded_name = getattr(guide, "__file__", None)
-    loaded = Path(str(loaded_name)).resolve() if loaded_name else None
-    if code is None or code.co_argcount != 2 or shorts[:3] != ["Complaint", "Data", "Charts"] or loaded != expected:
-        return False
-    stamped = getattr(guide, "_source_mtime", None)
-    if stamped is None:
-        return True
-    try:
-        return expected.stat().st_mtime <= float(stamped) + 1e-6
-    except OSError:
-        return False
-
-
-def _use_checkout(src: Path) -> None:
-    resolved = src.resolve()
-    sys.meta_path[:] = [finder for finder in sys.meta_path if getattr(finder, "_invalid_agent_src", None) != resolved]
-    sys.meta_path.insert(0, _CheckoutFinder(resolved))
-    if _guide_is_current(resolved):
-        return
-    for name in list(sys.modules):
-        if name == "invalid_agent" or name.startswith("invalid_agent."):
-            del sys.modules[name]
-
-
-_use_checkout(_SRC)
+ensure_checkout(_SRC)
 
 import pandas as pd
 import streamlit as st
@@ -94,17 +31,19 @@ from invalid_agent.config import find_repo_root, load_settings
 from invalid_agent.data.frame import load_frame
 from invalid_agent.sim.generate import load_scenario
 from invalid_agent.ui.guide import AUDIENCES, GUIDE_STEPS, progress_label
-from invalid_agent.ui.plain import PRACTICE_BANNER, PUBLIC_BANNER, plain_case_label, unexplained_jargon, with_gloss
+from invalid_agent.ui.plain import (
+    PRACTICE_BANNER,
+    PUBLIC_BANNER,
+    gloss_once,
+    gloss_seen_for_banner,
+    plain_case_label,
+    unexplained_jargon,
+)
 from invalid_agent.ui.records import logged_sections, note_sections, sections_from_run
 from invalid_agent.ui.story import beat_lines, build_week_view
-from invalid_agent.ui.talkback import example_prompts, respond, reword_reply
+from invalid_agent.ui.talkback import accepted_signatures, example_prompts, part_fact, respond, reword_reply
 
-_loaded_guide = sys.modules.get("invalid_agent.ui.guide")
-if _loaded_guide is not None:
-    try:
-        _loaded_guide._source_mtime = (_SRC / "invalid_agent" / "ui" / "guide.py").stat().st_mtime
-    except OSError:
-        pass
+note_imports()
 
 _LOG = logging.getLogger("invalid_agent.ui")
 
@@ -123,7 +62,6 @@ _KEPT_KEYS = (
     "stratum_for_week",
     "audience",
     "rules_only",
-    "week_insights",
     "open_items",
     "insight_serial",
     "flag_serial",
@@ -190,10 +128,6 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.unlocked_week = 1
     if "finished" not in st.session_state:
         st.session_state.finished = False
-    if not isinstance(st.session_state.get("week_insights"), dict):
-        st.session_state.week_insights = {1: [], 2: [], 3: [], 4: []}
-    for week in (1, 2, 3, 4):
-        st.session_state.week_insights.setdefault(week, [])
     if not isinstance(st.session_state.get("open_items"), list):
         st.session_state.open_items = []
     if "insight_serial" not in st.session_state:
@@ -202,6 +136,8 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.flag_serial = 0
     if "audience" not in st.session_state:
         st.session_state.audience = "customer"
+    if not isinstance(st.session_state.get("done_parts"), list):
+        st.session_state.done_parts = []
     st.session_state.unlocked_week = min(4, max(1, int(st.session_state.unlocked_week)))
     st.session_state.story_week = min(
         st.session_state.unlocked_week,
@@ -215,8 +151,9 @@ def _init_state(ids: list[str]) -> None:
         st.session_state.beat = 0
         st.session_state.unlocked_week = 1
         st.session_state.finished = False
-        st.session_state.week_insights = {1: [], 2: [], 3: [], 4: []}
+        st.session_state.done_parts = []
         st.session_state.open_items = []
+        st.session_state.ask_cache = {}
         st.session_state.insight_serial = 0
         st.session_state.flag_serial = 0
         st.session_state.last_reply = None
@@ -233,7 +170,15 @@ def _page_chrome(banner: str) -> None:
         <style>
           header[data-testid="stHeader"] { position: static !important; }
           [data-testid="stToolbar"] { position: static !important; }
-          .block-container { padding-top: 1.4rem !important; padding-bottom: 2.5rem; }
+          .block-container { padding-top: 1.4rem !important; padding-bottom: 7rem !important; }
+          div[data-testid="stHtml"],
+          div[data-testid="stHtml"] iframe,
+          div[data-testid="stHtml"] div {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            white-space: normal !important;
+          }
           div[data-testid="stMetric"] { position: static !important; top: auto !important; }
           div[data-testid="stHorizontalBlock"] { position: static !important; }
         </style>
@@ -247,9 +192,11 @@ def _page_chrome(banner: str) -> None:
     )
     st.html(
         '<div style="background:#0B3A5B;color:#FFFFFF;padding:16px 18px;'
-        'border-radius:6px;margin-top:8px;">'
-        '<p style="margin:0;color:#FFFFFF;font-size:16px;line-height:1.5;'
-        "font-family:sans-serif;font-weight:500;white-space:normal;\">"
+        "border-radius:6px;margin-top:8px;max-width:100%;box-sizing:border-box;"
+        'height:auto;overflow:visible;">'
+        '<p style="margin:0;color:#FFFFFF;font-size:16px;line-height:1.45;'
+        "font-family:sans-serif;font-weight:500;white-space:normal;"
+        'overflow-wrap:anywhere;word-break:break-word;">'
         f"{safe}</p></div>"
     )
     st.title("Invalid Bot")
@@ -296,7 +243,16 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
     reply = respond(message, view, beat_id, ticket_key=ticket_key, flag_key=flag_key)
     signature = str(reply.get("signature") or "")
     existing = next(
-        (item for item in st.session_state.open_items if signature and item.get("signature") == signature),
+        (
+            item
+            for item in st.session_state.open_items
+            if (
+                signature
+                and item.get("signature") == signature
+                and item.get("kind") == reply["log_kind"]
+                and int(item.get("week") or 0) == int(week)
+            )
+        ),
         None,
     )
     text = str(reply.get("text") or "")
@@ -304,7 +260,6 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         text = text.replace(str(reply.get("log_key") or ""), str(existing["key"]))
     elif reply["log_kind"] == "ticket" and reply.get("bullet"):
         st.session_state.insight_serial = int(st.session_state.insight_serial) + 1
-        st.session_state.week_insights.setdefault(week, []).append(reply["bullet"])
         st.session_state.open_items.append(
             {
                 "week": week,
@@ -320,11 +275,13 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
             {
                 "week": week,
                 "key": reply["log_key"],
-                "text": reply["log_text"],
+                "text": signature,
                 "kind": "flag",
                 "signature": signature,
             }
         )
+    if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
+        _mark_done(week, beat_id)
     shown = reword_reply(text, _talk_llm(rules_only))
     if unexplained_jargon(shown):
         shown = text
@@ -337,33 +294,77 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
     st.session_state.talk_nonce = int(st.session_state.get("talk_nonce") or 0) + 1
 
 
+def _mark_done(week: int, beat_id: str) -> None:
+    key = f"{int(week)}:{beat_id}"
+    done = st.session_state.done_parts
+    if key not in done:
+        done.append(key)
+
+
+def _part_done(week: int, beat_id: str) -> bool:
+    return f"{int(week)}:{beat_id}" in st.session_state.done_parts
+
+
+def _fresh_gloss() -> None:
+    public = load_settings().data_backend == "openfda"
+    st.session_state._gloss_seen = gloss_seen_for_banner(public)
+
+
+def _say(text: str) -> str:
+    seen = st.session_state.get("_gloss_seen")
+    if not isinstance(seen, set):
+        seen = set()
+        st.session_state._gloss_seen = seen
+    return gloss_once(str(text or ""), seen)
+
+
+def _item_line(item: dict) -> str:
+    text = str(item.get("text") or "").strip()
+    if item.get("kind") == "insight":
+        return f"- **Insight:** {text}"
+    key = str(item.get("key") or "")
+    kind = "Ticket" if item.get("kind") == "ticket" else "Flag"
+    prefix = f"{key}:"
+    if text.startswith(prefix):
+        text = text[len(prefix) :].strip()
+    return f"- **{key}** ({kind}): {text}"
+
+
 def _render_lines(lines: list[str]) -> None:
     for line in lines:
         if line.startswith("### "):
-            st.subheader(line[4:])
+            st.subheader(_say(line[4:]))
         else:
-            st.markdown(line)
+            st.markdown(_say(line))
 
 
 def _render_carried(week: int) -> None:
     if week <= 1:
         return
-    carried = [item for item in st.session_state.open_items if int(item["week"]) < week]
+    carried = [
+        item
+        for item in st.session_state.open_items
+        if int(item["week"]) < week and item.get("kind") in {"ticket", "flag"} and str(item.get("text") or "").strip()
+    ]
     if not carried:
         return
     st.subheader("Still open from earlier weeks")
     for item in carried:
-        st.markdown(f"- {item['key']}: {item['text']}")
+        st.markdown(_say(_item_line(item)))
 
 
 def _render_insights(week: int) -> None:
     st.subheader(f"Week {week} insights")
-    bullets = list(st.session_state.week_insights.get(week) or [])
-    if not bullets:
+    items = [
+        item
+        for item in st.session_state.open_items
+        if int(item["week"]) == week and str(item.get("text") or "").strip()
+    ]
+    if not items:
         st.markdown("No confirmed insight yet. Tell the agent what you see. A confirmed insight will land here.")
         return
-    for bullet in bullets:
-        st.markdown(f"- {bullet}")
+    for item in items:
+        st.markdown(_say(_item_line(item)))
 
 
 def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
@@ -377,14 +378,14 @@ def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     prompts = example_prompts(view, beat_id if beat_id != "done" else "wrap")
     st.caption("Or try one of these.")
     for index, prompt in enumerate(prompts):
-        if st.button(prompt, key=f"ex-{beat_id}-{index}"):
+        if st.button(_say(prompt), key=f"ex-{beat_id}-{index}"):
             _apply_talk(prompt, view, beat_id, week, rules_only)
             st.rerun()
     last = st.session_state.get("last_reply") or {}
     if last and int(last.get("week") or 0) == week and str(last.get("beat") or "") == beat_id:
         if last.get("user_text"):
-            st.markdown("**You said.** " + with_gloss(str(last["user_text"])))
-        st.markdown(str(last.get("text") or ""))
+            st.markdown("**You said.** " + str(last["user_text"]))
+        st.markdown(_say(str(last.get("text") or "")))
 
 
 def _render_metrics(view: dict) -> None:
@@ -409,6 +410,11 @@ def _render_charts(view: dict, week: int) -> None:
         width="stretch",
     )
     if view["pareto"]:
+        legend = " ".join(
+            f"{row['plain']}." for row in view["pareto"] if row.get("plain")
+        )
+        if legend:
+            st.caption(_say(legend))
         count_title = "Invalids" if view.get("estimable") else "Reports"
         st.plotly_chart(pareto_figure(view["pareto"], count_title=count_title), width="stretch")
     else:
@@ -531,19 +537,20 @@ def _deck_bytes(view: dict, scenario: dict) -> bytes | None:
 @st.cache_data(show_spinner=False)
 def _case_sections(scenario_path: str, story_week: int) -> list[dict[str, str]]:
     """Cached graph records for one story week. The model stays off for this call."""
-    saved = os.environ.get("LLM_BACKEND")
-    os.environ["LLM_BACKEND"] = "deterministic"
     try:
         from invalid_agent.graph import run_case
+        from invalid_agent.llm import DeterministicLLM
 
         out = ROOT / "out" / "dashboard" / Path(scenario_path).stem / f"week{int(story_week)}"
-        result = run_case(str(scenario_path), int(story_week), out)
+        result = run_case(str(scenario_path), int(story_week), out, llm=DeterministicLLM())
+        scenario = load_scenario(Path(scenario_path))
+        public = str(scenario.get("denominator") or "") == "reported_events"
         base = ""
         try:
             base = str(load_settings().jira_base_url or "")
         except Exception:
             base = ""
-        return sections_from_run(result, base_url=base)
+        return sections_from_run(result, base_url=base, public=public)
     except Exception as exc:
         _LOG.error("case run failed: %s", type(exc).__name__)
         return [
@@ -556,11 +563,6 @@ def _case_sections(scenario_path: str, story_week: int) -> list[dict[str, str]]:
                 ),
             }
         ]
-    finally:
-        if saved is None:
-            os.environ.pop("LLM_BACKEND", None)
-        else:
-            os.environ["LLM_BACKEND"] = saved
 
 
 def _render_sections(sections: list[dict[str, str]]) -> None:
@@ -598,7 +600,7 @@ def _render_ask(scenario: dict, rules_only: bool) -> None:
             items = list(SUGGESTED_QUESTIONS)
         picked = None
         for item in items:
-            if st.button(with_gloss(str(item["label"])), key=f"ask-{item['id']}"):
+            if st.button(_say(str(item["label"])), key=f"ask-{item['id']}"):
                 picked = item
         if picked:
             _show_answer(picked, rules_only)
@@ -609,6 +611,11 @@ def _show_answer(picked: dict, rules_only: bool) -> None:
     from invalid_agent.data.query import answer_question
     from invalid_agent.llm import get_llm
 
+    cache = st.session_state.setdefault("ask_cache", {})
+    cache_key = str(picked.get("id") or picked.get("text") or "")
+    if cache_key and cache_key in cache:
+        st.markdown(cache[cache_key])
+        return
     try:
         public = load_settings().data_backend == "openfda"
         url = query_url(load_settings(), public=public)
@@ -648,10 +655,48 @@ def _show_answer(picked: dict, rules_only: bool) -> None:
     prose = safe_prose(str(answered.get("prose") or ""))
     if not prose:
         prose = "The table answered. The counts on this page stay the ones Python computed for this week."
+    if cache_key:
+        cache[cache_key] = prose
     st.markdown(prose)
 
 
-def _nav(week: int, beat: int, finished: bool) -> None:
+def _reveal(view: dict, beat_id: str, week: int) -> None:
+    """Log this part's key insight. The reader asked to be shown the point."""
+    finding, body = part_fact(view, beat_id)
+    body = str(body or "").strip()
+    if not body:
+        _mark_done(week, beat_id)
+        return
+    existing = next(
+        (
+            item
+            for item in st.session_state.open_items
+            if item.get("signature") == finding and int(item.get("week") or 0) == int(week)
+        ),
+        None,
+    )
+    if existing is None:
+        text = f"Here is the point of this part. {body}"
+        st.session_state.open_items.append(
+            {
+                "week": week,
+                "key": "Insight",
+                "text": body,
+                "kind": "insight",
+                "signature": finding,
+            }
+        )
+        st.session_state.last_reply = {
+            "week": week,
+            "beat": beat_id,
+            "user_text": "Show me",
+            "text": text,
+        }
+        st.session_state.talk_nonce = int(st.session_state.get("talk_nonce") or 0) + 1
+    _mark_done(week, beat_id)
+
+
+def _nav(week: int, beat: int, finished: bool, view: dict) -> None:
     back, forward = st.columns(2)
     with back:
         if st.button("Back", key="back", disabled=beat == 0 and week == 1 and not finished):
@@ -667,13 +712,19 @@ def _nav(week: int, beat: int, finished: bool) -> None:
         if finished:
             return
         step = GUIDE_STEPS[beat]
+        ready = _part_done(week, step.id)
+        if st.button("Show me", key="show-me", disabled=ready):
+            _reveal(view, step.id, week)
+            st.rerun()
         if beat < len(GUIDE_STEPS) - 1:
             label = step.next_label
         elif week < 4:
             label = f"Start week {week + 1}"
         else:
             label = "Finish the story"
-        if st.button(label, key="next", type="primary"):
+        if st.button(label, key="next", type="primary", disabled=not ready):
+            if not _part_done(week, step.id):
+                return
             if beat < len(GUIDE_STEPS) - 1:
                 st.session_state.beat = beat + 1
             elif week < 4:
@@ -697,6 +748,7 @@ def _render_case_picker(rows: list[tuple[Path, dict, str]]) -> None:
 
 
 def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None:
+    _fresh_gloss()
     by_id = {str(scenario.get("id")): (path, scenario) for path, scenario, _label in rows}
     scenario_path, scenario = by_id[st.session_state.scenario_id]
     week = int(st.session_state.story_week)
@@ -721,7 +773,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         _render_carried(week)
         _render_talk(view, "done", week, rules_only)
         _render_insights(week)
-        _nav(week, beat, True)
+        _nav(week, beat, True, view)
         return
 
     step = GUIDE_STEPS[beat]
@@ -733,9 +785,9 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         trail.append(label)
     st.caption(" · ".join(trail))
     st.subheader(f"{progress_label(week, beat)} — {step.title}")
-    st.markdown(f"**What the agent is doing.** {step.doing}")
-    st.markdown(f"**Why.** {step.why}")
-    st.markdown(f"**What to look at.** {step.look}")
+    st.markdown(_say(f"**What the agent is doing.** {step.doing}"))
+    st.markdown(_say(f"**Why.** {step.why}"))
+    st.markdown(_say(f"**What to look at.** {step.look}"))
     if week == 1 and beat == 0:
         _render_case_picker(rows)
         scenario_path, scenario = by_id[st.session_state.scenario_id]
@@ -766,7 +818,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         _offer_deck(view, scenario)
     _render_talk(view, step.id, week, rules_only)
     _render_insights(week)
-    _nav(week, beat, False)
+    _nav(week, beat, False, view)
 
 
 def main() -> None:
@@ -796,7 +848,12 @@ def main() -> None:
     )
     rules_only = bool(st.session_state.rules_only)
     _backend_caption(rules_only)
-    _render_guided(rows, rules_only)
+    try:
+        _render_guided(rows, rules_only)
+    finally:
+        # Lazy imports during the page run have to be stamped too, or the next
+        # rerun treats them as leftovers from the previous release and reloads.
+        note_imports()
 
 
 main()
