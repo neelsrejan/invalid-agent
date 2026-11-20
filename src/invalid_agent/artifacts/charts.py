@@ -20,15 +20,21 @@ def p_chart_figure(chart: dict[str, Any], title: str = "Weekly invalid rate") ->
     center = [chart["p_bar"] * 100 for _ in periods]
     rule1 = {hit["period"] for hit in chart["violations"] if hit["rule"] == 1}
     figure = go.Figure()
-    figure.add_trace(go.Scatter(x=periods, y=ucl, name="UCL", line={"color": _RED, "dash": "dot", "width": 1}))
-    figure.add_trace(go.Scatter(x=periods, y=lcl, name="LCL", line={"color": _RED, "dash": "dot", "width": 1}))
-    figure.add_trace(go.Scatter(x=periods, y=center, name="p-bar", line={"color": "#8AA0B2", "dash": "dash", "width": 1}))
+    figure.add_trace(go.Scatter(x=periods, y=ucl, name="High line", line={"color": _RED, "dash": "dot", "width": 1}))
+    figure.add_trace(go.Scatter(x=periods, y=lcl, name="Low line", line={"color": _RED, "dash": "dot", "width": 1}))
+    figure.add_trace(go.Scatter(x=periods, y=center, name="Average", line={"color": "#8AA0B2", "dash": "dash", "width": 1}))
     figure.add_trace(go.Scatter(x=periods, y=rate, name="Invalid %", mode="lines+markers", line={"color": _NAVY, "width": 2}))
     flagged_x = [point["period"] for point in chart["points"] if point["period"] in rule1]
     flagged_y = [point["p"] * 100 for point in chart["points"] if point["period"] in rule1]
     if flagged_x:
         figure.add_trace(
-            go.Scatter(x=flagged_x, y=flagged_y, name="Rule 1", mode="markers", marker={"color": _RED, "size": 9, "symbol": "x"})
+            go.Scatter(
+                x=flagged_x,
+                y=flagged_y,
+                name="Far above usual",
+                mode="markers",
+                marker={"color": _RED, "size": 9, "symbol": "x"},
+            )
         )
     figure.update_layout(title=title, yaxis_title="Invalid rate (%)", template="plotly_white", height=380, margin={"l": 40, "r": 20, "t": 50, "b": 40})
     figure.update_xaxes(showgrid=True, gridcolor=_GRID)
@@ -44,7 +50,7 @@ def pareto_figure(rows: list[dict[str, Any]]) -> go.Figure:
     figure.add_trace(go.Bar(x=codes, y=counts, name="Count", marker_color=_TEAL))
     figure.add_trace(go.Scatter(x=codes, y=cumulative, name="Cumulative %", yaxis="y2", mode="lines+markers", line={"color": _NAVY}))
     figure.update_layout(
-        title="Pareto of invalid codes",
+        title="Which invalid types show up most",
         yaxis={"title": "Invalids"},
         yaxis2={"title": "Cumulative %", "overlaying": "y", "side": "right", "range": [0, 105]},
         template="plotly_white",
@@ -70,13 +76,13 @@ def before_after_figure(before_chart: dict[str, Any], after_chart: dict[str, Any
         go.Scatter(
             x=[point["period"] for point in after_chart["points"]],
             y=[point["p"] * 100 for point in after_chart["points"]],
-            name="Projected without leading stratum",
+            name="What-if, leading group cleared",
             mode="lines",
             line={"color": _TEAL, "width": 2},
         )
     )
     figure.update_layout(
-        title="Before / after — projection, not observed follow-up",
+        title="What-if on this same file, not a new test",
         yaxis_title="Invalid rate (%)",
         template="plotly_white",
         height=380,

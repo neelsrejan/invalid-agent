@@ -18,22 +18,16 @@ from invalid_agent.ui.guide import (
 def test_guided_steps_cover_the_investigation_in_order():
     assert [step.id for step in GUIDE_STEPS] == [
         "complaint",
-        "case",
-        "chart",
-        "pareto",
-        "strata",
-        "projection",
-        "artifacts",
+        "data",
+        "charts",
+        "logged",
         "notes",
-        "jira",
-        "pitch",
+        "wrap",
     ]
-    assert progress_label(0) == "Step 1 of 10"
-    assert progress_label(9) == "Step 10 of 10"
+    assert progress_label(1, 0) == "Week 1 of 4 — Part 1 of 6"
+    assert progress_label(4, 5) == "Week 4 of 4 — Part 6 of 6"
     assert len({step.next_label for step in GUIDE_STEPS}) == len(GUIDE_STEPS)
-    assert GUIDE_STEPS[0].needs_case is False
-    assert GUIDE_STEPS[1].needs_case is False
-    assert all(step.needs_case for step in GUIDE_STEPS[2:])
+    assert all(step.needs_case for step in GUIDE_STEPS)
     assert [label for _value, label in ARTIFACTS] == [
         "Triage memo",
         "Fishbone",
@@ -48,11 +42,11 @@ def test_suggested_questions_follow_the_open_case():
     known = {item["id"] for item in SUGGESTED_QUESTIONS}
     for step in GUIDE_STEPS:
         assert set(step.question_ids) <= known
-    chart = next(step for step in GUIDE_STEPS if step.id == "chart")
+    chart = next(step for step in GUIDE_STEPS if step.id == "charts")
     assert [item["id"] for item in questions_for(chart, "OOI", SUGGESTED_QUESTIONS)] == ["ooi_share"]
     assert [item["id"] for item in questions_for(chart, "JJE", SUGGESTED_QUESTIONS)] == ["jje_weeks"]
     assert questions_for(chart, "", SUGGESTED_QUESTIONS) == []
-    pitch = next(step for step in GUIDE_STEPS if step.id == "pitch")
+    pitch = next(step for step in GUIDE_STEPS if step.id == "wrap")
     assert [item["id"] for item in questions_for(pitch, "OOI", SUGGESTED_QUESTIONS)] == [
         "ooi_share",
         "jje_manufacturer",
@@ -62,19 +56,21 @@ def test_suggested_questions_follow_the_open_case():
 
 
 def test_ranker_sentence_uses_the_hypothesis_not_a_new_number():
-    assert cause_sentence({"cause": "no_single_cause", "summary": "No stratum cleared the evidence bar."}).startswith(
-        "The ranker stopped at no single cause."
+    assert cause_sentence({"cause": "no_single_cause", "summary": "No group cleared the bar."}).startswith(
+        "No single group stands out yet."
     )
     sentence = cause_sentence(
         {
             "cause": "bad_reagent_lot",
             "level": "L-4419",
+            "lift": 12.0,
             "summary": "L-4419 bad reagent lot rate is above the complement with lift 12.00",
         }
     )
-    assert "bad_reagent_lot" in sentence
     assert "L-4419" in sentence
-    assert "12.00" in sentence
+    assert "12.0" in sentence
+    assert "times" in sentence
+    assert "inf" not in sentence.casefold()
 
 
 def test_week_story_reads_injections_and_the_decision_log():
