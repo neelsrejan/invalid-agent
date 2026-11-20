@@ -286,6 +286,31 @@ def test_a_module_replaced_before_the_first_stamp_is_dropped(tmp_path):
         _restore_imports(*saved)
 
 
+def test_without_bytecode_an_unstamped_module_is_dropped_only_before_the_first_stamp(tmp_path):
+    """No .pyc to compare. The first run after a deploy still evicts. Later runs do not."""
+    import invalid_agent.fresh as fresh
+    import invalid_agent.ui.plain as plain
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    saved_noted = fresh._NOTED
+    saved_cached = plain.__cached__
+    try:
+        plain.__cached__ = str(tmp_path / "missing.pyc")
+        fresh._STAMPS.clear()
+        fresh._NOTED = True
+        assert fresh.ensure_checkout(ROOT / "src") is False
+        fresh._NOTED = False
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        assert "invalid_agent.ui.plain" not in sys.modules
+    finally:
+        plain.__cached__ = saved_cached
+        fresh._NOTED = saved_noted
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+        _restore_imports(*saved)
+
+
 def test_a_file_changed_in_place_drops_the_package():
     import invalid_agent.fresh as fresh
     import invalid_agent.ui.plain  # noqa: F401

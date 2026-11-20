@@ -16,6 +16,7 @@ from pathlib import Path
 
 _LOCK = threading.Lock()
 _STAMPS: dict[str, float] = {}
+_NOTED = False  # True once note_imports has run in this process
 # This module holds the stamps. Evicting it would forget them on the next rerun.
 _SELF = "invalid_agent.fresh"
 
@@ -77,16 +78,21 @@ def _pyc_predates_source(module: object, path: Path) -> bool:
     A bytecode file that another process rewrote is not enough on its own: its
     file time can be newer while this process still holds the previous module.
     The timestamp stored inside the bytecode is the source time it was built
-    from. A missing bytecode file does not, by itself, mean the module is old.
+    from. A missing bytecode file means the module is old only before the
+    first ``note_imports``. After that, a missing file does not drop a module
+    that already has every public name.
     """
     cached = getattr(module, "__cached__", None)
     if not cached:
-        return False
+        # No bytecode path at all (python -B). Before the first note_imports,
+        # an unstamped module is from the previous release.
+        return not _NOTED
     try:
         header = Path(str(cached)).read_bytes()[:16]
         source_mtime = int(path.stat().st_mtime)
     except OSError:
-        return True
+        # The recorded .pyc is missing. Same rule: evict only before the first stamp.
+        return not _NOTED
     if len(header) < 16:
         return True
     flags = struct.unpack("<I", header[4:8])[0]
@@ -116,8 +122,9 @@ def ensure_checkout(src: Path) -> bool:
 
     A module is evicted when its file is outside ``src``, when that file is
     newer than the mtime recorded by ``note_imports``, or when this process has
-    no stamp for it and the loaded module is missing a name the file defines
-    or was loaded from older bytecode. One stale module drops
+    no stamp for it and the loaded module is missing a name the file defines,
+    was loaded from older bytecode, or has no readable bytecode yet and
+    ``note_imports`` has not run. One stale module drops
     the rest of the package so the next import is one consistent tree.
     Returns True when anything was evicted.
     """
@@ -141,7 +148,9 @@ def ensure_checkout(src: Path) -> bool:
 
 def note_imports() -> None:
     """Record the mtime of each ``invalid_agent`` module now in memory."""
+    global _NOTED
     with _LOCK:
+        _NOTED = True
         for name, module in list(sys.modules.items()):
             if not _ours(name):
                 continue

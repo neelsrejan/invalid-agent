@@ -352,9 +352,9 @@ def test_a_typed_insight_unlocks_next_on_every_part(monkeypatch):
         ("The complaint", "The promise is at least 98% valid tests"),
         ("This week's numbers", None),
         ("The charts", None),
-        ("What gets logged", "The open tickets are the ones in the plan"),
-        ("Root-cause notes", "Tell the customer what this note says"),
-        ("Week wrap-up", "We recommend what this wrap-up says"),
+        ("What gets logged", None),
+        ("Root-cause notes", "Tell the customer we have not confirmed a cause"),
+        ("Week wrap-up", "We opened the case"),
     )
     for title, typed in steps:
         visible = _visible(app)
@@ -365,6 +365,8 @@ def test_a_typed_insight_unlocks_next_on_every_part(monkeypatch):
             rate = re.search(r"The invalid rate this week is [\d.]+%", visible)
             assert rate, visible
             typed = rate.group(0)
+        if title == "What gets logged":
+            typed = f"The plan has {len(app.dataframe[0].value)} follow-up items"
         if title == "The charts":
             typed = next(
                 button.label

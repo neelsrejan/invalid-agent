@@ -452,7 +452,7 @@ def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
     if beat_id == "complaint":
         return "what was promised", str(view.get("promise_sentence") or "The promise is that at least 98% of tests are valid.")
     if beat_id == "logged":
-        count = int(view.get("plan_ticket_count") or 0)
+        count = _shown_ticket_count(view)
         sentence = (
             f"This week the plan has {count} follow-up item{'s' if count != 1 else ''}."
             if count
@@ -465,6 +465,14 @@ def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
         return "what the customer should be told", sentence
     sentence = str(view.get("decision") or "Read the recommendation on this wrap-up.")
     return "what we recommend this week", sentence
+
+
+def _shown_ticket_count(view: dict[str, Any]) -> int:
+    """The tickets on this week's table, not the whole four-week plan."""
+    tickets = view.get("tickets")
+    if isinstance(tickets, list):
+        return len(tickets)
+    return int(view.get("plan_ticket_count") or 0)
 
 
 def part_signature(view: dict[str, Any], beat_id: str) -> str:
@@ -488,24 +496,77 @@ def accepted_signatures(view: dict[str, Any], beat_id: str) -> set[str]:
     return found
 
 
+_WORD_NUMBERS = {
+    "no": 0, "none": 0, "zero": 0, "nothing": 0, "one": 1, "two": 2, "three": 3, "four": 4,
+    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+}
+_STOP = frozenset(
+    "a an the is are was were be been of to in on at for and or we you i it this that these those with "
+    "as by from have has had will would should can could do does did our your my so if then than "
+    "tell told tells recommend recommends say says note notes customer".split()
+)
+_NO_WORD = re.compile(r"\b(?:no|not|none|never|nothing|cannot)\b|n't", re.I)
+
+
+def _promise_statement(lowered: str) -> bool:
+    """True for the promise as the file states it: 98% valid, or at most 2% invalid."""
+    if not re.search(r"\b(?:tests?|results?|runs?)\b", lowered):
+        return False
+    valid_side = re.search(r"\b98(?:\.0+)?\s*%?[^.;]{0,40}?\bvalid\b", lowered)
+    invalid_side = re.search(
+        r"\b(?:at most|at or below|below|under|up to|no more than|cap|stay|stays|may|can)\b[^.;]{0,40}?\b2(?:\.0+)?\s*%"
+        r"|\b2(?:\.0+)?\s*%[^.;]{0,40}?\binvalid\b",
+        lowered,
+    )
+    wrong_side = re.search(r"\b98(?:\.0+)?\s*%?[^.;]{0,30}?\binvalid\b", lowered) or re.search(
+        r"\b2(?:\.0+)?\s*%[^.;]{0,30}?(?<!in)\bvalid\b", lowered
+    )
+    return bool((valid_side or invalid_side) and not wrong_side)
+
+
+def _count_statement(lowered: str, count: int) -> bool:
+    """True when the message gives this week's follow-up count, and nothing else."""
+    numbers = {int(n) for n in re.findall(r"(?<![\d.])\d+(?![\d.%])", lowered)}
+    numbers |= {value for word, value in _WORD_NUMBERS.items() if re.search(rf"\b{word}\b", lowered)}
+    return numbers == {count}
+
+
+def _same_sentence(lowered: str, body: str) -> bool:
+    """The message restates one sentence of the facts: most of its words, and the same yes or no."""
+    words = [w[:4] for w in re.findall(r"[a-z0-9.%']+", lowered) if w not in _STOP and len(w) > 2]
+    if len(words) < 2:
+        return False
+    for sentence in re.split(r"(?<=[.!?])\s+", body.casefold()):
+        known = {w[:4] for w in re.findall(r"[a-z0-9.%']+", sentence)}
+        share = sum(1 for w in words if w in known) / len(words)
+        if share >= 0.7 and bool(_NO_WORD.search(lowered)) == bool(_NO_WORD.search(sentence)):
+            return True
+    return False
+
+
 def _key_statement(lowered: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str] | None:
-    """A typed statement of this part's point, not a question and not a denial."""
+    """A typed statement of this part's point, not a question and not a denial.
+
+    Each branch checks the fact itself, not a keyword, so a wrong statement
+    falls through to the hint and never logs a ticket.
+    """
     if _is_question(lowered) or _negated(lowered):
         return None
     finding, body = part_fact(view, step_id)
     if not body:
         return None
-    if step_id == "complaint" and ("98" in lowered or "2%" in lowered) and ("promise" in lowered or "valid" in lowered):
+    if step_id == "complaint" and _promise_statement(lowered):
         return "correct", body, finding
     if step_id == "data":
         label = str(view.get("rate_label") or "").casefold()
-        if label and label in lowered and "rate" in lowered:
+        if label and "rate" in lowered and re.search(rf"(?<![\d.]){re.escape(label)}", lowered):
             return "correct", body, finding
-    if step_id == "logged" and _seen(step_id, "logged") and "ticket" in lowered and "open" in lowered:
+    if step_id == "logged" and _seen(step_id, "logged") and re.search(r"\b(?:tickets?|items?)\b", lowered):
+        if _count_statement(lowered, _shown_ticket_count(view)):
+            return "correct", body, finding
+    if step_id == "notes" and _seen(step_id, "notes") and "customer" in lowered and _same_sentence(lowered, body):
         return "correct", body, finding
-    if step_id == "notes" and _seen(step_id, "notes") and "customer" in lowered and ("told" in lowered or "tell" in lowered):
-        return "correct", body, finding
-    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and "recommend" in lowered:
+    if step_id in {"wrap", "done"} and _seen(step_id, "notes") and _same_sentence(lowered, body):
         return "correct", body, finding
     return None
 

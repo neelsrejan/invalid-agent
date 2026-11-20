@@ -1,7 +1,7 @@
 """The talk-back reply answers from facts the reader has already seen."""
 
 from invalid_agent.ui.plain import unexplained_jargon
-from invalid_agent.ui.talkback import example_prompts, respond, reword_reply
+from invalid_agent.ui.talkback import example_prompts, part_fact, respond, reword_reply
 
 
 def _view() -> dict:
@@ -501,7 +501,7 @@ def test_each_part_accepts_a_typed_statement_of_its_point():
     cases = (
         ("complaint", "The promise is at least 98% valid tests"),
         ("data", "The invalid rate this week is 3.00%"),
-        ("logged", "The open tickets are the ones in the plan"),
+        ("logged", "The plan has 1 open ticket"),
         ("notes", "Tell the customer we have not confirmed a cause"),
         ("wrap", "We recommend opening the case"),
     )
@@ -517,3 +517,72 @@ def test_bare_false_or_hardly_in_a_correct_claim_still_confirms():
         "INV-NOR and INV-MECH make up most, hardly a surprise",
     ):
         assert _reply(message)["confirmed"], message
+
+
+def _typed(message: str, step: str, **view_extra):
+    view = _view()
+    view.update(rate_label="3.00%", **view_extra)
+    return respond(message, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+
+
+def test_a_wrong_statement_of_the_promise_is_not_a_yep_or_a_ticket():
+    for message in (
+        "98% of tests are invalid, which breaks the promise",
+        "the promise is that 2% are valid",
+        "the promise is that 2% of tests are valid",
+        "the promise is 98% invalid",
+        "I promise 98 dollars",
+        "98 valid promise",
+    ):
+        reply = _typed(message, "complaint")
+        assert not reply["confirmed"], message
+        assert reply["log_kind"] != "ticket", message
+        assert not reply["text"].startswith("YEP"), message
+    for message in (
+        "The promise is that at least 98% of tests are valid",
+        "invalid results stay at or below 2% of tests",
+    ):
+        assert _typed(message, "complaint")["confirmed"], message
+
+
+def test_the_logged_part_needs_the_real_count_of_tickets():
+    for message in (
+        "There are 12 tickets open about the software",
+        "no tickets are open",
+        "0 tickets open",
+        "open tickets don't matter",
+    ):
+        reply = _typed(message, "logged", plan_ticket_count=1)
+        assert not reply["confirmed"], message
+        assert not reply["text"].startswith("YEP"), message
+    assert _typed("There is 1 ticket open", "logged", plan_ticket_count=1)["confirmed"]
+    view = _view()
+    view["tickets"] = []
+    view["plan_ticket_count"] = 12
+    assert "no follow-up items" in part_fact(view, "logged")[1]
+
+
+def test_the_logged_count_is_this_weeks_table_not_the_whole_plan():
+    view = _view()
+    view["tickets"] = [{"key": "INV-1"}, {"key": "INV-2"}]
+    view["plan_ticket_count"] = 12
+    assert part_fact(view, "logged")[1] == "This week the plan has 2 follow-up items."
+
+
+def test_notes_and_wrap_need_the_note_not_just_a_keyword():
+    for message in (
+        "The customer was told the device is recalled",
+        "tell the customer everything is fine",
+        "the customer should be told we found the cause",
+    ):
+        assert not _typed(message, "notes")["confirmed"], message
+    for message in ("I recommend we stop selling the device", "I recommend pizza", "recommend closing the case"):
+        assert not _typed(message, "wrap")["confirmed"], message
+        assert not _typed(message, "notes")["confirmed"], message
+    assert _typed("Tell the customer we have not confirmed a cause", "notes")["confirmed"]
+    assert not _typed("Tell the customer we have confirmed a cause", "notes")["confirmed"]
+
+
+def test_a_longer_number_does_not_match_the_rate():
+    assert not _typed("the invalid rate is 13.00%", "data")["confirmed"]
+    assert _typed("the invalid rate is 3.00%", "data")["confirmed"]
