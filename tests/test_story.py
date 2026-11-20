@@ -128,11 +128,36 @@ def test_every_week_has_a_wrap_up_body_and_no_bare_jargon():
         for beat in ("complaint", "data", "charts", "logged", "notes", "wrap"):
             text = "\n".join(beat_lines(view, beat))
             assert unexplained_jargon(text) == [], unexplained_jargon(text)
+        data = "\n".join(beat_lines(view, "data"))
+        charts = "\n".join(beat_lines(view, "charts"))
+        assert "This chart" not in data
+        assert "This chart" in charts
         wrap = "\n".join(beat_lines(view, "wrap"))
         assert "What we recommend" in wrap
         assert "Open the week-4" not in wrap
         assert "0.00%" not in wrap
     assert unexplained_jargon(PUBLIC_BANNER) == []
+    assert unexplained_jargon("What is MAUDE?") == []
+    assert unexplained_jargon("(FDA product code OOI)") == []
+    assert unexplained_jargon("OOI showed up again.") != []
+
+
+def test_hosted_case_files_explain_maude_ooi_and_jje():
+    import yaml
+
+    from invalid_agent.ui.plain import with_gloss
+
+    root = __import__("pathlib").Path(__file__).resolve().parents[1] / "cases"
+    for name in ("openfda_ooi.yaml", "openfda_jje.yaml"):
+        data = yaml.safe_load((root / name).read_text())
+        assert unexplained_jargon(str(data["device"])) == [], data["device"]
+        shown = with_gloss(str(data["complaint"]))
+        assert unexplained_jargon(shown) == [], shown
+    from invalid_agent.ui.talkback import example_prompts
+
+    fda_view = {"fda": True, "majority": False}
+    for prompt in example_prompts(fda_view, "complaint"):
+        assert unexplained_jargon(prompt) == [], prompt
 
 
 def test_chart_text_uses_plain_labels():

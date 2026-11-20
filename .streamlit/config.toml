@@ -8,7 +8,10 @@ font = "sans serif"
 
 [server]
 headless = true
-fileWatcherType = "none"
+# Streamlit drops a changed imported module only when the file watcher is on.
+# "none" left charts, deck, hypotheses, planner, and triage on the previous
+# deploy in memory. poll checks mtimes without the inotify watcher.
+fileWatcherType = "poll"
 
 [browser]
 gatherUsageStats = false

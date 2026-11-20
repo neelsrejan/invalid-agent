@@ -1,7 +1,9 @@
 """The root Streamlit entrypoint has to render week 1, including after a stale import."""
 
+import importlib.util
+import inspect
 import sys
-import types
+from dataclasses import replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +49,12 @@ def _restore_imports(modules, meta_path) -> None:
     sys.modules.update(modules)
 
 
+def test_file_watcher_polls_so_a_deploy_drops_stale_modules():
+    text = (ROOT / ".streamlit" / "config.toml").read_text()
+    assert 'fileWatcherType = "poll"' in text
+    assert 'fileWatcherType = "none"' not in text
+
+
 def test_root_entrypoint_renders_week_one(monkeypatch):
     saved = _saved_imports()
     try:
@@ -59,40 +67,24 @@ def test_root_entrypoint_renders_week_one(monkeypatch):
         _restore_imports(*saved)
 
 
-def test_stale_guide_still_renders_week_one(monkeypatch):
-    """A long-lived Streamlit process keeps the pre-rewrite guide in sys.modules.
+def _load_fixture(module_name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None and spec.loader is not None
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
-    That module's progress_label takes the step index only, and its crumb is the
-    old ten-step line. The root entrypoint has to load the guide from this
-    checkout instead of crashing on progress_label(week, beat).
+
+def test_stale_guide_outside_the_checkout_still_renders_week_one(monkeypatch):
+    """The real pre-rewrite guide, loaded from outside this source tree, is evicted.
+
+    The fixture is the guide from commit cfd403f, the parent of the week rewrite.
+    Its progress_label takes one argument. The page has to load the checkout copy.
     """
     saved = _saved_imports()
     try:
-        guide = types.ModuleType("invalid_agent.ui.guide")
-        guide.__file__ = str(ROOT / "src" / "invalid_agent" / "ui" / "guide.py")
-
-        class GuideStep:
-            def __init__(self, short: str) -> None:
-                self.short = short
-                self.title = short
-                self.id = "complaint"
-                self.doing = "Reads the complaint."
-                self.why = "So the numbers have a promise to compare with."
-                self.look = "Read the promise."
-                self.next_label = "Next"
-                self.needs_case = True
-                self.question_ids = ()
-                self.match_case = True
-
-        guide.GuideStep = GuideStep
-        guide.GUIDE_STEPS = tuple(GuideStep(short) for short in _OLD_CRUMB.split(" · "))
-        guide.AUDIENCES = ()
-
-        def progress_label(index: int) -> str:
-            return f"Step {index + 1} of 10"
-
-        guide.progress_label = progress_label
-        sys.modules["invalid_agent.ui.guide"] = guide
+        _load_fixture("invalid_agent.ui.guide", ROOT / "tests" / "fixtures" / "pre_pr9_guide.py")
         app = _boot(monkeypatch)
         assert not app.exception, app.exception
         text = _visible(app)
@@ -100,4 +92,45 @@ def test_stale_guide_still_renders_week_one(monkeypatch):
         assert _OLD_CRUMB not in text
         assert "Step 1 of 10" not in text
     finally:
+        _restore_imports(*saved)
+
+
+def test_a_step_rename_in_memory_does_not_reload_every_run():
+    import invalid_agent.fresh as fresh
+    import invalid_agent.ui.guide as guide
+
+    saved_steps = guide.GUIDE_STEPS
+    saved_stamps = dict(fresh._STAMPS)
+    identity = id(guide)
+    try:
+        fresh.note_imports()
+        guide.GUIDE_STEPS = (replace(guide.GUIDE_STEPS[0], short="Renamed"),) + guide.GUIDE_STEPS[1:]
+        assert fresh.ensure_checkout(ROOT / "src") is False
+        assert fresh.ensure_checkout(ROOT / "src") is False
+        assert id(guide) == identity
+        assert guide.GUIDE_STEPS[0].short == "Renamed"
+    finally:
+        guide.GUIDE_STEPS = saved_steps
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
+
+
+def test_a_stale_charts_module_outside_src_is_replaced_by_the_checkout():
+    import invalid_agent.fresh as fresh
+
+    saved = _saved_imports()
+    saved_stamps = dict(fresh._STAMPS)
+    try:
+        fresh.note_imports()
+        old = _load_fixture(
+            "invalid_agent.artifacts.charts",
+            ROOT / "tests" / "fixtures" / "pre_pr9_charts.py",
+        )
+        assert "y_title" not in inspect.signature(old.p_chart_figure).parameters
+        assert fresh.ensure_checkout(ROOT / "src") is True
+        charts = importlib.import_module("invalid_agent.artifacts.charts")
+        assert "y_title" in inspect.signature(charts.p_chart_figure).parameters
+    finally:
+        fresh._STAMPS.clear()
+        fresh._STAMPS.update(saved_stamps)
         _restore_imports(*saved)

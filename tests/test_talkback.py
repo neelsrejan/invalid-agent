@@ -120,8 +120,9 @@ def test_example_prompts_hide_the_code_claim_before_charts():
 
 def test_ticket_key_is_not_read_as_an_invalid_type():
     reply = _reply("Your ticket 1 and INV-13 are the problem", "charts")
-    assert reply["kind"] == "question"
+    assert reply["kind"] == "hint"
     assert reply["confirmed"] is False
+    assert "GOOD QUESTION" not in reply["text"]
 
 
 def test_failed_model_keeps_the_plain_answer():
@@ -228,6 +229,155 @@ def test_a_rewritten_reply_cannot_smuggle_a_number_or_a_longer_verdict():
     assert reword_reply(base, _Draft(base + " The Paretos chart agrees.")) == base
     yep = _reply("INV-NOR and INV-MECH make up the majority of the invalids")["text"]
     assert reword_reply(yep, _Draft(yep.replace("YEP, YOU GOT IT!", "YEP, YOU GOT IT WRONG!", 1))) == yep
+
+
+def test_a_false_denial_is_not_a_ticket():
+    reply = _reply("The main invalid is not INV-NOR")
+    assert reply["confirmed"] is False
+    assert reply["log_kind"] == ""
+    assert not reply["text"].startswith("YEP")
+    assert "GOOD QUESTION" not in reply["text"]
+    denied = _reply("INV-NOR and INV-MECH are not in fact the majority of the invalids")
+    assert denied["confirmed"] is False
+    assert denied["log_kind"] == ""
+    assert not denied["text"].startswith("YEP")
+    extra = _reply("INV-NOR and INV-MECH and INV-SW do not make up the majority of the invalids")
+    assert extra["confirmed"] is False
+    assert extra["log_kind"] == ""
+    assert not extra["text"].startswith("YEP")
+
+
+def test_a_greeting_with_a_question_mark_is_still_not_a_question():
+    reply = _reply("Hello?", "complaint")
+    assert "GOOD QUESTION" not in reply["text"]
+    assert reply["log_kind"] == ""
+
+
+def test_a_negated_statement_is_a_direct_correction():
+    reply = _reply("INV-NOR is not the biggest")
+    assert reply["confirmed"] is False
+    assert reply["log_kind"] == ""
+    assert not reply["text"].startswith("YEP")
+    assert "GOOD QUESTION" not in reply["text"]
+    assert reply["text"].startswith("NOT QUITE.")
+    assert "no usable result (INV-NOR)" in reply["text"]
+
+
+def test_doubt_words_are_not_confirmed():
+    for message in (
+        "Neither INV-NOR nor INV-MECH make up most of the invalids",
+        "I doubt INV-NOR and INV-MECH make up most of the invalids",
+        "It's false that INV-NOR and INV-MECH make up most of the invalids",
+        "INV-NOR and INV-MECH make up most of the invalids or not",
+        "INV-NOR and INV-MECH make up most of the invalids, I think not",
+        "INV-NOR and INV-MECH make up most of the invalids. NOT!",
+        "INV-NOR isn't even close to the majority",
+        "INV-NOR is hardly the biggest",
+    ):
+        reply = _reply(message)
+        assert reply["confirmed"] is False, message
+        assert reply["log_kind"] == "", message
+        assert not reply["text"].startswith("YEP"), message
+        assert "GOOD QUESTION" not in reply["text"], message
+        assert "Your ticket" not in reply["text"], message
+
+
+def test_not_enough_sample_can_be_a_correct_majority():
+    view = _view()
+    view["majority_codes"] = ["INV-VOL"]
+    view["majority_phrase"] = "not enough sample (INV-VOL)"
+    view["top_code"] = "INV-VOL"
+    view["top_plain"] = "not enough sample (INV-VOL)"
+    view["code_shares"] = {"INV-VOL": 0.62, "INV-NOR": 0.2}
+    reply = respond(
+        "not enough sample makes up most of the invalids",
+        view,
+        "charts",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert reply["confirmed"] is True
+    assert reply["text"].startswith("YEP, YOU GOT IT!")
+    assert "Your ticket 1" in reply["text"]
+    assert "do not agree" not in reply["text"].casefold()
+    assert "Not enough sample (INV-VOL)" in reply["text"]
+
+
+def test_this_week_rate_question_uses_the_rate_sentence():
+    reply = _reply("What is the invalid rate this week?", "data")
+    assert reply["kind"] == "question"
+    assert "3.00%" in reply["text"]
+    assert "30 of 1000" in reply["text"]
+    assert "This chart" not in reply["text"]
+
+
+def test_a_greeting_or_aside_is_not_called_a_question():
+    for message in ("hello", "asdf", "tell me a joke", "calibration is a problem"):
+        reply = _reply(message, "complaint")
+        assert "GOOD QUESTION" not in reply["text"], message
+        assert reply["log_kind"] == ""
+        assert reply["confirmed"] is False
+
+
+def test_increasing_and_decreasing_follow_the_direction():
+    up = _reply("the invalids are increasing", "data")
+    assert up["confirmed"] is True
+    assert up["text"].startswith("YEP, YOU GOT IT!")
+    down = _reply("the invalids are decreasing", "data")
+    assert down["confirmed"] is False
+    assert down["log_kind"] == "flag"
+    assert not down["text"].startswith("YEP")
+    falling = _reply("the rate is going down", "data")
+    assert falling["confirmed"] is False
+    assert falling["log_kind"] == "flag"
+
+
+def test_main_invalid_matches_the_top_code_only():
+    view = _view()
+    view["majority_codes"] = ["INV-VOL"]
+    view["majority_phrase"] = "not enough sample (INV-VOL)"
+    view["top_code"] = "INV-VOL"
+    view["top_plain"] = "not enough sample (INV-VOL)"
+    view["code_shares"] = {"INV-VOL": 0.8}
+    reply = respond(
+        "INV-VOL is the main invalid",
+        view,
+        "charts",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert reply["confirmed"] is True
+    assert "Your ticket 1" in reply["text"]
+
+
+def test_two_unsupported_claims_name_different_codes():
+    first = _reply("INV-SW makes up the majority of the invalids")
+    second = _reply("INV-CAL makes up the majority of the invalids")
+    assert first["log_kind"] == "flag"
+    assert second["log_kind"] == "flag"
+    assert first["signature"] != second["signature"]
+    assert "INV-SW" in first["signature"] or "software" in first["signature"]
+    assert "INV-CAL" in second["signature"] or "calibration" in second["signature"]
+
+
+def test_a_rewritten_reply_cannot_swap_numbers_or_flip_a_negation():
+    base = _reply("Why is the invalid rate going up?")["text"]
+
+    class _Draft:
+        name = "groq"
+
+        def __init__(self, text: str):
+            self.text = text
+
+        def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+            del system, user, temperature
+            return self.text
+
+    swapped = base.replace("4.00%", "HOLD%").replace("1.00%", "4.00%").replace("HOLD%", "1.00%")
+    assert reword_reply(base, _Draft(swapped)) == base
+    yep = _reply("INV-NOR and INV-MECH make up the majority of the invalids")["text"]
+    flipped = yep.replace("make up most", "do NOT make up most", 1)
+    assert reword_reply(yep, _Draft(flipped)) == yep
 
 
 def test_every_step_has_example_prompts():

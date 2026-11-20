@@ -64,3 +64,6 @@ def test_ooi_deck_says_share_of_reports(tmp_path):
     assert re.search(r"(?<![\d.])0\.00%", text) is None
     assert "under 0.01%" in text
     assert PUBLIC_BANNER.split(".")[0] in text
+    assert "per invalid" not in text
+    assert "reported_manufacturer" not in text
+    assert "the company that made the device" in text

@@ -109,7 +109,8 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
     noun = "share of reports" if not estimable else "invalid rate"
     rate_sentence = f"The {noun} this week is {rate_label} ({count_label})."
     rule1_sentence = _rule1_sentence(rule1_count)
-    direction_sentence = _direction_sentence(direction, early, late, rule1_sentence)
+    direction_head = _direction_head(direction, early, late)
+    direction_sentence = f"{direction_head} {rule1_sentence}".strip()
     promise_sentence = (
         "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
     )
@@ -155,6 +156,7 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         "rule1_count": int(rule1_count),
         "rule1_sentence": rule1_sentence,
         "direction": direction,
+        "direction_head": direction_head,
         "direction_sentence": direction_sentence,
         "early_label": format_percent(early),
         "late_label": format_percent(late),
@@ -225,7 +227,7 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
             view["rate_sentence"],
             f"The likely range is {view['range_label']}. That is a 95% range. The model did not pick it.",
             f"This week's call is {view['call_label']}.",
-            view["direction_sentence"],
+            view.get("direction_head") or view["direction_sentence"],
             view["measure_sentence"],
         ]
     elif beat_id == "charts":
@@ -321,22 +323,24 @@ def _direction(points: list[dict[str, Any]]) -> tuple[str, float, float]:
     return "flat", early, late
 
 
-def _direction_sentence(direction: str, early: float, late: float, rule1_sentence: str) -> str:
+def _direction_head(direction: str, early: float, late: float) -> str:
     early_label = format_percent(early)
     late_label = format_percent(late)
     if direction == "up":
-        head = f"The later weeks in this slice are higher ({late_label}) than the early weeks ({early_label})."
-    elif direction == "down":
-        head = (
+        return f"The later weeks in this slice are higher ({late_label}) than the early weeks ({early_label})."
+    if direction == "down":
+        return (
             f"The later weeks in this slice are lower ({late_label}) than the early weeks ({early_label}). "
             "The rate is not going up."
         )
-    else:
-        head = (
-            f"The later weeks in this slice ({late_label}) are about the same as the early weeks ({early_label}). "
-            "The rate is not steadily going up."
-        )
-    return f"{head} {rule1_sentence}"
+    return (
+        f"The later weeks in this slice ({late_label}) are about the same as the early weeks ({early_label}). "
+        "The rate is not steadily going up."
+    )
+
+
+def _direction_sentence(direction: str, early: float, late: float, rule1_sentence: str) -> str:
+    return f"{_direction_head(direction, early, late)} {rule1_sentence}".strip()
 
 
 def _code_facts(rows: list[dict[str, Any]]) -> dict[str, Any]:
