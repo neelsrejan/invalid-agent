@@ -191,6 +191,9 @@ def test_complaint_insight_must_claim_the_biggest_with_the_real_numbers():
         f"Most invalid reports are internal control, {count} of {total}",
         f"{top} {count} of {total}",
         f"no way {top} is the biggest, {count} of {total}",
+        f"{top} first showed up in week 1 at {count} of {total}",
+        f"{top} first appeared in week 1 at {count} of {total}",
+        f"{top} is the first invalid category with {count} of {total}",
     ):
         reply, unlocked = _talk(view, bad)
         assert not unlocked, bad

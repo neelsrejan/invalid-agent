@@ -896,7 +896,7 @@ def _asserts_down(lowered: str) -> bool:
     return any(token in lowered for token in _DOWN)
 
 
-_TOP_WORD = re.compile(r"\b(?:biggest|largest|top|most (?:common|frequent|reported)|highest|main|leading|number one|first)\b|#1")
+_TOP_WORD = re.compile(r"\b(?:biggest|largest|top|most (?:common|frequent|reported)|highest|main|leading|number one)\b|#1")
 _NOT_TOP = re.compile(
     r"\b(?:smallest|least|lowest|fewest|second|third|fourth|last|bottom|smaller|fewer|less|than|rather|"
     r"instead|neither|nor|without|percent|no longer|used to|ago|will|would|might|maybe|could|no|none|nothing)\b|%"
