@@ -146,6 +146,23 @@ _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 def example_prompts(view: dict[str, Any], step_id: str) -> list[str]:
     """Three short prompts. A code-share claim is not offered before the charts part."""
+    if step_id in {"complaint", "data"}:
+        prompts = [
+            "How many complaints are in the dataset?",
+            "Which invalid categories are highest to lowest?",
+        ]
+        if (view.get("explore") or {}).get("manufacturers"):
+            prompts.append("Who is the main manufacturer from this week's reports?")
+        elif step_id == "data":
+            prompts.append("What is the invalid rate this week?")
+        week = int(view.get("story_week") or (view.get("explore") or {}).get("week") or 1)
+        if step_id == "data" and str(view.get("direction") or "") == "up" and week > 1:
+            prompts.append("Why is the invalid rate going up?")
+        unique: list[str] = []
+        for prompt in prompts:
+            if prompt not in unique:
+                unique.append(prompt)
+        return unique[:3]
     prompts: list[str] = []
     if _seen(step_id, "charts"):
         if view.get("majority") and view.get("majority_phrase"):
@@ -340,6 +357,27 @@ def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, 
     lowered = text.casefold()
     if _is_greeting(lowered):
         return "hint", _hello(step_id, view), ""
+    if step_id in {"complaint", "data"} and _is_question(lowered):
+        from invalid_agent.ui.explore import answer_for, honest_menu, match_intent
+
+        intent = match_intent(lowered)
+        if intent:
+            return "question", answer_for(intent, view), _question_finding(lowered, view, step_id)
+        glossary = _glossary_answer(lowered)
+        if glossary:
+            return "question", glossary, _question_finding(lowered, view, step_id)
+        later = any(word in lowered for word in ("ticket", "jira", "logged", "recommend"))
+        if not later:
+            week = int((view.get("explore") or {}).get("week") or view.get("story_week") or 1)
+            return "question", honest_menu(week), f"a question on the {step_id} screen"
+    if step_id == "complaint" and not _is_question(lowered) and not _negated(lowered):
+        stated = _key_statement(lowered, view, step_id)
+        if stated:
+            return stated
+        if _category_attempt(lowered):
+            sentence = str((view.get("explore") or {}).get("category_sentence") or "")
+            if sentence:
+                return "hint", sentence, ""
     codes = _mentioned_codes(lowered)
     claims_codes = bool(codes) and (_says_most(lowered) or "biggest" in lowered or "main invalid" in lowered)
     question = _is_question(lowered)
@@ -459,7 +497,10 @@ def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
     if beat_id == "data":
         return "the invalid rate this week", str(view.get("rate_sentence") or "")
     if beat_id == "complaint":
-        return "what was promised", str(view.get("promise_sentence") or "The promise is that at least 98% of tests are valid.")
+        sentence = str((view.get("explore") or {}).get("category_sentence") or "")
+        if not sentence:
+            sentence = "Name the biggest invalid category so far."
+        return "the biggest invalid category so far", sentence
     if beat_id == "logged":
         count = _shown_ticket_count(view)
         sentence = (
@@ -515,27 +556,6 @@ _STOP = frozenset(
     "tell told tells recommend recommends say says note notes customer".split()
 )
 _NO_WORD = re.compile(r"\b(?:no|not|none|never|nothing|cannot)\b|n't", re.I)
-
-
-def _promise_statement(lowered: str) -> bool:
-    """True for the promise as the file states it: 98% valid, or at most 2% invalid."""
-    if not re.search(r"\b(?:tests?|results?|runs?)\b", lowered):
-        return False
-    valid_side = re.search(r"\b98(?:\.0+)?\s*%?[^.;]{0,40}?\bvalid\b", lowered)
-    invalid_side = re.search(
-        r"\b(?:at most|at or below|below|under|up to|no more than|cap|stay|stays|may|can)\b[^.;]{0,40}?\b2(?:\.0+)?\s*%"
-        r"|\b2(?:\.0+)?\s*%[^.;]{0,40}?\binvalid\b",
-        lowered,
-    )
-    # "98% of tests are valid, so invalid results..." names both sides of one promise.
-    # "98% ... invalid" is the wrong side only when "valid" is not the claim in between.
-    wrong_side = re.search(
-        r"\b98(?:\.0+)?\s*%?(?:(?!\bvalid\b)[^.;]){0,40}?\binvalid\b", lowered
-    ) or re.search(
-        r"\b2(?:\.0+)?\s*%(?:(?!\binvalid\b)[^.;]){0,40}?(?<!in)\bvalid\b", lowered
-    )
-    denied = re.search(r"\b(?:not|never|cannot)\b|n't", lowered)
-    return bool((valid_side or invalid_side) and not wrong_side and not denied)
 
 
 def _count_statement(lowered: str, count: int) -> bool:
@@ -633,8 +653,10 @@ def _key_statement(lowered: str, view: dict[str, Any], step_id: str) -> tuple[st
     finding, body = part_fact(view, step_id)
     if not body:
         return None
-    if step_id == "complaint" and _promise_statement(lowered):
-        return "correct", body, finding
+    if step_id == "complaint":
+        if _complaint_insight(lowered, view):
+            return "correct", body, finding
+        return None
     if step_id == "data":
         label = str(view.get("rate_label") or "").casefold()
         if (
@@ -705,8 +727,8 @@ def _answer_question(lowered: str, view: dict[str, Any], step_id: str) -> str:
         return str(view.get("rate_sentence") or "")
     if "who made" in lowered or "who makes" in lowered or "manufacturer" in lowered or "made the device" in lowered:
         return _maker_answer(view, step_id)
-    if "promise" in lowered or "measure" in lowered or "98" in lowered:
-        return f"{view.get('promise_sentence', '')} {view.get('measure_sentence', '')}".strip()
+    if "promise" in lowered or re.search(r"\b98\b", lowered):
+        return str(view.get("measure_sentence") or "This file counts the reports we have so far.")
     if any(word in lowered for word in ("ticket", "jira", "logged")):
         if not _seen(step_id, "logged"):
             return "NOT YET — you'll see that on the logged part."
@@ -766,8 +788,8 @@ def _glossary_answer(lowered: str) -> str:
 
 def _hello(step_id: str, view: dict[str, Any]) -> str:
     screens = {
-        "complaint": "You are on the complaint. Ask what was promised, or who the device is.",
-        "data": "You are on the numbers. Ask whether the rate is going up. The sentence under the count is the answer.",
+        "complaint": "You are on complaint understanding. Ask how many complaints are in the data so far, or which categories rank highest to lowest.",
+        "data": "You are on the numbers. Ask how many complaints are in the data so far, or what the share is as of this week.",
         "charts": "You are on the charts. Ask which invalid types are the biggest, or whether one group stands out.",
         "logged": "You are on the logged part. Ask which plan tickets are open. A confirmed insight becomes Your ticket, not an INV number.",
         "notes": "You are on the notes. Ask what the customer should be told.",
@@ -872,6 +894,78 @@ def _asserts_up(lowered: str) -> bool:
 
 def _asserts_down(lowered: str) -> bool:
     return any(token in lowered for token in _DOWN)
+
+
+_TOP_WORD = re.compile(r"\b(?:biggest|largest|top|most (?:common|frequent|reported)|highest|main|leading|number one)\b|#1")
+_NOT_TOP = re.compile(
+    r"\b(?:smallest|least|lowest|fewest|second|third|fourth|last|bottom|smaller|fewer|less|than|rather|"
+    r"instead|neither|nor|without|percent|no longer|used to|ago|will|would|might|maybe|could|no|none|nothing)\b|%"
+)
+_CODE_FULL = re.compile(r"inv-[a-z0-9]+(?:-[a-z0-9]+)*")
+_OF_PAIR = re.compile(r"(\d+(?:\.\d+)?)\s+(?:out\s+)?of\s+(\d+(?:\.\d+)?)")
+_NUMBER_TOKEN = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _fragments_for(code: str) -> tuple[str, ...]:
+    for name, words in _FRAGMENTS:
+        if name.casefold() == code.casefold():
+            return words
+    return ()
+
+
+def _complaint_insight(lowered: str, view: dict[str, Any]) -> bool:
+    """The complaint point: the real top category and its count, claimed as the biggest.
+
+    The message must name the top category, say it is the biggest, and give
+    "count of total" with no other number, no other category, and no
+    smallest, second, "no longer", or percent wording.
+    """
+    explore = view.get("explore") or {}
+    top = str(explore.get("top_code") or "").casefold()
+    count = int(explore.get("top_count") or 0)
+    total = int(explore.get("invalid_total") or 0)
+    week = int(explore.get("week") or view.get("story_week") or 1)
+    if not top or count <= 0 or total <= 0:
+        return False
+    if "?" in lowered or re.search(r",\s*(?:right|isn't it|is it)\s*$", lowered):
+        return False
+    plain = str(explore.get("top_plain") or "").casefold()
+    core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
+    own = [fragment for fragment in _fragments_for(top)]
+    masked = lowered
+    for name in sorted({*_NEGATED_NAMES, plain, core, *own} - {""}, key=len, reverse=True):
+        masked = masked.replace(name, "codename")
+    if re.search(r"\b(?:not|never|cannot)\b|n't", masked) or _NOT_TOP.search(masked):
+        return False
+    if not _TOP_WORD.search(masked):
+        return False
+    codes = set(_CODE_FULL.findall(lowered))
+    if codes - {top}:
+        return False
+    for name, words in _FRAGMENTS:
+        if name.casefold() != top and any(word in lowered for word in words):
+            return False
+    named = (
+        top in codes
+        or (bool(plain) and plain in lowered)
+        or (len(core) > 8 and core in lowered)
+        or any(fragment in lowered for fragment in own)
+    )
+    if not named:
+        return False
+    pairs = _OF_PAIR.findall(lowered)
+    if not pairs or any(pair != (str(count), str(total)) for pair in pairs):
+        return False
+    allowed = {str(count), str(total), str(week)}
+    return all(number in allowed for number in _NUMBER_TOKEN.findall(_CODE_FULL.sub(" ", lowered)))
+
+
+def _category_attempt(lowered: str) -> bool:
+    if not re.search(r"\b(biggest|highest|main|top|largest|most)\b", lowered):
+        return False
+    if re.search(r"\b(?:categor(?:y|ies)|invalid types?)\b|inv-[a-z0-9]+", lowered):
+        return True
+    return any(word in lowered for _name, words in _FRAGMENTS for word in words)
 
 
 def _is_question(lowered: str) -> bool:

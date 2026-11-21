@@ -124,8 +124,7 @@ CAUSE_PLAIN: dict[str, str] = {
 PUBLIC_BANNER = (
     "These rows are from MAUDE, the FDA's public database of device problem reports. "
     "They come from the FDA's public download of device reports (openFDA). "
-    "The bottom of the fraction is every report in the file, not the successful tests. "
-    "The 2% cap is a promise about test runs. We cannot measure that promise from this file. "
+    "The file contains only problem reports. "
     "Not for clinical use. Not a medical device."
 )
 

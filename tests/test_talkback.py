@@ -105,7 +105,10 @@ def test_plain_questions_get_a_real_answer_and_no_flag():
     assert "3.00%" not in hello["text"]
     assert hello["log_kind"] == ""
     early = _reply("why is it going up?", "complaint")
-    assert "NOT YET — you'll see that on the numbers part" in early["text"]
+    assert "NOT YET" not in early["text"]
+    assert "4.00%" in early["text"]
+    assert "1.00%" in early["text"]
+    assert early["confirmed"] is False
     assert early["log_kind"] == ""
 
 
@@ -114,7 +117,8 @@ def test_example_prompts_hide_the_code_claim_before_charts():
     for step in ("complaint", "data"):
         prompts = " ".join(example_prompts(view, step))
         assert "make up most" not in prompts
-        assert "going up" in prompts
+        assert "going up" not in prompts
+        assert "How many complaints" in prompts
     assert any("make up most" in prompt for prompt in example_prompts(view, "charts"))
 
 
@@ -407,7 +411,10 @@ def test_every_step_has_example_prompts():
     for step in ("complaint", "data", "charts", "logged", "notes", "wrap"):
         prompts = example_prompts(view, step)
         assert len(prompts) >= 2
-        assert any("going up" in prompt for prompt in prompts)
+    for step in ("charts", "logged", "notes", "wrap"):
+        assert any("going up" in prompt for prompt in example_prompts(view, step))
+    for step in ("complaint", "data"):
+        assert all("going up" not in prompt for prompt in example_prompts(view, step))
 
 
 def test_doubt_with_a_code_in_between_is_not_a_ticket():
@@ -498,8 +505,16 @@ def test_each_part_accepts_a_typed_statement_of_its_point():
     view = _view()
     view["rate_label"] = "3.00%"
     view["plan_ticket_count"] = 1
+    sentence = "As of week 1, the biggest invalid category so far is an internal-control failure (INV-IC) (12 of 35)."
+    view["explore"] = {
+        "top_code": "INV-IC",
+        "top_plain": "an internal-control failure (INV-IC)",
+        "top_count": 12,
+        "invalid_total": 35,
+        "category_sentence": sentence,
+    }
     cases = (
-        ("complaint", "The promise is at least 98% valid tests"),
+        ("complaint", sentence),
         ("data", "The invalid rate this week is 3.00%"),
         ("logged", "The plan has 1 open ticket"),
         ("notes", "Tell the customer we have not confirmed a cause"),
@@ -542,7 +557,55 @@ def test_a_wrong_statement_of_the_promise_is_not_a_yep_or_a_ticket():
         "The promise is that at least 98% of tests are valid",
         "invalid results stay at or below 2% of tests",
     ):
-        assert _typed(message, "complaint")["confirmed"], message
+        reply = _typed(message, "complaint")
+        assert not reply["confirmed"], message
+        assert not reply["text"].startswith("YEP"), message
+    sentence = "As of week 1, the biggest invalid category so far is an internal-control failure (INV-IC) (12 of 35)."
+    view = _view()
+    view["explore"] = {
+        "top_code": "INV-IC",
+        "top_plain": "an internal-control failure (INV-IC)",
+        "top_count": 12,
+        "invalid_total": 35,
+        "category_sentence": sentence,
+        "week": 1,
+    }
+    kept = respond(sentence, view, "complaint", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert kept["confirmed"]
+    wrong = respond(
+        sentence.replace("(12 of 35)", "(50 of 35)"),
+        view,
+        "complaint",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert not wrong["confirmed"]
+    assert not wrong["text"].startswith("YEP")
+    swapped = respond(
+        sentence.replace("(12 of 35)", "(35 of 12)"),
+        view,
+        "complaint",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert not swapped["confirmed"]
+    other = respond(
+        sentence.replace("INV-IC", "INV-SW"),
+        view,
+        "complaint",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert not other["confirmed"]
+    tagged = respond(
+        "Not. " + sentence,
+        view,
+        "complaint",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert not tagged["confirmed"]
+    assert not tagged["text"].startswith("YEP")
 
 
 def test_the_logged_part_needs_the_real_count_of_tickets():
@@ -589,10 +652,20 @@ def test_a_longer_number_does_not_match_the_rate():
 
 
 def test_pasting_the_on_screen_sentence_confirms_and_a_denial_does_not():
-    promise = "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
-    assert _typed(promise, "complaint")["confirmed"]
-    denied = _typed("The promise is not that at least 98% of tests are valid", "complaint")
+    sentence = "As of week 1, the biggest invalid category so far is an internal-control failure (INV-IC) (12 of 35)."
+    view = _view()
+    view["explore"] = {
+        "top_code": "INV-IC",
+        "top_plain": "an internal-control failure (INV-IC)",
+        "top_count": 12,
+        "invalid_total": 35,
+        "category_sentence": sentence,
+    }
+    assert respond(sentence, view, "complaint", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"]
+    denied = respond("not " + sentence, view, "complaint", ticket_key="Your ticket 1", flag_key="Flag 1")
     assert not denied["confirmed"] and not denied["text"].startswith("YEP")
+    old = "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
+    assert not respond(old, view, "complaint", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"]
     view = _view()
     view["rate_label"] = "0.97%"
     view["rate_sentence"] = "The invalid rate this week is 0.97% (35 of 3600)."
