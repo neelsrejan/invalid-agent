@@ -75,13 +75,14 @@ def test_week_slices_grow_and_week_four_is_the_whole_file():
     early = build_week_view(scenario, frame, 1)
     full = build_week_view(scenario, frame, 4)
     assert early["n"] < full["n"]
-    assert "first quarter" in early["window_sentence"]
-    assert "would have arrived first" in early["window_sentence"]
+    assert early["window_sentence"] == "Here is the data we have as of week 1. New data arrives as we go week by week."
+    assert "quarter" not in early["window_sentence"]
+    assert "subset" not in early["window_sentence"]
     one_day = _toy_frame()
     one_view = build_week_view(_toy_scenario(), one_day, 1)
-    assert "whole file" in one_view["window_sentence"]
-    assert "first quarter" not in one_view["window_sentence"]
-    assert "whole date range" in full["window_sentence"]
+    assert one_view["window_sentence"] == "Here is the data we have as of week 1."
+    assert "quarter" not in one_view["window_sentence"]
+    assert full["window_sentence"] == "Here is the data we have as of week 4."
     assert early["call_label"] in {"Watch", "Look harder"}
     assert "kept the leading read" not in early["decision"]
     assert "kept the leading read" not in full["decision"]

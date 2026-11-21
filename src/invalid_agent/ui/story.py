@@ -1,8 +1,8 @@
 """One week of the guided story, computed in Python.
 
-Story weeks are 1, 2, 3, and 4. Week 1 shows the first quarter of the
-file's dates, week 4 shows the whole file. The page does not offer a
-week switcher. Every number in the returned view comes from that slice.
+Story weeks are 1, 2, 3, and 4. Each week uses the rows in hand as of
+that week. The page does not offer a week switcher. Every number in the
+returned view comes from those rows.
 """
 
 from __future__ import annotations
@@ -111,18 +111,7 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
     rule1_sentence = _rule1_sentence(rule1_count)
     direction_head = _direction_head(direction, early, late)
     direction_sentence = f"{direction_head} {rule1_sentence}".strip()
-    promise_sentence = (
-        "The promise is that at least 98% of tests are valid, so invalid results stay at or below 2%."
-    )
-    measure_sentence = (
-        "This file counts test runs, so we can compare the invalid rate with the 2% cap."
-        if estimable
-        else (
-            "This file counts problem reports, not successful tests. "
-            "We cannot measure the 2% cap from it. "
-            "The number on screen is the share of reports that are an invalid type."
-        )
-    )
+    measure_sentence = "This file counts test runs." if estimable else "This file counts problem reports."
     decision = _decision(week, level, single, previous)
     unit = int(scenario.get("cost_per_invalid_usd", 85))
     cost = int(overall["k"]) * unit
@@ -182,7 +171,7 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         "default_break": default_break,
         "tickets": tickets,
         "plan_ticket_count": plan_count,
-        "promise_sentence": promise_sentence,
+        "promise_sentence": "",
         "measure_sentence": measure_sentence,
         "decision": decision,
         "complaint": complaint,
@@ -201,6 +190,15 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         "unit": unit,
         "window_sentence": _window_sentence(week, whole_file=len(sliced) >= _dated_rows(frame) and week < 4),
     }
+    from invalid_agent.ui.explore import explore_facts
+
+    view["explore"] = explore_facts(
+        frame,
+        week,
+        product_code=str(scenario.get("product_code") or ""),
+        device=str(scenario.get("device") or "the device"),
+        estimable=estimable,
+    )
     return _jsonify(view)
 
 
@@ -210,14 +208,11 @@ def beat_lines(view: dict[str, Any], beat_id: str) -> list[str]:
     if beat_id == "complaint":
         lines = [
             view["case_line"],
-            view["promise_sentence"],
             view["measure_sentence"],
             view["device_line"],
-            view["window_sentence"] if week == 1 else "",
-            "### The complaint",
-            view["complaint"],
-            view["arrivals"] or "Nothing new came in this week. The original complaint still stands.",
-            "Next you will see the count for this week.",
+            view["window_sentence"],
+            "Ask the agent a question to start exploring. "
+            "Try how many complaints are in the data so far, or which invalid categories rank from highest to lowest.",
         ]
     elif beat_id == "data":
         lines = [
@@ -326,14 +321,14 @@ def _direction_head(direction: str, early: float, late: float) -> str:
     early_label = format_percent(early)
     late_label = format_percent(late)
     if direction == "up":
-        return f"The later weeks in this slice are higher ({late_label}) than the early weeks ({early_label})."
+        return f"The later reports so far are higher ({late_label}) than the early reports ({early_label})."
     if direction == "down":
         return (
-            f"The later weeks in this slice are lower ({late_label}) than the early weeks ({early_label}). "
+            f"The later reports so far are lower ({late_label}) than the early reports ({early_label}). "
             "The rate is not going up."
         )
     return (
-        f"The later weeks in this slice ({late_label}) are about the same as the early weeks ({early_label}). "
+        f"The later reports so far ({late_label}) are about the same as the early reports ({early_label}). "
         "The rate is not steadily going up."
     )
 
@@ -676,24 +671,9 @@ def _dated_rows(frame: pd.DataFrame) -> int:
 
 
 def _window_sentence(week: int, *, whole_file: bool = False) -> str:
-    if week < 4 and whole_file:
-        return (
-            f"Week {week} uses the whole file. Every date in the file is already in this slice, "
-            "so there is no later date to leave out."
-        )
-    if week >= 4:
-        return (
-            "Week 4 uses the whole date range in the file. "
-            "Earlier weeks left the later dates out so the story could not peek ahead."
-        )
-    part = {1: "the first quarter", 2: "the first half", 3: "the first three quarters"}[week]
-    sentence = f"Week {week} uses {part} of the date range. Later dates are not in this week's numbers."
-    if week == 1:
-        sentence += (
-            " Week 1 shows only that first quarter because those are the dates that would have arrived first. "
-            "The rest of the file stays out until a later week."
-        )
-    return sentence
+    if week >= 4 or whole_file:
+        return f"Here is the data we have as of week {week}."
+    return f"Here is the data we have as of week {week}. New data arrives as we go week by week."
 
 
 def _clean_level(level: Any, single: bool) -> str:

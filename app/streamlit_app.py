@@ -164,7 +164,7 @@ def _init_state(ids: list[str]) -> None:
 
 
 def _page_chrome(banner: str) -> None:
-    st.set_page_config(page_title="Invalid Bot", layout="wide")
+    st.set_page_config(page_title="Invalid Triage Bot", layout="wide")
     st.markdown(
         """
         <style>
@@ -199,21 +199,11 @@ def _page_chrome(banner: str) -> None:
         'overflow-wrap:anywhere;word-break:break-word;">'
         f"{safe}</p></div>"
     )
-    st.title("Invalid Bot")
+    st.title("Invalid Triage Bot")
     st.caption(
-        "The promise is at least 98% valid tests, so invalid results stay at or below 2%. "
-        "Python does every count. A language model, if one is on, only rephrases words."
+        "It shows the invalid types and the complaints for a device, "
+        "then tracks progress toward the failure mode and a way to reduce future complaints."
     )
-
-
-def _backend_caption(rules_only: bool) -> None:
-    if rules_only:
-        st.caption("Fixed wording is on. Python still does the math. No language model is called.")
-    else:
-        st.caption(
-            "Groq (a free language-model host) may rephrase a reply. "
-            "Python still computes every number. If the model fails, you still get the plain reply."
-        )
 
 
 @st.cache_data(show_spinner=False)
@@ -777,15 +767,15 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         return
 
     step = GUIDE_STEPS[beat]
-    trail = []
-    for position, item in enumerate(GUIDE_STEPS):
-        label = item.short
-        if position == beat:
-            label = f"**{label}**"
-        trail.append(label)
-    st.caption(" · ".join(trail))
     st.subheader(f"{progress_label(week, beat)} — {step.title}")
-    st.markdown(_say(f"**What the agent is doing.** {step.doing}"))
+    if step.id == "complaint":
+        st.markdown(
+            _say(
+                "Let's understand the invalid results in the context of what this device is supposed to do."
+            )
+        )
+    if step.id not in {"complaint", "data"}:
+        st.markdown(_say(f"**What the agent is doing.** {step.doing}"))
     st.markdown(_say(f"**Why.** {step.why}"))
     st.markdown(_say(f"**What to look at.** {step.look}"))
     if week == 1 and beat == 0:
@@ -839,15 +829,7 @@ def main() -> None:
         scenario = load_scenario(path)
         rows.append((path, scenario, f"{scenario.get('id')} — {scenario.get('title', '')}"))
     _init_state([str(scenario.get("id")) for _path, scenario, _label in rows])
-    if "rules_only" not in st.session_state:
-        st.session_state.rules_only = settings.rules_only
-    st.toggle(
-        "Use fixed wording",
-        key="rules_only",
-        help="On: the reply is the plain sentence from the counts. Off: a language model may rephrase it.",
-    )
-    rules_only = bool(st.session_state.rules_only)
-    _backend_caption(rules_only)
+    rules_only = bool(settings.rules_only)
     try:
         _render_guided(rows, rules_only)
     finally:

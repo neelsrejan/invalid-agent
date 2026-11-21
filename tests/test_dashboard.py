@@ -55,6 +55,17 @@ def _lint_each(app) -> None:
         known |= _explained(chunk)
 
 
+def _complaint_fact() -> str:
+    from invalid_agent.sim.generate import generate, load_scenario
+    from invalid_agent.ui.story import build_week_view
+    from invalid_agent.ui.talkback import part_fact
+
+    path = ROOT / "scenarios" / "bad_lot.yaml"
+    scenario = load_scenario(path)
+    view = build_week_view(scenario, generate(scenario), 1)
+    return part_fact(view, "complaint")[1]
+
+
 def _run_app(monkeypatch):
     from streamlit.testing.v1 import AppTest
 
@@ -107,7 +118,9 @@ def test_next_stays_locked_until_the_part_is_done(monkeypatch):
     visible = _visible(app)
     assert "No confirmed insight yet" not in visible
     assert "Insight:" in visible
-    assert "98%" in visible
+    assert "98%" not in visible
+    assert "biggest invalid category" in visible.casefold()
+    assert "promise" not in visible.casefold()
     assert "We found what was promised" not in visible
     nxt = next(button for button in app.button if button.key == "next")
     assert not nxt.disabled
@@ -181,8 +194,10 @@ def test_cannot_skip_weeks_and_every_part_has_a_wrap_up(monkeypatch):
     visible = _visible(app)
     assert "Not for clinical use" in visible
     assert "Week 1 of 4" in visible
-    assert "The complaint" in visible
-    assert "Northlake Health" in visible
+    assert "Complaint understanding" in visible
+    assert "Invalid Triage Bot" in visible
+    assert "Northlake Health" not in visible
+    assert "MDx-24" in visible
     assert not any(button.label == "Week 2" for button in app.button)
     assert not any(button.label == "Week 0" for button in app.button)
     assert not any(button.label == "Week 4" for button in app.button)
@@ -317,7 +332,7 @@ def test_show_me_does_not_rename_a_later_ticket(monkeypatch):
     app = _run_app(monkeypatch)
     app = _click_key(app, "show-me")
     box = next(item for item in app.text_input if item.label == "Your question or insight")
-    box.set_value("The promise is at least 98% valid tests").run()
+    box.set_value(_complaint_fact()).run()
     app = _click_label(app, "Tell the agent")
     visible = _visible(app)
     assert "Your ticket 1" in visible
@@ -362,7 +377,7 @@ def test_a_typed_insight_unlocks_next_on_the_numbers_and_the_charts(monkeypatch)
 def test_a_typed_insight_unlocks_next_on_every_part(monkeypatch):
     app = _run_app(monkeypatch)
     steps = (
-        ("The complaint", "The promise is at least 98% valid tests"),
+        ("Complaint understanding", None),
         ("This week's numbers", None),
         ("The charts", None),
         ("What gets logged", None),
@@ -374,6 +389,8 @@ def test_a_typed_insight_unlocks_next_on_every_part(monkeypatch):
         assert title in visible
         nxt = next(button for button in app.button if button.key == "next")
         assert nxt.disabled
+        if title == "Complaint understanding":
+            typed = _complaint_fact()
         if title == "This week's numbers":
             rate = re.search(r"The invalid rate this week is [\d.]+%", visible)
             assert rate, visible
@@ -461,3 +478,52 @@ def test_case_choice_survives_the_next_part(monkeypatch):
     assert "drift" in _visible(app).casefold() or "INS-02" in _visible(app)
     assert app.session_state["scenario_id"] == "drift_clear"
     assert not any(box.label == "Which case" for box in app.selectbox)
+
+
+def test_week_one_complaint_and_numbers_drop_the_old_copy_and_answer_from_the_file(monkeypatch):
+    from invalid_agent.sim.generate import generate, load_scenario
+    from invalid_agent.ui.story import slice_through_story_week
+
+    app = _run_app(monkeypatch)
+    visible = _visible(app)
+    folded = visible.casefold()
+    for banned in ("98%", "2%", "promise", "groq", "fixed wording", "subset", "quarter"):
+        assert banned not in folded, banned
+    assert "Invalid Triage Bot" in visible
+    assert "Complaint understanding" in visible
+    assert "Let's understand the invalid results" in visible
+    assert "This file counts test runs." in visible
+    assert "as of week 1" in folded
+    assert "What the agent is doing" not in visible
+    assert not any(getattr(box, "label", "") == "Use fixed wording" for box in getattr(app, "toggle", []))
+    labels = [button.label for button in app.button]
+    assert "Why is the invalid rate going up?" not in labels
+    assert any("How many complaints" in label for label in labels)
+    nxt = next(button for button in app.button if button.key == "next")
+    assert nxt.disabled
+    scenario = load_scenario(ROOT / "scenarios" / "bad_lot.yaml")
+    frame = generate(scenario)
+    week_rows = len(slice_through_story_week(frame, 1))
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value("How many complaints are in the dataset.").run()
+    app = _click_label(app, "Tell the agent")
+    answered = _visible(app)
+    assert "YEP" not in answered
+    assert str(week_rows) in answered
+    assert str(len(frame)) not in answered
+    nxt = next(button for button in app.button if button.key == "next")
+    assert nxt.disabled
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    box.set_value(_complaint_fact()).run()
+    app = _click_label(app, "Tell the agent")
+    assert "YEP, YOU GOT IT!" in _visible(app)
+    nxt = next(button for button in app.button if button.key == "next")
+    assert not nxt.disabled
+    app = _click_key(app, "next")
+    numbers = _visible(app)
+    folded = numbers.casefold()
+    assert "This week's numbers" in numbers
+    for banned in ("98%", "2%", "promise", "groq", "fixed wording", "subset", "quarter"):
+        assert banned not in folded, banned
+    assert "What the agent is doing" not in numbers
+    assert "as of week 1" in folded
