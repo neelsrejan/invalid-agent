@@ -147,3 +147,67 @@ def test_bad_lot_week_one_explore_does_not_count_the_rest_of_the_file():
     assert facts["change"] is None
     assert "quarter" not in facts["category_sentence"]
     assert "subset" not in facts["category_sentence"]
+
+
+def _ic_view():
+    scenario = load_scenario(ROOT)
+    frame = generate(scenario)
+    from invalid_agent.ui.story import build_week_view
+
+    return build_week_view(scenario, frame, 1)
+
+
+def _talk(view, text, step="complaint"):
+    from invalid_agent.ui.talkback import accepted_signatures
+
+    reply = respond(text, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+    unlocked = bool(reply["confirmed"]) and reply.get("signature") in accepted_signatures(view, step)
+    return reply, unlocked
+
+
+def test_complaint_insight_must_claim_the_biggest_with_the_real_numbers():
+    view = _ic_view()
+    facts = view["explore"]
+    top, count, total = facts["top_code"], facts["top_count"], facts["invalid_total"]
+    other = facts["categories"][-1]["code"]
+    for good in (
+        f"{top} is the biggest invalid category with {count} of {total}",
+        f"{top} is the biggest invalid category, {count} out of {total}",
+        "Internal control is the biggest category, " f"{count} of {total}",
+        facts["category_sentence"],
+    ):
+        assert _talk(view, good)[1], good
+    for bad in (
+        f"{top} is the smallest invalid category with {count} of {total}",
+        f"{top} is the least common invalid type at {count} of {total}",
+        f"{top} was {count} of {total} two weeks ago but no longer the biggest",
+        f"{top} is the second biggest invalid category, {count} of {total}",
+        f"{top} is the biggest, {count} of {total} percent",
+        f"{top} is the biggest, {count}.5 of {total}",
+        f"{top} is the biggest, {count} of {total}; also {total} of {count}",
+        f"{top}-7 is the biggest invalid category, {count} of {total}",
+        f"{top} is the biggest invalid category, {count + 1} of {total}",
+        f"{other} is the biggest invalid category, {count} of {total}",
+        f"Most invalid reports are internal control, {count} of {total}",
+        f"{top} {count} of {total}",
+        f"no way {top} is the biggest, {count} of {total}",
+    ):
+        reply, unlocked = _talk(view, bad)
+        assert not unlocked, bad
+        assert not reply["text"].startswith("YEP"), bad
+
+
+def test_category_and_count_wordings_get_real_numbers_not_the_menu():
+    view = _ic_view()
+    facts = view["explore"]
+    for step in ("complaint", "data"):
+        for text in ("What are the categories?", "Which category is biggest?", "what categories do we have"):
+            reply, unlocked = _talk(view, text, step)
+            assert not unlocked
+            assert facts["categories"][0]["code"] in reply["text"], text
+            assert "can't answer" not in reply["text"], text
+        reply, unlocked = _talk(view, "How many invalids so far?", step)
+        assert not unlocked
+        assert str(facts["invalid_total"]) in reply["text"]
+        assert str(facts["total"]) in reply["text"]
+        assert "can't answer" not in reply["text"]

@@ -896,38 +896,76 @@ def _asserts_down(lowered: str) -> bool:
     return any(token in lowered for token in _DOWN)
 
 
+_TOP_WORD = re.compile(r"\b(?:biggest|largest|top|most (?:common|frequent|reported)|highest|main|leading|number one|first)\b|#1")
+_NOT_TOP = re.compile(
+    r"\b(?:smallest|least|lowest|fewest|second|third|fourth|last|bottom|smaller|fewer|less|than|rather|"
+    r"instead|neither|nor|without|percent|no longer|used to|ago|will|would|might|maybe|could|no|none|nothing)\b|%"
+)
+_CODE_FULL = re.compile(r"inv-[a-z0-9]+(?:-[a-z0-9]+)*")
+_OF_PAIR = re.compile(r"(\d+(?:\.\d+)?)\s+(?:out\s+)?of\s+(\d+(?:\.\d+)?)")
+_NUMBER_TOKEN = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _fragments_for(code: str) -> tuple[str, ...]:
+    for name, words in _FRAGMENTS:
+        if name.casefold() == code.casefold():
+            return words
+    return ()
+
+
 def _complaint_insight(lowered: str, view: dict[str, Any]) -> bool:
-    """The complaint point: the real top category and its count, with no denial and no other code."""
+    """The complaint point: the real top category and its count, claimed as the biggest.
+
+    The message must name the top category, say it is the biggest, and give
+    "count of total" with no other number, no other category, and no
+    smallest, second, "no longer", or percent wording.
+    """
     explore = view.get("explore") or {}
     top = str(explore.get("top_code") or "").casefold()
     count = int(explore.get("top_count") or 0)
     total = int(explore.get("invalid_total") or 0)
+    week = int(explore.get("week") or view.get("story_week") or 1)
     if not top or count <= 0 or total <= 0:
         return False
     if "?" in lowered or re.search(r",\s*(?:right|isn't it|is it)\s*$", lowered):
         return False
-    masked = lowered
-    for name in _NEGATED_NAMES:
-        masked = masked.replace(name, "codename")
     plain = str(explore.get("top_plain") or "").casefold()
-    if plain:
-        masked = masked.replace(plain, "codename")
-    if re.search(r"\b(?:not|never|cannot)\b|n't", masked):
+    core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
+    own = [fragment for fragment in _fragments_for(top)]
+    masked = lowered
+    for name in sorted({*_NEGATED_NAMES, plain, core, *own} - {""}, key=len, reverse=True):
+        masked = masked.replace(name, "codename")
+    if re.search(r"\b(?:not|never|cannot)\b|n't", masked) or _NOT_TOP.search(masked):
         return False
-    codes = set(re.findall(r"inv-[a-z0-9]+", lowered))
+    if not _TOP_WORD.search(masked):
+        return False
+    codes = set(_CODE_FULL.findall(lowered))
     if codes - {top}:
         return False
-    core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
-    named = top in codes or (plain and plain in lowered) or (len(core) > 8 and core in lowered)
+    for name, words in _FRAGMENTS:
+        if name.casefold() != top and any(word in lowered for word in words):
+            return False
+    named = (
+        top in codes
+        or (bool(plain) and plain in lowered)
+        or (len(core) > 8 and core in lowered)
+        or any(fragment in lowered for fragment in own)
+    )
     if not named:
         return False
-    return re.search(rf"(?<!\d){count} of {total}(?!\d)", lowered) is not None
+    pairs = _OF_PAIR.findall(lowered)
+    if not pairs or any(pair != (str(count), str(total)) for pair in pairs):
+        return False
+    allowed = {str(count), str(total), str(week)}
+    return all(number in allowed for number in _NUMBER_TOKEN.findall(_CODE_FULL.sub(" ", lowered)))
 
 
 def _category_attempt(lowered: str) -> bool:
-    if not re.search(r"\b(biggest|highest|main|top)\b", lowered):
+    if not re.search(r"\b(biggest|highest|main|top|largest|most)\b", lowered):
         return False
-    return re.search(r"\b(categor|invalid type|inv-[a-z0-9]+)\b", lowered) is not None
+    if re.search(r"\b(?:categor(?:y|ies)|invalid types?)\b|inv-[a-z0-9]+", lowered):
+        return True
+    return any(word in lowered for _name, words in _FRAGMENTS for word in words)
 
 
 def _is_question(lowered: str) -> bool:

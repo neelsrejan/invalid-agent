@@ -128,12 +128,12 @@ def match_intent(text: str) -> str | None:
         return None
     if re.search(r"\bmanufactur", lowered) or "who report" in lowered:
         return "manufacturers"
-    if re.search(r"\b(categor|invalid types?|highest to lowest|high to low|ranked)\b", lowered):
+    if re.search(r"\bcategor(?:y|ies)\b|\binvalid types?\b|\b(?:highest to lowest|high to low|ranked)\b", lowered):
         return "categories"
     if re.search(r"week over week|last week|previous week|from week", lowered):
         return "wow"
     if re.search(r"how many|how much|number of|count of", lowered) and re.search(
-        r"complaint|report|dataset|data set|\brows\b|\bruns?\b", lowered
+        r"complaint|report|dataset|data set|\brows\b|\bruns?\b|\binvalids?\b", lowered
     ):
         return "total"
     if re.search(r"product code|supposed to do|\bdevice\b", lowered):
