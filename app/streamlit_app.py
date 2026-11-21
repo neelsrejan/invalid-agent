@@ -2,8 +2,9 @@
 
 The guided walk is Week 1 through Week 4. Each week is complaint, numbers,
 charts, what gets logged, root-cause notes, and a wrap-up. The next week
-unlocks only after the wrap-up. Python computes every number. A language
-model, when one is on, may only rephrase the talk-back reply.
+unlocks only after the wrap-up. Python computes every number. On the complaint
+and the numbers, a model may only choose a lookup. On later parts it may
+rephrase the reply.
 """
 
 from __future__ import annotations
@@ -206,8 +207,15 @@ def _page_chrome(banner: str) -> None:
     )
 
 
+# Bump this when the week view gains a field the talk-back reads.
+# The cache key is the path and the week, so a new field would otherwise
+# keep serving a view built by the previous deploy.
+_VIEW_SCHEMA = 2
+
+
 @st.cache_data(show_spinner=False)
-def _week_view(scenario_path: str, story_week: int) -> dict:
+def _week_view(scenario_path: str, story_week: int, view_schema: int) -> dict:
+    del view_schema
     scenario = load_scenario(scenario_path)
     frame = load_frame(scenario)
     return build_week_view(scenario, frame, story_week)
@@ -227,10 +235,24 @@ def _talk_llm(rules_only: bool):
     return llm
 
 
+def _tool_client(rules_only: bool):
+    llm = _talk_llm(rules_only)
+    if llm is None or not hasattr(llm, "select_tools"):
+        return None
+    return llm
+
+
 def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     ticket_key = f"Your ticket {int(st.session_state.insight_serial) + 1}"
     flag_key = f"Flag {int(st.session_state.flag_serial) + 1}"
-    reply = respond(message, view, beat_id, ticket_key=ticket_key, flag_key=flag_key)
+    reply = respond(
+        message,
+        view,
+        beat_id,
+        ticket_key=ticket_key,
+        flag_key=flag_key,
+        tool_client=_tool_client(rules_only),
+    )
     signature = str(reply.get("signature") or "")
     existing = next(
         (
@@ -272,7 +294,10 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         )
     if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
         _mark_done(week, beat_id)
-    shown = reword_reply(text, _talk_llm(rules_only))
+    if beat_id in {"complaint", "data"}:
+        shown = text
+    else:
+        shown = reword_reply(text, _talk_llm(rules_only))
     if unexplained_jargon(shown):
         shown = text
     st.session_state.last_reply = {
@@ -745,7 +770,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
     beat = int(st.session_state.beat)
     finished = bool(st.session_state.finished)
     try:
-        view = _week_view(str(scenario_path), week)
+        view = _week_view(str(scenario_path), week, _VIEW_SCHEMA)
     except Exception as exc:
         _LOG.error("week view failed: %s", type(exc).__name__)
         st.error(
@@ -782,7 +807,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
         _render_case_picker(rows)
         scenario_path, scenario = by_id[st.session_state.scenario_id]
         try:
-            view = _week_view(str(scenario_path), week)
+            view = _week_view(str(scenario_path), week, _VIEW_SCHEMA)
         except Exception as exc:
             _LOG.error("week view failed: %s", type(exc).__name__)
             st.error(

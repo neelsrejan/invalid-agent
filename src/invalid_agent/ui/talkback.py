@@ -197,8 +197,14 @@ def respond(
     *,
     ticket_key: str,
     flag_key: str,
+    tool_client: Any | None = None,
 ) -> dict[str, Any]:
-    """Classify ``message`` and answer from facts already on screen. No model."""
+    """Classify ``message`` and answer from this week's counts.
+
+    On the complaint and numbers parts, a tool client may choose a lookup.
+    Python still computes every number. With no client, the same lookups run
+    from the wording.
+    """
     raw = str(message or "")
     text = " ".join(raw.split())
     if not text:
@@ -210,7 +216,8 @@ def respond(
             flag_key=flag_key,
             user_text="",
         )
-    kind, body, finding = _classify(text, view, step_id)
+    kind, body, finding = _classify(text, view, step_id, tool_client)
+    bare = step_id in {"complaint", "data"} and kind in {"question", "hint", "early"}
     return _pack(
         kind=kind,
         body=body,
@@ -218,6 +225,7 @@ def respond(
         ticket_key=ticket_key,
         flag_key=flag_key,
         user_text=raw.strip(),
+        bare=bare,
     )
 
 
@@ -290,6 +298,7 @@ def _pack(
     ticket_key: str,
     flag_key: str,
     user_text: str,
+    bare: bool = False,
 ) -> dict[str, Any]:
     confirmed = kind == "correct"
     logs_flag = kind in {"partial", "unsupported"}
@@ -320,8 +329,11 @@ def _pack(
     bullet = None
     if confirmed:
         bullet = f"We found {finding} -> logged as {key} to resolve going forward. On a real team this would go in Jira."
-    parts = [lead, body, log_line, f"Remember: {remember}"]
-    reply = " ".join(part for part in parts if part)
+    if bare:
+        reply = body
+    else:
+        parts = [lead, body, log_line, f"Remember: {remember}"]
+        reply = " ".join(part for part in parts if part)
     if confirmed:
         log_kind = "ticket"
     elif logs_flag:
@@ -353,23 +365,48 @@ def _early(first_step: str) -> tuple[str, str, str]:
     return "early", body, f"an idea to check on the {part} part"
 
 
-def _classify(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str]:
+_ASK = re.compile(
+    r"\?|\b(?:name|show|tell|list|give|what|how|which|who|whos|why|when|where)\b|\bcan you\b"
+)
+
+
+def _explore_turn(lowered: str) -> bool:
+    """True when the complaint or numbers page should look up a fact instead of grading it."""
+    from invalid_agent.ui.explore import match_intent
+
+    later = any(word in lowered for word in ("ticket", "jira", "logged", "recommend"))
+    intent = match_intent(lowered)
+    if later and intent is None:
+        return False
+    if _ASK.search(lowered):
+        return True
+    return intent in {"total", "categories", "manufacturers", "device", "wow"}
+
+
+def _classify(
+    text: str,
+    view: dict[str, Any],
+    step_id: str,
+    tool_client: Any | None = None,
+) -> tuple[str, str, str]:
     lowered = text.casefold()
     if _is_greeting(lowered):
         return "hint", _hello(step_id, view), ""
-    if step_id in {"complaint", "data"} and _is_question(lowered):
-        from invalid_agent.ui.explore import answer_for, honest_menu, match_intent
+    if step_id in {"complaint", "data"}:
+        from invalid_agent.ui.explore import answer_message, match_intent
 
-        intent = match_intent(lowered)
-        if intent:
-            return "question", answer_for(intent, view), _question_finding(lowered, view, step_id)
-        glossary = _glossary_answer(lowered)
-        if glossary:
-            return "question", glossary, _question_finding(lowered, view, step_id)
-        later = any(word in lowered for word in ("ticket", "jira", "logged", "recommend"))
-        if not later:
-            week = int((view.get("explore") or {}).get("week") or view.get("story_week") or 1)
-            return "question", honest_menu(week), f"a question on the {step_id} screen"
+        stated = _key_statement(lowered, view, step_id)
+        if stated:
+            return stated
+        if _explore_turn(lowered):
+            glossary = _glossary_answer(lowered)
+            if glossary and match_intent(lowered) is None:
+                return "question", glossary, _question_finding(lowered, view, step_id)
+            return (
+                "question",
+                answer_message(text, view, tool_client),
+                f"a question on the {step_id} screen",
+            )
     if step_id == "complaint" and not _is_question(lowered) and not _negated(lowered):
         stated = _key_statement(lowered, view, step_id)
         if stated:
@@ -497,9 +534,11 @@ def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
     if beat_id == "data":
         return "the invalid rate this week", str(view.get("rate_sentence") or "")
     if beat_id == "complaint":
-        sentence = str((view.get("explore") or {}).get("category_sentence") or "")
+        from invalid_agent.ui.explore import ensure_explore
+
+        sentence = str(ensure_explore(view).get("category_sentence") or "")
         if not sentence:
-            sentence = "Name the biggest invalid category so far."
+            sentence = "The week's counts did not load."
         return "the biggest invalid category so far", sentence
     if beat_id == "logged":
         count = _shown_ticket_count(view)

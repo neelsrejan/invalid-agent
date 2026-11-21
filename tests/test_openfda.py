@@ -270,7 +270,7 @@ def test_overlapping_report_keys_collapse_per_product_code():
     assert "ON CONFLICT (mdr_report_key, product_code, product_problem)" in PROBLEM_INSERT_SQL
 
 
-def test_chart_date_prefers_the_event_date():
+def test_chart_date_uses_the_received_date():
     from invalid_agent.sim.generate import load_scenario
 
     scenario = load_scenario(Path(__file__).resolve().parents[1] / "cases" / "openfda_ooi.yaml")
@@ -289,8 +289,8 @@ def test_chart_date_prefers_the_event_date():
         ],
         scenario,
     )
-    assert str(frame.loc[0, "date"].date()) == "2024-05-01"
-    assert frame.loc[0, "date_basis"] == "date_of_event"
+    assert str(frame.loc[0, "date"].date()) == "2024-06-01"
+    assert frame.loc[0, "date_basis"] == "date_received"
     assert frame.loc[0, "manufacturer"] == "Firm North"
 
 

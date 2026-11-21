@@ -78,21 +78,25 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
     for record in records:
         received = pd.Timestamp(record["date_received"])
         event_raw = record.get("date_of_event")
-        if event_raw:
-            chart_date = pd.Timestamp(event_raw)
-            basis = "date_of_event"
-        else:
-            chart_date = received
-            basis = "date_received"
+        event_date = pd.Timestamp(event_raw) if event_raw else pd.NaT
+        # Weeks follow the FDA received date. The event date can sit years
+        # earlier and would put almost the whole file in week 1.
+        chart_date = received
+        basis = "date_received"
         lot = str(record.get("lot_number") or "").strip() or "UNREPORTED"
         brand = str(record.get("brand_name") or "").strip() or "UNREPORTED"
         operator = str(record.get("device_operator") or "").strip() or "UNREPORTED"
         catalog = str(record.get("catalog_number") or "").strip() or "UNREPORTED"
         invalid_code = str(record.get("invalid_code") or "")
+        if record.get("is_invalid_type") is None:
+            is_invalid = bool(invalid_code)
+        else:
+            is_invalid = bool(record.get("is_invalid_type"))
         rows.append(
             {
                 "run_id": str(record["mdr_report_key"]),
                 "date": chart_date,
+                "date_of_event": event_date,
                 "date_basis": basis,
                 "day_index": int((chart_date.normalize() - start.normalize()).days),
                 "customer": str(record.get("manufacturer_name") or "UNREPORTED"),
@@ -106,8 +110,8 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
                 "catalog_number": catalog,
                 "product_code": str(record.get("product_code") or ""),
                 "event_type": str(record.get("event_type") or ""),
-                "invalid": bool(record.get("is_invalid_type")),
-                "invalid_code": invalid_code if record.get("is_invalid_type") else "",
+                "invalid": is_invalid,
+                "invalid_code": invalid_code if is_invalid else "",
             }
         )
     frame = pd.DataFrame(rows)
@@ -122,8 +126,6 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
     frame.attrs["spec_estimable"] = False
     frame.attrs["manufacturer_display"] = "anonymized" if enabled else "real"
     frame.attrs["date_basis_note"] = (
-        "Weekly bins use date_of_event when the report has one. "
-        "Otherwise they use the FDA received date, which is when the report was logged, "
-        "not when the run happened."
+        "Weekly bins use the FDA received date, which is when the report was logged."
     )
     return frame

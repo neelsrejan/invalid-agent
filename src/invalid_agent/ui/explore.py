@@ -109,6 +109,7 @@ def explore_facts(
         "noun": "runs" if estimable else "complaints",
         "change": week_over_week(frame, current),
         "category_sentence": _category_sentence(current, top, invalid),
+        "rows": _slim_rows(visible),
     }
 
 
@@ -166,8 +167,8 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
         if sentence:
             return (prefix + sentence).strip()
         return honest_menu(week)
-    if not facts:
-        return honest_menu(week)
+    if not facts or "total" not in facts:
+        return counts_did_not_load()
     if intent == "total":
         return _with_lead(_total_answer(facts), facts, intent)
     if intent == "categories":
@@ -176,16 +177,24 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
         return _maker_answer(facts)
     if intent == "wow":
         return _change_answer(facts)
-    return honest_menu(week)
+    return capabilities_menu(week)
 
 
-def honest_menu(week: int) -> str:
+def capabilities_menu(week: int) -> str:
+    """What this page can look up. This sentence does not say the lookup failed."""
     return (
         f"I can look up, as of week {int(week)}, how many complaints are in the data so far, "
         "which invalid categories rank highest to lowest, who the main manufacturer is, "
-        "and the device. Once a second week is in, I can also say what changed. "
-        "I can't answer that from this file."
+        "and the device. Once a second week is in, I can also say what changed."
     )
+
+
+def honest_menu(week: int) -> str:
+    return capabilities_menu(week)
+
+
+def counts_did_not_load() -> str:
+    return "The week's counts did not load."
 
 
 def _total_answer(facts: dict[str, Any]) -> str:
@@ -215,6 +224,8 @@ def _maker_answer(facts: dict[str, Any]) -> str:
     week = int(facts["week"])
     rows = list(facts.get("manufacturers") or [])
     if not rows:
+        if facts.get("rebuilt"):
+            return "The week's manufacturer list did not load."
         return f"This file does not name a manufacturer. The device is {facts.get('device') or 'the device'}."
     listed = ", ".join(
         f"{row['name']} {int(row['count'])} ({format_percent(float(row['share']))})" for row in rows[:3]
@@ -257,3 +268,323 @@ def _with_lead(text: str, facts: dict[str, Any], intent: str) -> str:
     if facts.get("manufacturers"):
         lead += " Want to see who reports it most?"
     return f"{text} {lead}"
+
+
+def _slim_rows(frame: pd.DataFrame) -> list[dict[str, Any]]:
+    if frame.empty:
+        return []
+    count = len(frame)
+    makers = frame["manufacturer"] if "manufacturer" in frame.columns else [""] * count
+    flags = frame["invalid"] if "invalid" in frame.columns else [False] * count
+    codes = frame["invalid_code"] if "invalid_code" in frame.columns else [""] * count
+    rows: list[dict[str, Any]] = []
+    for maker, flag, code in zip(list(makers), list(flags), list(codes)):
+        rows.append(
+            {
+                "manufacturer": str(maker or ""),
+                "invalid": bool(flag),
+                "invalid_code": str(code or ""),
+            }
+        )
+    return rows
+
+
+def ensure_explore(view: dict[str, Any]) -> dict[str, Any]:
+    """Return week facts. Rebuild only when the view has counts but no explore block."""
+    current = view.get("explore")
+    if isinstance(current, dict) and (current.get("category_sentence") or "total" in current):
+        return current
+    rebuilt = rebuild_explore(view)
+    if rebuilt:
+        view["explore"] = rebuilt
+        return rebuilt
+    if isinstance(current, dict):
+        return current
+    return {}
+
+
+def rebuild_explore(view: dict[str, Any]) -> dict[str, Any] | None:
+    """Build week facts from counts already on an older view. None when those counts are absent."""
+    if "n" not in view or "k" not in view:
+        return None
+    week = int(view.get("story_week") or 1)
+    total = int(view["n"])
+    invalid = int(view["k"])
+    categories: list[dict[str, Any]] = []
+    for row in view.get("pareto") or []:
+        if not isinstance(row, dict) or not row.get("code"):
+            continue
+        categories.append(
+            {
+                "code": str(row["code"]),
+                "plain": str(row.get("plain") or code_plain(str(row["code"]))),
+                "count": int(row.get("count") or 0),
+                "share": float(row.get("share") or 0.0),
+            }
+        )
+    top = categories[0] if categories else {}
+    if not top and view.get("top_code"):
+        top = {
+            "code": str(view.get("top_code") or ""),
+            "plain": str(view.get("top_plain") or code_plain(str(view.get("top_code") or ""))),
+            "count": int(view.get("k") or 0),
+            "share": 1.0 if invalid else 0.0,
+        }
+        categories = [top]
+    device_line = str(view.get("device_line") or "")
+    device = device_line.replace("Device:", "").strip(" .") or "the device"
+    estimable = bool(view.get("estimable"))
+    return {
+        "week": week,
+        "total": total,
+        "invalid_total": invalid,
+        "invalid_share": (invalid / total) if total else 0.0,
+        "categories": categories,
+        "manufacturers": [],
+        "top_code": str(top.get("code") or ""),
+        "top_plain": str(top.get("plain") or ""),
+        "top_count": int(top.get("count") or 0),
+        "product_code": "",
+        "device": device,
+        "estimable": estimable,
+        "noun": "runs" if estimable else "complaints",
+        "change": None,
+        "category_sentence": _category_sentence(week, top, invalid),
+        "rows": [],
+        "rebuilt": True,
+    }
+
+
+def tool_specs() -> list[dict[str, Any]]:
+    empty = {"type": "object", "properties": {}, "additionalProperties": False}
+    filtered = {
+        "type": "object",
+        "properties": {
+            "manufacturer": {"type": "string"},
+            "category": {"type": "string"},
+        },
+        "additionalProperties": False,
+    }
+    return [
+        {"name": "report_total", "description": "Count the reports visible as of this week.", "parameters": empty},
+        {"name": "invalid_summary", "description": "Count invalid-type reports and their share.", "parameters": empty},
+        {"name": "category_ranking", "description": "Rank invalid categories from highest to lowest.", "parameters": empty},
+        {"name": "manufacturer_ranking", "description": "Rank manufacturers by report count.", "parameters": empty},
+        {"name": "device_info", "description": "Name the device and the product code.", "parameters": empty},
+        {"name": "week_change", "description": "Compare this week with the previous week.", "parameters": empty},
+        {
+            "name": "filtered_count",
+            "description": "Count reports for one manufacturer or one invalid category code.",
+            "parameters": filtered,
+        },
+    ]
+
+
+def run_tool(name: str, arguments: dict[str, Any] | None, facts: dict[str, Any]) -> dict[str, Any]:
+    args = arguments or {}
+    if name == "report_total":
+        data: dict[str, Any] = {"week": facts["week"], "total": facts["total"], "noun": facts.get("noun")}
+    elif name == "invalid_summary":
+        data = {
+            "week": facts["week"],
+            "total": facts["total"],
+            "invalid_total": facts["invalid_total"],
+            "invalid_share": facts["invalid_share"],
+        }
+    elif name == "category_ranking":
+        data = {
+            "week": facts["week"],
+            "categories": facts.get("categories") or [],
+            "top_code": facts.get("top_code"),
+            "top_count": facts.get("top_count"),
+            "invalid_total": facts.get("invalid_total"),
+        }
+    elif name == "manufacturer_ranking":
+        data = {"week": facts["week"], "manufacturers": list(facts.get("manufacturers") or [])[:5]}
+    elif name == "device_info":
+        data = {"device": facts.get("device"), "product_code": facts.get("product_code")}
+    elif name == "week_change":
+        data = {"week": facts["week"], "change": facts.get("change")}
+    elif name == "filtered_count":
+        data = _filtered_data(facts, args)
+    else:
+        raise KeyError(name)
+    return {"name": name, "data": data}
+
+
+def answer_message(text: str, view: dict[str, Any], client: Any | None = None) -> str:
+    """Answer one exploratory message. Python owns every number."""
+    facts = ensure_explore(view)
+    if client is not None and facts and "total" in facts:
+        try:
+            answered = _answer_with_client(text, facts, view, client)
+            if answered:
+                return answered
+        except Exception:
+            pass
+    if not facts or "total" not in facts:
+        return _answer_without_facts(text, view)
+    return _answer_router(text, facts, view)
+
+
+def _answer_without_facts(text: str, view: dict[str, Any]) -> str:
+    """Use a sentence already on the view. Do not pretend the lookup failed."""
+    intent = match_intent(text)
+    if intent == "device":
+        return _device_answer({}, view)
+    if intent == "rate":
+        sentence = str(view.get("rate_sentence") or "").strip()
+        if sentence:
+            return sentence
+    if intent == "direction":
+        sentence = str(view.get("direction_sentence") or "").strip()
+        if sentence:
+            week = int(view.get("story_week") or 1)
+            prefix = f"As of week {week} there is no earlier week to compare. " if week < 2 else ""
+            return (prefix + sentence).strip()
+    if intent in {"total", "categories", "manufacturers", "wow"}:
+        return counts_did_not_load()
+    week = int(view.get("story_week") or 1)
+    return capabilities_menu(week)
+
+
+def _answer_router(text: str, facts: dict[str, Any], view: dict[str, Any]) -> str:
+    chosen = _specific_filter(text, facts)
+    if chosen:
+        return _sentence_for(run_tool("filtered_count", chosen, facts), facts, view)
+    intent = match_intent(text)
+    if not intent:
+        return capabilities_menu(int(facts["week"]))
+    return answer_for(intent, view)
+
+
+def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], client: Any) -> str:
+    calls = client.select_tools(text, tool_specs())
+    if not isinstance(calls, list) or not calls:
+        return ""
+    results: list[dict[str, Any]] = []
+    for call in calls:
+        if not isinstance(call, dict):
+            return ""
+        name = str(call.get("name") or "")
+        arguments = call.get("arguments") if isinstance(call.get("arguments"), dict) else {}
+        try:
+            results.append(run_tool(name, arguments, facts))
+        except KeyError:
+            return ""
+    template = " ".join(_sentence_for(result, facts, view) for result in results).strip()
+    if not template:
+        return capabilities_menu(int(facts["week"]))
+    try:
+        phrased = str(client.phrase(text, results) or "").strip()
+    except Exception:
+        return template
+    if not phrased or _unknown_number(phrased, results, template):
+        return template
+    return phrased
+
+
+def _specific_filter(text: str, facts: dict[str, Any]) -> dict[str, str] | None:
+    lowered = " ".join(str(text or "").casefold().split())
+    if not re.search(r"how many|how much|number of|count of", lowered):
+        return None
+    for row in facts.get("manufacturers") or []:
+        name = str(row.get("name") or "")
+        if name and name.casefold() in lowered:
+            return {"manufacturer": name}
+    for row in facts.get("categories") or []:
+        code = str(row.get("code") or "")
+        if code and code.casefold() in lowered:
+            return {"category": code}
+    return None
+
+
+def _filtered_data(facts: dict[str, Any], args: dict[str, Any]) -> dict[str, Any]:
+    rows = list(facts.get("rows") or [])
+    maker = str(args.get("manufacturer") or "").strip()
+    category = str(args.get("category") or "").strip()
+    if not rows:
+        return {"loaded": False, "week": facts.get("week")}
+    matched = rows
+    if maker:
+        needle = maker.casefold()
+        matched = [row for row in matched if needle in str(row.get("manufacturer") or "").casefold()]
+    if category:
+        needle = category.casefold()
+        matched = [row for row in matched if str(row.get("invalid_code") or "").casefold() == needle]
+    invalid = sum(1 for row in matched if row.get("invalid"))
+    return {
+        "loaded": True,
+        "week": facts.get("week"),
+        "count": len(matched),
+        "invalid": invalid,
+        "manufacturer": maker,
+        "category": category,
+    }
+
+
+def _sentence_for(result: dict[str, Any], facts: dict[str, Any], view: dict[str, Any]) -> str:
+    name = str(result.get("name") or "")
+    if name in {"report_total", "invalid_summary"}:
+        return _with_lead(_total_answer(facts), facts, "total")
+    if name == "category_ranking":
+        return _category_answer(facts)
+    if name == "manufacturer_ranking":
+        return _maker_answer(facts)
+    if name == "device_info":
+        return _device_answer(facts, view)
+    if name == "week_change":
+        return _change_answer(facts)
+    if name == "filtered_count":
+        data = result.get("data") or {}
+        if not data.get("loaded"):
+            return counts_did_not_load()
+        who = str(data.get("manufacturer") or data.get("category") or "that filter")
+        return (
+            f"As of week {int(data.get('week') or facts['week'])}, {who} has {int(data['count'])} reports so far. "
+            f"{int(data['invalid'])} of them are an invalid type."
+        )
+    return ""
+
+
+def _unknown_number(phrased: str, results: list[dict[str, Any]], template: str) -> bool:
+    allowed = _number_tokens(results) | _number_tokens(template)
+    return any(token not in allowed for token in _number_tokens(phrased))
+
+
+def _number_tokens(value: Any) -> set[str]:
+    found: set[str] = set()
+
+    def add(token: str) -> None:
+        found.add(token)
+        if "." in token:
+            found.add(token.rstrip("0").rstrip("."))
+
+    def walk(item: Any) -> None:
+        if isinstance(item, bool) or item is None:
+            return
+        if isinstance(item, int):
+            add(str(item))
+            return
+        if isinstance(item, float):
+            add(f"{item:.4f}")
+            if 0.0 <= item <= 1.0:
+                pct = item * 100.0
+                add(f"{pct:.2f}")
+                add(f"{pct:.1f}")
+                add(f"{pct:.0f}")
+            return
+        if isinstance(item, str):
+            for token in re.findall(r"\d+(?:\.\d+)?", item):
+                add(token)
+            return
+        if isinstance(item, dict):
+            for child in item.values():
+                walk(child)
+            return
+        if isinstance(item, list):
+            for child in item:
+                walk(child)
+
+    walk(value)
+    return found

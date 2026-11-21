@@ -159,6 +159,97 @@ class GroqLLM:
             payload["max_tokens"] = 4096
         raise RuntimeError("Groq returned an empty reply")
 
+    def select_tools(self, message: str, tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Ask Groq which lookups to run. The numbers are not chosen here."""
+        import json
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Choose the tools that answer the question about this week's complaint data. "
+                        "Do not invent numbers. If none of the tools fit, call none."
+                    ),
+                },
+                {"role": "user", "content": message},
+            ],
+            "tools": [{"type": "function", "function": spec} for spec in tools],
+            "tool_choice": "auto",
+            "temperature": 0,
+            "max_tokens": 400,
+        }
+        message_obj = self._message(payload)
+        picked: list[dict[str, Any]] = []
+        for call in message_obj.get("tool_calls") or []:
+            function = call.get("function") or {}
+            raw = function.get("arguments") or "{}"
+            if isinstance(raw, str):
+                try:
+                    arguments = json.loads(raw) if raw.strip() else {}
+                except json.JSONDecodeError:
+                    arguments = {}
+            elif isinstance(raw, dict):
+                arguments = raw
+            else:
+                arguments = {}
+            if not isinstance(arguments, dict):
+                arguments = {}
+            name = str(function.get("name") or "")
+            if name:
+                picked.append({"name": name, "arguments": arguments})
+        return picked
+
+    def phrase(self, message: str, results: list[dict[str, Any]]) -> str:
+        """Turn tool results into one short reply. Callers reject any new number."""
+        import json
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Write one or two short sentences a high school reader can follow. "
+                        "Use only numbers that appear in the tool results. Do not add a count."
+                    ),
+                },
+                {"role": "user", "content": json.dumps({"question": message, "results": results})},
+            ],
+            "temperature": 0,
+            "max_tokens": 300,
+        }
+        return str(self._message(payload).get("content") or "").strip()
+
+    def _message(self, payload: dict[str, Any]) -> dict[str, Any]:
+        import time
+
+        import httpx
+
+        from invalid_agent.config import GROQ_CHAT_URL
+
+        waited = 0.0
+        response: Any = None
+        for attempt in range(4):
+            self._pace()
+            response = httpx.post(
+                GROQ_CHAT_URL,
+                headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=60.0,
+            )
+            if response.status_code == 429 and attempt < 3:
+                delay = _retry_after_seconds(response.headers)
+                if waited + delay > self._max_retry_wait:
+                    raise RuntimeError("Groq retry wait would exceed 15 seconds.")
+                time.sleep(delay)
+                waited += delay
+                continue
+            response.raise_for_status()
+            return dict(response.json()["choices"][0]["message"])
+        raise RuntimeError("Groq returned no tool message")
+
 
 class LlamaCppLLM:
     name = "llamacpp"
