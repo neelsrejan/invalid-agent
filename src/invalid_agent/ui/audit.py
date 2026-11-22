@@ -371,14 +371,29 @@ def _with_codes(lowered: str) -> str:
     return re.sub(r"\(\s*(inv-[a-z]+)\s*\)", r"\1", lowered)
 
 
-def _segments(lowered: str, facts: dict[str, Any]) -> dict[str, str]:
-    """Text after each named company, up to the next company name."""
-    hits = []
-    for row in facts.get("companies") or []:
-        name = str(row["name"]).casefold()
+def _company_hits(lowered: str, facts: dict[str, Any]) -> list[tuple[int, int, str]]:
+    """Start, end, and canonical name for each company mention, including the Abbott alias."""
+    names = [str(row["name"]).casefold() for row in facts.get("companies") or []]
+    hits: list[tuple[int, int, str]] = []
+    for name in names:
         for match in re.finditer(r"\b" + re.escape(name) + r"\b", lowered):
             hits.append((match.start(), match.end(), name))
+    aliases = {}
+    for name in names:
+        if name == "abbott labs" or name.startswith("abbott "):
+            aliases["abbott"] = name
+    for alias, name in aliases.items():
+        for match in re.finditer(r"\b" + re.escape(alias) + r"\b", lowered):
+            if any(start <= match.start() and match.end() <= end for start, end, _ in hits):
+                continue
+            hits.append((match.start(), match.end(), name))
     hits.sort()
+    return hits
+
+
+def _segments(lowered: str, facts: dict[str, Any]) -> dict[str, str]:
+    """Text after each named company, up to the next company name."""
+    hits = _company_hits(lowered, facts)
     out: dict[str, str] = {}
     for index, (_start, stop, name) in enumerate(hits):
         nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
@@ -386,22 +401,55 @@ def _segments(lowered: str, facts: dict[str, Any]) -> dict[str, str]:
     return out
 
 
-def _numbers_ok(lowered: str, facts: dict[str, Any]) -> bool:
-    """Every percent must be the 1% line or a share we computed; every N of M must be a real pair."""
+def _share_tokens(value: float) -> set[str]:
+    return {f"{float(value) * 100:.2f}", f"{float(value) * 100:.1f}"}
+
+
+def _allowed_numbers(name: str, facts: dict[str, Any]) -> tuple[set[str], set[tuple[int, int]]]:
+    """Percents and N-of-M pairs that may be said about this company, plus the 1% line."""
     shares = {"1", "1.0", "1.00"}
-    pairs = set()
+    pairs: set[tuple[int, int]] = set()
     for row in facts.get("companies") or []:
-        shares |= {f"{row['share'] * 100:.2f}", f"{row['share'] * 100:.1f}"}
+        if str(row["name"]).casefold() != name:
+            continue
+        shares |= _share_tokens(row["share"])
         pairs.add((int(row["invalid"]), int(row["total"])))
     for bundle in facts.get("cause_sets") or []:
+        if str(bundle.get("name") or "").casefold() != name:
+            continue
         if bundle.get("projected") is not None:
-            shares |= {f"{bundle['projected'] * 100:.2f}", f"{bundle['projected'] * 100:.1f}"}
+            shares |= _share_tokens(bundle["projected"])
+        invalid = int(bundle.get("invalid") or 0)
         for cause in bundle.get("causes") or []:
-            pairs.add((int(cause["count"]), int(bundle["invalid"])))
-    if any(value not in shares for value in _PCT.findall(lowered)):
+            pairs.add((int(cause["count"]), invalid))
+    for row in facts.get("closeouts") or []:
+        if str(row.get("company") or "").casefold() != name:
+            continue
+        if row.get("share") is not None:
+            shares |= _share_tokens(row["share"])
+        if row.get("projected") is not None:
+            shares |= _share_tokens(row["projected"])
+    return shares, pairs
+
+
+def _slice_numbers_ok(text: str, shares: set[str], pairs: set[tuple[int, int]]) -> bool:
+    if any(value not in shares for value in _PCT.findall(text)):
         return False
-    for left, right in _N_OF_M.findall(lowered):
+    for left, right in _N_OF_M.findall(text):
         if (int(left.replace(",", "")), int(right.replace(",", ""))) not in pairs:
+            return False
+    return True
+
+
+def _numbers_ok(lowered: str, facts: dict[str, Any]) -> bool:
+    """Each company slice may only use that company's share, projected share, counts, and 1%."""
+    hits = _company_hits(lowered, facts)
+    prefix = lowered[: hits[0][0]] if hits else lowered
+    if not _slice_numbers_ok(prefix, {"1", "1.0", "1.00"}, set()):
+        return False
+    for index, (_start, stop, name) in enumerate(hits):
+        nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
+        if not _slice_numbers_ok(lowered[stop:nxt], *_allowed_numbers(name, facts)):
             return False
     return True
 
@@ -431,11 +479,26 @@ def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
 
 
 def _eda_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    if not re.search(r"\b(?:over|above)\s+1\b", lowered) or re.search(r"\b(?:under|below)\b", lowered):
+    if not re.search(r"\b(?:over|above)\s+1\b", lowered):
         return False
     flagged = {str(row["name"]).casefold() for row in facts.get("flagged") or []}
-    named = set(_segments(lowered, facts))
-    return bool(flagged) and named == flagged
+    if not flagged:
+        return False
+    segments = _segments(lowered, facts)
+    if not flagged.issubset(segments):
+        return False
+    by_name = {str(row["name"]).casefold(): row for row in facts.get("companies") or []}
+    for name, segment in segments.items():
+        if name in flagged:
+            if re.search(r"\b(?:under|below)\b", segment):
+                return False
+            continue
+        if not re.search(r"\b(?:under|below)\s+1\b", segment) or re.search(r"\b(?:over|above)\b", segment):
+            return False
+        row = by_name.get(name)
+        if not row or not row.get("enough") or float(row["share"]) >= THRESHOLD:
+            return False
+    return True
 
 
 def _pareto_claim(lowered: str, facts: dict[str, Any]) -> bool:
@@ -462,18 +525,23 @@ def _pareto_claim(lowered: str, facts: dict[str, Any]) -> bool:
 def _response_claim(lowered: str, facts: dict[str, Any]) -> bool:
     issues = facts.get("issues") or []
     segments = _segments(lowered, facts)
-    if not issues or set(segments) != {str(issue["company"]).casefold() for issue in issues}:
+    wanted = {str(issue["company"]).casefold() for issue in issues}
+    if not issues or set(segments) != wanted:
         return False
     branches = "|".join(sorted({name.casefold() for name in _BRANCH.values()} | {"environment"}))
-    for issue in issues:
-        segment = segments[str(issue["company"]).casefold()]
-        code = str(issue["code"]).casefold()
-        chunk = re.search(re.escape(code) + r"(.*?)(?=\binv-[a-z]+\b|$)", segment)
-        if not chunk:
+    for name, segment in segments.items():
+        group = [issue for issue in issues if str(issue["company"]).casefold() == name]
+        expected = {str(issue["code"]).casefold() for issue in group}
+        if set(_CODE.findall(segment)) != expected:
             return False
-        said = set(re.findall(r"\b(" + branches + r")\b", chunk.group(1)))
-        if said != {str(issue["branch"]).casefold()}:
-            return False
+        for issue in group:
+            code = str(issue["code"]).casefold()
+            chunk = re.search(re.escape(code) + r"(.*?)(?=\binv-[a-z]+\b|$)", segment)
+            if not chunk:
+                return False
+            said = set(re.findall(r"\b(" + branches + r")\b", chunk.group(1)))
+            if said != {str(issue["branch"]).casefold()}:
+                return False
     return True
 
 

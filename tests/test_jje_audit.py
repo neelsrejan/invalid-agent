@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from invalid_agent.data.mapping import INVALID_LABELS, primary_invalid_code
-from invalid_agent.data.frame import frame_from_reports
+from invalid_agent.data.frame import DataUnavailable, frame_from_reports
 from invalid_agent.sim.generate import load_scenario
 from invalid_agent.ui.audit import cause_set_for, company_table, flagged_companies
 from invalid_agent.ui.story import build_week_view
@@ -229,3 +229,148 @@ def test_a_missing_problem_table_uses_the_cached_extract(monkeypatch, caplog):
     assert "cached JJE extract" in caplog.text
     assert "no product_problems" in caplog.text
     assert len(built) == 4221
+
+
+def test_goal_claims_reject_numbers_tied_to_the_wrong_company():
+    bad = {
+        "eda": (
+            "Roche 2.68%, Abbott Labs 3.60% and Siemens 1.34% are over 1%",
+            "Roche 13 of 485, Abbott Labs 81 of 2249, Siemens 10 of 748 are over 1%",
+        ),
+        "pareto": (
+            "Roche needs INV-MECH and INV-NOR to reach 0.21%, Abbott Labs needs INV-MECH to get under 1%, and Siemens needs INV-MECH and INV-USR to get to 0.58%",
+        ),
+        "closeout": (
+            "Roche gets under 1%, Abbott Labs gets under 1%, and Siemens gets under 1% from 0.58%",
+        ),
+    }
+    cases = (("eda", 1), ("pareto", 2), ("closeout", 4))
+    for step, week in cases:
+        view = _view(week)
+        for text in bad[step]:
+            reply = respond(text, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+            assert reply["confirmed"] is False, (step, text, reply["text"])
+            assert not reply["text"].startswith("YEP")
+    good = {
+        1: ("eda", "Roche 3.60% (81 of 2249), Abbott Labs 1.34% (10 of 748), and Siemens 2.68% (13 of 485) are over 1%"),
+        2: ("pareto", "Roche needs INV-MECH and INV-NOR to reach 0.58%, Abbott Labs needs INV-MECH to get under 1%, and Siemens needs INV-MECH and INV-USR to get to 0.21%"),
+        4: ("closeout", "Roche gets under 1% from 0.58%, Abbott Labs gets under 1%, and Siemens gets under 1%"),
+    }
+    for week, (step, text) in good.items():
+        reply = respond(text, _view(week), step, ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert reply["confirmed"] is True, (step, text, reply["text"])
+        assert reply["text"].startswith("YEP")
+
+
+def test_company_causes_and_issue_response_stay_on_the_template():
+    from invalid_agent.ui import explore
+
+    view = _view(2)
+    facts = view["explore"]
+
+    class WrongCauses:
+        def select_tools(self, text, specs):
+            return [{"name": "company_causes", "arguments": {"company": "Roche"}}]
+
+        def phrase(self, text, results):
+            return "Roche gets under 1% by fixing INV-CAL and INV-SW."
+
+    template = explore._sentence_for(
+        explore.run_tool("company_causes", {"company": "Roche"}, facts), facts, view
+    )
+    assert "INV-MECH" in template and "INV-NOR" in template
+    assert explore._answer_with_client("x", facts, view, WrongCauses()) == template
+
+    class Honest:
+        def select_tools(self, text, specs):
+            return [{"name": "company_causes", "arguments": {"company": "Roche"}}]
+
+        def phrase(self, text, results):
+            return template
+
+    assert explore._answer_with_client("x", facts, view, Honest()) == template
+
+    week3 = _view(3)
+    issue_template = explore._sentence_for(
+        explore.run_tool("issue_response", {"company": "Siemens"}, week3["explore"]),
+        week3["explore"],
+        week3,
+    )
+
+    class WrongIssue:
+        def select_tools(self, text, specs):
+            return [{"name": "issue_response", "arguments": {"company": "Siemens"}}]
+
+        def phrase(self, text, results):
+            return "Siemens INV-CAL is Measurement."
+
+    assert explore._answer_with_client("x", week3["explore"], week3, WrongIssue()) == issue_template
+
+
+def test_week_three_rejects_an_invented_issue_and_accepts_the_real_set():
+    invented = (
+        "Roche INV-MECH is Machine, Roche INV-NOR is Material, "
+        "Abbott Labs INV-MECH is Machine, Siemens INV-MECH is Machine, "
+        "Siemens INV-USR is Man, and Siemens INV-CAL is Measurement."
+    )
+    view = _view(3)
+    reply = respond(invented, view, "responses", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert reply["confirmed"] is False
+    assert not reply["text"].startswith("YEP")
+    _, sentence = part_fact(view, "responses")
+    honest = respond(sentence, view, "responses", ticket_key="Your ticket 1", flag_key="Flag 1")
+    assert honest["confirmed"] is True
+    assert honest["text"].startswith("YEP")
+
+
+def test_week_one_accepts_the_abbott_alias_and_a_true_beckman_clause():
+    view = _view(1)
+    alias = respond(
+        "Roche, Abbott, and Siemens are over 1%",
+        view,
+        "eda",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert alias["confirmed"] is True, alias["text"]
+    assert alias["text"].startswith("YEP")
+    with_beckman = respond(
+        "Roche, Abbott Labs, and Siemens are over 1%; Beckman is below 1%",
+        view,
+        "eda",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert with_beckman["confirmed"] is True, with_beckman["text"]
+    false_extra = respond(
+        "Roche, Abbott Labs, and Siemens are over 1%; Ortho is below 1%",
+        view,
+        "eda",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+    )
+    assert false_extra["confirmed"] is False
+
+
+def test_problem_table_fallback_is_only_for_the_jje_case(monkeypatch, caplog):
+    import logging
+
+    from invalid_agent.data import frame as frame_mod
+
+    def missing(_code, _start, _end):
+        raise RuntimeError('relation "maude_problem" does not exist')
+
+    monkeypatch.setattr(frame_mod, "_query_case_rows", missing)
+    monkeypatch.setattr("invalid_agent.data.cache.read_rows", lambda *_args, **_kwargs: [])
+    ooi = load_scenario(ROOT / "cases" / "openfda_ooi.yaml")
+    try:
+        frame_mod.load_openfda_frame(ooi)
+        raise AssertionError("OOI should not be served the JJE extract")
+    except DataUnavailable:
+        pass
+    jje = load_scenario(ROOT / "cases" / "openfda_jje.yaml")
+    with caplog.at_level(logging.WARNING):
+        built = frame_mod.load_openfda_frame(jje)
+    assert "cached JJE extract" in caplog.text
+    assert len(built) == 4221
+

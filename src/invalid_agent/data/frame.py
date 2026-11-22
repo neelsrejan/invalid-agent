@@ -46,6 +46,10 @@ def load_openfda_frame(scenario: dict[str, Any]) -> pd.DataFrame:
     except Exception as exc:
         if not _missing_problem_source(exc):
             raise
+        if case_id != "openfda_jje":
+            raise DataUnavailable(
+                f"The MAUDE query has no product_problems for {case_id or product_code}."
+            ) from exc
         _LOG.warning(
             "MAUDE query has no product_problems; using the cached JJE extract (%s)",
             type(exc).__name__,

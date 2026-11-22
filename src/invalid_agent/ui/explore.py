@@ -547,7 +547,7 @@ def _answer_router(text: str, facts: dict[str, Any], view: dict[str, Any]) -> st
     return answer_for(intent, view)
 
 
-_PER_COMPANY_TOOLS = frozenset({"company_shares", "threshold_flags", "capa_outlook"})
+_PER_COMPANY_TOOLS = frozenset({"company_shares", "threshold_flags", "capa_outlook", "company_causes", "issue_response"})
 
 
 def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], client: ToolCaller) -> str:
