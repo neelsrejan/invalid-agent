@@ -20,7 +20,7 @@ from __future__ import annotations
 import threading
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -33,6 +33,13 @@ class LLM(Protocol):
     name: str
 
     def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str: ...
+
+
+@runtime_checkable
+class ToolCaller(Protocol):
+    def select_tools(self, message: str, tools: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
+
+    def phrase(self, message: str, results: list[dict[str, Any]]) -> str: ...
 
 
 def _chat_payload(system: str, user: str) -> list[dict[str, str]]:
@@ -160,7 +167,6 @@ class GroqLLM:
         raise RuntimeError("Groq returned an empty reply")
 
     def select_tools(self, message: str, tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Ask Groq which lookups to run. The numbers are not chosen here."""
         import json
 
         payload = {
@@ -202,7 +208,6 @@ class GroqLLM:
         return picked
 
     def phrase(self, message: str, results: list[dict[str, Any]]) -> str:
-        """Turn tool results into one short reply. Callers reject any new number."""
         import json
 
         payload = {

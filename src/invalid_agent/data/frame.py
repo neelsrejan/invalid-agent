@@ -79,8 +79,6 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
         received = pd.Timestamp(record["date_received"])
         event_raw = record.get("date_of_event")
         event_date = pd.Timestamp(event_raw) if event_raw else pd.NaT
-        # Weeks follow the FDA received date. The event date can sit years
-        # earlier and would put almost the whole file in week 1.
         chart_date = received
         basis = "date_received"
         lot = str(record.get("lot_number") or "").strip() or "UNREPORTED"

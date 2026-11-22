@@ -2,9 +2,7 @@
 
 The guided walk is Week 1 through Week 4. Each week is complaint, numbers,
 charts, what gets logged, root-cause notes, and a wrap-up. The next week
-unlocks only after the wrap-up. Python computes every number. On the complaint
-and the numbers, a model may only choose a lookup. On later parts it may
-rephrase the reply.
+unlocks only after the wrap-up.
 """
 
 from __future__ import annotations
@@ -29,6 +27,7 @@ import streamlit as st
 
 from invalid_agent.artifacts.charts import before_after_figure, p_chart_figure, pareto_figure
 from invalid_agent.config import find_repo_root, load_settings
+from invalid_agent.llm import ToolCaller
 from invalid_agent.data.frame import load_frame
 from invalid_agent.sim.generate import load_scenario
 from invalid_agent.ui.guide import AUDIENCES, GUIDE_STEPS, progress_label
@@ -42,7 +41,14 @@ from invalid_agent.ui.plain import (
 )
 from invalid_agent.ui.records import logged_sections, note_sections, sections_from_run
 from invalid_agent.ui.story import beat_lines, build_week_view
-from invalid_agent.ui.talkback import accepted_signatures, example_prompts, part_fact, respond, reword_reply
+from invalid_agent.ui.talkback import (
+    LOOKUP_PARTS,
+    accepted_signatures,
+    example_prompts,
+    part_fact,
+    respond,
+    reword_reply,
+)
 
 note_imports()
 
@@ -207,9 +213,6 @@ def _page_chrome(banner: str) -> None:
     )
 
 
-# Bump this when the week view gains a field the talk-back reads.
-# The cache key is the path and the week, so a new field would otherwise
-# keep serving a view built by the previous deploy.
 _VIEW_SCHEMA = 2
 
 
@@ -235,9 +238,9 @@ def _talk_llm(rules_only: bool):
     return llm
 
 
-def _tool_client(rules_only: bool):
+def _tool_client(rules_only: bool) -> ToolCaller | None:
     llm = _talk_llm(rules_only)
-    if llm is None or not hasattr(llm, "select_tools"):
+    if not isinstance(llm, ToolCaller):
         return None
     return llm
 
@@ -294,7 +297,7 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         )
     if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
         _mark_done(week, beat_id)
-    if beat_id in {"complaint", "data"}:
+    if beat_id in LOOKUP_PARTS:
         shown = text
     else:
         shown = reword_reply(text, _talk_llm(rules_only))
@@ -799,7 +802,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
                 "Let's understand the invalid results in the context of what this device is supposed to do."
             )
         )
-    if step.id not in {"complaint", "data"}:
+    if step.id not in LOOKUP_PARTS:
         st.markdown(_say(f"**What the agent is doing.** {step.doing}"))
     st.markdown(_say(f"**Why.** {step.why}"))
     st.markdown(_say(f"**What to look at.** {step.look}"))

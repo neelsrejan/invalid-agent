@@ -10,10 +10,12 @@ import re
 from typing import Any
 
 from invalid_agent.guards.numeric_fidelity import check_narrative
+from invalid_agent.llm import ToolCaller
 from invalid_agent.ui.plain import code_plain, unexplained_jargon
 
 # A claim is graded only against facts on or before the current part.
 _STEP_ORDER = ("complaint", "data", "charts", "logged", "notes", "wrap", "done")
+LOOKUP_PARTS = frozenset({"complaint", "data"})
 _PART_NAME = {
     "data": "numbers",
     "charts": "charts",
@@ -146,7 +148,7 @@ _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 def example_prompts(view: dict[str, Any], step_id: str) -> list[str]:
     """Three short prompts. A code-share claim is not offered before the charts part."""
-    if step_id in {"complaint", "data"}:
+    if step_id in LOOKUP_PARTS:
         prompts = [
             "How many complaints are in the dataset?",
             "Which invalid categories are highest to lowest?",
@@ -197,14 +199,8 @@ def respond(
     *,
     ticket_key: str,
     flag_key: str,
-    tool_client: Any | None = None,
+    tool_client: ToolCaller | None = None,
 ) -> dict[str, Any]:
-    """Classify ``message`` and answer from this week's counts.
-
-    On the complaint and numbers parts, a tool client may choose a lookup.
-    Python still computes every number. With no client, the same lookups run
-    from the wording.
-    """
     raw = str(message or "")
     text = " ".join(raw.split())
     if not text:
@@ -217,7 +213,7 @@ def respond(
             user_text="",
         )
     kind, body, finding = _classify(text, view, step_id, tool_client)
-    bare = step_id in {"complaint", "data"} and kind in {"question", "hint", "early"}
+    bare = step_id in LOOKUP_PARTS and kind in {"question", "hint", "early"}
     return _pack(
         kind=kind,
         body=body,
@@ -370,8 +366,7 @@ _ASK = re.compile(
 )
 
 
-def _explore_turn(lowered: str) -> bool:
-    """True when the complaint or numbers page should look up a fact instead of grading it."""
+def _asks_for_facts(lowered: str) -> bool:
     from invalid_agent.ui.explore import match_intent
 
     later = any(word in lowered for word in ("ticket", "jira", "logged", "recommend"))
@@ -387,18 +382,18 @@ def _classify(
     text: str,
     view: dict[str, Any],
     step_id: str,
-    tool_client: Any | None = None,
+    tool_client: ToolCaller | None = None,
 ) -> tuple[str, str, str]:
     lowered = text.casefold()
     if _is_greeting(lowered):
         return "hint", _hello(step_id, view), ""
-    if step_id in {"complaint", "data"}:
+    if step_id in LOOKUP_PARTS:
         from invalid_agent.ui.explore import answer_message, match_intent
 
         stated = _key_statement(lowered, view, step_id)
         if stated:
             return stated
-        if _explore_turn(lowered):
+        if _asks_for_facts(lowered):
             glossary = _glossary_answer(lowered)
             if glossary and match_intent(lowered) is None:
                 return "question", glossary, _question_finding(lowered, view, step_id)

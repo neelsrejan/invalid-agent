@@ -10,6 +10,7 @@ from typing import Any
 
 import pandas as pd
 
+from invalid_agent.llm import ToolCaller
 from invalid_agent.metrics.pareto import pareto
 from invalid_agent.ui.plain import code_plain, format_percent
 
@@ -160,13 +161,13 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
             return sentence
         if facts:
             return _total_answer(facts)
-        return honest_menu(week)
+        return capabilities_menu(week)
     if intent == "direction":
         sentence = str(view.get("direction_sentence") or "").strip()
         prefix = f"As of week {week} there is no earlier week to compare. " if week < 2 else ""
         if sentence:
             return (prefix + sentence).strip()
-        return honest_menu(week)
+        return capabilities_menu(week)
     if not facts or "total" not in facts:
         return counts_did_not_load()
     if intent == "total":
@@ -181,16 +182,11 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
 
 
 def capabilities_menu(week: int) -> str:
-    """What this page can look up. This sentence does not say the lookup failed."""
     return (
         f"I can look up, as of week {int(week)}, how many complaints are in the data so far, "
         "which invalid categories rank highest to lowest, who the main manufacturer is, "
         "and the device. Once a second week is in, I can also say what changed."
     )
-
-
-def honest_menu(week: int) -> str:
-    return capabilities_menu(week)
 
 
 def counts_did_not_load() -> str:
@@ -290,7 +286,6 @@ def _slim_rows(frame: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 def ensure_explore(view: dict[str, Any]) -> dict[str, Any]:
-    """Return week facts. Rebuild only when the view has counts but no explore block."""
     current = view.get("explore")
     if isinstance(current, dict) and (current.get("category_sentence") or "total" in current):
         return current
@@ -304,7 +299,6 @@ def ensure_explore(view: dict[str, Any]) -> dict[str, Any]:
 
 
 def rebuild_explore(view: dict[str, Any]) -> dict[str, Any] | None:
-    """Build week facts from counts already on an older view. None when those counts are absent."""
     if "n" not in view or "k" not in view:
         return None
     week = int(view.get("story_week") or 1)
@@ -412,8 +406,7 @@ def run_tool(name: str, arguments: dict[str, Any] | None, facts: dict[str, Any])
     return {"name": name, "data": data}
 
 
-def answer_message(text: str, view: dict[str, Any], client: Any | None = None) -> str:
-    """Answer one exploratory message. Python owns every number."""
+def answer_message(text: str, view: dict[str, Any], client: ToolCaller | None = None) -> str:
     facts = ensure_explore(view)
     if client is not None and facts and "total" in facts:
         try:
@@ -428,7 +421,6 @@ def answer_message(text: str, view: dict[str, Any], client: Any | None = None) -
 
 
 def _answer_without_facts(text: str, view: dict[str, Any]) -> str:
-    """Use a sentence already on the view. Do not pretend the lookup failed."""
     intent = match_intent(text)
     if intent == "device":
         return _device_answer({}, view)
@@ -458,7 +450,7 @@ def _answer_router(text: str, facts: dict[str, Any], view: dict[str, Any]) -> st
     return answer_for(intent, view)
 
 
-def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], client: Any) -> str:
+def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], client: ToolCaller) -> str:
     calls = client.select_tools(text, tool_specs())
     if not isinstance(calls, list) or not calls:
         return ""

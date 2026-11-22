@@ -1,5 +1,3 @@
-"""Week 1 complaint and numbers, on the real OOI extract, binned by received date."""
-
 from pathlib import Path
 
 import pandas as pd
@@ -7,7 +5,6 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "openfda_ooi.csv"
 
-# Measured from tests/fixtures/openfda_ooi.csv with weeks binned on date_received.
 WEEK_TOTALS = {
     1: {"reports": 775, "invalid": 42, "top_code": "INV-MECH", "top_count": 38, "maker": "ABBOTT MOLECULAR", "maker_count": 540},
     2: {"reports": 972, "invalid": 73, "top_code": "INV-MECH", "top_count": 39, "maker": "ABBOTT MOLECULAR", "maker_count": 603},
