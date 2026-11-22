@@ -12,9 +12,9 @@ promised_validity: 0.98
 cost_per_invalid_usd: 85
 cost_basis: This dollar figure is a planning assumption. MAUDE has no cost field.
 banner: >-
-  Public openFDA MAUDE device-event reports. Denominator: reported events, not
-  test runs. The 2% invalid cap is the stated run-level promise and is not
-  estimable from this table. Not for clinical use. Not a medical device.
+  Public openFDA MAUDE device-event reports for clinical chemistry analyzers.
+  Invalid share of field problem reports. Not a run-level rate.
+  Not for clinical use. Not a medical device.
 strata_columns: [manufacturer, brand_name, reagent_lot, catalog_number]
 strata_labels:
   manufacturer: Manufacturer

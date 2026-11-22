@@ -1,8 +1,8 @@
 # Guided page logic trace
 
-The page is one script. It walks Week 1, then Week 2, then Week 3, then Week 4. Each week has six parts: complaint, numbers, charts, what gets logged, root-cause notes, and a wrap-up. Next stays off until that part's key insight is confirmed, or the reader presses Show me and the page logs it. Start week N+1 is that same Next button on the wrap-up, so it stays off until the wrap-up insight is logged. Python computes every count. A language model may only rephrase the talk-back reply.
+The page is one script. It walks Week 1, then Week 2, then Week 3, then Week 4. Each week is one page: companies over 1% (`eda`), cause sets (`pareto`), simulated responses (`responses`), and the close-out (`closeout`). The JJE file is not sliced by week. Next stays off until that week's goal claim is confirmed, or the reader presses Show me and the page logs the real sentence from `part_fact`. A question is answered by the same tool-calling path as before and does not unlock Next. Python computes every count. Groq may choose a tool and phrase. A phrased reply that adds a number, code, or manufacturer is replaced by the template.
 
-There is no week switcher and no free-explore panel. Those were the old way to skip ahead.
+There is no week switcher and no six-part walk.
 
 ## main
 

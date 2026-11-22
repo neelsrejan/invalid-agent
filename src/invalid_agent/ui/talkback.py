@@ -16,6 +16,7 @@ from invalid_agent.ui.plain import code_plain, unexplained_jargon
 # A claim is graded only against facts on or before the current part.
 _STEP_ORDER = ("complaint", "data", "charts", "logged", "notes", "wrap", "done")
 LOOKUP_PARTS = frozenset({"complaint", "data"})
+AUDIT_WEEKS = frozenset({"eda", "pareto", "responses", "closeout"})
 _PART_NAME = {
     "data": "numbers",
     "charts": "charts",
@@ -148,6 +149,10 @@ _FRAGMENTS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 def example_prompts(view: dict[str, Any], step_id: str) -> list[str]:
     """Three short prompts. A code-share claim is not offered before the charts part."""
+    if step_id in AUDIT_WEEKS:
+        from invalid_agent.ui.audit import prompts_for
+
+        return prompts_for(step_id, view.get("explore") or {})
     if step_id in LOOKUP_PARTS:
         prompts = [
             "How many complaints are in the dataset?",
@@ -213,7 +218,7 @@ def respond(
             user_text="",
         )
     kind, body, finding = _classify(text, view, step_id, tool_client)
-    bare = step_id in LOOKUP_PARTS and kind in {"question", "hint", "early"}
+    bare = step_id in LOOKUP_PARTS | AUDIT_WEEKS and kind in {"question", "hint", "early"}
     return _pack(
         kind=kind,
         body=body,
@@ -387,6 +392,18 @@ def _classify(
     lowered = text.casefold()
     if _is_greeting(lowered):
         return "hint", _hello(step_id, view), ""
+    if step_id in AUDIT_WEEKS:
+        from invalid_agent.ui.audit import goal_statement
+        from invalid_agent.ui.explore import answer_message
+
+        stated = goal_statement(text, view, step_id)
+        if stated:
+            return stated
+        return (
+            "question",
+            answer_message(text, view, tool_client),
+            f"a question on the {step_id} page",
+        )
     if step_id in LOOKUP_PARTS:
         from invalid_agent.ui.explore import answer_message, match_intent
 
@@ -519,6 +536,10 @@ def _negated_code_claim(lowered: str, codes: list[str], view: dict[str, Any]) ->
 
 def part_fact(view: dict[str, Any], beat_id: str) -> tuple[str, str]:
     """The key insight for one part: a signature and the sentence that states it."""
+    if beat_id in AUDIT_WEEKS:
+        from invalid_agent.ui.audit import show_me_fact
+
+        return show_me_fact(view, beat_id)
     if beat_id == "charts":
         if not (view.get("code_shares") or view.get("majority_codes")):
             return (

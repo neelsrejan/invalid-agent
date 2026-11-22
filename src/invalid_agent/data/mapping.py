@@ -60,6 +60,7 @@ READONLY_ROLE = "invalid_demo_ro"
 INVALID_LABELS: dict[str, str] = {
     "unable to obtain readings": "INV-NOR",
     "failure to obtain readings": "INV-NOR",
+    "failure to obtain sample": "INV-NOR",
     "no device output": "INV-NOR",
     "failure to run": "INV-NOR",
     "failure to power up": "INV-NOR",
@@ -69,6 +70,7 @@ INVALID_LABELS: dict[str, str] = {
     "application program freezes or crashes": "INV-SW",
     "computer software in medical device": "INV-SW",
     "program or algorithm problem": "INV-SW",
+    "program or algorithm execution problem": "INV-SW",
     "calibration problem": "INV-CAL",
     "calibration error": "INV-CAL",
     "failure to calibrate": "INV-CAL",

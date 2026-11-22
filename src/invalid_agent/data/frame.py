@@ -85,11 +85,17 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
         brand = str(record.get("brand_name") or "").strip() or "UNREPORTED"
         operator = str(record.get("device_operator") or "").strip() or "UNREPORTED"
         catalog = str(record.get("catalog_number") or "").strip() or "UNREPORTED"
-        invalid_code = str(record.get("invalid_code") or "")
+        raw_code = record.get("invalid_code")
+        invalid_code = "" if raw_code is None or (isinstance(raw_code, float) and pd.isna(raw_code)) else str(raw_code).strip()
+        if invalid_code.casefold() == "nan":
+            invalid_code = ""
         if record.get("is_invalid_type") is None:
             is_invalid = bool(invalid_code)
         else:
             is_invalid = bool(record.get("is_invalid_type"))
+        problems = record.get("product_problems") or []
+        if isinstance(problems, str):
+            problems = [part.strip() for part in problems.split("|") if part.strip()]
         rows.append(
             {
                 "run_id": str(record["mdr_report_key"]),
@@ -110,6 +116,7 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
                 "event_type": str(record.get("event_type") or ""),
                 "invalid": is_invalid,
                 "invalid_code": invalid_code if is_invalid else "",
+                "product_problems": [str(item) for item in problems] if isinstance(problems, list) else [],
             }
         )
     frame = pd.DataFrame(rows)

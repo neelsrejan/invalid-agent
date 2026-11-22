@@ -128,3 +128,72 @@ def before_after_figure(
         legend={"orientation": "h"},
     )
     return figure
+
+
+def company_share_figure(companies: list[dict[str, Any]]) -> go.Figure:
+    """Share by company. Grey is too few reports. A red X is over 1%."""
+    names = [str(row["name"]) for row in companies]
+    shares = [float(row["share"]) * 100 for row in companies]
+    colors = []
+    symbols = []
+    for row in companies:
+        if not row.get("enough"):
+            colors.append("#8AA0B2")
+            symbols.append("circle")
+        elif row.get("over"):
+            colors.append(_RED)
+            symbols.append("x")
+        else:
+            colors.append(_NAVY)
+            symbols.append("circle")
+    figure = go.Figure(
+        go.Scatter(
+            x=names,
+            y=shares,
+            mode="markers",
+            marker={"color": colors, "symbol": symbols, "size": 14},
+            name="Invalid share",
+            hovertemplate="%{x}<br>%{y:.2f}%<extra></extra>",
+        )
+    )
+    figure.add_hline(y=1, line_color=_RED, line_dash="dot", annotation_text="1%")
+    figure.update_layout(
+        title="Invalid share of field problem reports",
+        yaxis_title="Invalid share (%)",
+        template="plotly_white",
+        height=380,
+        margin={"l": 40, "r": 20, "t": 50, "b": 80},
+        showlegend=False,
+    )
+    return figure
+
+
+def fishbone_figure(branch: str) -> go.Figure:
+    """Six cause groups. The likely branch is the red mark."""
+    names = ["Man", "Machine", "Method", "Material", "Measurement", "Environment"]
+    marked = str(branch or "")
+    figure = go.Figure(
+        go.Scatter(
+            x=list(range(len(names))),
+            y=[1 if index % 2 == 0 else 0 for index in range(len(names))],
+            mode="markers+text",
+            text=names,
+            textposition="top center",
+            marker={
+                "size": 16,
+                "color": [_RED if name == marked else _NAVY for name in names],
+                "symbol": ["x" if name == marked else "circle" for name in names],
+            },
+        )
+    )
+    figure.add_shape(type="line", x0=-0.4, x1=5.4, y0=0.5, y1=0.5, line={"color": _NAVY, "width": 2})
+    figure.update_layout(
+        title=f"Cause diagram. Likely branch: {marked}",
+        template="plotly_white",
+        height=280,
+        margin={"l": 20, "r": 20, "t": 50, "b": 20},
+        xaxis={"visible": False},
+        yaxis={"visible": False},
+        showlegend=False,
+    )
+    return figure

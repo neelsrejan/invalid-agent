@@ -59,7 +59,8 @@ def slice_through_story_week(frame: pd.DataFrame, story_week: int) -> pd.DataFra
 def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: int) -> dict[str, Any]:
     """Facts, sentences, and tickets for one story week. No model."""
     week = min(4, max(1, int(story_week)))
-    sliced = slice_through_story_week(frame, week)
+    whole = str(scenario.get("product_code") or "").upper() == "JJE"
+    sliced = frame.copy() if whole else slice_through_story_week(frame, week)
     estimable = _estimable(scenario, sliced)
     framed = with_bands(sliced.copy())
     framed.attrs["spec_estimable"] = estimable
@@ -198,6 +199,7 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         product_code=str(scenario.get("product_code") or ""),
         device=str(scenario.get("device") or "the device"),
         estimable=estimable,
+        whole=whole,
     )
     return _jsonify(view)
 
