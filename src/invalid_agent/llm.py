@@ -242,7 +242,7 @@ class GroqLLM:
                 GROQ_CHAT_URL,
                 headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
                 json=payload,
-                timeout=60.0,
+                timeout=8.0,
             )
             if response.status_code == 429 and attempt < 3:
                 delay = _retry_after_seconds(response.headers)

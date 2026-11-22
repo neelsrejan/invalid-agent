@@ -164,6 +164,52 @@ def test_a_phrased_reply_with_a_wrong_number_is_replaced():
     assert reply["confirmed"] is False
 
 
+def test_a_phrased_reply_that_swaps_the_category_or_manufacturer_is_replaced():
+    view = _week_view(1)
+
+    class _SwapCode:
+        def select_tools(self, message, tools):
+            return [{"name": "category_ranking", "arguments": {}}]
+
+        def phrase(self, message, results):
+            return "INV-NOR is the biggest invalid category, 38 of 42."
+
+    class _SwapMaker:
+        def select_tools(self, message, tools):
+            return [{"name": "manufacturer_ranking", "arguments": {}}]
+
+        def phrase(self, message, results):
+            return "BECTON DICKINSON leads with 540 reports so far."
+
+    class _InventedMaker:
+        def select_tools(self, message, tools):
+            return [{"name": "manufacturer_ranking", "arguments": {}}]
+
+        def phrase(self, message, results):
+            return "Cepheid leads with 540 reports so far."
+
+    class _Honest:
+        def select_tools(self, message, tools):
+            return [{"name": "category_ranking", "arguments": {}}]
+
+        def phrase(self, message, results):
+            return "INV-MECH is the biggest invalid category, 38 of 42."
+
+    swapped = _talk_with(view, "Which invalid categories are highest to lowest?", _SwapCode())
+    assert "INV-NOR is the biggest" not in swapped["text"]
+    assert "INV-MECH" in swapped["text"]
+    assert swapped["confirmed"] is False
+    maker = _talk_with(view, "Who is the main manufacturer from this weeks reports", _SwapMaker())
+    assert "BECTON DICKINSON leads with 540" not in maker["text"]
+    assert "ABBOTT MOLECULAR" in maker["text"]
+    assert "540" in maker["text"]
+    invented = _talk_with(view, "Who is the main manufacturer from this weeks reports", _InventedMaker())
+    assert "Cepheid" not in invented["text"]
+    assert "ABBOTT MOLECULAR" in invented["text"]
+    honest = _talk_with(view, "Which invalid categories are highest to lowest?", _Honest())
+    assert honest["text"] == "INV-MECH is the biggest invalid category, 38 of 42."
+
+
 def _talk_with(view, text, client):
     from invalid_agent.ui.talkback import respond
 

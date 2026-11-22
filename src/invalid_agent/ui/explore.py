@@ -5,6 +5,7 @@ Every number comes from that slice. A later week is not counted.
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
 
@@ -15,6 +16,7 @@ from invalid_agent.metrics.pareto import pareto
 from invalid_agent.ui.plain import code_plain, format_percent
 
 _BLANK = {"", "UNREPORTED", "NAN", "NONE", "NAT"}
+_LOG = logging.getLogger(__name__)
 
 
 def report_total(frame: pd.DataFrame) -> int:
@@ -414,7 +416,7 @@ def answer_message(text: str, view: dict[str, Any], client: ToolCaller | None = 
             if answered:
                 return answered
         except Exception:
-            pass
+            _LOG.exception("week lookup failed")
     if not facts or "total" not in facts:
         return _answer_without_facts(text, view)
     return _answer_router(text, facts, view)
@@ -471,7 +473,7 @@ def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], 
         phrased = str(client.phrase(text, results) or "").strip()
     except Exception:
         return template
-    if not phrased or _unknown_number(phrased, results, template):
+    if not phrased or _unknown_number(phrased, results, template) or _unknown_label(phrased, results, template, facts):
         return template
     return phrased
 
@@ -542,6 +544,93 @@ def _sentence_for(result: dict[str, Any], facts: dict[str, Any], view: dict[str,
 def _unknown_number(phrased: str, results: list[dict[str, Any]], template: str) -> bool:
     allowed = _number_tokens(results) | _number_tokens(template)
     return any(token not in allowed for token in _number_tokens(phrased))
+
+
+_INV_CODE = re.compile(r"inv-[a-z0-9]+(?:-[a-z0-9]+)*", re.I)
+
+
+def _unknown_label(
+    phrased: str,
+    results: list[dict[str, Any]],
+    template: str,
+    facts: dict[str, Any],
+) -> bool:
+    """True when the phrasing names a category or manufacturer the tools did not support."""
+    allowed_codes = _codes_in(results) | _codes_in(template)
+    said_codes = _codes_in(phrased)
+    if said_codes - allowed_codes:
+        return True
+    allowed_makers = _makers_in(results) | _makers_mentioned(template, facts)
+    if _makers_mentioned(phrased, facts) - allowed_makers:
+        return True
+    lowered = phrased.casefold()
+    for result in results:
+        name = str(result.get("name") or "")
+        data = result.get("data") or {}
+        if name == "category_ranking":
+            top = str(data.get("top_code") or facts.get("top_code") or "")
+            if top and not _refers_to(lowered, top, facts):
+                return True
+        if name == "manufacturer_ranking":
+            makers = list(data.get("manufacturers") or facts.get("manufacturers") or [])
+            top = str((makers[0] or {}).get("name") or "") if makers else ""
+            if top and top.casefold() not in lowered:
+                return True
+    return False
+
+
+def _codes_in(value: Any) -> set[str]:
+    return {token.casefold() for token in _INV_CODE.findall(_text_of(value))}
+
+
+def _makers_in(results: list[dict[str, Any]]) -> set[str]:
+    found: set[str] = set()
+    for result in results:
+        data = result.get("data") or {}
+        for row in data.get("manufacturers") or []:
+            name = str(row.get("name") or "").strip()
+            if name:
+                found.add(name.casefold())
+        name = str(data.get("manufacturer") or "").strip()
+        if name:
+            found.add(name.casefold())
+    return found
+
+
+def _makers_mentioned(text: str, facts: dict[str, Any]) -> set[str]:
+    lowered = str(text or "").casefold()
+    found: set[str] = set()
+    for row in facts.get("manufacturers") or []:
+        name = str(row.get("name") or "").strip()
+        if name and name.casefold() in lowered:
+            found.add(name.casefold())
+    return found
+
+
+def _refers_to(lowered: str, code: str, facts: dict[str, Any]) -> bool:
+    token = str(code or "").casefold()
+    if token and token in lowered:
+        return True
+    for row in facts.get("categories") or []:
+        if str(row.get("code") or "").casefold() != token:
+            continue
+        plain = str(row.get("plain") or "").casefold()
+        if plain and plain in lowered:
+            return True
+        core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
+        if len(core) > 8 and core in lowered:
+            return True
+    return False
+
+
+def _text_of(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return " ".join(_text_of(child) for child in value.values())
+    if isinstance(value, list):
+        return " ".join(_text_of(child) for child in value)
+    return ""
 
 
 def _number_tokens(value: Any) -> set[str]:
