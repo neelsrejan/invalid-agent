@@ -85,12 +85,14 @@ def explore_facts(
     product_code: str = "",
     device: str = "",
     estimable: bool = True,
+    whole: bool = False,
 ) -> dict[str, Any]:
     """Facts the agent may say for this week. Later rows are not in the counts."""
+    from invalid_agent.ui.audit import attach
     from invalid_agent.ui.story import slice_through_story_week
 
     current = min(4, max(1, int(week)))
-    visible = slice_through_story_week(frame, current)
+    visible = frame if whole else slice_through_story_week(frame, current)
     categories = category_ranking(visible)
     makers = manufacturer_ranking(visible)
     total = report_total(visible)
@@ -110,15 +112,37 @@ def explore_facts(
         "device": str(device or "").strip() or "the device",
         "estimable": bool(estimable),
         "noun": "runs" if estimable else "complaints",
-        "change": week_over_week(frame, current),
-        "category_sentence": _category_sentence(current, top, invalid),
+        "whole": whole,
+        "change": None if whole else week_over_week(frame, current),
+        "category_sentence": _category_sentence(current, top, invalid, whole=whole),
         "rows": _slim_rows(visible),
+        **_audit_for_week(attach(visible), current, whole),
     }
 
 
-def _category_sentence(week: int, top: dict[str, Any], invalid: int) -> str:
+_AUDIT_FROM_WEEK = {"cause_sets": 2, "issues": 3, "closeouts": 4}
+
+
+def _audit_for_week(audit: dict[str, Any], week: int, whole: bool) -> dict[str, Any]:
+    """The JJE file is whole every week, but a later week's finding is not said early.
+
+    Requests and issues stay on ``_held`` so leaving a week can still log its tickets.
+    """
+    held = {"requests": list(audit.get("requests") or []), "issues": list(audit.get("issues") or [])}
+    if not whole:
+        return {**audit, "_held": held}
+    shown = {key: ([] if week < _AUDIT_FROM_WEEK.get(key, 1) else value) for key, value in audit.items()}
+    shown["_held"] = held
+    return shown
+
+
+def _category_sentence(week: int, top: dict[str, Any], invalid: int, whole: bool = False) -> str:
     if not top:
+        if whole:
+            return "This file has no invalid categories."
         return f"As of week {week}, there are no invalid categories so far."
+    if whole:
+        return f"The biggest invalid category is {top['plain']} ({int(top['count'])} of {int(invalid)})."
     return (
         f"As of week {week}, the biggest invalid category so far is {top['plain']} "
         f"({int(top['count'])} of {int(invalid)})."
@@ -130,6 +154,20 @@ def match_intent(text: str) -> str | None:
     lowered = " ".join(str(text or "").casefold().split())
     if not lowered:
         return None
+    if re.search(r"over 1|above 1|too few|which companies", lowered):
+        return "threshold"
+    if re.search(r"root cause|fishbone|co-reported|co reported|testimonial", lowered):
+        return "issue"
+    if re.search(r"\bcapa\b|projected|plan get|plan gets", lowered):
+        return "outlook"
+    if re.search(r"under 1|below 1", lowered) and re.search(
+        r"cause|fix|bring|company|roche|siemens|abbott|beckman", lowered
+    ):
+        return "causes"
+    if re.search(r"biggest invalid|invalid categor", lowered) and re.search(
+        r"\bfor\b|roche|siemens|abbott|beckman|ortho|binding", lowered
+    ):
+        return "causes"
     if re.search(r"\bmanufactur", lowered) or "who report" in lowered:
         return "manufacturers"
     if re.search(r"\bcategor(?:y|ies)\b|\binvalid types?\b|\b(?:highest to lowest|high to low|ranked)\b", lowered):
@@ -163,13 +201,16 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
             return sentence
         if facts:
             return _total_answer(facts)
-        return capabilities_menu(week)
+        return capabilities_menu(week, whole=bool(facts.get("whole")))
     if intent == "direction":
         sentence = str(view.get("direction_sentence") or "").strip()
-        prefix = f"As of week {week} there is no earlier week to compare. " if week < 2 else ""
+        if facts.get("whole"):
+            prefix = ""
+        else:
+            prefix = f"As of week {week} there is no earlier week to compare. " if week < 2 else ""
         if sentence:
             return (prefix + sentence).strip()
-        return capabilities_menu(week)
+        return capabilities_menu(week, whole=bool(facts.get("whole")))
     if not facts or "total" not in facts:
         return counts_did_not_load()
     if intent == "total":
@@ -180,10 +221,15 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
         return _maker_answer(facts)
     if intent == "wow":
         return _change_answer(facts)
-    return capabilities_menu(week)
+    return capabilities_menu(week, whole=bool(facts.get("whole")))
 
 
-def capabilities_menu(week: int) -> str:
+def capabilities_menu(week: int, whole: bool = False) -> str:
+    if whole:
+        return (
+            "I can look up how many complaints are in this file, "
+            "which companies are over 1%, and which have too few reports to judge."
+        )
     return (
         f"I can look up, as of week {int(week)}, how many complaints are in the data so far, "
         "which invalid categories rank highest to lowest, who the main manufacturer is, "
@@ -201,6 +247,8 @@ def _total_answer(facts: dict[str, Any]) -> str:
     invalid = int(facts["invalid_total"])
     noun = str(facts.get("noun") or "reports")
     share = format_percent(float(facts.get("invalid_share") or 0.0))
+    if facts.get("whole"):
+        return f"This file has {total} {noun}. {invalid} of them are an invalid type ({share})."
     return (
         f"As of week {week} there are {total} {noun} so far. "
         f"{invalid} of them are an invalid type ({share})."
@@ -211,10 +259,14 @@ def _category_answer(facts: dict[str, Any]) -> str:
     week = int(facts["week"])
     rows = list(facts.get("categories") or [])
     if not rows:
+        if facts.get("whole"):
+            return "This file has no invalid categories."
         return f"As of week {week}, there are no invalid categories so far."
     listed = "; ".join(
         f"{row['plain']} {int(row['count'])} ({format_percent(float(row['share']))})" for row in rows
     )
+    if facts.get("whole"):
+        return f"Invalid categories from highest to lowest: {listed}."
     return f"As of week {week}, invalid categories from highest to lowest: {listed}."
 
 
@@ -228,13 +280,17 @@ def _maker_answer(facts: dict[str, Any]) -> str:
     listed = ", ".join(
         f"{row['name']} {int(row['count'])} ({format_percent(float(row['share']))})" for row in rows[:3]
     )
+    if facts.get("whole"):
+        return f"Manufacturers with the most reports: {listed}."
     return f"As of week {week}, manufacturers with the most reports so far: {listed}."
 
 
 def _change_answer(facts: dict[str, Any]) -> str:
     week = int(facts["week"])
     change = facts.get("change")
-    if not change:
+    if facts.get("whole") or not change:
+        if facts.get("whole"):
+            return "The whole file is in hand. There is no earlier slice to compare."
         return f"As of week {week} there is no earlier week to compare. New data arrives as we go week by week."
     added = int(change["reports_now"]) - int(change["reports_then"])
     return (
@@ -262,7 +318,7 @@ def _with_lead(text: str, facts: dict[str, Any], intent: str) -> str:
     plain = str(facts.get("top_plain") or "").strip()
     if not plain:
         return text
-    lead = f"{plain[:1].upper()}{plain[1:]} is the biggest category so far."
+    lead = f"{plain[:1].upper()}{plain[1:]} is the biggest category{'' if facts.get('whole') else ' so far'}."
     if facts.get("manufacturers"):
         lead += " Want to see who reports it most?"
     return f"{text} {lead}"
@@ -373,6 +429,27 @@ def tool_specs() -> list[dict[str, Any]]:
             "description": "Count reports for one manufacturer or one invalid category code.",
             "parameters": filtered,
         },
+        {"name": "company_shares", "description": "List each company's reports, invalids, and share.", "parameters": empty},
+        {"name": "threshold_flags", "description": "List companies over 1% and companies with too few reports.", "parameters": empty},
+        {
+            "name": "company_causes",
+            "description": "Pareto and the smallest cause set that brings one company under 1%.",
+            "parameters": {
+                "type": "object",
+                "properties": {"company": {"type": "string"}},
+                "additionalProperties": False,
+            },
+        },
+        {
+            "name": "issue_response",
+            "description": "Simulated company note, ticket, and likely cause branch for one issue.",
+            "parameters": {
+                "type": "object",
+                "properties": {"company": {"type": "string"}, "category": {"type": "string"}},
+                "additionalProperties": False,
+            },
+        },
+        {"name": "capa_outlook", "description": "Projected share after the cause set, against the 1% line.", "parameters": empty},
     ]
 
 
@@ -403,6 +480,16 @@ def run_tool(name: str, arguments: dict[str, Any] | None, facts: dict[str, Any])
         data = {"week": facts["week"], "change": facts.get("change")}
     elif name == "filtered_count":
         data = _filtered_data(facts, args)
+    elif name == "company_shares":
+        data = {"companies": facts.get("companies") or []}
+    elif name == "threshold_flags":
+        data = {"flagged": facts.get("flagged") or [], "small": facts.get("small") or []}
+    elif name == "company_causes":
+        data = _cause_payload(facts, args)
+    elif name == "issue_response":
+        data = _issue_payload(facts, args)
+    elif name == "capa_outlook":
+        data = {"closeouts": facts.get("closeouts") or []}
     else:
         raise KeyError(name)
     return {"name": name, "data": data}
@@ -447,9 +534,20 @@ def _answer_router(text: str, facts: dict[str, Any], view: dict[str, Any]) -> st
     if chosen:
         return _sentence_for(run_tool("filtered_count", chosen, facts), facts, view)
     intent = match_intent(text)
+    if intent == "threshold":
+        return _sentence_for(run_tool("threshold_flags", {}, facts), facts, view)
+    if intent == "causes":
+        return _sentence_for(run_tool("company_causes", {"company": _named_company(text, facts)}, facts), facts, view)
+    if intent == "issue":
+        return _sentence_for(run_tool("issue_response", {"company": _named_company(text, facts)}, facts), facts, view)
+    if intent == "outlook":
+        return _sentence_for(run_tool("capa_outlook", {}, facts), facts, view)
     if not intent:
-        return capabilities_menu(int(facts["week"]))
+        return capabilities_menu(int(facts["week"]), whole=bool(facts.get("whole")))
     return answer_for(intent, view)
+
+
+_PER_COMPANY_TOOLS = frozenset({"company_shares", "threshold_flags", "capa_outlook"})
 
 
 def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], client: ToolCaller) -> str:
@@ -468,7 +566,9 @@ def _answer_with_client(text: str, facts: dict[str, Any], view: dict[str, Any], 
             return ""
     template = " ".join(_sentence_for(result, facts, view) for result in results).strip()
     if not template:
-        return capabilities_menu(int(facts["week"]))
+        return capabilities_menu(int(facts["week"]), whole=bool(facts.get("whole")))
+    if any(str(result.get("name") or "") in _PER_COMPANY_TOOLS for result in results):
+        return template
     try:
         phrased = str(client.phrase(text, results) or "").strip()
     except Exception:
@@ -534,11 +634,122 @@ def _sentence_for(result: dict[str, Any], facts: dict[str, Any], view: dict[str,
         if not data.get("loaded"):
             return counts_did_not_load()
         who = str(data.get("manufacturer") or data.get("category") or "that filter")
+        if facts.get("whole"):
+            return f"{who} has {int(data['count'])} reports in this file. {int(data['invalid'])} of them are an invalid type."
         return (
             f"As of week {int(data.get('week') or facts['week'])}, {who} has {int(data['count'])} reports so far. "
             f"{int(data['invalid'])} of them are an invalid type."
         )
+    if name == "company_shares":
+        return _company_sentence(facts.get("companies") or [])
+    if name == "threshold_flags":
+        return _threshold_sentence(facts)
+    if name == "company_causes":
+        return _cause_sentence(result.get("data") or {})
+    if name == "issue_response":
+        return _issue_sentence(result.get("data") or {})
+    if name == "capa_outlook":
+        return _capa_sentence(facts.get("closeouts") or [])
     return ""
+
+
+def _named_company(text: str, facts: dict[str, Any]) -> str:
+    lowered = " ".join(str(text or "").casefold().split())
+    for row in facts.get("companies") or []:
+        name = str(row.get("name") or "")
+        if name and name.casefold() in lowered:
+            return name
+    return ""
+
+
+def _cause_payload(facts: dict[str, Any], args: dict[str, Any]) -> dict[str, Any]:
+    wanted = short_company(str(args.get("company") or ""), facts)
+    bundles = facts.get("cause_sets") or []
+    if wanted:
+        for bundle in bundles:
+            if str(bundle.get("name") or "").casefold() == wanted.casefold():
+                return bundle
+    return {"name": wanted, "causes": [], "missing": True}
+
+
+def _issue_payload(facts: dict[str, Any], args: dict[str, Any]) -> dict[str, Any]:
+    wanted = short_company(str(args.get("company") or ""), facts).casefold()
+    category = str(args.get("category") or "").casefold()
+    issues = facts.get("issues") or []
+    for issue in issues:
+        if wanted and str(issue.get("company") or "").casefold() != wanted:
+            continue
+        if category and category not in str(issue.get("code") or "").casefold() and category not in str(issue.get("plain") or "").casefold():
+            continue
+        return issue
+    return {"missing": True, "company": wanted}
+
+
+def short_company(name: str, facts: dict[str, Any]) -> str:
+    from invalid_agent.ui.audit import short_name
+
+    if not name:
+        return ""
+    label = short_name(name)
+    for row in facts.get("companies") or []:
+        if str(row.get("name") or "").casefold() == label.casefold():
+            return str(row["name"])
+    return label
+
+
+def _company_sentence(rows: list[dict[str, Any]]) -> str:
+    if not rows:
+        return "The company table did not load."
+    listed = ", ".join(
+        f"{row['name']} {int(row['invalid'])} of {int(row['total'])} ({float(row['share']) * 100:.2f}%)"
+        for row in rows[:8]
+    )
+    return f"Invalid share of field problem reports: {listed}."
+
+
+def _threshold_sentence(facts: dict[str, Any]) -> str:
+    flagged = facts.get("flagged") or []
+    small = facts.get("small") or []
+    if not facts.get("companies"):
+        return "The company table did not load."
+    over = ", ".join(
+        f"{row['name']} {float(row['share']) * 100:.2f}% ({int(row['invalid'])} of {int(row['total'])})"
+        for row in flagged
+    ) or "none"
+    few = ", ".join(f"{row['name']} ({int(row['total'])} reports)" for row in small[:6]) or "none"
+    return f"Over 1% with enough reports: {over}. Too few reports to judge: {few}."
+
+
+def _cause_sentence(data: dict[str, Any]) -> str:
+    if data.get("missing") or not data.get("causes"):
+        name = data.get("name") or "That company"
+        return f"{name} has no cause set on this page."
+    if data.get("tied"):
+        causes = " or ".join(f"{code} (tied at {int(data.get('tie_count') or 0)})" for code in data["tied"])
+    else:
+        causes = ", ".join(f"{cause['code']} ({int(cause['count'])})" for cause in data["causes"])
+    projected = float(data.get("projected") or 0.0) * 100
+    return (
+        f"{data['name']}: the smallest cause set that gets under 1% is {causes}. "
+        f"The projected invalid share of field problem reports is {projected:.2f}%."
+    )
+
+
+def _issue_sentence(data: dict[str, Any]) -> str:
+    if data.get("missing") or not data.get("testimonial"):
+        return "That issue is not on this page."
+    others = ", ".join(data.get("co_reported") or []) or "no other label"
+    return f"{data['testimonial']} Co-reported labels: {others}. Likely branch: {data['branch']}."
+
+
+def _capa_sentence(rows: list[dict[str, Any]]) -> str:
+    if not rows:
+        return "No close-out is on this page."
+    parts = [
+        f"{row['company']} moves from {float(row['share']) * 100:.2f}% to {float(row['projected']) * 100:.2f}%"
+        for row in rows
+    ]
+    return "Projected invalid share of field problem reports after the fix: " + "; ".join(parts) + "."
 
 
 def _unknown_number(phrased: str, results: list[dict[str, Any]], template: str) -> bool:
@@ -563,6 +774,8 @@ def _unknown_label(
     allowed_makers = _makers_in(results) | _makers_mentioned(template, facts)
     if _makers_mentioned(phrased, facts) - allowed_makers:
         return True
+    if _companies_mentioned(phrased, facts) - (_companies_mentioned(template, facts) | _companies_mentioned(_text_of(results), facts)):
+        return True
     lowered = phrased.casefold()
     for result in results:
         name = str(result.get("name") or "")
@@ -571,6 +784,15 @@ def _unknown_label(
             top = str(data.get("top_code") or facts.get("top_code") or "")
             if top and not _refers_to(lowered, top, facts):
                 return True
+        if name in {"threshold_flags", "capa_outlook"}:
+            rows = data.get("flagged") if name == "threshold_flags" else data.get("closeouts")
+            for row in rows or []:
+                label = str(row.get("name") or row.get("company") or "").casefold()
+                if label and label not in lowered:
+                    return True
+            if name == "capa_outlook" and re.search(r"\b(?:stays|remains|still)\b", lowered):
+                if all(row.get("under") for row in rows or []):
+                    return True
         if name == "manufacturer_ranking":
             makers = list(data.get("manufacturers") or facts.get("manufacturers") or [])
             top = str((makers[0] or {}).get("name") or "") if makers else ""
@@ -594,15 +816,34 @@ def _makers_in(results: list[dict[str, Any]]) -> set[str]:
         name = str(data.get("manufacturer") or "").strip()
         if name:
             found.add(name.casefold())
+        for key in ("companies", "flagged", "small", "closeouts"):
+            for row in data.get(key) or []:
+                label = str(row.get("name") or row.get("company") or "").strip()
+                if label:
+                    found.add(label.casefold())
+        label = str(data.get("company") or data.get("name") or "").strip()
+        if label and not data.get("missing"):
+            found.add(label.casefold())
+    return found
+
+
+def _companies_mentioned(text: str, facts: dict[str, Any]) -> set[str]:
+    lowered = str(text or "").casefold()
+    found: set[str] = set()
+    for row in facts.get("companies") or []:
+        name = str(row.get("name") or "").strip().casefold()
+        if name and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", lowered):
+            found.add(name)
     return found
 
 
 def _makers_mentioned(text: str, facts: dict[str, Any]) -> set[str]:
     lowered = str(text or "").casefold()
     found: set[str] = set()
-    for row in facts.get("manufacturers") or []:
+    rows = list(facts.get("manufacturers") or []) + list(facts.get("companies") or [])
+    for row in rows:
         name = str(row.get("name") or "").strip()
-        if name and name.casefold() in lowered:
+        if name and re.search(r"\b" + re.escape(name.casefold()) + r"\b", lowered):
             found.add(name.casefold())
     return found
 

@@ -1,6 +1,6 @@
 # invalid-agent
 
-Field-quality investigation for a program manager's portfolio. The promise is still validity of at least 98%, so the invalid rate must stay at or below 2% (`SPEC_INVALID_RATE` in `config.py`). Invalid Bot runs the weekly loop: triage, plan, root-cause analysis, status, through weeks 0–4. Week 4 writes a fishbone, 5 Whys, an 8D/CAPA record, and a seven-slide exec deck.
+Field-quality investigation for a program manager's portfolio. Invalid Triage Bot audits the invalid share of field problem reports for the JJE product code in four guided weeks: company table, causes, simulated company responses, and close-out. Numbers come from Python, not from a model.
 
 The public demo reads a hosted Postgres table of openFDA device-event (MAUDE) reports for two IVD product codes. Synthetic scenarios remain the CI fallback. They are not the public demo.
 
@@ -25,15 +25,14 @@ Counted from public openFDA `count=` queries on 2026-11-18. Those calls chose th
 
 | Case | Code | Window | What the counts showed |
 |---|---|---|---|
-| `openfda_ooi` | OOI | 2022-01-01 to 2024-12-31 | About 1,422 reports. Multiplex / nucleic-acid amplification. Dominant labels were false positive and false negative, which are not invalids. |
 | `openfda_jje` | JJE | 2024-01-01 to 2024-12-31 | 4,221 reports. Clinical chemistry analyzers. Dominant labels were high and low test results, which are not invalids. |
 
 Invalid types, in priority order when one report has several:
 
 | Code | Meaning | Example labels |
 |---|---|---|
-| INV-NOR | No usable result | Unable to Obtain Readings, Failure to Run, No Device Output |
-| INV-SW | Software abort | Computer Software Problem, Application Program Problem |
+| INV-NOR | No usable result | Unable to Obtain Readings, Failure to Obtain Sample, Failure to Run, No Device Output |
+| INV-SW | Software abort | Computer Software Problem, Program or Algorithm Execution Problem, Program or Algorithm Execution Failure |
 | INV-CAL | Calibration | Calibration Problem, Failure to Calibrate |
 | INV-MECH | Mechanical | Mechanical Problem |
 | INV-USR | Use | Improper or Incorrect Procedure or Method, Human-Device Interface Problem |
@@ -44,7 +43,7 @@ Manufacturer names come straight from the public openFDA records. They are upper
 
 ## Call budget
 
-Page size is 1,000, the openFDA maximum. Planning totals imply about 2 pages for OOI and 5 for JJE, about 7 calls. `MAX_API_CALLS` is 40. The run stops at the cap instead of paging into the thousands. Pages use `skip`, and a `Link` header with `search_after` is followed when openFDA sends one. Skip above 25,000 aborts with a message to narrow the window.
+Page size is 1,000, the openFDA maximum. The JJE window is about 5 pages. `MAX_API_CALLS` is 40. The run stops at the cap instead of paging into the thousands. Pages use `skip`, and a `Link` header with `search_after` is followed when openFDA sends one. Skip above 25,000 aborts with a message to narrow the window.
 
 Each call is printed as `openFDA call N/40` without the key. The cache is `data/cache/openfda/` (gitignored). A complete cache makes the next run, the tests, and the dashboard use zero API calls. `--refresh` is the only flag that calls again. Narratives, patient blocks, and street addresses are dropped before the cache is written.
 
@@ -79,7 +78,7 @@ python -m invalid_agent.graph --scenario bad_lot --week 4
 
 Week 4 writes `out/exec_deck.pptx` and `out/closeout.md`. With no secrets, `streamlit run streamlit_app.py` is the CI fallback and says so on the banner. The public demo is the hosted app after the owner checklist below.
 
-The page opens on Week 1 of a four-week story. Each week is six parts: the complaint, the numbers, the charts, what gets logged, the root-cause notes, and a wrap-up that writes the recommendation in full. Next and Back move one part at a time. Week 2 unlocks only after the week-1 wrap-up, and the same is true for weeks 3 and 4. There is no week switcher. Each week uses a longer slice of the file's dates: week 1 is the first quarter, week 4 is the whole file. A talk-back box sits on every part. The reader types a question or an insight. Python scores it against facts already on that part. A claim about the charts before the charts part gets "NOT YET" and is not logged. A confirmed insight is "Your ticket 1", then "Your ticket 2", under "Week N insights", and that ticket carries into the next week. A question is answered and is not logged. Plan tickets stay INV-1 onward. **Use fixed wording** keeps the plain reply. With it off, Groq may only rephrase that reply. If the model is missing or adds a number, the plain reply stays. The call chain is in `docs/ui/LOGIC_TRACE.md`.
+The guided page is the JJE chemistry-analyzer audit. The whole 2024 file is in hand from week 1. There is no weekly drip and no parts. Week 1 is the company table and the 1% line. Week 2 is the biggest problems first and the smallest cause set that gets each flagged company under 1%. Week 3 is a simulated company note and a cause diagram. Week 4 is the simulated close-out and the projected share. Next stays off until the reader states that week's goal or presses Show me. A question is answered and does not unlock Next. Python computes every number. Groq may only choose a tool and phrase the sentence. A number, code, or manufacturer that was not in the tool output is dropped and the template is used. A tool call waits 8 seconds, then the wording router answers. The call chain is in `docs/ui/LOGIC_TRACE.md`.
 
 ```bash
 python evals/run_eval.py --backend deterministic
@@ -136,7 +135,7 @@ Do these in order. The agent cannot create the accounts. Nothing below is a paid
 
    That command searches first and creates issues only when the case label is absent. A second run does not post. Issues are labeled `openfda` or `simulation`. The public page only reads and links those issues. A visitor cannot create one. Invite the reader to the free site (the free plan is not a public anonymous board).
 7. **Streamlit Community Cloud.** Sign in at https://share.streamlit.io with GitHub. Deploy this repo. Main file: `streamlit_app.py`. Paste `.streamlit/secrets.toml.example` into the secrets editor with the real values: `DATA_BACKEND=openfda`, `LLM_BACKEND=groq`, `GROQ_API_KEY`, `GROQ_MODEL`, `DATABASE_URL_READONLY`, and the three Jira secrets. Do not paste `OPENFDA_API_KEY` or the admin `DATABASE_URL`. Leave `MANUFACTURER_DISPLAY=real` so the page shows the firm names from the public reports. Set it to `anonymized` only to print Manufacturer A/B/C.
-8. **Confirm.** Open the public URL. The banner must say the rows are from MAUDE (the FDA's public database of device problem reports) and that we cannot measure the 2% promise from that file. On week 1, pick OOI (machines that run many nucleic-acid tests at once) and walk Next through the wrap-up, then week 2, week 3, and week 4. Do the same for JJE (clinical chemistry analyzers). Ask "Why is the invalid rate going up?" on the charts part. The reply must use the same week-count as the chart. The logged part lists tickets starting at INV-1.
+8. **Confirm.** Open the public URL. Press Reboot app once. Stay on the JJE chemistry-analyzer case. Week 1 should show 4,221 reports. Roche, Abbott Labs, and Siemens are over 1%. Ortho and The Binding Site are too few reports to judge. Ask `which companies are over 1%` and `how many complaints are in the dataset` with no question mark. Next stays off. Then type `Roche, Abbott Labs, and Siemens are over 1%.` Next turns on.
 
 Local Ollama, after `ollama pull llama3.1:8b`:
 

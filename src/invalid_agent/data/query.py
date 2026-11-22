@@ -22,23 +22,31 @@ _FORBIDDEN = re.compile(
 
 CASE_ROWS_SQL = """
 SELECT
-    mdr_report_key,
-    product_code,
-    date_received,
-    event_type,
-    manufacturer_name,
-    brand_name,
-    generic_name,
-    model_number,
-    catalog_number,
-    lot_number,
-    device_operator,
-    is_invalid_type,
-    invalid_code
-FROM maude_report
-WHERE product_code = %(product_code)s
-  AND date_received >= %(date_from)s
-  AND date_received <= %(date_to)s
+    r.mdr_report_key,
+    r.product_code,
+    r.date_received,
+    r.event_type,
+    r.manufacturer_name,
+    r.brand_name,
+    r.generic_name,
+    r.model_number,
+    r.catalog_number,
+    r.lot_number,
+    r.device_operator,
+    r.is_invalid_type,
+    r.invalid_code,
+    COALESCE(problems.labels, ARRAY[]::text[]) AS product_problems
+FROM maude_report r
+LEFT JOIN (
+    SELECT mdr_report_key, product_code, array_agg(product_problem ORDER BY product_problem) AS labels
+    FROM maude_problem
+    GROUP BY mdr_report_key, product_code
+) problems
+  ON problems.mdr_report_key = r.mdr_report_key
+ AND problems.product_code = r.product_code
+WHERE r.product_code = %(product_code)s
+  AND r.date_received >= %(date_from)s
+  AND r.date_received <= %(date_to)s
 """
 
 TEMPLATES: dict[str, dict[str, Any]] = {

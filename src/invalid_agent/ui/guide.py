@@ -3,8 +3,7 @@
 Plain-language copy lives here so a test can lock the order without
 starting Streamlit. Nothing in this module computes a rate.
 
-The walk is four weeks. Each week has the same six parts, in order.
-The page does not offer a way to jump to a later week.
+The walk is four weeks. Each week is one page. The page does not offer a way to jump ahead.
 """
 
 from __future__ import annotations
@@ -29,62 +28,40 @@ class GuideStep:
 
 GUIDE_STEPS: tuple[GuideStep, ...] = (
     GuideStep(
-        id="complaint",
-        short="Complaint",
-        title="Complaint understanding",
-        doing="The agent answers questions about the reports in hand as of this week.",
-        why="An invalid result is one the device could not turn into a usable answer.",
-        look="Read the case and the device, then ask the agent what the reports show so far.",
-        next_label="See this week's numbers",
-        needs_case=True,
+        id="eda",
+        short="Companies",
+        title="Who is over 1%",
+        doing="The agent answers from the full chemistry-analyzer file. Python computes every share.",
+        why="Invalid share of field problem reports is invalid rows divided by total rows. It is not a run-level rate.",
+        look="Read the first 10 rows, the company table, and the 1% line. Grey marks are too few reports to judge.",
+        next_label="See the returned complaint detail",
     ),
     GuideStep(
-        id="data",
-        short="Data",
-        title="This week's numbers",
-        doing="Python counts the reports in hand as of this week. The model does not do the math.",
-        why="The count is only what has arrived as of this week.",
-        look="Read the share and the count. Ask how the categories rank.",
-        next_label="See the charts",
+        id="pareto",
+        short="Causes",
+        title="Causes that get under 1%",
+        doing="The agent ranks the biggest problems first for each flagged company and picks the smallest set that gets under 1%.",
+        why="The complaint detail is back. One cause may not be enough.",
+        look="Read each company's ranking and the cause set under it.",
+        next_label="See the company responses",
     ),
     GuideStep(
-        id="charts",
-        short="Charts",
-        title="The charts",
-        doing="Python draws the weekly rate and the ranking of invalid types from the same counts as the number screen.",
-        why="A picture should match the sentence. Both use one count of weeks that sit far above the usual rate.",
-        look="The red marks, the biggest bars, and the leading group all come from this week's slice.",
-        next_label="See what gets logged",
-        question_ids=("ooi_share", "jje_weeks"),
+        id="responses",
+        short="Responses",
+        title="What the companies say",
+        doing="The agent reads the simulated company note, the ticket, and the cause diagram.",
+        why="Each note is simulated and labeled. It was not sent.",
+        look="The marked branch on the cause diagram is the one the note points at.",
+        next_label="See the close-out",
     ),
     GuideStep(
-        id="logged",
-        short="Logged",
-        title="What gets logged",
-        doing="The agent lists the tickets for this week. A confirmed insight becomes the next ticket.",
-        why="A finding that is not written down gets lost before the next week.",
-        look="Plan tickets start at INV-1. Your own findings are Your ticket 1, then Your ticket 2.",
-        next_label="Read the notes",
-    ),
-    GuideStep(
-        id="notes",
-        short="Notes",
-        title="Root-cause notes",
-        doing="The agent writes three notes from the same counts: customer, team, and leadership.",
-        why="The lab can hear the rate. The team can hear the leading group. Leadership can hear the cost.",
-        look="Pick who the note is for. The cause sentence stays the same.",
-        next_label="Read the week wrap-up",
-    ),
-    GuideStep(
-        id="wrap",
-        short="Wrap-up",
-        title="Week wrap-up",
-        doing="The agent writes this week's recommendation in full, including the what-if on the same file.",
-        why="The pitch is part of every week. It is not a button that jumps to the last week.",
-        look="Read what came in, what the counts say, and what we recommend. Then the next week unlocks.",
-        next_label="Start the next week",
-        question_ids=("ooi_share", "jje_manufacturer", "ooi_types", "jje_weeks"),
-        match_case=False,
+        id="closeout",
+        short="Close-out",
+        title="Does the plan get under 1%",
+        doing="The agent states the simulated root cause, the corrective and preventive action, and the projected share.",
+        why="The projection is what remains after the cause set is removed. It is not observed follow-up.",
+        look="Compare each projected share with the 1% line.",
+        next_label="Finish the story",
     ),
 )
 
@@ -97,7 +74,8 @@ AUDIENCES: tuple[tuple[str, str], ...] = (
 )
 
 def progress_label(week: int, beat: int) -> str:
-    return f"Week {int(week)} of 4 — Part {int(beat) + 1} of {len(GUIDE_STEPS)}"
+    del beat
+    return f"Week {int(week)} of 4"
 
 
 def questions_for(
