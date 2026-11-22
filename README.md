@@ -1,6 +1,6 @@
 # invalid-agent
 
-Field-quality investigation for a program manager's portfolio. The promise is still validity of at least 98%, so the invalid rate must stay at or below 2% (`SPEC_INVALID_RATE` in `config.py`). Invalid Bot runs the weekly loop: triage, plan, root-cause analysis, status, through weeks 0–4. Week 4 writes a fishbone, 5 Whys, an 8D/CAPA record, and a seven-slide exec deck.
+Field-quality investigation for a program manager's portfolio. Invalid Triage Bot audits the invalid share of field problem reports for the JJE product code in four guided weeks: company table, causes, simulated company responses, and close-out. Numbers come from Python, not from a model.
 
 The public demo reads a hosted Postgres table of openFDA device-event (MAUDE) reports for two IVD product codes. Synthetic scenarios remain the CI fallback. They are not the public demo.
 
@@ -25,7 +25,6 @@ Counted from public openFDA `count=` queries on 2026-11-18. Those calls chose th
 
 | Case | Code | Window | What the counts showed |
 |---|---|---|---|
-| `openfda_ooi` | OOI | 2022-01-01 to 2024-12-31 | About 1,422 reports. Multiplex / nucleic-acid amplification. Dominant labels were false positive and false negative, which are not invalids. |
 | `openfda_jje` | JJE | 2024-01-01 to 2024-12-31 | 4,221 reports. Clinical chemistry analyzers. Dominant labels were high and low test results, which are not invalids. |
 
 Invalid types, in priority order when one report has several:
@@ -33,7 +32,7 @@ Invalid types, in priority order when one report has several:
 | Code | Meaning | Example labels |
 |---|---|---|
 | INV-NOR | No usable result | Unable to Obtain Readings, Failure to Obtain Sample, Failure to Run, No Device Output |
-| INV-SW | Software abort | Computer Software Problem, Program or Algorithm Execution Problem |
+| INV-SW | Software abort | Computer Software Problem, Program or Algorithm Execution Problem, Program or Algorithm Execution Failure |
 | INV-CAL | Calibration | Calibration Problem, Failure to Calibrate |
 | INV-MECH | Mechanical | Mechanical Problem |
 | INV-USR | Use | Improper or Incorrect Procedure or Method, Human-Device Interface Problem |
@@ -44,7 +43,7 @@ Manufacturer names come straight from the public openFDA records. They are upper
 
 ## Call budget
 
-Page size is 1,000, the openFDA maximum. Planning totals imply about 2 pages for OOI and 5 for JJE, about 7 calls. `MAX_API_CALLS` is 40. The run stops at the cap instead of paging into the thousands. Pages use `skip`, and a `Link` header with `search_after` is followed when openFDA sends one. Skip above 25,000 aborts with a message to narrow the window.
+Page size is 1,000, the openFDA maximum. The JJE window is about 5 pages. `MAX_API_CALLS` is 40. The run stops at the cap instead of paging into the thousands. Pages use `skip`, and a `Link` header with `search_after` is followed when openFDA sends one. Skip above 25,000 aborts with a message to narrow the window.
 
 Each call is printed as `openFDA call N/40` without the key. The cache is `data/cache/openfda/` (gitignored). A complete cache makes the next run, the tests, and the dashboard use zero API calls. `--refresh` is the only flag that calls again. Narratives, patient blocks, and street addresses are dropped before the cache is written.
 

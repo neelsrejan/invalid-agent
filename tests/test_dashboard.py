@@ -115,6 +115,46 @@ def test_a_failed_load_does_not_print_the_exception(monkeypatch):
     assert "RuntimeError" not in visible
 
 
+def test_a_question_clears_the_box_and_later_weeks_render(monkeypatch):
+    app = _run_app(monkeypatch)
+    app.session_state["story_week"] = 4
+    app.run()
+    assert not app.exception, app.exception
+    assert "Week 1 of 4" in _visible(app)
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    app = box.set_value("how many complaints are in the dataset").run()
+    button = next(item for item in app.button if item.label == "Tell the agent")
+    button.click()
+    app.run()
+    assert not app.exception, app.exception
+    box = next(item for item in app.text_input if item.label == "Your question or insight")
+    assert not str(getattr(box, "value", "") or "").strip()
+    nxt = next(button for button in app.button if button.key == "next")
+    assert nxt.disabled
+    app = _click_key(app, "show-me")
+    assert _visible(app).count("Insight:") == 1
+    app.session_state["done_parts"] = []
+    app.run()
+    app = _click_key(app, "show-me")
+    assert _visible(app).count("Insight:") == 1
+    for title in (
+        "Causes that get under 1%",
+        "What the companies say",
+        "Does the plan get under 1%",
+    ):
+        app = _click_key(app, "next")
+        visible = _visible(app)
+        assert title in visible
+        assert "Things to notice" in visible
+        assert "Your question or insight" in visible
+        assert "Show me" in visible
+        nxt = next(button for button in app.button if button.key == "next")
+        assert nxt.disabled
+        app = _click_key(app, "show-me")
+        nxt = next(button for button in app.button if button.key == "next")
+        assert not nxt.disabled
+
+
 def test_a_failed_deck_does_not_print_the_exception(monkeypatch):
     def boom(_path, _facts):
         raise RuntimeError("postgres://secret-host/db password=hunter2")

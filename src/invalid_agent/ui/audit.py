@@ -38,7 +38,7 @@ _BRANCH = {
 def short_name(raw: str) -> str:
     text = str(raw or "").upper()
     for needle, label in _SHORT:
-        if needle in text:
+        if re.search(rf"\b{needle}\b", text):
             return label
     cleaned = " ".join(text.split())
     return cleaned.title() if cleaned else "Unreported"
@@ -160,9 +160,22 @@ def cause_set_for(frame: pd.DataFrame, company: str, table: list[dict[str, Any]]
         chosen.append(row)
         removed += int(row["count"])
     projected = ((invalid - removed) / total) if total else 0.0
+    tied: list[str] = []
+    tie_count = 0
+    if chosen:
+        last_count = int(chosen[-1]["count"])
+        peers = [row for row in pareto if int(row["count"]) == last_count]
+        needed = [row for row in chosen if int(row["count"]) == last_count]
+        earlier = [row for row in chosen if int(row["count"]) != last_count]
+        if not earlier and len(needed) == 1 and len(peers) > 1:
+            tied = [str(row["code"]) for row in peers]
+            tie_count = last_count
     return {
         "name": company_row["name"],
         "causes": [{"code": row["code"], "plain": row["plain"], "count": row["count"]} for row in chosen],
+        "pareto": pareto,
+        "tied": tied,
+        "tie_count": tie_count,
         "projected": projected,
         "total": total,
         "invalid": invalid,
@@ -222,11 +235,15 @@ def issues_for(frame: pd.DataFrame, table: list[dict[str, Any]]) -> list[dict[st
     return issues
 
 
+def _plain_core(plain: str) -> str:
+    return re.sub(r"^(?:a|an|the)\s+", "", str(plain or "").split("(")[0].strip())
+
+
 def _testimonial(company: str, cause: dict[str, Any], branch: str, others: list[str]) -> str:
     extra = f" The same reports also carry {others[0]}." if others else ""
     return (
         f"Simulated note from {company}. "
-        f"The {cause['plain']} reports ({int(cause['count'])}) point at the {branch} branch.{extra} "
+        f"The {int(cause['count'])} {cause['code']} reports ({_plain_core(cause['plain'])}) point at the {branch} branch.{extra} "
         "This note was written for the exercise and was not sent."
     )
 
@@ -236,9 +253,7 @@ def closeouts_for(frame: pd.DataFrame, table: list[dict[str, Any]]) -> list[dict
     for company in flagged_companies(table):
         bundle = cause_set_for(frame, company["name"], table)
         causes = ", ".join(cause["code"] for cause in bundle["causes"]) or "no code"
-        branches = ", ".join(
-            _BRANCH.get(cause["code"], "Environment") for cause in bundle["causes"]
-        ) or "Environment"
+        branches = _join(sorted({_BRANCH.get(cause["code"], "Environment") for cause in bundle["causes"]})) or "Environment"
         projected = float(bundle["projected"] or 0.0)
         share = float(company["share"])
         rows.append(
@@ -251,7 +266,7 @@ def closeouts_for(frame: pd.DataFrame, table: list[dict[str, Any]]) -> list[dict
                 "under": projected <= THRESHOLD,
                 "statement": (
                     f"Simulated close-out for {company['name']}. "
-                    f"Root cause: the {branches} branch behind {causes}. "
+                    f"Root cause: the {branches} {'branches' if ' and ' in branches else 'branch'} behind {causes}. "
                     f"Corrective action: fix that failure on the open complaints. "
                     f"Preventive action: add a release check so it cannot ship again. "
                     f"Public statement: {company['name']} will move its invalid share of field problem reports "
@@ -315,8 +330,10 @@ def goal_statement(text: str, view: dict[str, Any], step_id: str) -> tuple[str, 
         return None
     if _ASK.search(str(text or "").casefold()):
         return None
-    lowered = " ".join(str(text or "").casefold().split())
-    if re.search(r"\b(?:not|never|no|without)\b|n't", lowered):
+    lowered = _with_codes(" ".join(str(text or "").casefold().split()))
+    if re.search(r"\b(?:not|never|no|without|except|but|only|unless)\b|n't", lowered):
+        return None
+    if not _numbers_ok(lowered, facts):
         return None
     finding, sentence = show_me_fact(view, step_id)
     if step_id == "eda" and _eda_claim(lowered, facts):
@@ -330,6 +347,65 @@ def goal_statement(text: str, view: dict[str, Any], step_id: str) -> tuple[str, 
     return None
 
 
+_CODE = re.compile(r"\binv-[a-z]+\b")
+_PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent)")
+_N_OF_M = re.compile(r"(\d[\d,]*)\s*(?:of|/|out of)\s*(\d[\d,]*)")
+
+
+def _cause_label(bundle: dict[str, Any]) -> str:
+    tied = [str(code) for code in bundle.get("tied") or []]
+    if len(tied) > 1:
+        return f"{' or '.join(tied)} (tied at {int(bundle.get('tie_count') or 0)})"
+    codes = [str(cause["code"]) for cause in bundle.get("causes") or []]
+    return " and ".join(codes) or "no code"
+
+
+def _with_codes(lowered: str) -> str:
+    """Swap a plain category name for its code so 'no usable result' is not read as a negation."""
+    for code in _BRANCH:
+        plain = code_plain(code).casefold()
+        core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
+        for phrase in (plain, core):
+            if phrase:
+                lowered = lowered.replace(phrase, code.casefold())
+    return re.sub(r"\(\s*(inv-[a-z]+)\s*\)", r"\1", lowered)
+
+
+def _segments(lowered: str, facts: dict[str, Any]) -> dict[str, str]:
+    """Text after each named company, up to the next company name."""
+    hits = []
+    for row in facts.get("companies") or []:
+        name = str(row["name"]).casefold()
+        for match in re.finditer(r"\b" + re.escape(name) + r"\b", lowered):
+            hits.append((match.start(), match.end(), name))
+    hits.sort()
+    out: dict[str, str] = {}
+    for index, (_start, stop, name) in enumerate(hits):
+        nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
+        out[name] = out.get(name, "") + " " + lowered[stop:nxt]
+    return out
+
+
+def _numbers_ok(lowered: str, facts: dict[str, Any]) -> bool:
+    """Every percent must be the 1% line or a share we computed; every N of M must be a real pair."""
+    shares = {"1", "1.0", "1.00"}
+    pairs = set()
+    for row in facts.get("companies") or []:
+        shares |= {f"{row['share'] * 100:.2f}", f"{row['share'] * 100:.1f}"}
+        pairs.add((int(row["invalid"]), int(row["total"])))
+    for bundle in facts.get("cause_sets") or []:
+        if bundle.get("projected") is not None:
+            shares |= {f"{bundle['projected'] * 100:.2f}", f"{bundle['projected'] * 100:.1f}"}
+        for cause in bundle.get("causes") or []:
+            pairs.add((int(cause["count"]), int(bundle["invalid"])))
+    if any(value not in shares for value in _PCT.findall(lowered)):
+        return False
+    for left, right in _N_OF_M.findall(lowered):
+        if (int(left.replace(",", "")), int(right.replace(",", ""))) not in pairs:
+            return False
+    return True
+
+
 def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
     facts = view.get("explore") or {}
     if step_id == "eda":
@@ -339,8 +415,7 @@ def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
     if step_id == "pareto":
         parts = []
         for bundle in facts.get("cause_sets") or []:
-            causes = " and ".join(cause["code"] for cause in bundle["causes"]) or "no code"
-            parts.append(f"{bundle['name']} needs {causes}")
+            parts.append(f"{bundle['name']} needs {_cause_label(bundle)}")
         sentence = f"{_join(parts)} to get under 1%." if parts else "No company is over 1%."
         return "the causes that get each company under 1%", sentence
     if step_id == "responses":
@@ -356,53 +431,71 @@ def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
 
 
 def _eda_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    if "over 1" not in lowered and "above 1" not in lowered:
+    if not re.search(r"\b(?:over|above)\s+1\b", lowered) or re.search(r"\b(?:under|below)\b", lowered):
         return False
-    flagged = [str(row["name"]).casefold() for row in facts.get("flagged") or []]
-    if not flagged or not all(name in lowered for name in flagged):
-        return False
-    for row in facts.get("small") or []:
-        if str(row["name"]).casefold() in lowered:
-            return False
-    return True
+    flagged = {str(row["name"]).casefold() for row in facts.get("flagged") or []}
+    named = set(_segments(lowered, facts))
+    return bool(flagged) and named == flagged
 
 
 def _pareto_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    if "under 1" not in lowered and "below 1" not in lowered:
+    if not re.search(r"\b(?:under|below)\s+1\b", lowered):
         return False
-    bundles = facts.get("cause_sets") or []
-    if not bundles:
+    bundles = {str(bundle["name"]).casefold(): bundle for bundle in facts.get("cause_sets") or []}
+    segments = _segments(lowered, facts)
+    if not bundles or set(segments) != set(bundles):
         return False
-    for bundle in bundles:
-        if str(bundle["name"]).casefold() not in lowered:
-            return False
-        for cause in bundle["causes"]:
-            code = str(cause["code"]).casefold()
-            plain = str(cause["plain"]).casefold()
-            if code not in lowered and plain not in lowered:
-                return False
+    for name, bundle in bundles.items():
+        wanted = {str(cause["code"]).casefold() for cause in bundle["causes"]}
+        tied = {str(code).casefold() for code in bundle.get("tied") or []}
+        said = set(_CODE.findall(segments[name]))
+        if said == wanted:
+            continue
+        if tied and said in [{code} for code in tied]:
+            continue
+        if tied and said == tied and re.search(r"\b(?:tied|or)\b", segments[name]):
+            continue
+        return False
     return True
 
 
 def _response_claim(lowered: str, facts: dict[str, Any]) -> bool:
     issues = facts.get("issues") or []
-    if not issues:
+    segments = _segments(lowered, facts)
+    if not issues or set(segments) != {str(issue["company"]).casefold() for issue in issues}:
         return False
+    branches = "|".join(sorted({name.casefold() for name in _BRANCH.values()} | {"environment"}))
     for issue in issues:
-        if str(issue["company"]).casefold() not in lowered:
+        segment = segments[str(issue["company"]).casefold()]
+        code = str(issue["code"]).casefold()
+        chunk = re.search(re.escape(code) + r"(.*?)(?=\binv-[a-z]+\b|$)", segment)
+        if not chunk:
             return False
-        if str(issue["code"]).casefold() not in lowered and str(issue["plain"]).casefold() not in lowered:
-            return False
-        if str(issue["branch"]).casefold() not in lowered:
+        said = set(re.findall(r"\b(" + branches + r")\b", chunk.group(1)))
+        if said != {str(issue["branch"]).casefold()}:
             return False
     return True
 
 
 def _closeout_claim(lowered: str, facts: dict[str, Any]) -> bool:
     rows = facts.get("closeouts") or []
-    if not rows or "under 1" not in lowered:
+    segments = _segments(lowered, facts)
+    if not rows or set(segments) != {str(row["company"]).casefold() for row in rows}:
         return False
-    return all(str(row["company"]).casefold() in lowered for row in rows)
+    for row in rows:
+        segment = segments[str(row["company"]).casefold()]
+        under = bool(re.search(r"\b(?:under|below)\s+1\b", segment))
+        over = bool(re.search(r"\b(?:over|above|stays)\b", segment))
+        if not under and not over:
+            under = bool(re.search(r"\b(?:under|below)\s+1\b", lowered))
+            over = bool(re.search(r"\b(?:over|above|stays)\b", lowered))
+        if row.get("under") and not (under and not over):
+            return False
+        if not row.get("under") and not (over and not under):
+            return False
+    if re.search(r"\b(?:under|below)\s+1\b", lowered) is None:
+        return False
+    return True
 
 
 def _join(parts: list[str]) -> str:
@@ -424,7 +517,7 @@ def hints_for(step_id: str) -> list[str]:
         ]
     if step_id == "pareto":
         return [
-            "Things to notice: the ranking lists the biggest problems first. The line adds them up.",
+            "Things to notice: the chart ranks the biggest problems first. The line adds them up.",
             "The cause set is the smallest group at the top of that ranking that brings the company under 1%.",
             "Mention to the agent: name the biggest invalid category for one flagged company.",
         ]

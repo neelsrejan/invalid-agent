@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+_LOG = logging.getLogger(__name__)
 
 from invalid_agent.data.mapping import case_by_id
 
@@ -32,29 +36,21 @@ def load_frame(scenario: dict[str, Any]) -> pd.DataFrame:
 
 
 def load_openfda_frame(scenario: dict[str, Any]) -> pd.DataFrame:
-    from invalid_agent.config import load_settings
-    from invalid_agent.data.db import connect, query_url
-    from invalid_agent.data.query import CASE_ROWS_SQL, assert_readonly_sql
-
     case_id = str(scenario.get("id") or "")
     case = case_by_id(case_id)
     product_code = str(scenario.get("product_code") or case["product_code"])
     date_from = str(scenario.get("date_from") or case["date_from"])
     date_to = str(scenario.get("date_to") or case["date_to"])
-    settings = load_settings()
-    public = settings.data_backend == "openfda"
-    url = query_url(settings, public=public)
-    sql = assert_readonly_sql(CASE_ROWS_SQL)
-    conn = connect(url, readonly=True)
     try:
-        cursor = conn.execute(
-            sql,
-            {"product_code": product_code, "date_from": date_from, "date_to": date_to},
+        records = _query_case_rows(product_code, date_from, date_to)
+    except Exception as exc:
+        if not _missing_problem_source(exc):
+            raise
+        _LOG.warning(
+            "MAUDE query has no product_problems; using the cached JJE extract (%s)",
+            type(exc).__name__,
         )
-        columns = [item[0] for item in cursor.description]
-        records = [dict(zip(columns, row)) for row in cursor.fetchall()]
-    finally:
-        conn.close()
+        records = _cached_jje_records()
     if not records:
         raise DataUnavailable(
             f"The MAUDE table has no rows for {product_code} between {date_from} and {date_to}. "
@@ -85,17 +81,21 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
         brand = str(record.get("brand_name") or "").strip() or "UNREPORTED"
         operator = str(record.get("device_operator") or "").strip() or "UNREPORTED"
         catalog = str(record.get("catalog_number") or "").strip() or "UNREPORTED"
-        raw_code = record.get("invalid_code")
-        invalid_code = "" if raw_code is None or (isinstance(raw_code, float) and pd.isna(raw_code)) else str(raw_code).strip()
-        if invalid_code.casefold() == "nan":
-            invalid_code = ""
-        if record.get("is_invalid_type") is None:
+        problems = _problem_values(record.get("product_problems"))
+        if problems:
+            from invalid_agent.data.mapping import primary_invalid_code
+
+            invalid_code = primary_invalid_code(problems)
             is_invalid = bool(invalid_code)
         else:
-            is_invalid = bool(record.get("is_invalid_type"))
-        problems = record.get("product_problems") or []
-        if isinstance(problems, str):
-            problems = [part.strip() for part in problems.split("|") if part.strip()]
+            raw_code = record.get("invalid_code")
+            invalid_code = "" if raw_code is None or (isinstance(raw_code, float) and pd.isna(raw_code)) else str(raw_code).strip()
+            if invalid_code.casefold() == "nan":
+                invalid_code = ""
+            if record.get("is_invalid_type") is None:
+                is_invalid = bool(invalid_code)
+            else:
+                is_invalid = bool(record.get("is_invalid_type"))
         rows.append(
             {
                 "run_id": str(record["mdr_report_key"]),
@@ -134,3 +134,58 @@ def frame_from_reports(records: list[dict[str, Any]], scenario: dict[str, Any]) 
         "Weekly bins use the FDA received date, which is when the report was logged."
     )
     return frame
+
+
+def _query_case_rows(product_code: str, date_from: str, date_to: str) -> list[dict[str, Any]]:
+    from invalid_agent.config import load_settings
+    from invalid_agent.data.db import connect, query_url
+    from invalid_agent.data.query import CASE_ROWS_SQL, assert_readonly_sql
+
+    settings = load_settings()
+    public = settings.data_backend == "openfda"
+    url = query_url(settings, public=public)
+    sql = assert_readonly_sql(CASE_ROWS_SQL)
+    conn = connect(url, readonly=True)
+    try:
+        cursor = conn.execute(
+            sql,
+            {"product_code": product_code, "date_from": date_from, "date_to": date_to},
+        )
+        columns = [item[0] for item in cursor.description]
+        return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+
+def _problem_values(value: Any) -> list[str]:
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return []
+    if isinstance(value, str):
+        text = value.strip()
+        if not text or text.casefold() == "nan":
+            return []
+        return [part.strip() for part in text.split("|") if part.strip()]
+    if isinstance(value, (list, tuple)):
+        return [str(item).strip() for item in value if str(item).strip()]
+    return []
+
+
+def _missing_problem_source(exc: BaseException) -> bool:
+    text = str(exc).casefold()
+    return "product_problems" in text or "maude_problem" in text
+
+
+def _cached_jje_records() -> list[dict[str, Any]]:
+    from invalid_agent.data.cache import read_rows
+
+    cached = read_rows("openfda_jje")
+    if cached:
+        _LOG.warning("cached JJE extract: data/cache/openfda/openfda_jje.jsonl (%s rows)", len(cached))
+        return cached
+    fixture = Path(__file__).resolve().parents[3] / "tests" / "fixtures" / "openfda_jje.csv"
+    if not fixture.is_file():
+        _LOG.warning("cached JJE extract is missing")
+        return []
+    raw = pd.read_csv(fixture, dtype=str).fillna("")
+    _LOG.warning("cached JJE extract: %s (%s rows)", fixture, len(raw))
+    return raw.to_dict(orient="records")

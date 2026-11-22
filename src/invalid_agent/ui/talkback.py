@@ -13,7 +13,7 @@ from invalid_agent.guards.numeric_fidelity import check_narrative
 from invalid_agent.llm import ToolCaller
 from invalid_agent.ui.plain import code_plain, unexplained_jargon
 
-# A claim is graded only against facts on or before the current part.
+# Legacy synthetic walk. The JJE pages use AUDIT_WEEKS instead of these six parts.
 _STEP_ORDER = ("complaint", "data", "charts", "logged", "notes", "wrap", "done")
 LOOKUP_PARTS = frozenset({"complaint", "data"})
 AUDIT_WEEKS = frozenset({"eda", "pareto", "responses", "closeout"})

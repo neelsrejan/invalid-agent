@@ -189,7 +189,11 @@ def build_week_view(scenario: dict[str, Any], frame: pd.DataFrame, story_week: i
         "notes": notes,
         "cost": cost,
         "unit": unit,
-        "window_sentence": _window_sentence(week, whole_file=len(sliced) >= _dated_rows(frame) and week < 4),
+        "window_sentence": (
+            "The whole file is in hand."
+            if whole
+            else _window_sentence(week, whole_file=len(sliced) >= _dated_rows(frame) and week < 4)
+        ),
     }
     from invalid_agent.ui.explore import explore_facts
 

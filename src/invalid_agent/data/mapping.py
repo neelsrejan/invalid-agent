@@ -71,6 +71,7 @@ INVALID_LABELS: dict[str, str] = {
     "computer software in medical device": "INV-SW",
     "program or algorithm problem": "INV-SW",
     "program or algorithm execution problem": "INV-SW",
+    "program or algorithm execution failure": "INV-SW",
     "calibration problem": "INV-CAL",
     "calibration error": "INV-CAL",
     "failure to calibrate": "INV-CAL",

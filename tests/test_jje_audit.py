@@ -46,16 +46,20 @@ def _view(week: int = 1) -> dict:
 def test_label_map_includes_the_missing_phrases():
     assert INVALID_LABELS["program or algorithm execution problem"] == "INV-SW"
     assert INVALID_LABELS["failure to obtain sample"] == "INV-NOR"
+    assert INVALID_LABELS["program or algorithm execution failure"] == "INV-SW"
+    assert primary_invalid_code(["Program or Algorithm Execution Failure"]) == "INV-SW"
 
 
 def test_company_table_and_cause_sets_use_the_recomputed_file():
     frame = _frame()
     table = company_table(frame)
     by_name = {row["name"]: row for row in table}
-    assert by_name["Roche"]["invalid"] == 81 and by_name["Roche"]["total"] == 2250
+    assert by_name["Roche"]["invalid"] == 81 and by_name["Roche"]["total"] == 2249
     assert by_name["Siemens"]["invalid"] == 13 and by_name["Siemens"]["total"] == 485
     assert by_name["Abbott Labs"]["invalid"] == 10 and by_name["Abbott Labs"]["total"] == 748
     assert by_name["Beckman"]["over"] is False and by_name["Beckman"]["enough"] is True
+    assert by_name["Ortho"]["total"] == 64
+    assert by_name["Biomerieux Italia"]["invalid"] == 1
     assert by_name["Ortho"]["note"] == "too few reports to judge"
     assert by_name["The Binding Site"]["total"] == 3
     assert [row["name"] for row in flagged_companies(table)] == ["Roche", "Abbott Labs", "Siemens"]
@@ -89,7 +93,7 @@ def test_neel_phrases_answer_on_every_week_and_do_not_unlock():
 def test_goal_claim_unlocks_and_show_me_logs_the_same_fact():
     expectations = {
         "eda": "Roche, Abbott Labs, and Siemens are over 1%.",
-        "pareto": "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-MECH, and Siemens needs INV-MECH and INV-USR to get under 1%.",
+        "pareto": "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-MECH or INV-SW (tied at 4), and Siemens needs INV-MECH and INV-USR to get under 1%.",
         "responses": "Roche INV-MECH is Machine, Roche INV-NOR is Material, Abbott Labs INV-MECH is Machine, Siemens INV-MECH is Machine, and Siemens INV-USR is Man.",
         "closeout": "Roche gets under 1%, Abbott Labs gets under 1%, and Siemens gets under 1%.",
     }
@@ -102,3 +106,126 @@ def test_goal_claim_unlocks_and_show_me_logs_the_same_fact():
         assert reply["text"].startswith("YEP")
         asked = respond("which companies are over 1%", view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
         assert asked["confirmed"] is False
+
+
+def test_guard_rejects_company_swap_on_new_tools():
+    from invalid_agent.ui import explore
+
+    view = _view(2)
+    facts = view["explore"]
+
+    class Swap:
+        def select_tools(self, text, specs):
+            return [{"name": "threshold_flags", "arguments": {}}]
+
+        def phrase(self, text, results):
+            return "Siemens is at 3.60% (81 of 2249), Roche is at 2.68% (13 of 485), Abbott Labs 1.34% (10 of 748)."
+
+    template = explore._sentence_for(explore.run_tool("threshold_flags", {}, facts), facts, view)
+    assert explore._answer_with_client("x", facts, view, Swap()) == template
+
+    class Foreign:
+        def select_tools(self, text, specs):
+            return [{"name": "company_causes", "arguments": {"company": "Roche"}}]
+
+        def phrase(self, text, results):
+            return "Siemens needs INV-MECH (53) and INV-NOR (15)."
+
+    cause = explore._sentence_for(explore.run_tool("company_causes", {"company": "Roche"}, facts), facts, view)
+    assert explore._answer_with_client("x", facts, view, Foreign()) == cause
+
+
+def test_goal_claims_reject_wrong_companies_codes_branches_and_numbers():
+    bad = {
+        "eda": (
+            "Roche, Abbott Labs, Siemens, and Beckman are over 1%.",
+            "Roche, Abbott Labs, and Siemens are over 10%",
+            "Roche, Abbott Labs, and Siemens are over 1.5%",
+            "Roche, Abbott Labs, and Siemens are under 1%, everyone else over 1%",
+            "Roche 99 of 2250, Abbott Labs 10 of 748, Siemens 13 of 485 are over 1%",
+            "Roche, Abbott Labs, and Siemens are over 1% except Siemens",
+            "Roche and Siemens are over 1%",
+        ),
+        "pareto": (
+            "Roche needs INV-MECH, Abbott Labs needs INV-NOR, and Siemens needs INV-USR to get under 1%.",
+            "Roche needs INV-MECH and INV-NOR and INV-CAL and INV-SW, Abbott Labs needs INV-MECH, Siemens needs INV-MECH and INV-USR to get under 1%",
+            "Roche INV-MECH INV-NOR Abbott Labs INV-MECH Siemens INV-MECH INV-USR under 10%",
+        ),
+        "responses": (
+            "Roche INV-MECH is Machine, Roche INV-NOR is Material, Abbott Labs INV-MECH is Machine, Siemens INV-MECH is Man, and Siemens INV-USR is Machine.",
+        ),
+        "closeout": (
+            "Roche gets under 1%, Abbott Labs gets under 1%, and Siemens stays over 1%",
+            "Roche and Abbott Labs get under 1%",
+        ),
+    }
+    for week, step in enumerate(WEEKS, start=1):
+        view = _view(week)
+        for text in bad[step]:
+            reply = respond(text, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
+            assert reply["confirmed"] is False, (step, text)
+    plain = "Roche needs a mechanical problem and no usable result, Abbott Labs needs a software abort, and Siemens needs INV-MECH and INV-USR to get under 1%"
+    assert respond(plain, _view(2), "pareto", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"] is True
+    either = "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-SW, and Siemens needs INV-MECH and INV-USR to get under 1%"
+    assert respond(either, _view(2), "pareto", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"] is True
+
+
+def test_week_one_does_not_say_a_later_weeks_finding():
+    view = _view(1)
+    for text in ("which causes bring Roche under 1%", "what is the projected invalid share after the fix"):
+        reply = respond(text, view, "eda", ticket_key="Your ticket 1", flag_key="Flag 1")
+        assert "0.58" not in reply["text"], text
+        assert "INV-NOR (15)" not in reply["text"], text
+        assert reply["confirmed"] is False
+
+
+def test_phrased_reply_cannot_add_a_company_to_the_flags():
+    from invalid_agent.ui.explore import answer_message
+
+    class Stub:
+        def __init__(self, tool, phrased):
+            self.tool, self.phrased = tool, phrased
+
+        def select_tools(self, text, specs):
+            return [{"name": self.tool, "arguments": {}}]
+
+        def phrase(self, text, results):
+            return self.phrased
+
+    for tool, view, phrased in (
+        ("threshold_flags", _view(1), "Roche, Abbott Labs, Siemens and Beckman are over 1%."),
+        ("threshold_flags", _view(1), "Only Ortho is over 1%."),
+        ("capa_outlook", _view(4), "Siemens stays over 1% after the fix."),
+    ):
+        assert answer_message("q", view, Stub(tool, phrased)) != phrased, phrased
+
+
+def test_db_shaped_rows_without_invalid_code_still_count_roche():
+    records = []
+    for row in _records():
+        bare = dict(row)
+        bare.pop("invalid_code", None)
+        bare.pop("is_invalid_type", None)
+        records.append(bare)
+    scenario = load_scenario(ROOT / "cases" / "openfda_jje.yaml")
+    frame = frame_from_reports(records, scenario)
+    by_name = {row["name"]: row for row in company_table(frame)}
+    assert by_name["Roche"]["invalid"] == 81 and by_name["Roche"]["total"] == 2249
+
+
+def test_a_missing_problem_table_uses_the_cached_extract(monkeypatch, caplog):
+    import logging
+
+    from invalid_agent.data import frame as frame_mod
+
+    def missing(_code, _start, _end):
+        raise RuntimeError('relation "maude_problem" does not exist')
+
+    monkeypatch.setattr(frame_mod, "_query_case_rows", missing)
+    monkeypatch.setattr("invalid_agent.data.cache.read_rows", lambda *_args, **_kwargs: [])
+    scenario = load_scenario(ROOT / "cases" / "openfda_jje.yaml")
+    with caplog.at_level(logging.WARNING):
+        built = frame_mod.load_openfda_frame(scenario)
+    assert "cached JJE extract" in caplog.text
+    assert "no product_problems" in caplog.text
+    assert len(built) == 4221
