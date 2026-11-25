@@ -44,13 +44,22 @@ class _Recorder:
         self.calls: list[dict] = []
         self.tools = 0
 
-    def complete(self, *, system: str, user: str, temperature: float = 0.1, reasoning_effort: str = "low") -> str:
+    def complete(
+        self,
+        *,
+        system: str,
+        user: str,
+        temperature: float = 0.1,
+        reasoning_effort: str = "low",
+        timeout: float | None = None,
+    ) -> str:
         self.calls.append(
             {
                 "system": system,
                 "user": user,
                 "temperature": temperature,
                 "reasoning_effort": reasoning_effort,
+                "timeout": timeout,
             }
         )
         return self.text
@@ -68,8 +77,16 @@ class _Recorder:
 class _Down:
     model = "qwen/qwen3.8-27b"
 
-    def complete(self, *, system: str, user: str, temperature: float = 0.1, reasoning_effort: str = "low") -> str:
-        del system, user, temperature, reasoning_effort
+    def complete(
+        self,
+        *,
+        system: str,
+        user: str,
+        temperature: float = 0.1,
+        reasoning_effort: str = "low",
+        timeout: float | None = None,
+    ) -> str:
+        del system, user, temperature, reasoning_effort, timeout
         raise RuntimeError("model down")
 
 
@@ -125,6 +142,7 @@ def test_neel_sentence_and_paraphrases_unlock_from_recorded_model_output():
         call = client.calls[0]
         assert call["temperature"] == 0
         assert call["reasoning_effort"] == "none"
+        assert call["timeout"] == 15
         assert text in call["user"]
         assert "81" in call["user"] and "2249" in call["user"]
         assert "13" in call["user"] and "485" in call["user"]
@@ -189,7 +207,56 @@ def test_unrecognized_question_stays_on_the_table_and_skips_the_menu():
     assert "The Binding Site" in flagged
 
 
-def test_missing_model_answers_from_python_and_does_not_unlock():
+def test_lying_model_leaves_next_locked():
+    from invalid_agent.ui.talkback import accepted_signatures
+
+    prose = "Roche, Abbott Labs, and Siemens are over 1%."
+    flagged = ["Roche", "Abbott Labs", "Siemens"]
+    view = _view()
+    liar = _Recorder(_model(prose, True, flagged))
+    reply = respond(
+        "Roche and Beckman",
+        view,
+        "eda",
+        ticket_key="Your ticket 1",
+        flag_key="Flag 1",
+        tool_client=liar,
+    )
+    assert reply["confirmed"] is False
+    assert "the companies over 1%" in accepted_signatures(view, "eda")
+    assert reply["text"] == prose
+
+    excused = (
+        "Roche, abbott and siemens have enough data to call an invalid issue. "
+        "Binding Site has too few reports to judge."
+    )
+    reply = _talk(excused, _Recorder(_model(prose, True, flagged)))
+    assert reply["confirmed"] is True
+    assert reply["text"] == prose
+
+    kept = _Recorder(_model(prose + " A side count is 2 of 3.", True, flagged))
+    reply = _talk(NEEL, kept)
+    assert reply["confirmed"] is True
+    assert "2 of 3" in reply["text"]
+
+    cited = _Recorder(_model("The Binding Site is 2 of 3. " + prose, True, flagged))
+    reply = _talk(NEEL, cited)
+    assert reply["confirmed"] is False
+    assert "2 of 3" not in reply["text"]
+
+
+def test_missing_model_answers_from_python_and_does_not_unlock(monkeypatch):
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    fallback_calls: list[dict] = []
+
+    class _Fallback:
+        model = "openai/gpt-oss-20b"
+
+        def complete(self, **kwargs):
+            fallback_calls.append(kwargs)
+            raise RuntimeError("fallback down")
+
+    monkeypatch.setattr("invalid_agent.ui.week1._fallback_client", lambda client: _Fallback())
     reply = _talk(NEEL)
     assert reply["confirmed"] is False
     assert "Roche, Abbott Labs, and Siemens are over 1%." in reply["text"]
@@ -203,6 +270,8 @@ def test_missing_model_answers_from_python_and_does_not_unlock():
     assert down["confirmed"] is False
     assert "Roche" in down["text"]
     assert "I can look up" not in down["text"]
+    assert fallback_calls
+    assert fallback_calls[0]["timeout"] == 15
 
 
 @pytest.mark.skipif(not os.environ.get("GROQ_API_KEY"), reason="set GROQ_API_KEY to run the live week 1 check")

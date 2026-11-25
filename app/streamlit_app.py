@@ -405,7 +405,7 @@ def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     talk_key = f"talk_text_{int(st.session_state.get('talk_nonce') or 0)}"
     with st.form("talk-form", clear_on_submit=True):
         message = st.text_input("Your question or insight", key=talk_key)
-        submitted = st.form_submit_button("Tell the agent", key="talk-send")
+        submitted = st.form_submit_button("Tell the agent")
     if submitted:
         _apply_talk(str(message or ""), view, beat_id, week, rules_only)
         st.rerun()

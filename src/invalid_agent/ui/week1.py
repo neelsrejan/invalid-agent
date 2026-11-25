@@ -104,11 +104,24 @@ def prose_numbers_match(prose: str, facts: dict[str, Any]) -> bool:
             shares.add(f"{pct:.1f}")
     if any(value not in shares for value in _PCT.findall(prose)):
         return False
-    for left, right in _N_OF_M.findall(prose):
-        pair = (int(left.replace(",", "")), int(right.replace(",", "")))
+    rows = [row for row in facts.get("companies") or [] if str(row.get("name") or "").strip()]
+    for match in _N_OF_M.finditer(prose):
+        total = int(match.group(2).replace(",", ""))
+        pair = (int(match.group(1).replace(",", "")), total)
+        if total < 100 and not _pair_names_its_company(prose, match.start(), total, rows):
+            continue
         if pair not in pairs:
             return False
     return True
+
+
+def _pair_names_its_company(prose: str, index: int, total: int, rows: list[dict[str, Any]]) -> bool:
+    start = prose.rfind(".", 0, index)
+    start = 0 if start < 0 else start + 1
+    end = prose.find(".", index)
+    end = len(prose) if end < 0 else end
+    owners = [row for row in rows if int(row["total"]) == total]
+    return bool(owners and _mentions(prose[start:end], owners))
 
 
 def _python(message: str, facts: dict[str, Any], reason: str) -> Week1Verdict:
@@ -126,6 +139,11 @@ def _effort(client: Any) -> str:
     return "none"
 
 
+_COMPLETE_TIMEOUT = 15.0
+_TOO_FEW = re.compile(r"too few")
+_SKIP_TOKEN = frozenset({"the", "labs", "lab", "inc", "ltd", "corp", "corporation", "company"})
+
+
 def _complete(client: Any, message: str, facts: dict[str, Any]) -> str | None:
     try:
         text = client.complete(
@@ -133,9 +151,8 @@ def _complete(client: Any, message: str, facts: dict[str, Any]) -> str | None:
             user=_user_prompt(message, facts),
             temperature=0,
             reasoning_effort=_effort(client),
+            timeout=_COMPLETE_TIMEOUT,
         )
-    except TypeError:
-        raise
     except Exception:
         return None
     return str(text or "")
@@ -212,6 +229,74 @@ def _resolve(names: list[str], official: list[str]) -> tuple[list[str], bool]:
     return resolved, ok
 
 
+def _aliases(name: str) -> list[str]:
+    folded = " ".join(name.casefold().split())
+    found = {folded}
+    if folded.startswith("the "):
+        found.add(folded[4:])
+    tokens = [token for token in re.findall(r"[a-z0-9]+", folded) if token not in _SKIP_TOKEN]
+    for token in tokens:
+        if len(token) >= 4 and short_name(token).casefold() == folded:
+            found.add(token)
+    words = folded.split()
+    for index in range(len(words) - 1):
+        phrase = " ".join(words[index : index + 2])
+        if short_name(phrase).casefold() == folded:
+            found.add(phrase)
+    return sorted(found, key=len, reverse=True)
+
+
+def _bounded(text: str, start: int, end: int) -> bool:
+    before = text[start - 1] if start else " "
+    after = text[end] if end < len(text) else " "
+    return not before.isalnum() and not after.isalnum()
+
+
+def _mentions(message: str, rows: list[dict[str, Any]]) -> list[tuple[int, int, str]]:
+    lowered = " ".join(str(message or "").casefold().split())
+    patterns: list[tuple[str, str]] = []
+    for row in rows:
+        name = str(row.get("name") or "").strip()
+        if not name:
+            continue
+        for alias in _aliases(name):
+            patterns.append((alias, name))
+    patterns.sort(key=lambda item: len(item[0]), reverse=True)
+    hits: list[tuple[int, int, str]] = []
+    cursor = 0
+    while cursor < len(lowered):
+        found: tuple[int, int, str] | None = None
+        for alias, name in patterns:
+            end = cursor + len(alias)
+            if lowered.startswith(alias, cursor) and _bounded(lowered, cursor, end):
+                found = (cursor, end, name)
+                break
+        if found is None:
+            cursor += 1
+            continue
+        hits.append(found)
+        cursor = found[1]
+    return hits
+
+
+def _user_companies(message: str, facts: dict[str, Any]) -> set[str]:
+    rows = [row for row in facts.get("companies") or [] if str(row.get("name") or "").strip()]
+    hits = _mentions(message, rows)
+    lowered = " ".join(str(message or "").casefold().split())
+    by_name = {str(row["name"]): row for row in rows}
+    claimed: set[str] = set()
+    for index, (start, end, name) in enumerate(hits):
+        row = by_name[name]
+        if not row.get("enough"):
+            prev_end = hits[index - 1][1] if index else 0
+            nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
+            window = lowered[max(prev_end, start - 80) : nxt]
+            if _TOO_FEW.search(window):
+                continue
+        claimed.add(name)
+    return claimed
+
+
 def _guard(
     message: str,
     facts: dict[str, Any],
@@ -221,10 +306,10 @@ def _guard(
     meets = _as_bool(payload.get("meets_goal"))
     reason = str(payload.get("reason") or "").strip()
     official = [str(row["name"]) for row in facts.get("companies") or []]
-    resolved, mapped = _resolve(_as_names(payload.get("companies")), official)
+    resolved, _mapped = _resolve(_as_names(payload.get("companies")), official)
     flagged = {str(row["name"]) for row in facts.get("flagged") or []}
     if not prose_numbers_match(prose, facts):
         return Week1Verdict(python_sentence(message, facts), False, "invented number", tuple(resolved))
-    if meets and (not mapped or set(resolved) != flagged or not flagged):
+    if not (meets and flagged and _user_companies(message, facts) == flagged):
         meets = False
     return Week1Verdict(prose, meets, reason, tuple(dict.fromkeys(resolved)))

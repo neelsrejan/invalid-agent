@@ -129,6 +129,7 @@ class GroqLLM:
         user: str,
         temperature: float = 0.1,
         reasoning_effort: str = "low",
+        timeout: float = 180.0,
     ) -> str:
         import time
 
@@ -152,7 +153,7 @@ class GroqLLM:
                 GROQ_CHAT_URL,
                 headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
                 json=payload,
-                timeout=180.0,
+                timeout=timeout,
             )
             if response.status_code == 429 and attempt < 3:
                 delay = _retry_after_seconds(response.headers)
