@@ -140,8 +140,17 @@ def _effort(client: Any) -> str:
 
 
 _COMPLETE_TIMEOUT = 15.0
-_TOO_FEW = re.compile(r"too few")
 _SKIP_TOKEN = frozenset({"the", "labs", "lab", "inc", "ltd", "corp", "corporation", "company"})
+_SPLIT = re.compile(r"[,.;!?]|\b(?:and|but)\b", re.I)
+_NEGATED = re.compile(r"n't|\b(?:under|below|not|no|neither|nor|less than|fine|ok|okay)\b", re.I)
+_OVER = re.compile(
+    r">\s*1\b|\b(?:over|above|exceeds?|flagged|also)\b|\btoo\b(?!\s+few)|\b(?:more|greater) than\b",
+    re.I,
+)
+_GAP_LINE = (
+    "That doesn't match the companies over 1% with enough reports yet. "
+    "Check the third table."
+)
 
 
 def _complete(client: Any, message: str, facts: dict[str, Any]) -> str | None:
@@ -279,22 +288,39 @@ def _mentions(message: str, rows: list[dict[str, Any]]) -> list[tuple[int, int, 
     return hits
 
 
-def _user_companies(message: str, facts: dict[str, Any]) -> set[str]:
+def _segments(message: str) -> list[str]:
+    return [part.strip() for part in _SPLIT.split(str(message or "")) if part.strip()]
+
+
+def _own(segments: list[str], row: dict[str, Any]) -> list[str]:
+    return [part for part in segments if _mentions(part, [row])]
+
+
+def _claimed_over(segments: list[str], row: dict[str, Any]) -> bool:
+    for part in _own(segments, row):
+        if _NEGATED.search(part):
+            continue
+        if _OVER.search(part):
+            return True
+    return False
+
+
+def _stands(segments: list[str], row: dict[str, Any]) -> bool:
+    parts = _own(segments, row)
+    return any(_NEGATED.search(part) is None for part in parts)
+
+
+def _name_gap(message: str, facts: dict[str, Any]) -> tuple[list[str], list[str]]:
     rows = [row for row in facts.get("companies") or [] if str(row.get("name") or "").strip()]
-    hits = _mentions(message, rows)
-    lowered = " ".join(str(message or "").casefold().split())
-    by_name = {str(row["name"]): row for row in rows}
-    claimed: set[str] = set()
-    for index, (start, end, name) in enumerate(hits):
-        row = by_name[name]
-        if not row.get("enough"):
-            prev_end = hits[index - 1][1] if index else 0
-            nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
-            window = lowered[max(prev_end, start - 80) : nxt]
-            if _TOO_FEW.search(window):
-                continue
-        claimed.add(name)
-    return claimed
+    segments = _segments(message)
+    flagged = {str(row["name"]) for row in facts.get("flagged") or []}
+    missing = [str(row["name"]) for row in rows if str(row["name"]) in flagged and not _stands(segments, row)]
+    wrong = [
+        str(row["name"])
+        for row in rows
+        if str(row["name"]) not in flagged and _claimed_over(segments, row)
+    ]
+    return missing, wrong
 
 
 def _guard(
@@ -307,9 +333,15 @@ def _guard(
     reason = str(payload.get("reason") or "").strip()
     official = [str(row["name"]) for row in facts.get("companies") or []]
     resolved, _mapped = _resolve(_as_names(payload.get("companies")), official)
-    flagged = {str(row["name"]) for row in facts.get("flagged") or []}
+    names = tuple(dict.fromkeys(resolved))
     if not prose_numbers_match(prose, facts):
-        return Week1Verdict(python_sentence(message, facts), False, "invented number", tuple(resolved))
-    if not (meets and flagged and _user_companies(message, facts) == flagged):
-        meets = False
-    return Week1Verdict(prose, meets, reason, tuple(dict.fromkeys(resolved)))
+        return Week1Verdict(python_sentence(message, facts), False, "invented number", names)
+    flagged = [str(row["name"]) for row in facts.get("flagged") or []]
+    if not meets:
+        return Week1Verdict(prose, False, reason, names)
+    if not flagged:
+        return Week1Verdict(python_sentence(message, facts), False, "company set", names)
+    missing, wrong = _name_gap(message, facts)
+    if missing or wrong:
+        return Week1Verdict(_GAP_LINE, False, "company set", names)
+    return Week1Verdict(prose, True, reason, names)
