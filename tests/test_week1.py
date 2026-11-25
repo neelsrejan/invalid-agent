@@ -159,11 +159,16 @@ def test_wrong_company_set_binding_site_and_invented_numbers_do_not_unlock():
     wrong = _Recorder(_model(prose, True, ["Roche", "Beckman"]))
     reply = _talk("Roche and Beckman are over 1% with enough reports.", wrong)
     assert reply["confirmed"] is False
-    assert reply["text"] == prose
+    assert reply["text"] != prose
+    assert "Beckman" in reply["text"]
+    assert "YEP" not in reply["text"]
 
     binding = _Recorder(_model(prose, True, right + ["The Binding Site"]))
     reply = _talk("Roche, Abbott, Siemens, and Binding Site are over 1%.", binding)
     assert reply["confirmed"] is False
+    assert reply["text"] != prose
+    assert "The Binding Site" in reply["text"]
+    assert "YEP" not in reply["text"]
 
     invented = "Roche is at 9.99% (99 of 2249)."
     bad = _Recorder(_model(invented, True, right))
@@ -207,6 +212,24 @@ def test_unrecognized_question_stays_on_the_table_and_skips_the_menu():
     assert "The Binding Site" in flagged
 
 
+def test_beckman_under_unlocks_and_beckman_over_stays_locked():
+    prose = "Roche, Abbott Labs, and Siemens are over 1%."
+    flagged = ["Roche", "Abbott Labs", "Siemens"]
+    under = "Roche, Abbott and Siemens are over 1%; Beckman is under"
+    reply = _talk(under, _Recorder(_model(prose, True, flagged)))
+    assert reply["confirmed"] is True
+    assert reply["text"] == prose
+    over = "Roche, Abbott, Siemens and Beckman are over 1%"
+    reply = _talk(over, _Recorder(_model(prose, True, flagged)))
+    assert reply["confirmed"] is False
+    assert "Beckman" in reply["text"]
+    assert "YEP" not in reply["text"]
+    assert "GOOD QUESTION" not in reply["text"]
+    reply = _talk(NEEL, _Recorder(_model(prose, True, flagged)))
+    assert reply["confirmed"] is True
+    assert reply["text"] == prose
+
+
 def test_lying_model_leaves_next_locked():
     from invalid_agent.ui.talkback import accepted_signatures
 
@@ -224,7 +247,9 @@ def test_lying_model_leaves_next_locked():
     )
     assert reply["confirmed"] is False
     assert "the companies over 1%" in accepted_signatures(view, "eda")
-    assert reply["text"] == prose
+    assert reply["text"] != prose
+    assert "Abbott Labs" in reply["text"]
+    assert "YEP" not in reply["text"]
 
     excused = (
         "Roche, abbott and siemens have enough data to call an invalid issue. "

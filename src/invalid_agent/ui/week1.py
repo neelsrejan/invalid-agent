@@ -140,8 +140,10 @@ def _effort(client: Any) -> str:
 
 
 _COMPLETE_TIMEOUT = 15.0
-_TOO_FEW = re.compile(r"too few")
 _SKIP_TOKEN = frozenset({"the", "labs", "lab", "inc", "ltd", "corp", "corporation", "company"})
+_CLAUSE_SPLIT = re.compile(r"[.;!?]|\bbut\b", re.I)
+_NEGATED = re.compile(r"\b(?:under|below|not|less than|fine|ok|okay)\b", re.I)
+_CLAIMS_OVER = re.compile(r"\b(?:over|above)\s+(?:the\s+)?1\b|\bflagged\b", re.I)
 
 
 def _complete(client: Any, message: str, facts: dict[str, Any]) -> str | None:
@@ -279,22 +281,55 @@ def _mentions(message: str, rows: list[dict[str, Any]]) -> list[tuple[int, int, 
     return hits
 
 
-def _user_companies(message: str, facts: dict[str, Any]) -> set[str]:
+def _clauses(message: str) -> list[str]:
+    return [part.strip() for part in _CLAUSE_SPLIT.split(str(message or "")) if part.strip()]
+
+
+def _claimed_over(name: str, clauses: list[str], row: dict[str, Any]) -> bool:
+    owners = [row]
+    for clause in clauses:
+        if not _mentions(clause, owners):
+            continue
+        if _NEGATED.search(clause):
+            continue
+        if _CLAIMS_OVER.search(clause):
+            return True
+    return False
+
+
+def _name_gap(message: str, facts: dict[str, Any]) -> tuple[list[str], list[str]]:
     rows = [row for row in facts.get("companies") or [] if str(row.get("name") or "").strip()]
-    hits = _mentions(message, rows)
-    lowered = " ".join(str(message or "").casefold().split())
-    by_name = {str(row["name"]): row for row in rows}
-    claimed: set[str] = set()
-    for index, (start, end, name) in enumerate(hits):
-        row = by_name[name]
-        if not row.get("enough"):
-            prev_end = hits[index - 1][1] if index else 0
-            nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
-            window = lowered[max(prev_end, start - 80) : nxt]
-            if _TOO_FEW.search(window):
-                continue
-        claimed.add(name)
-    return claimed
+    named = {hit[2] for hit in _mentions(message, rows)}
+    missing = [str(row["name"]) for row in facts.get("flagged") or [] if str(row["name"]) not in named]
+    clauses = _clauses(message)
+    wrong: list[str] = []
+    flagged = {str(row["name"]) for row in facts.get("flagged") or []}
+    for row in rows:
+        name = str(row["name"])
+        if name in flagged or name not in named:
+            continue
+        if _claimed_over(name, clauses, row):
+            wrong.append(name)
+    return missing, wrong
+
+
+def _listed(names: list[str]) -> str:
+    if len(names) == 1:
+        return names[0]
+    if len(names) == 2:
+        return f"{names[0]} and {names[1]}"
+    return ", ".join(names[:-1]) + ", and " + names[-1]
+
+
+def _name_line(missing: list[str], wrong: list[str]) -> str:
+    parts: list[str] = []
+    if missing:
+        verb = "is" if len(missing) == 1 else "are"
+        parts.append(f"{_listed(missing)} {verb} missing from the flagged companies.")
+    if wrong:
+        verb = "is" if len(wrong) == 1 else "are"
+        parts.append(f"{_listed(wrong)} {verb} not a flagged company.")
+    return " ".join(parts)
 
 
 def _guard(
@@ -307,9 +342,15 @@ def _guard(
     reason = str(payload.get("reason") or "").strip()
     official = [str(row["name"]) for row in facts.get("companies") or []]
     resolved, _mapped = _resolve(_as_names(payload.get("companies")), official)
-    flagged = {str(row["name"]) for row in facts.get("flagged") or []}
+    names = tuple(dict.fromkeys(resolved))
     if not prose_numbers_match(prose, facts):
-        return Week1Verdict(python_sentence(message, facts), False, "invented number", tuple(resolved))
-    if not (meets and flagged and _user_companies(message, facts) == flagged):
-        meets = False
-    return Week1Verdict(prose, meets, reason, tuple(dict.fromkeys(resolved)))
+        return Week1Verdict(python_sentence(message, facts), False, "invented number", names)
+    flagged = [str(row["name"]) for row in facts.get("flagged") or []]
+    if not meets:
+        return Week1Verdict(prose, False, reason, names)
+    if not flagged:
+        return Week1Verdict(python_sentence(message, facts), False, "company set", names)
+    missing, wrong = _name_gap(message, facts)
+    if missing or wrong:
+        return Week1Verdict(_name_line(missing, wrong), False, "company set", names)
+    return Week1Verdict(prose, True, reason, names)
