@@ -23,6 +23,8 @@ _LLM_BACKENDS = {"deterministic", "ollama", "llamacpp", "groq"}
 DEFAULT_LLM_MODEL = "llama3.1:8b"
 HOSTED_LLM_MODEL = "llama3.2:1b"
 DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
+DEFAULT_WEEK1_GROQ_MODEL = "qwen/qwen3.8-27b"
+WEEK1_GROQ_FALLBACK = "openai/gpt-oss-20b"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
@@ -99,6 +101,7 @@ class Settings:
     demo_readonly_password: str
     groq_api_key: str
     groq_model: str
+    week1_groq_model: str
     data_backend: str
     manufacturer_display: str
     spec_invalid_rate: float
@@ -133,6 +136,7 @@ class Settings:
             "demo_readonly_password": "***" if self.demo_readonly_password else "",
             "groq_api_key": "***" if self.groq_api_key else "",
             "groq_model": self.groq_model,
+            "week1_groq_model": self.week1_groq_model,
             "data_backend": self.data_backend,
             "manufacturer_display": self.manufacturer_display,
             "spec_invalid_rate": self.spec_invalid_rate,
@@ -181,6 +185,7 @@ def load_settings() -> Settings:
         demo_readonly_password=_env("DEMO_READONLY_PASSWORD"),
         groq_api_key=_env("GROQ_API_KEY"),
         groq_model=_env("GROQ_MODEL", DEFAULT_GROQ_MODEL),
+        week1_groq_model=_env("WEEK1_GROQ_MODEL", DEFAULT_WEEK1_GROQ_MODEL) or DEFAULT_WEEK1_GROQ_MODEL,
         data_backend=_env("DATA_BACKEND", "synthetic").lower() or "synthetic",
         manufacturer_display=_display_mode(_env("MANUFACTURER_DISPLAY", "real")),
         spec_invalid_rate=SPEC_INVALID_RATE,

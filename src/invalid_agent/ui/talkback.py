@@ -1,8 +1,4 @@
-"""Talk-back agent for one week and one part of the story.
-
-Python classifies the message and writes the reply from facts the reader
-has already seen. A language model may only rephrase that reply.
-"""
+"""Talk-back agent for one week and one part of the story."""
 
 from __future__ import annotations
 
@@ -209,6 +205,8 @@ def respond(
     raw = str(message or "")
     text = " ".join(raw.split())
     if not text:
+        if step_id == "eda":
+            return _respond_eda(raw, text, view, None, ticket_key, flag_key)
         return _pack(
             kind="question",
             body="Type a question, or type what you think the screen is saying. Then I can check it against this week's counts.",
@@ -217,6 +215,8 @@ def respond(
             flag_key=flag_key,
             user_text="",
         )
+    if step_id == "eda":
+        return _respond_eda(raw, text, view, tool_client, ticket_key, flag_key)
     kind, body, finding = _classify(text, view, step_id, tool_client)
     bare = step_id in LOOKUP_PARTS | AUDIT_WEEKS and kind in {"question", "hint", "early"}
     return _pack(
@@ -228,6 +228,33 @@ def respond(
         user_text=raw.strip(),
         bare=bare,
     )
+
+
+def _respond_eda(
+    raw: str,
+    text: str,
+    view: dict[str, Any],
+    client: Any | None,
+    _ticket_key: str,
+    _flag_key: str,
+) -> dict[str, Any]:
+    from invalid_agent.ui.audit import show_me_fact
+    from invalid_agent.ui.week1 import judge_week1
+
+    verdict = judge_week1(text, view, client)
+    finding, _sentence = show_me_fact(view, "eda")
+    confirmed = bool(verdict.meets_goal)
+    return {
+        "kind": "correct" if confirmed else "question",
+        "confirmed": confirmed,
+        "text": verdict.text,
+        "bullet": verdict.text if confirmed else None,
+        "signature": finding if confirmed else "",
+        "log_kind": "insight" if confirmed else "",
+        "log_key": "Insight" if confirmed else "",
+        "log_text": verdict.text if confirmed else "",
+        "user_text": raw.strip(),
+    }
 
 
 def reword_reply(base_text: str, llm: Any | None) -> str:

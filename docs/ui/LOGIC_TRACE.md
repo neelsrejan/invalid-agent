@@ -1,6 +1,6 @@
 # Guided page logic trace
 
-The page is one script. It walks Week 1, then Week 2, then Week 3, then Week 4. Each week is one page: companies over 1% (`eda`), cause sets (`pareto`), simulated responses (`responses`), and the close-out (`closeout`). The JJE file is not sliced by week. Next stays off until that week's goal claim is confirmed, or the reader presses Show me and the page logs the real sentence from `part_fact`. A question is answered and does not unlock Next. Python computes every count. Groq may choose a tool and phrase. A phrased reply that adds a number, a code, a manufacturer, or a company the tool result did not name is replaced by the template.
+The page is one script. It walks Week 1, then Week 2, then Week 3, then Week 4. Each week is one page: companies over 1% (`eda`), cause sets (`pareto`), simulated responses (`responses`), and the close-out (`closeout`). The JJE file is not sliced by week. Next stays off until that week's goal claim is confirmed, or the reader presses Show me and the page logs the real sentence from `part_fact`. A question is answered and does not unlock Next. Python computes every count. On Weeks 2-4, Groq may choose a tool and phrase. A phrased reply that adds a number, a code, a manufacturer, or a company the tool result did not name is replaced by the template. On Week 1, the model judges the reply and Python guards the names and the numbers.
 
 There is no week switcher. The hosted picker lists JJE only.
 
@@ -16,7 +16,7 @@ There is no week switcher. The hosted picker lists JJE only.
 
 ## _render_guided
 
-`app/streamlit_app.py:631`. It loads one week view through `_week_view` (`app/streamlit_app.py:218`), which calls `build_week_view` (`src/invalid_agent/ui/story.py:59`). A load failure logs the exception type and shows one fixed sentence. On week 1, `_render_case_picker` (`app/streamlit_app.py:620`) draws the case box, then the view loads again.
+`_render_guided` (`app/streamlit_app.py`) loads one week view through `_week_view`, which calls `build_week_view` (`src/invalid_agent/ui/story.py`). A load failure logs the exception type and shows one fixed sentence. Week 1 shows the case title as plain text. There is no case selectbox, and the view is not loaded a second time.
 
 The title comes from `progress_label` (`src/invalid_agent/ui/guide.py:76`) and `GUIDE_STEPS` (`src/invalid_agent/ui/guide.py:29`). The four ids are `eda`, `pareto`, `responses`, `closeout`.
 
@@ -28,8 +28,14 @@ The week view cache key is `_VIEW_SCHEMA` (`app/streamlit_app.py:214`). Press Re
 
 `company_table` (`src/invalid_agent/ui/audit.py:47`) is one row per company. Share is invalid rows divided by total rows. A company with fewer than 100 reports is too few to judge. `cause_set_for` (`src/invalid_agent/ui/audit.py:146`) is the smallest top-of-Pareto set that brings the company to 1% or under. When the last slot is a tie, the set records every code at that count. `goal_statement` (`src/invalid_agent/ui/audit.py:327`) accepts a claim only when the named companies, codes, branches, and numbers match that week. `show_me_fact` (`src/invalid_agent/ui/audit.py:409`) is the sentence Show me logs.
 
+## Week 1 judge
+
+`judge_week1` (`src/invalid_agent/ui/week1.py`) makes one Groq call. The call carries the compact company table, the week rubric, and the user text, at temperature 0, with a 15 second timeout. The fallback model gets the same limit, so the two calls together stay near 30 seconds. The model writes the reply and a `meets_goal` JSON object.
+
+`_guard` keeps `meets_goal` only when it is true and the user's own message names every flagged company and no other company with at least 100 reports. Matching is case-insensitive and uses the company aliases (`abbott` is Abbott Labs). A company under 100 reports that the user calls too few to judge is left out of that set. This is a set of names, not a required phrase. Percents in the reply have to be on the table. An N-of-M pair is checked when its total is at least 100, or when that total belongs to a company named in the same sentence. A bare pair such as `2 of 3` is left alone. A failed call, an unparsed reply, or an invented number is replaced by `python_sentence`. Week 1 does not run `reword_reply`.
+
 ## talk-back
 
-`example_prompts` (`src/invalid_agent/ui/talkback.py:150`) fills the prompt buttons. `respond` (`src/invalid_agent/ui/talkback.py:200`) answers a question from `explore.py` and grades a goal claim through `goal_statement`. `part_fact` (`src/invalid_agent/ui/talkback.py:537`) is the Show me sentence. Questions never confirm. The six-part grader below `AUDIT_WEEKS` remains for the synthetic practice cases.
+`example_prompts` (`src/invalid_agent/ui/talkback.py`) fills the prompt buttons. `respond` answers a Week 1 message through `judge_week1`. Weeks 2-4 still grade a goal claim through `goal_statement`. `part_fact` is the Show me sentence. Questions never confirm. The six-part grader below `AUDIT_WEEKS` remains for the synthetic practice cases.
 
 `explore_facts` (`src/invalid_agent/ui/explore.py:81`) attaches the audit table. `_audit_for_week` (`src/invalid_agent/ui/explore.py:126`) hides cause sets until week 2, company notes until week 3, and close-outs until week 4. The rows themselves stay the whole file.

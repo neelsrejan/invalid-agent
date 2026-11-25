@@ -113,6 +113,36 @@ def test_groq_retry_wait_is_capped_and_the_template_takes_over(monkeypatch):
     assert "Not for clinical use" in text
 
 
+def test_complete_uses_the_caller_timeout(monkeypatch):
+    import httpx
+
+    from invalid_agent.llm import GroqLLM
+
+    GroqLLM._next_ok = 0.0
+    seen: dict[str, object] = {}
+
+    class _Response:
+        status_code = 200
+        headers: dict[str, str] = {}
+
+        def json(self):
+            return {"choices": [{"message": {"content": "ok"}}]}
+
+        def raise_for_status(self):
+            return None
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        del url, headers, json
+        seen["timeout"] = timeout
+        return _Response()
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr("time.sleep", lambda seconds: None)
+    text = GroqLLM("test-key", "openai/gpt-oss-20b").complete(system="s", user="u", timeout=15)
+    assert text == "ok"
+    assert seen["timeout"] == 15
+
+
 def test_lot_identifier_is_not_scored_as_a_rate():
     facts = _facts()
     text = "Lot L-4419 is the leading stratum. The rate is 3.67%."

@@ -122,7 +122,15 @@ class GroqLLM:
                 time.sleep(wait)
             GroqLLM._next_ok = time.monotonic() + self._min_interval
 
-    def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+    def complete(
+        self,
+        *,
+        system: str,
+        user: str,
+        temperature: float = 0.1,
+        reasoning_effort: str = "low",
+        timeout: float = 180.0,
+    ) -> str:
         import time
 
         import httpx
@@ -134,7 +142,7 @@ class GroqLLM:
             "messages": _chat_payload(system, user),
             "temperature": temperature,
             "max_tokens": 2048,
-            "reasoning_effort": "low",
+            "reasoning_effort": reasoning_effort,
         }
         empty_retried = False
         waited = 0.0
@@ -145,7 +153,7 @@ class GroqLLM:
                 GROQ_CHAT_URL,
                 headers={"Authorization": f"Bearer {self._api_key}", "Content-Type": "application/json"},
                 json=payload,
-                timeout=180.0,
+                timeout=timeout,
             )
             if response.status_code == 429 and attempt < 3:
                 delay = _retry_after_seconds(response.headers)

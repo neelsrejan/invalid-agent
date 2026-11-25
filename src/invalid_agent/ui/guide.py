@@ -17,9 +17,6 @@ class GuideStep:
     id: str
     short: str
     title: str
-    doing: str
-    why: str
-    look: str
     next_label: str
     needs_case: bool = True
     question_ids: tuple[str, ...] = ()
@@ -31,36 +28,24 @@ GUIDE_STEPS: tuple[GuideStep, ...] = (
         id="eda",
         short="Companies",
         title="Who is over 1%",
-        doing="The agent answers from the full chemistry-analyzer file. Python computes every share.",
-        why="Invalid share of field problem reports is invalid rows divided by total rows. It is not a run-level rate.",
-        look="Read the first 10 rows, the company table, and the 1% line. Grey marks are too few reports to judge.",
         next_label="See the returned complaint detail",
     ),
     GuideStep(
         id="pareto",
         short="Causes",
         title="Causes that get under 1%",
-        doing="The agent ranks the biggest problems first for each flagged company and picks the smallest set that gets under 1%.",
-        why="The complaint detail is back. One cause may not be enough.",
-        look="Read each company's ranking and the cause set under it.",
         next_label="See the company responses",
     ),
     GuideStep(
         id="responses",
         short="Responses",
         title="What the companies say",
-        doing="The agent reads the simulated company note, the ticket, and the cause diagram.",
-        why="Each note is simulated and labeled. It was not sent.",
-        look="The marked branch on the cause diagram is the one the note points at.",
         next_label="See the close-out",
     ),
     GuideStep(
         id="closeout",
         short="Close-out",
         title="Does the plan get under 1%",
-        doing="The agent states the simulated root cause, the corrective and preventive action, and the projected share.",
-        why="The projection is what remains after the cause set is removed. It is not observed follow-up.",
-        look="Compare each projected share with the 1% line.",
         next_label="Finish the story",
     ),
 )
