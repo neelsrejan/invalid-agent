@@ -141,9 +141,16 @@ def _effort(client: Any) -> str:
 
 _COMPLETE_TIMEOUT = 15.0
 _SKIP_TOKEN = frozenset({"the", "labs", "lab", "inc", "ltd", "corp", "corporation", "company"})
-_CLAUSE_SPLIT = re.compile(r"[.;!?]|\bbut\b", re.I)
-_NEGATED = re.compile(r"\b(?:under|below|not|less than|fine|ok|okay)\b", re.I)
-_CLAIMS_OVER = re.compile(r"\b(?:over|above)\s+(?:the\s+)?1\b|\bflagged\b", re.I)
+_SPLIT = re.compile(r"[,.;!?]|\b(?:and|but)\b", re.I)
+_NEGATED = re.compile(r"n't|\b(?:under|below|not|no|neither|nor|less than|fine|ok|okay)\b", re.I)
+_OVER = re.compile(
+    r">\s*1\b|\b(?:over|above|exceeds?|flagged|also)\b|\btoo\b(?!\s+few)|\b(?:more|greater) than\b",
+    re.I,
+)
+_GAP_LINE = (
+    "That doesn't match the companies over 1% with enough reports yet. "
+    "Check the third table."
+)
 
 
 def _complete(client: Any, message: str, facts: dict[str, Any]) -> str | None:
@@ -281,55 +288,39 @@ def _mentions(message: str, rows: list[dict[str, Any]]) -> list[tuple[int, int, 
     return hits
 
 
-def _clauses(message: str) -> list[str]:
-    return [part.strip() for part in _CLAUSE_SPLIT.split(str(message or "")) if part.strip()]
+def _segments(message: str) -> list[str]:
+    return [part.strip() for part in _SPLIT.split(str(message or "")) if part.strip()]
 
 
-def _claimed_over(name: str, clauses: list[str], row: dict[str, Any]) -> bool:
-    owners = [row]
-    for clause in clauses:
-        if not _mentions(clause, owners):
+def _own(segments: list[str], row: dict[str, Any]) -> list[str]:
+    return [part for part in segments if _mentions(part, [row])]
+
+
+def _claimed_over(segments: list[str], row: dict[str, Any]) -> bool:
+    for part in _own(segments, row):
+        if _NEGATED.search(part):
             continue
-        if _NEGATED.search(clause):
-            continue
-        if _CLAIMS_OVER.search(clause):
+        if _OVER.search(part):
             return True
     return False
 
 
+def _stands(segments: list[str], row: dict[str, Any]) -> bool:
+    parts = _own(segments, row)
+    return any(_NEGATED.search(part) is None for part in parts)
+
+
 def _name_gap(message: str, facts: dict[str, Any]) -> tuple[list[str], list[str]]:
     rows = [row for row in facts.get("companies") or [] if str(row.get("name") or "").strip()]
-    named = {hit[2] for hit in _mentions(message, rows)}
-    missing = [str(row["name"]) for row in facts.get("flagged") or [] if str(row["name"]) not in named]
-    clauses = _clauses(message)
-    wrong: list[str] = []
+    segments = _segments(message)
     flagged = {str(row["name"]) for row in facts.get("flagged") or []}
-    for row in rows:
-        name = str(row["name"])
-        if name in flagged or name not in named:
-            continue
-        if _claimed_over(name, clauses, row):
-            wrong.append(name)
+    missing = [str(row["name"]) for row in rows if str(row["name"]) in flagged and not _stands(segments, row)]
+    wrong = [
+        str(row["name"])
+        for row in rows
+        if str(row["name"]) not in flagged and _claimed_over(segments, row)
+    ]
     return missing, wrong
-
-
-def _listed(names: list[str]) -> str:
-    if len(names) == 1:
-        return names[0]
-    if len(names) == 2:
-        return f"{names[0]} and {names[1]}"
-    return ", ".join(names[:-1]) + ", and " + names[-1]
-
-
-def _name_line(missing: list[str], wrong: list[str]) -> str:
-    parts: list[str] = []
-    if missing:
-        verb = "is" if len(missing) == 1 else "are"
-        parts.append(f"{_listed(missing)} {verb} missing from the flagged companies.")
-    if wrong:
-        verb = "is" if len(wrong) == 1 else "are"
-        parts.append(f"{_listed(wrong)} {verb} not a flagged company.")
-    return " ".join(parts)
 
 
 def _guard(
@@ -352,5 +343,5 @@ def _guard(
         return Week1Verdict(python_sentence(message, facts), False, "company set", names)
     missing, wrong = _name_gap(message, facts)
     if missing or wrong:
-        return Week1Verdict(_name_line(missing, wrong), False, "company set", names)
+        return Week1Verdict(_GAP_LINE, False, "company set", names)
     return Week1Verdict(prose, True, reason, names)
