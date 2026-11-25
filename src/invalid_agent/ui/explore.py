@@ -200,7 +200,7 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
         if sentence:
             return sentence
         if facts:
-            return _total_answer(facts)
+            return total_answer(facts)
         return capabilities_menu(week, whole=bool(facts.get("whole")))
     if intent == "direction":
         sentence = str(view.get("direction_sentence") or "").strip()
@@ -214,7 +214,7 @@ def answer_for(intent: str, view: dict[str, Any]) -> str:
     if not facts or "total" not in facts:
         return counts_did_not_load()
     if intent == "total":
-        return _with_lead(_total_answer(facts), facts, intent)
+        return _with_lead(total_answer(facts), facts, intent)
     if intent == "categories":
         return _category_answer(facts)
     if intent == "manufacturers":
@@ -241,7 +241,7 @@ def counts_did_not_load() -> str:
     return "The week's counts did not load."
 
 
-def _total_answer(facts: dict[str, Any]) -> str:
+def total_answer(facts: dict[str, Any]) -> str:
     week = int(facts["week"])
     total = int(facts["total"])
     invalid = int(facts["invalid_total"])
@@ -620,7 +620,7 @@ def _filtered_data(facts: dict[str, Any], args: dict[str, Any]) -> dict[str, Any
 def _sentence_for(result: dict[str, Any], facts: dict[str, Any], view: dict[str, Any]) -> str:
     name = str(result.get("name") or "")
     if name in {"report_total", "invalid_summary"}:
-        return _with_lead(_total_answer(facts), facts, "total")
+        return _with_lead(total_answer(facts), facts, "total")
     if name == "category_ranking":
         return _category_answer(facts)
     if name == "manufacturer_ranking":
@@ -643,7 +643,7 @@ def _sentence_for(result: dict[str, Any], facts: dict[str, Any], view: dict[str,
     if name == "company_shares":
         return _company_sentence(facts.get("companies") or [])
     if name == "threshold_flags":
-        return _threshold_sentence(facts)
+        return threshold_sentence(facts)
     if name == "company_causes":
         return _cause_sentence(result.get("data") or {})
     if name == "issue_response":
@@ -707,7 +707,7 @@ def _company_sentence(rows: list[dict[str, Any]]) -> str:
     return f"Invalid share of field problem reports: {listed}."
 
 
-def _threshold_sentence(facts: dict[str, Any]) -> str:
+def threshold_sentence(facts: dict[str, Any]) -> str:
     flagged = facts.get("flagged") or []
     small = facts.get("small") or []
     if not facts.get("companies"):

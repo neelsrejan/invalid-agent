@@ -23,6 +23,7 @@ _SECRET_KEYS = (
     "DEMO_READONLY_PASSWORD",
     "GROQ_API_KEY",
     "GROQ_MODEL",
+    "WEEK1_GROQ_MODEL",
     "DATA_BACKEND",
     "MANUFACTURER_DISPLAY",
     "OLLAMA_HOST",
@@ -53,8 +54,17 @@ def test_defaults_are_offline(monkeypatch):
     assert settings.database_url_readonly == ""
     assert settings.groq_api_key == ""
     assert settings.groq_model == "openai/gpt-oss-20b"
+    assert settings.week1_groq_model == "qwen/qwen3.8-27b"
     assert settings.data_backend == "synthetic"
     assert settings.manufacturer_display == "real"
+
+
+def test_week1_model_is_separate_from_the_narrator(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("WEEK1_GROQ_MODEL", "qwen/other")
+    settings = load_settings()
+    assert settings.week1_groq_model == "qwen/other"
+    assert settings.groq_model == "openai/gpt-oss-20b"
 
 
 def test_jira_requires_all_three_values(monkeypatch):

@@ -74,6 +74,15 @@ def test_week_one_boots_with_the_agent_and_a_locked_next(monkeypatch):
     assert "Who is over 1%" in visible
     assert "how many complaints are in the dataset" in visible
     assert "Your question or insight" in visible
+    assert "First 10 rows of the dataset" in visible
+    assert "Aggregated invalid data by company" in visible
+    assert "Invalid by company exceeding 1% and has enough N" in visible
+    assert "too few reports to judge and are not flagged." in visible
+    assert "Which case" not in visible
+    assert not list(getattr(app, "selectbox", []))
+    assert "Things to notice" not in visible
+    assert "Mention to the agent" not in visible
+    assert "What the agent is doing" not in visible
     assert "98%" not in visible
     assert "2%" not in visible
     nxt = next(button for button in app.button if button.key == "next")
@@ -84,14 +93,18 @@ def test_week_one_boots_with_the_agent_and_a_locked_next(monkeypatch):
 def test_show_me_unlocks_next_and_a_question_does_not(monkeypatch):
     app = _run_app(monkeypatch)
     box = next(item for item in app.text_input if item.label == "Your question or insight")
-    app = box.set_value("how many complaints are in the dataset").run()
     button = next(item for item in app.button if item.label == "Tell the agent")
+    box.set_value("how many complaints are in the dataset")
     button.click()
     app.run()
     assert not app.exception, app.exception
+    visible = _visible(app)
+    assert "You said." in visible
+    assert "how many complaints are in the dataset" in visible
+    assert "GOOD QUESTION" not in visible
+    assert "I can look up" not in visible
     nxt = next(button for button in app.button if button.key == "next")
     assert nxt.disabled
-    assert "GOOD QUESTION" not in _visible(app)
     app = _click_key(app, "show-me")
     visible = _visible(app)
     assert "Insight:" in visible
@@ -122,8 +135,8 @@ def test_a_question_clears_the_box_and_later_weeks_render(monkeypatch):
     assert not app.exception, app.exception
     assert "Week 1 of 4" in _visible(app)
     box = next(item for item in app.text_input if item.label == "Your question or insight")
-    app = box.set_value("how many complaints are in the dataset").run()
     button = next(item for item in app.button if item.label == "Tell the agent")
+    box.set_value("how many complaints are in the dataset")
     button.click()
     app.run()
     assert not app.exception, app.exception

@@ -102,8 +102,14 @@ def test_goal_claim_unlocks_and_show_me_logs_the_same_fact():
         finding, sentence = part_fact(view, step)
         assert sentence == expectations[step], sentence
         reply = respond(sentence, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
-        assert reply["confirmed"] is True, step
-        assert reply["text"].startswith("YEP")
+        if step == "eda":
+            assert reply["confirmed"] is False
+            assert not reply["text"].startswith("YEP")
+            assert "GOOD QUESTION" not in reply["text"]
+            assert "I can look up" not in reply["text"]
+        else:
+            assert reply["confirmed"] is True, step
+            assert reply["text"].startswith("YEP")
         asked = respond("which companies are over 1%", view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
         assert asked["confirmed"] is False
 

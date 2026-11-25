@@ -89,6 +89,7 @@ def _apply_streamlit_secrets() -> None:
         "DEMO_READONLY_PASSWORD",
         "GROQ_API_KEY",
         "GROQ_MODEL",
+        "WEEK1_GROQ_MODEL",
         "LLM_BACKEND",
         "LLM_MODEL",
         "DATA_BACKEND",
@@ -243,6 +244,19 @@ def _tool_client(rules_only: bool) -> ToolCaller | None:
     return llm
 
 
+def _talk_client(beat_id: str, rules_only: bool) -> ToolCaller | None:
+    if beat_id != "eda":
+        return _tool_client(rules_only)
+    if rules_only:
+        return None
+    from invalid_agent.llm import GroqLLM
+
+    settings = load_settings()
+    if not settings.groq_api_key:
+        return None
+    return GroqLLM(settings.groq_api_key, settings.week1_groq_model)
+
+
 def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     ticket_key = f"Your ticket {int(st.session_state.insight_serial) + 1}"
     flag_key = f"Flag {int(st.session_state.flag_serial) + 1}"
@@ -252,7 +266,7 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         beat_id,
         ticket_key=ticket_key,
         flag_key=flag_key,
-        tool_client=_tool_client(rules_only),
+        tool_client=_talk_client(beat_id, rules_only),
     )
     signature = str(reply.get("signature") or "")
     existing = next(
@@ -293,9 +307,19 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
                 "signature": signature,
             }
         )
+    elif reply.get("log_kind") == "insight" and reply.get("confirmed") and existing is None:
+        st.session_state.open_items.append(
+            {
+                "week": week,
+                "key": "Insight",
+                "text": text,
+                "kind": "insight",
+                "signature": signature,
+            }
+        )
     if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
         _mark_done(week, beat_id)
-    if beat_id in LOOKUP_PARTS:
+    if beat_id in LOOKUP_PARTS or beat_id == "eda":
         shown = text
     else:
         shown = reword_reply(text, _talk_llm(rules_only))
@@ -379,9 +403,11 @@ def _render_talk(view: dict, beat_id: str, week: int, rules_only: bool) -> None:
     st.subheader("Talk to the agent")
     st.caption("Type a question, or type what you think is going on. The reply uses this week's counts.")
     talk_key = f"talk_text_{int(st.session_state.get('talk_nonce') or 0)}"
-    st.text_input("Your question or insight", key=talk_key)
-    if st.button("Tell the agent", key="talk-send"):
-        _apply_talk(str(st.session_state.get(talk_key) or ""), view, beat_id, week, rules_only)
+    with st.form("talk-form", clear_on_submit=True):
+        message = st.text_input("Your question or insight", key=talk_key)
+        submitted = st.form_submit_button("Tell the agent", key="talk-send")
+    if submitted:
+        _apply_talk(str(message or ""), view, beat_id, week, rules_only)
         st.rerun()
     prompts = example_prompts(view, beat_id if beat_id != "done" else "wrap")
     st.caption("Or try one of these.")
@@ -529,9 +555,14 @@ def _render_audit(view: dict, step_id: str, scenario: dict) -> None:
         st.markdown(_say(line))
     st.caption(str(facts.get("share_line") or "invalid share of field problem reports"))
     if step_id == "eda":
+        st.markdown(
+            "Note: companies with fewer than 100 reports are marked too few reports to judge and are not flagged."
+        )
+        st.markdown("**First 10 rows of the dataset**")
         preview = facts.get("preview") or []
         if preview:
             st.dataframe(preview, use_container_width=True)
+        st.markdown("**Aggregated invalid data by company**")
         companies = facts.get("companies") or []
         if companies:
             st.dataframe(
@@ -548,6 +579,21 @@ def _render_audit(view: dict, step_id: str, scenario: dict) -> None:
                 use_container_width=True,
             )
             st.plotly_chart(company_share_figure(companies), use_container_width=True)
+        st.markdown("**Invalid by company exceeding 1% and has enough N**")
+        flagged = facts.get("flagged") or []
+        if flagged:
+            st.dataframe(
+                [
+                    {
+                        "company": row["name"],
+                        "invalid": row["invalid"],
+                        "total": row["total"],
+                        "rate": f"{float(row['share']) * 100:.2f}%",
+                    }
+                    for row in flagged
+                ],
+                use_container_width=True,
+            )
         return
     if step_id == "pareto":
         for bundle in facts.get("cause_sets") or []:
@@ -617,17 +663,6 @@ def _nav(week: int, beat: int, finished: bool, view: dict) -> None:
             st.rerun()
 
 
-def _render_case_picker(rows: list[tuple[Path, dict, str]]) -> None:
-    ids = [str(scenario.get("id")) for _path, scenario, _label in rows]
-    labels = {str(scenario.get("id")): label for _path, scenario, label in rows}
-    st.selectbox(
-        "Which case",
-        ids,
-        key="scenario_id",
-        format_func=lambda case_id: plain_case_label(labels.get(case_id, case_id)),
-    )
-
-
 def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None:
     _fresh_gloss()
     by_id = {str(scenario.get("id")): (path, scenario) for path, scenario, _label in rows}
@@ -659,21 +694,8 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
 
     step = GUIDE_STEPS[week - 1]
     st.subheader(f"{progress_label(week, 0)} — {step.title}")
-    st.markdown(_say(f"**What the agent is doing.** {step.doing}"))
-    st.markdown(_say(f"**Why.** {step.why}"))
-    st.markdown(_say(f"**What to look at.** {step.look}"))
     if week == 1:
-        _render_case_picker(rows)
-        scenario_path, scenario = by_id[st.session_state.scenario_id]
-        try:
-            view = _week_view(str(scenario_path), week, _VIEW_SCHEMA)
-        except Exception as exc:
-            _LOG.error("week view failed: %s", type(exc).__name__)
-            st.error(
-                "The public report table is not connected, so this case cannot load. "
-                "Pick a practice case. This page does not show a connection string."
-            )
-            st.stop()
+        st.markdown(plain_case_label(str(scenario.get("title") or "")))
     _render_carried(week)
     _render_audit(view, step.id, scenario)
     _render_talk(view, step.id, week, rules_only)

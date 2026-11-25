@@ -122,7 +122,14 @@ class GroqLLM:
                 time.sleep(wait)
             GroqLLM._next_ok = time.monotonic() + self._min_interval
 
-    def complete(self, *, system: str, user: str, temperature: float = 0.1) -> str:
+    def complete(
+        self,
+        *,
+        system: str,
+        user: str,
+        temperature: float = 0.1,
+        reasoning_effort: str = "low",
+    ) -> str:
         import time
 
         import httpx
@@ -134,7 +141,7 @@ class GroqLLM:
             "messages": _chat_payload(system, user),
             "temperature": temperature,
             "max_tokens": 2048,
-            "reasoning_effort": "low",
+            "reasoning_effort": reasoning_effort,
         }
         empty_retried = False
         waited = 0.0

@@ -336,8 +336,6 @@ def goal_statement(text: str, view: dict[str, Any], step_id: str) -> tuple[str, 
     if not _numbers_ok(lowered, facts):
         return None
     finding, sentence = show_me_fact(view, step_id)
-    if step_id == "eda" and _eda_claim(lowered, facts):
-        return "correct", sentence, finding
     if step_id == "pareto" and _pareto_claim(lowered, facts):
         return "correct", sentence, finding
     if step_id == "responses" and _response_claim(lowered, facts):
@@ -430,14 +428,6 @@ def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
     return "whether each plan gets under 1%", sentence
 
 
-def _eda_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    if not re.search(r"\b(?:over|above)\s+1\b", lowered) or re.search(r"\b(?:under|below)\b", lowered):
-        return False
-    flagged = {str(row["name"]).casefold() for row in facts.get("flagged") or []}
-    named = set(_segments(lowered, facts))
-    return bool(flagged) and named == flagged
-
-
 def _pareto_claim(lowered: str, facts: dict[str, Any]) -> bool:
     if not re.search(r"\b(?:under|below)\s+1\b", lowered):
         return False
@@ -510,11 +500,7 @@ def _join(parts: list[str]) -> str:
 
 def hints_for(step_id: str) -> list[str]:
     if step_id == "eda":
-        return [
-            "Things to notice: invalid share of field problem reports is invalid rows divided by total rows.",
-            "Companies with fewer than 100 reports are grey and marked too few reports to judge. They are not flagged.",
-            "Mention to the agent: which companies are over 1%, and which have too few reports to judge.",
-        ]
+        return []
     if step_id == "pareto":
         return [
             "Things to notice: the chart ranks the biggest problems first. The line adds them up.",
