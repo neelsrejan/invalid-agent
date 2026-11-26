@@ -15,9 +15,6 @@ from invalid_agent.ui.plain import code_plain
 
 THRESHOLD = 0.01
 MIN_REPORTS = 100
-_ASK = re.compile(
-    r"\?|\b(?:name|show|tell|list|give|what|how|which|who|whos|why|when|where|does|do|can|could)\b"
-)
 _SHORT = (
     ("BINDING SITE", "The Binding Site"),
     ("ROCHE", "Roche"),
@@ -324,84 +321,12 @@ def attach(frame: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def goal_statement(text: str, view: dict[str, Any], step_id: str) -> tuple[str, str, str] | None:
-    facts = view.get("explore") or {}
-    if not facts.get("companies"):
-        return None
-    if _ASK.search(str(text or "").casefold()):
-        return None
-    lowered = _with_codes(" ".join(str(text or "").casefold().split()))
-    if re.search(r"\b(?:not|never|no|without|except|but|only|unless)\b|n't", lowered):
-        return None
-    if not _numbers_ok(lowered, facts):
-        return None
-    finding, sentence = show_me_fact(view, step_id)
-    if step_id == "pareto" and _pareto_claim(lowered, facts):
-        return "correct", sentence, finding
-    if step_id == "responses" and _response_claim(lowered, facts):
-        return "correct", sentence, finding
-    if step_id == "closeout" and _closeout_claim(lowered, facts):
-        return "correct", sentence, finding
-    return None
-
-
-_CODE = re.compile(r"\binv-[a-z]+\b")
-_PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent)")
-_N_OF_M = re.compile(r"(\d[\d,]*)\s*(?:of|/|out of)\s*(\d[\d,]*)")
-
-
 def _cause_label(bundle: dict[str, Any]) -> str:
     tied = [str(code) for code in bundle.get("tied") or []]
     if len(tied) > 1:
         return f"{' or '.join(tied)} (tied at {int(bundle.get('tie_count') or 0)})"
     codes = [str(cause["code"]) for cause in bundle.get("causes") or []]
     return " and ".join(codes) or "no code"
-
-
-def _with_codes(lowered: str) -> str:
-    """Swap a plain category name for its code so 'no usable result' is not read as a negation."""
-    for code in _BRANCH:
-        plain = code_plain(code).casefold()
-        core = re.sub(r"^(?:a|an|the)\s+", "", plain.split("(")[0].strip())
-        for phrase in (plain, core):
-            if phrase:
-                lowered = lowered.replace(phrase, code.casefold())
-    return re.sub(r"\(\s*(inv-[a-z]+)\s*\)", r"\1", lowered)
-
-
-def _segments(lowered: str, facts: dict[str, Any]) -> dict[str, str]:
-    """Text after each named company, up to the next company name."""
-    hits = []
-    for row in facts.get("companies") or []:
-        name = str(row["name"]).casefold()
-        for match in re.finditer(r"\b" + re.escape(name) + r"\b", lowered):
-            hits.append((match.start(), match.end(), name))
-    hits.sort()
-    out: dict[str, str] = {}
-    for index, (_start, stop, name) in enumerate(hits):
-        nxt = hits[index + 1][0] if index + 1 < len(hits) else len(lowered)
-        out[name] = out.get(name, "") + " " + lowered[stop:nxt]
-    return out
-
-
-def _numbers_ok(lowered: str, facts: dict[str, Any]) -> bool:
-    """Every percent must be the 1% line or a share we computed; every N of M must be a real pair."""
-    shares = {"1", "1.0", "1.00"}
-    pairs = set()
-    for row in facts.get("companies") or []:
-        shares |= {f"{row['share'] * 100:.2f}", f"{row['share'] * 100:.1f}"}
-        pairs.add((int(row["invalid"]), int(row["total"])))
-    for bundle in facts.get("cause_sets") or []:
-        if bundle.get("projected") is not None:
-            shares |= {f"{bundle['projected'] * 100:.2f}", f"{bundle['projected'] * 100:.1f}"}
-        for cause in bundle.get("causes") or []:
-            pairs.add((int(cause["count"]), int(bundle["invalid"])))
-    if any(value not in shares for value in _PCT.findall(lowered)):
-        return False
-    for left, right in _N_OF_M.findall(lowered):
-        if (int(left.replace(",", "")), int(right.replace(",", ""))) not in pairs:
-            return False
-    return True
 
 
 def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
@@ -428,66 +353,6 @@ def show_me_fact(view: dict[str, Any], step_id: str) -> tuple[str, str]:
     return "whether each plan gets under 1%", sentence
 
 
-def _pareto_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    if not re.search(r"\b(?:under|below)\s+1\b", lowered):
-        return False
-    bundles = {str(bundle["name"]).casefold(): bundle for bundle in facts.get("cause_sets") or []}
-    segments = _segments(lowered, facts)
-    if not bundles or set(segments) != set(bundles):
-        return False
-    for name, bundle in bundles.items():
-        wanted = {str(cause["code"]).casefold() for cause in bundle["causes"]}
-        tied = {str(code).casefold() for code in bundle.get("tied") or []}
-        said = set(_CODE.findall(segments[name]))
-        if said == wanted:
-            continue
-        if tied and said in [{code} for code in tied]:
-            continue
-        if tied and said == tied and re.search(r"\b(?:tied|or)\b", segments[name]):
-            continue
-        return False
-    return True
-
-
-def _response_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    issues = facts.get("issues") or []
-    segments = _segments(lowered, facts)
-    if not issues or set(segments) != {str(issue["company"]).casefold() for issue in issues}:
-        return False
-    branches = "|".join(sorted({name.casefold() for name in _BRANCH.values()} | {"environment"}))
-    for issue in issues:
-        segment = segments[str(issue["company"]).casefold()]
-        code = str(issue["code"]).casefold()
-        chunk = re.search(re.escape(code) + r"(.*?)(?=\binv-[a-z]+\b|$)", segment)
-        if not chunk:
-            return False
-        said = set(re.findall(r"\b(" + branches + r")\b", chunk.group(1)))
-        if said != {str(issue["branch"]).casefold()}:
-            return False
-    return True
-
-
-def _closeout_claim(lowered: str, facts: dict[str, Any]) -> bool:
-    rows = facts.get("closeouts") or []
-    segments = _segments(lowered, facts)
-    if not rows or set(segments) != {str(row["company"]).casefold() for row in rows}:
-        return False
-    for row in rows:
-        segment = segments[str(row["company"]).casefold()]
-        under = bool(re.search(r"\b(?:under|below)\s+1\b", segment))
-        over = bool(re.search(r"\b(?:over|above|stays)\b", segment))
-        if not under and not over:
-            under = bool(re.search(r"\b(?:under|below)\s+1\b", lowered))
-            over = bool(re.search(r"\b(?:over|above|stays)\b", lowered))
-        if row.get("under") and not (under and not over):
-            return False
-        if not row.get("under") and not (over and not under):
-            return False
-    if re.search(r"\b(?:under|below)\s+1\b", lowered) is None:
-        return False
-    return True
-
-
 def _join(parts: list[str]) -> str:
     if not parts:
         return ""
@@ -499,25 +364,8 @@ def _join(parts: list[str]) -> str:
 
 
 def hints_for(step_id: str) -> list[str]:
-    if step_id == "eda":
-        return []
-    if step_id == "pareto":
-        return [
-            "Things to notice: the chart ranks the biggest problems first. The line adds them up.",
-            "The cause set is the smallest group at the top of that ranking that brings the company under 1%.",
-            "Mention to the agent: name the biggest invalid category for one flagged company.",
-        ]
-    if step_id == "responses":
-        return [
-            "Things to notice: each company note is simulated and labeled. It was not sent.",
-            "The cause diagram groups possible causes. The marked branch is the one the note points at.",
-            "Mention to the agent: which labels are co-reported with a company's invalid category.",
-        ]
-    return [
-        "Things to notice: the projected share is what remains after the cause set is removed.",
-        "Each close-out is simulated and labeled. It was not sent.",
-        "Mention to the agent: does each company's plan get under 1%.",
-    ]
+    del step_id
+    return []
 
 
 def prompts_for(step_id: str, facts: dict[str, Any]) -> list[str]:

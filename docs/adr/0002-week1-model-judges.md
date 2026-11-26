@@ -14,7 +14,7 @@ Week 1 used to require the words "over 1" and an exact official company name. A 
 - One Groq call writes the reply and `meets_goal`. Temperature is 0. Each call times out after 15 seconds.
 - Python keeps `meets_goal` only when the user's message names every flagged company. An extra company blocks Next only when that company's clause claims it is over 1% or flagged. A clause that says under, below, not, less than, fine, or ok does not. There is no required phrase.
 - A percent or a large N-of-M pair that is not on the table is replaced by a Python sentence. When the name check overrides a true `meets_goal`, the page shows one neutral line and does not name the gap. It does not show the model's agreeing prose.
-- Weeks 2-4 still grade with `goal_statement`.
+- Weeks 2-4 graded with `goal_statement` when this decision was accepted. ADR 0003 moves those weeks onto this same judge.
 
 ## Consequences
 

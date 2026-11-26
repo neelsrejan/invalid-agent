@@ -102,14 +102,10 @@ def test_goal_claim_unlocks_and_show_me_logs_the_same_fact():
         finding, sentence = part_fact(view, step)
         assert sentence == expectations[step], sentence
         reply = respond(sentence, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
-        if step == "eda":
-            assert reply["confirmed"] is False
-            assert not reply["text"].startswith("YEP")
-            assert "GOOD QUESTION" not in reply["text"]
-            assert "I can look up" not in reply["text"]
-        else:
-            assert reply["confirmed"] is True, step
-            assert reply["text"].startswith("YEP")
+        assert reply["confirmed"] is False
+        assert not reply["text"].startswith("YEP")
+        assert "GOOD QUESTION" not in reply["text"]
+        assert "I can look up" not in reply["text"]
         asked = respond("which companies are over 1%", view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
         assert asked["confirmed"] is False
 
@@ -170,10 +166,6 @@ def test_goal_claims_reject_wrong_companies_codes_branches_and_numbers():
         for text in bad[step]:
             reply = respond(text, view, step, ticket_key="Your ticket 1", flag_key="Flag 1")
             assert reply["confirmed"] is False, (step, text)
-    plain = "Roche needs a mechanical problem and no usable result, Abbott Labs needs a software abort, and Siemens needs INV-MECH and INV-USR to get under 1%"
-    assert respond(plain, _view(2), "pareto", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"] is True
-    either = "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-SW, and Siemens needs INV-MECH and INV-USR to get under 1%"
-    assert respond(either, _view(2), "pareto", ticket_key="Your ticket 1", flag_key="Flag 1")["confirmed"] is True
 
 
 def test_week_one_does_not_say_a_later_weeks_finding():

@@ -40,6 +40,7 @@ from invalid_agent.ui.plain import (
 )
 from invalid_agent.ui.story import build_week_view
 from invalid_agent.ui.talkback import (
+    AUDIT_WEEKS,
     LOOKUP_PARTS,
     accepted_signatures,
     example_prompts,
@@ -245,7 +246,7 @@ def _tool_client(rules_only: bool) -> ToolCaller | None:
 
 
 def _talk_client(beat_id: str, rules_only: bool) -> ToolCaller | None:
-    if beat_id != "eda":
+    if beat_id not in AUDIT_WEEKS:
         return _tool_client(rules_only)
     if rules_only:
         return None
@@ -319,7 +320,7 @@ def _apply_talk(message: str, view: dict, beat_id: str, week: int, rules_only: b
         )
     if reply.get("confirmed") and signature in accepted_signatures(view, beat_id):
         _mark_done(week, beat_id)
-    if beat_id in LOOKUP_PARTS or beat_id == "eda":
+    if beat_id in LOOKUP_PARTS or beat_id in AUDIT_WEEKS:
         shown = text
     else:
         shown = reword_reply(text, _talk_llm(rules_only))
@@ -596,6 +597,11 @@ def _render_audit(view: dict, step_id: str, scenario: dict) -> None:
             )
         return
     if step_id == "pareto":
+        st.markdown("**Pareto of product problems**")
+        st.markdown(
+            "Note: the smallest set at the top of the chart brings the company under 1%. "
+            "A tie means any one of those codes."
+        )
         for bundle in facts.get("cause_sets") or []:
             st.markdown(_say(f"**{bundle['name']}**"))
             chart_rows = [
@@ -620,11 +626,20 @@ def _render_audit(view: dict, step_id: str, scenario: dict) -> None:
             st.markdown(_say(request["message"]))
         return
     if step_id == "responses":
+        st.markdown("**Company notes and cause diagrams**")
+        st.markdown(
+            "Note: each note is simulated and was not sent. The diagram marks the branch the note points at."
+        )
         for issue in facts.get("issues") or []:
             st.markdown(_say(f"**{issue['ticket']}**"))
             st.markdown(_say(issue["testimonial"]))
             st.plotly_chart(fishbone_figure(issue["branch"]), use_container_width=True)
         return
+    st.markdown("**Close-out statements**")
+    st.markdown(
+        "Note: each close-out is simulated and was not sent. "
+        "The projected share is what remains after the cause set is removed."
+    )
     for row in facts.get("closeouts") or []:
         st.markdown(_say(row["statement"]))
     _offer_deck(view, scenario)
@@ -694,8 +709,7 @@ def _render_guided(rows: list[tuple[Path, dict, str]], rules_only: bool) -> None
 
     step = GUIDE_STEPS[week - 1]
     st.subheader(f"{progress_label(week, 0)} — {step.title}")
-    if week == 1:
-        st.markdown(plain_case_label(str(scenario.get("title") or "")))
+    st.markdown(plain_case_label(str(scenario.get("title") or "")))
     _render_carried(week)
     _render_audit(view, step.id, scenario)
     _render_talk(view, step.id, week, rules_only)
