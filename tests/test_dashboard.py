@@ -150,15 +150,17 @@ def test_a_question_clears_the_box_and_later_weeks_render(monkeypatch):
     app.run()
     app = _click_key(app, "show-me")
     assert _visible(app).count("Insight:") == 1
-    for title in (
-        "Causes that get under 1%",
-        "What the companies say",
-        "Does the plan get under 1%",
+    for title, heading in (
+        ("Causes that get under 1%", "Pareto of product problems"),
+        ("What the companies say", "Company notes and cause diagrams"),
+        ("Does the plan get under 1%", "Close-out statements"),
     ):
         app = _click_key(app, "next")
         visible = _visible(app)
         assert title in visible
-        assert "Things to notice" in visible
+        assert heading in visible
+        assert "Things to notice" not in visible
+        assert "Mention to the agent" not in visible
         assert "Your question or insight" in visible
         assert "Show me" in visible
         nxt = next(button for button in app.button if button.key == "next")

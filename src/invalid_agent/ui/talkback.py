@@ -204,9 +204,9 @@ def respond(
 ) -> dict[str, Any]:
     raw = str(message or "")
     text = " ".join(raw.split())
+    if step_id in AUDIT_WEEKS:
+        return _respond_audit(raw, text, view, step_id, tool_client, ticket_key, flag_key)
     if not text:
-        if step_id == "eda":
-            return _respond_eda(raw, text, view, None, ticket_key, flag_key)
         return _pack(
             kind="question",
             body="Type a question, or type what you think the screen is saying. Then I can check it against this week's counts.",
@@ -215,8 +215,6 @@ def respond(
             flag_key=flag_key,
             user_text="",
         )
-    if step_id == "eda":
-        return _respond_eda(raw, text, view, tool_client, ticket_key, flag_key)
     kind, body, finding = _classify(text, view, step_id, tool_client)
     bare = step_id in LOOKUP_PARTS | AUDIT_WEEKS and kind in {"question", "hint", "early"}
     return _pack(
@@ -230,19 +228,26 @@ def respond(
     )
 
 
-def _respond_eda(
+def _respond_audit(
     raw: str,
     text: str,
     view: dict[str, Any],
+    step_id: str,
     client: Any | None,
     _ticket_key: str,
     _flag_key: str,
 ) -> dict[str, Any]:
     from invalid_agent.ui.audit import show_me_fact
-    from invalid_agent.ui.week1 import judge_week1
 
-    verdict = judge_week1(text, view, client)
-    finding, _sentence = show_me_fact(view, "eda")
+    if step_id == "eda":
+        from invalid_agent.ui.week1 import judge_week1
+
+        verdict = judge_week1(text, view, client)
+    else:
+        from invalid_agent.ui.weeks import judge_week
+
+        verdict = judge_week(text, view, client, step_id)
+    finding, _sentence = show_me_fact(view, step_id)
     confirmed = bool(verdict.meets_goal)
     return {
         "kind": "correct" if confirmed else "question",
@@ -419,18 +424,6 @@ def _classify(
     lowered = text.casefold()
     if _is_greeting(lowered):
         return "hint", _hello(step_id, view), ""
-    if step_id in AUDIT_WEEKS:
-        from invalid_agent.ui.audit import goal_statement
-        from invalid_agent.ui.explore import answer_message
-
-        stated = goal_statement(text, view, step_id)
-        if stated:
-            return stated
-        return (
-            "question",
-            answer_message(text, view, tool_client),
-            f"a question on the {step_id} page",
-        )
     if step_id in LOOKUP_PARTS:
         from invalid_agent.ui.explore import answer_message, match_intent
 
