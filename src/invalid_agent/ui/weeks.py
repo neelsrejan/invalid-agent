@@ -8,7 +8,7 @@ from typing import Any
 from invalid_agent.config import WEEK1_GROQ_FALLBACK, load_settings
 from invalid_agent.ui.audit import show_me_fact
 from invalid_agent.ui.plain import code_plain
-from invalid_agent.ui.week1 import _mentions, _segments
+from invalid_agent.ui.week1 import _mentions, _pair_names_its_company, _segments
 
 _CODE = re.compile(r"\binv-[a-z]+\b", re.I)
 _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent)", re.I)
@@ -48,12 +48,11 @@ _CLOSE_RUBRIC = (
     "Do not write YEP, CLOSE, NOT QUITE, GOOD QUESTION, Remember, or Jira. "
     "Do not praise the user. Do not invent a percent or a count."
 )
-_CLAIM = {
-    "closeout": re.compile(
-        r"\btoo\b(?!\s+few)|\b(?:under|below|plan|close-out|closeout|statement|cause|action|fix|public|also|over|above)\b",
-        re.I,
-    )
-}
+_CLAIM = re.compile(
+    r">\s*1\b|\btoo\b(?!\s+few)|\b(?:under|below|over|above|exceeds?|flagged|also)\b|\b(?:more|greater) than\b",
+    re.I,
+)
+_EXTRA = re.compile(r"\btoo\b(?!\s+few)|\b(?:flagged|also)\b|\bin the set\b", re.I)
 
 
 @dataclass(frozen=True)
@@ -199,6 +198,11 @@ def _stamp(message: str, codes: set[str]) -> str:
     return text
 
 
+def _stands(parts: list[str], name: str, rows: list[dict[str, Any]]) -> bool:
+    mentioned = [part for part in parts if any(hit == name for _start, _end, hit in _mentions(part, rows))]
+    return any(_NOT.search(part) is None for part in mentioned)
+
+
 def _claimed_codes(parts: list[str]) -> set[str]:
     found: set[str] = set()
     for part in parts:
@@ -208,7 +212,9 @@ def _claimed_codes(parts: list[str]) -> set[str]:
     return found
 
 
-def _code_gap(runs: dict[str, list[str]], groups: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+def _code_gap(
+    runs: dict[str, list[str]], groups: list[dict[str, Any]], rows: list[dict[str, Any]]
+) -> tuple[list[str], list[str]]:
     missing: list[str] = []
     wrong: list[str] = []
     required: set[str] = set()
@@ -216,7 +222,6 @@ def _code_gap(runs: dict[str, list[str]], groups: list[dict[str, Any]]) -> tuple
         name = str(group["name"])
         required.add(name)
         parts = runs.get(name) or []
-        stands = any(_NOT.search(part) is None for part in parts)
         claimed = _claimed_codes(parts)
         causes = {str(code).upper() for code in group["causes"]}
         tied = {str(code).upper() for code in group.get("tied") or []}
@@ -224,7 +229,7 @@ def _code_gap(runs: dict[str, list[str]], groups: list[dict[str, Any]]) -> tuple
             ok = bool(claimed & tied) and (causes - tied) <= claimed
         else:
             ok = bool(causes) and causes <= claimed
-        if not stands or not ok:
+        if not _stands(parts, name, rows) or not ok:
             missing.append(name)
         if claimed - causes - tied:
             wrong.append(name)
@@ -233,6 +238,15 @@ def _code_gap(runs: dict[str, list[str]], groups: list[dict[str, Any]]) -> tuple
             continue
         if _claimed_codes(parts):
             wrong.append(name)
+            continue
+        for part in parts:
+            if not any(hit == name for _start, _end, hit in _mentions(part, rows)):
+                continue
+            if _NOT.search(part):
+                continue
+            if _EXTRA.search(part):
+                wrong.append(name)
+                break
     return missing, wrong
 
 
@@ -257,21 +271,21 @@ def _issue_groups(facts: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _company_gap(runs: dict[str, list[str]], required: set[str], rows: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
-    claim = _CLAIM["closeout"]
     missing: list[str] = []
     wrong: list[str] = []
     for row in rows:
         name = str(row["name"])
         parts = runs.get(name) or []
-        stands = any(_NOT.search(part) is None for part in parts)
-        if name in required and not stands:
+        if name in required and not _stands(parts, name, rows):
             missing.append(name)
         if name in required:
             continue
         for part in parts:
+            if not any(hit == name for _start, _end, hit in _mentions(part, rows)):
+                continue
             if _NOT.search(part):
                 continue
-            if claim.search(part):
+            if _CLAIM.search(part):
                 wrong.append(name)
                 break
     return missing, wrong
@@ -326,9 +340,14 @@ def _pairs(facts: dict[str, Any]) -> set[tuple[int, int]]:
 def _numbers_ok(prose: str, facts: dict[str, Any]) -> bool:
     if any(value not in _shares(facts) for value in _PCT.findall(prose)):
         return False
+    rows = _rows(facts)
     pairs = _pairs(facts)
-    for left, right in _N_OF_M.findall(prose):
-        if (int(left.replace(",", "")), int(right.replace(",", ""))) not in pairs:
+    for match in _N_OF_M.finditer(prose):
+        total = int(match.group(2).replace(",", ""))
+        pair = (int(match.group(1).replace(",", "")), total)
+        if total < 100 and not _pair_names_its_company(prose, match.start(), total, rows):
+            continue
+        if pair not in pairs:
             return False
     return True
 
@@ -355,7 +374,7 @@ def _guard(
         ready = bool(required)
     else:
         groups = _pareto_groups(facts) if step_id == "pareto" else _issue_groups(facts)
-        missing, wrong = _code_gap(runs, groups)
+        missing, wrong = _code_gap(runs, groups, rows)
         ready = bool(groups)
     if not ready or missing or wrong:
         return WeekVerdict(_gap_line(step_id), False, "entity set", ())

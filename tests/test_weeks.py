@@ -68,6 +68,8 @@ def test_week_two_paraphrases_unlock_and_the_wrong_set_stays_locked():
         "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-MECH, Siemens needs INV-MECH and INV-USR, and Beckman needs INV-MECH.",
         "Roche isn't in the set. Abbott Labs needs INV-MECH. Siemens needs INV-MECH and INV-USR.",
         "Abbott Labs needs INV-MECH, and Siemens needs INV-MECH and INV-USR.",
+        "Roche is not in the set. INV-MECH and INV-NOR are the codes. Abbott Labs needs INV-MECH. Siemens needs INV-MECH and INV-USR.",
+        "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-MECH, Siemens needs INV-MECH and INV-USR, and Beckman is in the set.",
     ):
         _locked("pareto", text)
     spared = _talk(
@@ -94,6 +96,7 @@ def test_week_three_guard_checks_codes_and_leaves_the_branch_to_the_judge():
         "Roche INV-MECH is Machine, Abbott Labs INV-MECH is Machine, Siemens INV-MECH is Machine, and Siemens INV-USR is Man.",
         "Roche INV-MECH is Machine, Roche INV-NOR is Material, Abbott Labs INV-MECH is Machine, Siemens INV-MECH is Machine, Siemens INV-USR is Man, and Beckman INV-MECH is Machine.",
         "Roche and Abbott are over 1%, Siemens is not",
+        "Roche is not included. INV-MECH is Machine and INV-NOR is Material. Abbott Labs INV-MECH is Machine. Siemens INV-MECH is Machine and Siemens INV-USR is Man.",
     ):
         _locked("responses", text)
 
@@ -118,8 +121,18 @@ def test_week_four_companies_unlock_and_an_extra_company_stays_locked():
         "Roche, Abbott and Siemens get under 1%, Beckman too.",
         "Roche and Abbott get under 1%, Siemens is not",
         "Roche and Abbott get under 1%, neither Siemens nor Beckman",
+        "Siemens is not included. See the page. Roche and Abbott get under 1%.",
+        "Roche, Abbott and Siemens get under 1%. Beckman is flagged.",
+        "Roche, Abbott and Siemens get under 1%. Beckman exceeds 1%.",
     ):
         _locked("closeout", text)
+    aside = _talk(
+        "closeout",
+        "Roche, Abbott and Siemens get under 1%. Beckman has a public statement.",
+        _Recorder(_model(prose)),
+    )
+    assert aside["confirmed"] is True
+    assert aside["text"] == prose
 
 
 def test_a_question_does_not_unlock_and_an_invented_number_is_replaced():
@@ -128,6 +141,13 @@ def test_a_question_does_not_unlock_and_an_invented_number_is_replaced():
     assert "4221" in asked["text"]
     for banned in BANNED:
         assert banned not in asked["text"]
+    kept = _talk(
+        "pareto",
+        "Roche needs INV-MECH and INV-NOR, Abbott Labs needs INV-MECH, and Siemens needs INV-MECH and INV-USR.",
+        _Recorder(_model("Agreed. A side count is 2 of 3.", True)),
+    )
+    assert kept["confirmed"] is True
+    assert "2 of 3" in kept["text"]
     invented = _talk(
         "closeout",
         "Roche, Abbott and Siemens get under 1%.",

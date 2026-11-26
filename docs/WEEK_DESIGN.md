@@ -26,7 +26,9 @@ Split the user text on commas, semicolons, periods, and the words and and but. A
 
 Negation always includes n't, no, neither, nor, and not. A week whose correct claim is "over" also treats under, below, less than, fine, ok, and okay as negation, because those words deny the over-claim. A week whose correct claim is "under" does not treat under as negation.
 
-Each week supplies its own claim markers. On a company week the markers are the over-phrases: over, above, exceed, more than, greater than, >1, over one, too, also, and flagged. The word too does not match the phrase "too few". On a code week, a code in a non-negated segment is the claim.
+A company stands only when a segment that names that company is not negated. A later segment that does not name it does not clear that negation.
+
+Each week supplies its own claim markers. On a company week the markers are under, below, and the over-phrases: over, above, exceed, more than, greater than, >1, over one, too, also, and flagged. The word too does not match the phrase "too few". On a code week, a code in a non-negated segment is the claim. An extra company with no code still counts when its own mention says it is in the set, or uses flagged, too, or also.
 
 A required entity whose every mention is negated counts as missing. A missing required entity keeps Next locked. An extra entity keeps Next locked only when its own run makes the week's claim and that run is not negated.
 
