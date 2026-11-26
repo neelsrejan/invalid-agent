@@ -1,5 +1,3 @@
-"""Weeks 2-4 judge and guard, on the frozen JJE fixture."""
-
 import json
 import os
 

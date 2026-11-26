@@ -1,5 +1,3 @@
-"""Weeks 2-4 use the same judge and guard as Week 1. Week 1 stays in week1.py."""
-
 from __future__ import annotations
 
 import json
